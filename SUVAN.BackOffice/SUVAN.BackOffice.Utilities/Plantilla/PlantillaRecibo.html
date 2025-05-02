@@ -1,0 +1,76 @@
+<div style='width:100%; text-align:center'>
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> EMPRESA: </td>
+                    <td style='border:1px solid #000; width: 30%;'> FECHA EMISIÓN: </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{nombre_empresa}}</td>
+                    <td>{{fecha_emision}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> OPERADOR: </td>
+                    <td style='border:1px solid #000'> CURP: </td>
+                    <td style='border:1px solid #000'> RFC: </td>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{nombre_operador}}</td>
+                    <td>{{curp}}</td>
+                    <td>{{rfc}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000' colspan="3"> RECIBO LIQUIDACION </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style='border:1px solid #000'> PERIODO: </td>
+                    <td style='border:1px solid #000'> MONTO FACTURADO: </td>
+                    <td style='border:1px solid #000'> MONTO COMISION: </td>
+                </tr>
+                <tr>
+                    <td>{{periodo_liquidacion}}</td>
+                    <td>{{monto_pagado}}</td>
+                    <td>{{monto_comision}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> RUTA </td>
+                    <td style='border:1px solid #000'> FECHA </td>
+                    <td style='border:1px solid #000'> $ FACTURADO </td>
+                    <td style='border:1px solid #000'> $ COMISION </td>
+                </tr>
+            </thead>
+            <tbody>
+                {{filasTabla}}
+            </tbody>
+        </table>
+    </div>
+</div>

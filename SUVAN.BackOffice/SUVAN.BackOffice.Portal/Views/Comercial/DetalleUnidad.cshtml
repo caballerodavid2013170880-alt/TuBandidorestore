@@ -1,0 +1,143 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "DetalleUnidad";
+}
+
+@model ObtenerUnidadesViewModel
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.gestionDeUnidades);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+
+
+<div id="kt_app_toolbar" class="app-toolbar ">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <a href="~/Comercial/Unidades" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+                    <i class="ki-duotone ki-left fs-1 pe-5">
+                    </i>
+                    <span>Detalles gestión de unidades</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-sm my-5">
+    <div class="card shadow col-md-4 mx-auto">
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-center">
+                <div class="image-container">
+                    <style>
+                        .checked {
+                            color: #004AAD;
+                        }
+
+                        .rating span {
+                            cursor: pointer;
+                            font-size: 1.5rem;
+                            color: #004AAD; /* Color para estrellas */
+                        }
+
+                        .image-input-placeholder {
+                            background-image: url('/assets/media/svg/files/blank-image.svg');
+                        }
+
+                        [data-bs-theme="dark"] .image-input-placeholder {
+                            background-image: url('/assets/media/svg/files/blank-image-dark.svg');
+                        }</style>
+                    <div class="image-input image-input-empty image-input-outline image-input-placeholder mb-10 mt-10" data-kt-image-input="true">
+                        <img src="data:image/png;base64" alt="Imagen" class="image-input-wrapper w-150px h-150px">
+                    </div>
+                    <!--end::Image input-->
+
+                </div>
+            </div>
+            <div class="col-md-5 d-flex align-items-center">
+                <div class="info-container">
+                    <div>
+                        <h3>@Model.NombreUnidad - @Model.PlacasUnidad</h3>
+                    </div>
+                    @{
+                        var activo = Model.ActivoUnidad;
+                    }
+                    <div>
+                        @if (activo == 1)
+                        {
+                            <h3>Estatus: Activo</h3>
+                        }
+                        @if (activo != 1)
+                        {
+                            <h3>Estatus: No activo</h3>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-5">
+    <div class="mx-auto d-flex align-items-center">
+        <!-- Lista Horizontal -->
+        <ul class="nav nav-pills mx-auto d-flex align-items-center" id="listaHorizontal">
+            <li class="nav-item">
+                <a class="nav-link active" id="generales-tab" data-bs-toggle="tab" href="#generales">Generales</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="asignaciones-tab" data-bs-toggle="tab" href="#asignaciones">Asignaciones</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="ruta-tab" data-bs-toggle="tab" href="#ruta">Ruta</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="servicios-tab" data-bs-toggle="tab" href="#servicios">Servicios</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="seguro-tab" data-bs-toggle="tab" href="#seguro">Seguro</a>
+            </li>
+            @* <li class="nav-item">
+                <a class="nav-link" id="ingresos-tab" data-bs-toggle="tab" href="#ingresos">Ingresos</a>
+            </li> *@
+        </ul>
+    </div>
+    <!-- Contenido de las Pestañas -->
+    <div class="container mt-5">
+        <div class="tab-content" id="contenidoPestanas">
+            <div class="tab-pane fade show active" id="generales">
+            </div>
+
+            <div class="tab-pane fade" id="asignaciones">
+            </div>
+
+            <div class="tab-pane fade" id="ruta">
+            </div>
+
+            <div class="tab-pane fade" id="servicios">
+            </div>
+
+            <div class="tab-pane fade" id="seguro">
+            </div>
+
+            @* <div class="tab-pane fade" id="ingresos">
+            </div> *@
+        </div>
+    </div>
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<!--end::Content-->
+<script type="text/javascript">
+    window.userId = @Model.Idunidad;
+</script>
+@section scripts {
+    <script src="~/js/comercial/unidades.js" asp-append-version="true"></script>
+    <script src="~/js/comercial/navDetalleUnidad.js" asp-append-version="true"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>>
+}

@@ -1,0 +1,213 @@
+<div style='width:100%; text-align:center'>
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border: 1px solid #000;'> EMPRESA: </td>
+                    <td style='border:1px solid #000'> EMITIDO EN:</td>
+                    <td style='border:1px solid #000'> LUGAR EXPEDICION:</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{nombre_empresa_emisor}}</td>
+                    <td>{{emitido_en}}</td>
+                    <td>{{lugar_expedicion_cp}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> TIPO DE COMPROBANTE:</td>
+                    <td style='border:1px solid #000'> REGIMEN FISCAL:</td>
+                    <td style='border:1px solid #000'> USO CFDI:</td>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{tipo_comprobante}}</td>
+                    <td>{{regimen_fiscal_receptor}}</td>
+                    <td>{{uso_cfdi_receptor}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> RFC EMPRESA:</td>
+                    <td style='border:1px solid #000'> SERIE:</td>
+                    <td style='border:1px solid #000'> FOLIO:</td>
+                    <td style='border:1px solid #000'> FOLIO FISCAL:</td>
+                    <td style='border:1px solid #000'> NO. DE SERIE DEL CERTIFICADO SAT:</td>
+                    <td style='border:1px solid #000'> FECHA Y HORA DE CERTIFICADO:</td>
+                    <td style='border:1px solid #000'> NO. DE SERIE DEL CERTIFICADO CSD:</td>
+                    <td style='border:1px solid #000'> FECHA DE EMISION:</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{rfc_empresa_emisor}}</td>
+                    <td>{{serie}}</td>
+                    <td>{{folio}}</td>
+                    <td>{{folio_uuid}}</td>
+                    <td>{{no_de_certificado_sat}}</td>
+                    <td>{{fecha_timbrado_certificacion}}</td>
+                    <td>{{no_de_certificado_csd}}</td>
+                    <td>{{fecha_emision}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> RFC RECEPTOR:</td>
+                    <td style='border:1px solid #000'> NOMBRE:</td>
+                    <td style='border:1px solid #000'> DOMICILIO:</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{rfc_receptor}}</td>
+                    <td>{{nombre_receptor}}</td>
+                    <td>{{domicilio_fiscal_receptor}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> CLAVEPROD:</td>
+                    <td style='border:1px solid #000'> DESCRIPCION:</td>
+                    <td style='border:1px solid #000'> CANTIDAD:</td>
+                    <td style='border:1px solid #000'> PRECIO UNITARIO:</td>
+                    <td style='border:1px solid #000'> IMPORTE:</td>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{claveprod}}</td>
+                    <td>{{descripcion}}</td>
+                    <td>{{cantidad}}</td>
+                    <td>{{precio_unitario}}</td>
+                    <td>{{importe}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> TOTAL CON LETRA:</td>
+                    <td style='border:1px solid #000'> SUBOTAL:</td>
+                    <td style='border:1px solid #000'> IVA 16%:</td>
+                    <td style='border:1px solid #000'> TOTAL:</td>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{total_letra}}</td>
+                    <td>{{subtotal}}</td>
+                    <td>{{monto_iva}}</td>
+                    <td>{{total}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> METODO DE PAGO:</td>
+                    <td style='border:1px solid #000'> FORMA DE PAGO:</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>{{metodo_de_pago}}</td>
+                    <td>{{forma_de_pago}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000;'> SELLO DIGITAL DE CFDI:</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="word-break: break-all;">{{sello_del_emisor_cfdi}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> SELLO DEL SAT:</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="word-break: break-all;">{{sello_sat}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> CADENA ORIGINAL DEL COMPLEMENTO DE CERTIFICADO DIGITAL DEL SAT</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="word-break: break-all;">{{cadena_original_sat}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <br />
+    <div>
+        <table style='width:100%; border: 1px solid #000'>
+            <thead style='font-weight:bold'>
+                <tr>
+                    <td style='border:1px solid #000'> CODIGO QR:</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="word-break: break-all;">
+                        <img style='width: 80px; height: 80%;' src='data:image/png;base64,{{codigo_qr}}' />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

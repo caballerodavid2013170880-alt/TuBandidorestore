@@ -1,0 +1,35 @@
+﻿<div class="container">
+    <button class="btn btn-sm btn-light-primary fw-bold" data-kt-drawer-show="true"  id="btnMensajeGlobal">
+       Mensaje Global
+    </button>
+    <button class="btn btn-sm btn-light-primary fw-bold" data-kt-drawer-show="true" id="btnMensajeRuta">
+       Mensaje Ruta
+    </button>
+    <button class="btn btn-sm btn-light-primary fw-bold" data-kt-drawer-show="true" id="btnMensajeOperador">
+        Mensaje Operador
+    </button>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        KTUtil.onDOMContentLoaded((function () {
+            $("#btnMensajeGlobal").on("click", function () {
+                fnMensajeriaSignalR.open({
+                    tipoConversacion: 0
+                });
+            });
+            $("#btnMensajeRuta").on("click", function () {
+                fnMensajeriaSignalR.open({
+                    tipoConversacion: 1,
+                    rutaId: 13,
+                });
+            });
+            $("#btnMensajeOperador").on("click", function () {
+                fnMensajeriaSignalR.open({
+                    tipoConversacion: 2,
+                    operadorId: 21
+                });
+            });
+        }));
+    </script>
+}

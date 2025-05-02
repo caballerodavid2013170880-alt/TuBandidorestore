@@ -1,0 +1,173 @@
+﻿@{
+  ViewData["Title"] = "Inicio";
+}
+
+<!--begin::Table Widget 5-->
+<div class="card card-flush mb-5 mb-xl-10">
+  <!--begin::Card header-->
+  <div class="card-header pt-7">
+    <!--begin::Title-->
+    <h3 class="card-title align-items-start flex-column">
+      <span class="card-label fw-bold text-dark">Ocupación / Ingresos por fecha</span>
+      @* <span class="text-gray-400 mt-1 fw-semibold fs-6">Total 2,356 Items in the Stock</span> *@
+    </h3>
+    <!--end::Title-->
+    <!--begin::Actions-->
+    <div class="card-toolbar">
+      <!--begin::Filters-->
+      <div class="d-flex flex-stack flex-wrap gap-4">
+        <div class="d-flex align-items-center fw-bold">
+          <!--begin::Label-->
+          <div class="text-muted fs-7 me-2">Periodo</div>
+          <!--end::Label-->
+          <!--begin::Select-->
+          <select id="periodo" class="form-select form-select-transparent text-dark fs-7 lh-1 fw-bold py-0 ps-3 w-auto" data-control="select2" data-hide-search="true" data-dropdown-css-class="w-150px" data-placeholder="Seleccione">
+
+            <option value="d">Día</option>
+            <option value="m">Mes</option>
+            <option value="a">Año</option>
+          </select>
+          <!--end::Select-->
+        </div>
+        <div class="d-flex align-items-center fw-bold">
+          <!--begin::Label-->
+          <div class="text-muted fs-7 me-2">Fechas</div>
+          <!--end::Label-->
+          <input id="fechas" class="form-control form-control-solid form-control-sm " placeholder="Rango de fechas" />
+        </div>
+        <!--begin::Destination-->
+        <div class="d-flex align-items-center fw-bold">
+          <!--begin::Label-->
+          <div class="text-muted fs-7 me-2">Indicador</div>
+          <!--end::Label-->
+          <!--begin::Select-->
+          <select id="indicador" class="form-select form-select-transparent text-dark fs-7 lh-1 fw-bold py-0 ps-3 w-auto" data-control="select2" data-hide-search="true" data-dropdown-css-class="w-150px" data-placeholder="Seleccione">
+            <option value="o">Ocupación</option>
+            <option value="i">Ingresos</option>
+
+          </select>
+          <!--end::Select-->
+        </div>
+        <!--end::Destination-->
+        <!--begin::Status-->
+        <div class="d-flex align-items-center fw-bold">
+          <!--begin::Label-->
+          <div class="text-muted fs-7 me-2">Ruta</div>
+          <!--end::Label-->
+          <!--begin::Select-->
+          <select id="ruta" class="form-select form-select-transparent text-dark fs-7 lh-1 fw-bold py-0 ps-3 w-auto">
+            <option></option>
+            @*
+            data-control="select2" data-hide-search="true" data-dropdown-css-class="w-150px" data-placeholder="Seleccione"
+            <option value="Show All" selected="selected">Todos</option>
+            <option value="In Stock">In Stock</option>
+            <option value="Out of Stock">Out of Stock</option>
+            <option value="Low Stock">Low Stock</option> *@
+          </select>
+          <!--end::Select-->
+        </div>
+        <div class="d-flex align-items-center fw-bold">
+          <!--begin::Label-->
+          <div class="text-muted fs-7 me-2">Horario</div>
+          <!--end::Label-->
+          <!--begin::Select-->
+          <select id="horario" class="form-select form-select-transparent text-dark fs-7 lh-1 fw-bold py-0 ps-3 w-auto" data-control="select2" data-hide-search="true" data-dropdown-css-class="w-150px" data-placeholder="Seleccione">
+            <option></option>
+            @*   <option value="Show All" selected="selected">Todos</option>
+            <option value="In Stock">In Stock</option>
+            <option value="Out of Stock">Out of Stock</option>
+            <option value="Low Stock">Low Stock</option> *@
+          </select>
+          <!--end::Select-->
+        </div>
+        <!--end::Status-->
+        <!--begin::Search-->
+        <button id="filtrar" class="btn btn-light btn-sm">
+
+          <!--begin::Indicator label-->
+          <span class="indicator-label">Filtrar</span>
+          <!--end::Indicator label-->
+          <!--begin::Indicator progress-->
+          <span class="indicator-progress">
+            Por favor espere...
+            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+          </span>
+          <!--end::Indicator progress-->
+
+        </button>
+        <!--end::Search-->
+      </div>
+      <!--begin::Filters-->
+    </div>
+    <!--end::Actions-->
+  </div>
+  <!--end::Card header-->
+  <!--begin::Card body-->
+  <div class="card-body">
+    <div class="row g-5 g-xl-10 g-xl-10">
+      <!--begin::Col-->
+      <div class="col-xl-6 mb-xl-10">
+        <!--begin::Chart widget 5-->
+        <div class="card card-flush h-md-100">
+
+          <!--begin::Body-->
+          <div class="card-body pt-5 ps-6">
+            <div id="kt_charts_widget_ingresos_chart" class="min-h-auto"></div>
+          </div>
+          <!--end::Body-->
+        </div>
+        <!--end::Chart widget 5-->
+      </div>
+      <!--end::Col-->
+      <!--begin::Col-->
+      <div class="col-xl-6 mb-xl-10">
+        <!--begin::Table-->
+        <table class="table align-middle table-row-dashed fs-6 gy-3" id="kt_table_widget_ingresos">
+          <!--begin::Table head-->
+          <thead>
+            <!--begin::Table row-->
+            <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+              <th class="min-w-150px">Fecha</th>
+              <th class="pe-3 min-w-100px">Cantidad boletos</th>
+              <th class="text-end pe-3 min-w-150px">Ingresos $</th>
+            </tr>
+            <!--end::Table row-->
+          </thead>
+          <!--end::Table head-->
+          <!--begin::Table body-->
+          <tbody class="fw-bold text-gray-600">
+            @* <tr>
+
+            <!--begin::Date added-->
+            <td>02 Apr, 2023</td>
+            <!--end::Date added-->
+            <!--begin::Product ID-->
+            <td>356</td>
+            <!--end::Product ID-->
+            <!--begin::Price-->
+            <td class="text-end">$1,230</td>
+            <!--end::Price-->
+            <!--end::Qty-->
+            </tr> *@
+
+          </tbody>
+          <!--end::Table body-->
+        </table>
+        <!--end::Table-->
+      </div>
+      <!--end::Col-->
+    </div>
+
+  </div>
+  <!--end::Card body-->
+</div>
+<!--end::Table Widget 5-->
+@section scripts {
+
+  <script type="text/javascript">
+
+    const rutasArray = @Html.Raw(@ViewBag.Rutas);
+  </script>
+
+  <script src="~/js/dashboard/home.js" asp-append-version="true"></script>
+}

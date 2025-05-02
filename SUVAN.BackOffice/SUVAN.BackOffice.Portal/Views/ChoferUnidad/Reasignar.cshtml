@@ -1,0 +1,306 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Configuracion
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+
+@{
+  ViewData["Title"] = "Reasignar chofer y unidad";
+}
+
+@model ReasignarChoferViewMolde
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.choferUnidad);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+}
+
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+  <!--begin::Toolbar container-->
+  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+    <!--begin::Toolbar wrapper-->
+    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+      <!--begin::Page title-->
+      <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+
+
+        <a href="~/choferunidad" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+          <i class="ki-duotone ki-left fs-1 pe-5">
+          </i>
+          <span>Reasignar chofer y unidad</span>
+        </a>
+
+
+      </div>
+      <!--end::Page title-->
+      <!--begin::Actions-->
+      <div class="d-flex align-items-center gap-2 gap-lg-3">
+      </div>
+      <!--end::Actions-->
+    </div>
+    <!--end::Toolbar wrapper-->
+  </div>
+  <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+  <!--begin::Content container-->
+  <div id="kt_app_content_container" class="app-container container-fluid">
+    <!--begin::Card-->
+    <div class="card mb-5">
+
+      <!--begin::Card body-->
+      <div class="card-body py-4">
+        <form class="form w-100" novalidate="novalidate" id="kt_reporte_in_form" data-kt-redirect-url="/" asp-controller="ChoferUnidad" asp-action="Reasignar" method="post">
+          @Html.AntiForgeryToken()
+          @*       <div class="fv-row mb-8">
+          <div class="col-sm-12">
+          <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+          <div asp-validation-summary="All"></div>
+          </div>
+          </div>
+          </div> *@
+          <div class="row">
+            <div class="col-sm-4">
+              <div class="fv-row mb-8">
+                <label class="col-sm-12 col-form-label text-gray-600 ">Conductor</label>
+                <div class="col-sm-12">
+                  <select asp-for="ConductorId" asp-items="@(new SelectList(Model.Conductores, "ChoferId", "Nombre"))" class="form-control" data-control="select2" data-placeholder="Seleccione">
+                    <option value="">Selecciona un Conductor</option>
+                  </select>
+
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="fv-row mb-8">
+                <label class="col-sm-12 col-form-label text-gray-600 ">Unidad</label>
+                <div class="col-sm-12">
+                  <select asp-for="VehiculoId" asp-items="@(new SelectList(Model.Vehiculos, "UnidadId", "Descripcion"))" class="form-control" data-control="select2" data-placeholder="Seleccione">
+                    <option value="">Selecciona una Unidad</option>
+                  </select>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-10 text-end">
+            <button type="submit" id="kt_reporte_in_submit" class="btn btn-primary">
+              <!--begin::Indicator label-->
+              <span class="indicator-label">Buscar</span>
+              <!--end::Indicator label-->
+              <!--begin::Indicator progress-->
+              <span class="indicator-progress">
+                Por favor espere...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              </span>
+              <!--end::Indicator progress-->
+            </button>
+          </div>
+        </form>
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+    <!--begin::Card-->
+    <div class="card">
+      <!--begin::Card header-->
+      <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+        <!--begin::Card title-->
+        <div class="card-title">
+          <!--begin::Search-->
+          <div class="d-flex align-items-center position-relative my-1">
+            <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+            <input type="text" data-kt-reporte-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+          </div>
+          <!--end::Search-->
+        </div>
+        <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+          <!--begin::Export dropdown-->
+          <button type="button" class="btn btn-light-primary" id="btn-seleccion-reasignacion">
+
+            Reasignar
+          </button>
+          <!--begin::Export dropdown-->
+          <button type="button" class="btn btn-light-danger" id="btn-seleccion-remover">
+
+            Remover
+          </button>
+          <!--begin::Menu-->
+
+        </div>
+      </div>
+      <!--end::Card header-->
+      <!--begin::Card body-->
+      <div class="card-body py-4">
+        <div class="table-responsive">
+          <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_reporte_table">
+            <thead>
+              <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                <th class="min-w-125px">
+                  <input type="checkbox" class="form-check-input" id="selectAll">
+                </th>
+                <th class="min-w-125px">Ruta</th>
+                <th class="min-w-225px">Conductor</th>
+                <th class="min-w-225px">Unidad</th>
+                <th class="min-w-125px">Horario</th>
+                <th class="min-w-125px">Fecha</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 fw-semibold">
+
+              @foreach (var item in Model.CorridaReasingacion)
+              {
+                <tr>
+                  <td>
+
+                    <input type="hidden" value="@item.CorridaAsignacionId" />
+                    <div class="form-check form-check-sm form-check-custom">
+                      <input type="checkbox" class="rowCheckbox form-check-input">
+                    </div>
+
+                  </td>
+                  <td>
+                    <input type="hidden" value="@item.RutaId" />
+                    @item.NombreRuta
+                  </td>
+                  <td>
+                    <input type="hidden" value="@item.ConductorId" />
+                    @item.Conductor
+                  </td>
+                  <td>
+                    <input type="hidden" value="@item.VehiculoId" />
+                    @item.Vehiculo
+                  </td>
+                  <td>
+                    <input type="hidden" value="@item.HorarioId" />
+
+                    @item.Horario
+                  </td>
+                  <td>
+
+                    <span class="badge badge-light-primary p-2 m-1">@Convert.ToDateTime(item.Fecha).ToString("dd/MM/yyyy")</span>
+
+                  </td>
+
+                </tr>
+
+              }
+
+            </tbody>
+
+          </table>
+        </div>
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+  </div>
+  <!--end::Content container-->
+</div>
+<!--end::Content-->
+
+
+
+<div class="modal modal-xl fade" tabindex="-1" id="kt_modal_reasignar">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal_body_reasignacion">
+
+      <div class="modal-header">
+        <h3 class="modal-title">Reasinación</h3>
+
+        <!--begin::Close-->
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+          <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+        </div>
+        <!--end::Close-->
+      </div>
+
+      <div class="modal-body">
+        <div class="row">
+          <div class="col-md-12">
+
+            <div class="card mt-2">
+
+              <!--begin::Card body-->
+              <div class="card-body ">
+
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="fv-row mb-8">
+                      <label class="col-sm-12 col-form-label text-gray-600 required">Conductor</label>
+                      <div class="col-sm-10">
+                        <select asp-for="ConductorReasignarId" asp-items="@(new SelectList(Model.Conductores, "ChoferId", "Nombre"))" class="form-control" data-control="select2" data-placeholder="Selecciona un Operador" data-dropdown-parent="#kt_modal_reasignar">
+                          <option></option>
+                        </select>
+
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-6">
+                    <div class="fv-row mb-8">
+                      <label class="col-sm-12 col-form-label text-gray-600 required">Vehículo</label>
+                      <div class="col-sm-10">
+                        <select asp-for="VehiculoReasignarId" asp-items="@(new SelectList(Model.Vehiculos, "UnidadId", "Descripcion"))" class="form-control" data-control="select2" data-placeholder="Selecciona un vehículo" data-dropdown-parent="#kt_modal_reasignar">
+                          <option></option>
+                        </select>
+
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+
+              </div>
+              <!--end::Card body-->
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="card mt-2">
+
+              <!--begin::Card body-->
+              <div class="card-body ">
+                <div id="listado-container">
+                  @*   <div class="d-flex flex-row gap-4 mb-4">
+                  <span class="text-gray-900">Salvador Silva</span>
+                  <span class="text-gray-500">Nissan - AS90AS</span>
+                  <a class=" ms-auto btn btn-icon btn-active-light-danger w-15px h-15px">
+                  <i class="ki-outline ki-trash fs-3"></i>
+                  </a>
+                  </div>
+                  <div class="d-flex flex-row  gap-4 mb-4">
+                  <span class="text-gray-900">Salvador Silva</span>
+                  <span class="text-gray-500">Nissan - AS90AS</span>
+                  <a class="ms-auto btn btn-icon btn-active-light-danger w-15px h-15px">
+                  <i class="ki-outline ki-trash fs-3"></i>
+                  </a>
+                  </div> *@
+                </div>
+              </div>
+              <!--end::Card body-->
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+        <button type="submit" class="btn btn-primary" id="btn-guardar-reasignacion">Reasignar</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+@section scripts {
+  <script src="~/js/configuracion/choferunidad/reasignar.js" asp-append-version="true"></script>
+
+}

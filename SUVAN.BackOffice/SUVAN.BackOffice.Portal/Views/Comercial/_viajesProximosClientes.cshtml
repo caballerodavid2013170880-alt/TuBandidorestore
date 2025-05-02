@@ -1,0 +1,72 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+  ViewData["Title"] = "DetalleCliente";
+}
+@model List<ObtenerViajesClienteViewModel>
+
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.gestionDeClientes);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+}
+
+
+<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_viajes_proximos_usuario">
+  <thead>
+    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+      <th class="min-w-125px">Fecha</th>
+      <th class="min-w-125px">Ruta</th>
+      <th class="min-w-125px">Punto de abordaje</th>
+      <th class="min-w-125px">Hora de abordaje</th>
+      <th class="min-w-125px">Punto de descenso</th>
+      <th class="min-w-125px">Hora de descenso</th>
+      <th class="min-w-125px">Corrida</th>
+      <th class="min-w-125px">Precio</th>
+      <th class="min-w-125px">Pasajeros</th>
+    </tr>
+  </thead>
+  <tbody class="text-gray-600 fw-semibold">
+    @foreach (var item in Model)
+    {
+      <tr>
+        <td class="date-cell">
+          @{
+            var fecha = item.Fechaviaje != null ? Convert.ToDateTime(item.Fechaviaje).ToString("dd/MM/yyyy") : string.Empty;
+          }
+          @fecha
+        </td>
+        <td>
+          @item.Ruta
+        </td>
+        <td>
+          <input type="hidden" data-kt-usuario-table-filter="row_id" value="@item.ViajeId" />
+          @item.PuntoAbordaje
+        </td>
+        <td>
+          @item.HoraAbordaje
+        </td>
+        <td>
+          @item.PuntoDescenso
+        </td>
+        <td>
+          @item.HoraDescenso
+        </td>
+        <td>
+          @item.Corrida
+        </td>
+        <td>
+          @item.Precio
+        </td>
+        <td>
+          @item.Pasajeros
+        </td>
+      </tr>
+
+    }
+  </tbody>
+</table>

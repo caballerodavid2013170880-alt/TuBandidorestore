@@ -1,0 +1,63 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+  ViewData["Title"] = "DetalleCliente";
+}
+@model List<CalificacionClienteViewModel>
+
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.gestionDeClientes);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+}
+
+
+<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_calificacion_usuario">
+  <thead>
+    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+      <th class="min-w-125px">Fecha</th>
+      <th class="min-w-125px">Ruta</th>
+      <th class="min-w-125px">Punto de abordaje</th>
+      <th class="min-w-125px">Hora de abordaje</th>
+      <th class="min-w-125px">Punto de descenso</th>
+      <th class="min-w-125px">Nombre operador</th>
+      <th class="min-w-125px">Calificación</th>
+    </tr>
+  </thead>
+  <tbody class="text-gray-600 fw-semibold">
+    @foreach (var item in Model)
+    {
+      <tr>
+        <td class="date-cell">
+          @{
+            var fecha = item.Fechaviaje != null ? Convert.ToDateTime(item.Fechaviaje).ToString("dd/MM/yyyy") : string.Empty;
+          }
+          @fecha
+        </td>
+        <td>
+          @item.Ruta
+        </td>
+        <td>
+          @item.PuntoAbordaje
+        </td>
+        <td>
+          @item.HoraAbordaje
+        </td>
+        <td>
+          @item.PuntoDescenso
+        </td>
+        <td>
+          @item.NombreOperador
+        </td>
+        <td>
+          @item.Calificacion
+        </td>
+      </tr>
+
+    }
+  </tbody>
+</table>

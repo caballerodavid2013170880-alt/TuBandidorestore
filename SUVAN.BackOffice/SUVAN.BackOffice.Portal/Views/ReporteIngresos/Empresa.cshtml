@@ -1,0 +1,298 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Models.ViewModel.Ingresos
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+
+@{
+  ViewData["Title"] = "Reporte Ingresos por Empresa";
+}
+@model ReporteIngresosViewModel
+
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.reporteIngresosPorEmpresa);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+}
+
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+  <!--begin::Toolbar container-->
+  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+    <!--begin::Toolbar wrapper-->
+    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+      <!--begin::Page title-->
+      <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+        <!--begin::Title-->
+        <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Reporte ingresos por empresa</h1>
+        <!--end::Title-->
+
+      </div>
+      <!--end::Page title-->
+
+    </div>
+    <!--end::Toolbar wrapper-->
+  </div>
+  <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+  <!--begin::Content container-->
+  <div id="kt_app_content_container" class="app-container container-fluid">
+    <!--begin::Card-->
+    <div class="card mb-5">
+
+      <!--begin::Card body-->
+      <div class="card-body py-4">
+        <form class="form w-100" novalidate="novalidate" id="kt_reporte_in_form" data-kt-redirect-url="/" asp-controller="ReporteIngresos" asp-action="Empresa" method="post">
+          @Html.AntiForgeryToken()
+          <div class="fv-row mb-8">
+            <div class="col-sm-12">
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                <div asp-validation-summary="All"></div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="fv-row mb-8 ">
+                <label asp-for="Periodo" class="col-sm-12 col-form-label text-gray-600 ">Perido</label>
+                <input type="hidden" asp-for="Periodo" />
+                <div class="col-sm-12">
+                  <div class="row  g-9" data-kt-buttons="true" data-kt-buttons-target="[data-kt-button='true']" data-kt-initialized="1">
+                    <!--begin::Col-->
+                    <div class="col-auto">
+                      <!--begin::Option-->
+                      <label class="btn btn-outline btn-active-light-primary d-flex text-start p-3 active" data-kt-button="true">
+                        <!--begin::Radio-->
+                        <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start ">
+                          <input class="form-check-input" type="radio" name="periodo_type" value="1" checked="checked">
+                        </span>
+                        <!--end::Radio-->
+                        <!--begin::Info-->
+                        <span class="ms-3">
+                          <span class="fs-5 text-gray-600 d-block">Día</span>
+                        </span>
+                        <!--end::Info-->
+                      </label>
+                      <!--end::Option-->
+                    </div>
+                    <!--end::Col-->
+                    <!--begin::Col-->
+                    <div class="col-auto">
+                      <!--begin::Option-->
+                      <label class="btn btn-outline  btn-active-light-primary d-flex text-start p-3" data-kt-button="true">
+                        <!--begin::Radio-->
+                        <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start ">
+                          <input class="form-check-input" type="radio" name="periodo_type" value="2">
+                        </span>
+                        <!--end::Radio-->
+                        <!--begin::Info-->
+                        <span class="ms-3">
+                          <span class="fs-5 text-gray-800 d-block">Mes</span>
+                        </span>
+                        <!--end::Info-->
+                      </label>
+                      <!--end::Option-->
+                    </div>
+                    <!--end::Col-->
+                    <!--begin::Col-->
+                    <div class="col-auto">
+                      <!--begin::Option-->
+                      <label class="btn btn-outline btn-active-light-primary d-flex text-start p-3" data-kt-button="true">
+                        <!--begin::Radio-->
+                        <span class="form-check form-check-custom form-check-solid form-check-sm align-items-start">
+                          <input class="form-check-input" type="radio" name="periodo_type" value="3">
+                        </span>
+                        <!--end::Radio-->
+                        <!--begin::Info-->
+                        <span class="ms-3">
+                          <span class="fs-5 text-gray-800 d-block">Año</span>
+                        </span>
+                        <!--end::Info-->
+                      </label>
+                      <!--end::Option-->
+                    </div>
+                    <!--end::Col-->
+                  </div>
+                  <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    <span asp-validation-for="Periodo"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+
+            <div class="col-sm-6">
+              <div class="fv-row mb-8">
+                <label asp-for="MetodoPagoId" class="col-sm-12 col-form-label text-gray-600 ">Método de pago</label>
+                <div class="col-sm-12">
+                  <select asp-for="MetodoPagoId" asp-items="@(new SelectList(Model.MetodoPago, "Id", "Descripcion"))" class="form-control">
+                    <option value="">Selecciona un método de pago</option>
+                  </select>
+                  <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    <span asp-validation-for="MetodoPagoId"></span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="fv-row mb-8">
+                <label asp-for="Desde" class="col-sm-12 col-form-label text-gray-600 ">Desde</label>
+                <div class="col-sm-12">
+                  <input id="desdeview" name="desdeview" class="form-control" />
+                  <input asp-for="Desde" type="hidden" class="form-control" value="@Model.Desde" />
+                  <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    <span asp-validation-for="Desde"></span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <div class="col-sm-3">
+              <div class="fv-row mb-8">
+                <label asp-for="Hasta" class="col-sm-12 col-form-label text-gray-600 ">Hasta</label>
+                <div class="col-sm-12">
+                  <input id="hastaview" name="hastaview" class="form-control" />
+                  <input asp-for="Hasta" type="hidden" class="form-control" value="@Model.Hasta" />
+                  <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    <span asp-validation-for="Hasta"></span>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="mb-10 text-end">
+            <button type="submit" id="kt_reporte_in_submit" class="btn btn-primary">
+              <!--begin::Indicator label-->
+              <span class="indicator-label">Buscar</span>
+              <!--end::Indicator label-->
+              <!--begin::Indicator progress-->
+              <span class="indicator-progress">
+                Por favor espere...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              </span>
+              <!--end::Indicator progress-->
+            </button>
+          </div>
+        </form>
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+    <!--begin::Card-->
+    <div class="card">
+      <!--begin::Card header-->
+      <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+        <!--begin::Card title-->
+        <div class="card-title">
+          <!--begin::Search-->
+          <div class="d-flex align-items-center position-relative my-1">
+            <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+            <input type="text" data-kt-reporte-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+          </div>
+          <!--end::Search-->
+        </div>
+        <!--begin::Card title-->
+        <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+          <!--begin::Export dropdown-->
+          <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+            <i class="ki-duotone ki-exit-down fs-2"><span class="path1"></span><span class="path2"></span></i>
+            Exportar reporte
+          </button>
+          <!--begin::Menu-->
+          <div id="kt_datatable_example_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+
+            <!--begin::Menu item-->
+            <div class="menu-item px-3">
+              <a href="#" class="menu-link px-3" data-kt-export="excel">
+                Exportar Excel
+              </a>
+            </div>
+            <!--end::Menu item-->
+          </div>
+          <!--end::Menu-->
+          <!--end::Export dropdown-->
+          <!--begin::Hide default export buttons-->
+          <div id="kt_datatable_example_buttons" class="d-none"></div>
+        </div>
+
+      </div>
+      <!--end::Card header-->
+      <!--begin::Card body-->
+      <div class="card-body py-4">
+        <div class="table-responsive">
+          <!--begin::Table-->
+          <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_reporte_table">
+            <thead>
+              <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+
+                <th class="min-w-125px">Fecha</th>
+                <th class="min-w-125px">Empresa</th>
+                <th class="min-w-125px">Método de pago</th>
+                <th class="min-w-125px">Tipo de pago</th>
+                <th class="min-w-125px">Cantidad</th>
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 fw-semibold">
+
+              @foreach (var item in Model.Detalle)
+              {
+                <tr>
+                  <td>
+                    @item.Fecha.ToString("dd/MM/yyyy")
+                  </td>
+                  <td>
+                    @item.Empresa
+                  </td>
+                  <td>
+                    @item.MetodoPago
+                  </td>
+                  <td>
+                    @item.TipoPago
+                  </td>
+                  <td>
+                    @item.Cantidad.ToString("C")
+                  </td>
+                </tr>
+
+              }
+
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="5" class="text-end">
+                  <span class="text-gray-600 fw-semibold mx-5 fs-1">Total</span>
+                  <span class="fs-2x fw-bold text-primary">@Model.Total</span>
+                </td>
+              </tr>
+
+
+            </tfoot>
+          </table>
+          <!--end::Table-->
+        </div>
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+  </div>
+  <!--end::Content container-->
+</div>
+<!--end::Content-->
+@section scripts {
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script src="~/js/ingresos/reporteingresos/table.js" asp-append-version="true"></script>
+
+  <script src="~/assets/js/widgets.bundle.js"></script>
+  <script src="~/assets/js/custom/widgets.js"></script>
+
+}

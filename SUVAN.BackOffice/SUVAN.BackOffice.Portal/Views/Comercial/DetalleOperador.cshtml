@@ -1,0 +1,152 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "DetalleOperador";
+}
+
+@model ObtenerDetalleOperadorViewModel
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.gestionDeOperadores);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+
+
+<div id="kt_app_toolbar" class="app-toolbar ">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <a href="~/Comercial/Operadores" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+                    <i class="ki-duotone ki-left fs-1 pe-5">
+                    </i>
+                    <span>Detalles gestión de operadores</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-sm my-5">
+    <div class="card shadow col-md-4 mx-auto">
+        <div class="row">
+            <div class="col-md-6 d-flex justify-content-center">
+                <div class="image-container">
+                    <style>
+                        .checked {
+                            color: #004AAD;
+                        }
+
+                        .rating span {
+                            cursor: pointer;
+                            font-size: 1.5rem;
+                            color: #004AAD; /* Color para estrellas */
+                        }
+
+                        .image-input-placeholder {
+                            background-image: url('/assets/media/svg/files/blank-image.svg');
+                        }
+
+                        [data-bs-theme="dark"] .image-input-placeholder {
+                            background-image: url('/assets/media/svg/files/blank-image-dark.svg');
+                        }</style>
+                    <div class="image-input image-input-empty image-input-outline image-input-placeholder mb-10 mt-10" data-kt-image-input="true">
+                        <img src="data:image/png;base64,@Model.FotoUsuario" alt="Imagen" class="image-input-wrapper w-150px h-150px">
+                    </div>
+                    <!--end::Image input-->
+
+                </div>
+            </div>
+            <div class="col-md-4 d-flex align-items-center">
+                <div class="info-container">
+                    <div>
+                        <h3>@Model.Nombre</h3>
+                    </div>
+                    @{
+                        var promedio = Model.Calificacion;
+                        decimal numeroDecimal;
+
+                        bool conversionExitosa = decimal.TryParse(promedio, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out numeroDecimal);
+
+                        int estrellasCompletas = (int)Math.Floor(numeroDecimal);
+                        decimal parteDecimal = numeroDecimal - estrellasCompletas;
+                        int mediaEstrella = parteDecimal >= 0.25m && parteDecimal < 0.75m ? 1 : 0;
+                        int estrellasVacías = 5 - estrellasCompletas - mediaEstrella;
+                    }
+                    <div class="rating">
+                        @for (int i = 0; i < estrellasCompletas; i++)
+                        {
+                            <span class="fa fa-star checked"></span> <!-- Estrella completa -->
+                        }
+                        @if (mediaEstrella == 1)
+                        {
+                            <span class="fa fa-star-half-alt checked"></span> <!-- Media estrella -->
+                        }
+                        @for (int i = 0; i < estrellasVacías; i++)
+                        {
+                            <span class="far fa-star"></span> <!-- Estrella vacía -->
+                        }
+                    </div>
+                    <div>
+                        <h6>Calificación promedio</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-5">
+    <div class="mx-auto d-flex align-items-center">
+        <!-- Lista Horizontal -->
+        <ul class="nav nav-pills mx-auto d-flex align-items-center" id="listaHorizontal">
+            <li class="nav-item">
+                <a class="nav-link active" id="viajes-tab" data-bs-toggle="tab" href="#viajes">Viajes</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="viajesproximos-tab" data-bs-toggle="tab" href="#viajesproximos">Viajes próximos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="asignaciones-tab" data-bs-toggle="tab" href="#asignaciones">Asignaciones</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pagos-tab" data-bs-toggle="tab" href="#pagos">Pagos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="calificacion-tab" data-bs-toggle="tab" href="#calificacion">Calificación</a>
+            </li>
+        </ul>
+    </div>
+    <!-- Contenido de las Pestañas -->
+    <div class="container mt-5">
+        <div class="tab-content" id="contenidoPestanas">
+            <div class="tab-pane fade show active" id="viajes">
+            </div>
+
+            <div class="tab-pane fade" id="viajesproximos">
+            </div>
+
+            <div class="tab-pane fade" id="asignaciones">
+            </div>
+
+            <div class="tab-pane fade" id="pagos">
+            </div>
+
+            <div class="tab-pane fade" id="calificacion">
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<!--end::Content-->
+<script type="text/javascript">
+    window.userId = @Model.Idusuario;
+</script>
+@section scripts {
+    <script src="~/js/comercial/operadores.js" asp-append-version="true"></script>
+    <script src="~/js/comercial/navDetalleOperador.js" asp-append-version="true"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>>
+}

@@ -1,0 +1,9 @@
+.inputparada {
+    padding: 10px !important;
+    font-size: 10px !important;
+    border-radius: 0px !important;
+    padding-right: 0px !important;
+}
+#contenedorPiramide div.col-md-1{
+    padding-right:0px !important;
+}

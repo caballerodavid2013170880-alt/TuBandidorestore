@@ -1,0 +1,137 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+  ViewData["Title"] = "DetalleOperador";
+}
+@model PagosOperadorViewModel
+
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.gestionDeOperadores);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+}
+
+<div class="container-sm">
+  <div class="col-md-12">
+    <button id="btnEmitir" class="btn btn-flex btn-outline fs-7 fw-bold">Emitir Liquidación</button>
+  </div>
+</div>
+
+<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_pagos_operador">
+  <thead>
+    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+      <th class="min-w-125px">ID</th>
+      <th class="min-w-125px">Fecha Emisión</th>
+      <th class="min-w-125px">Fecha Inicio</th>
+      <th class="min-w-125px">Fecha Fin</th>
+      <th class="min-w-125px">Monto Facturado</th>
+      <th class="min-w-125px">Monto Comisión</th>
+      <th class="min-w-125px">Acciones</th>
+    </tr>
+  </thead>
+  <tbody class="text-gray-600 fw-semibold">
+    @foreach (var item in Model.lPagosOperador)
+    {
+      <tr>
+        <td>
+          @item.LiquidacionId
+        </td>
+        <td class="date-cell">
+          @item.FechaEmision.ToString("dd/MM/yyyy")
+        </td>
+        <td class="date-cell">
+          @item.FechaInicio.ToString("dd/MM/yyyy")
+        </td>
+        <td class="date-cell">
+          @item.FechaFin.ToString("dd/MM/yyyy")
+        </td>
+        <td>
+          @item.MontoPagado.ToString("c")
+        </td>
+        <td>
+          @item.MontoComision.ToString("c")
+        </td>
+        <td>
+          <a href="@(Url.Action("EmiteReciboPDF", "Comercial") + "?liquidacionID=" + item.LiquidacionId.ToString())" class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-operadores-action="edit">
+            <i class="ki-outline ki-eye fs-3"></i>
+          </a>
+        </td>
+      </tr>
+
+    }
+  </tbody>
+</table>
+
+<div class="modal modal-xl fade" tabindex="-1" id="kt_modal_liquidacion">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal_body_liquidacion">
+      <div class="modal-header">
+        <h3 class="modal-title">Generar Liquidación</h3>
+        <!--begin::Close-->
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+          <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+        </div>
+        <!--end::Close-->
+      </div>
+      <form class="form w-100" novalidate="novalidate" id="kt_GeneraLiq_form" method="post">
+        <input type="hidden" id="operadorId" value="@ViewBag.operadorId" />
+        @Html.AntiForgeryToken()
+        <div class="modal-body">
+          <div class="row">
+            <div class="col-md-12">
+              <div class="card mt-2">
+                <!--begin::Card body-->
+                <div class="card-body ">
+                  <div class="fv-row mb-8">
+                    <div class="col-sm-12">
+                      <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                        <div asp-validation-summary="All"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="fv-row mb-8">
+                        <label asp-for="FechaInicio" class="col-sm-6 col-form-label text-gray-600 required">Fecha Inicio</label>
+                        <div class="col-sm-6">
+                          <input asp-for="FechaInicio" class="form-control bg-transparent" placeholder="Fecha Inicio" />
+                          <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                            <span asp-validation-for="FechaInicio"></span>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <div class="fv-row mb-8">
+                        <label asp-for="FechaFin" class="col-sm-6 col-form-label text-gray-600 required">Fecha Fin</label>
+                        <div class="col-sm-6">
+                          <input asp-for="FechaFin" class="form-control bg-transparent" placeholder="Fecha Fin" />
+                          <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                            <span asp-validation-for="FechaFin"></span>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--end::Card body-->
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+          <button type="button" class="btn btn-primary" id="btnGenerar">Generar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script defer src="~/js/comercial/_operadoresPagos.js" asp-append-version="true"></script>

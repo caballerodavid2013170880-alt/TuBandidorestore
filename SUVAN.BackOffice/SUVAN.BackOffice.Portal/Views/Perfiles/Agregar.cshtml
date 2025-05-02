@@ -1,0 +1,177 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+  ViewData["Title"] = "Perfiles";
+}
+
+@model AgregarPerfilViewModel
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.perfiles);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+  var isAgaregarText = Model.PerfilId == 0 ? "Agregar" : "Editar";
+}
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+  <!--begin::Toolbar container-->
+  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+    <!--begin::Toolbar wrapper-->
+    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+      <!--begin::Page title-->
+      <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+        <!--begin::Title-->
+        <a href="~/perfiles" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+          <i class="ki-duotone ki-left fs-1 pe-5">
+          </i>
+          <span>@isAgaregarText Perfil</span>
+        </a>
+        <!--end::Title-->
+
+      </div>
+      <!--end::Page title-->
+
+    </div>
+    <!--end::Toolbar wrapper-->
+  </div>
+  <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+  <!--begin::Content container-->
+  <div id="kt_app_content_container" class="app-container container-fluid">
+    <!--begin::Card-->
+    <div class="card">
+
+      <!--begin::Card body-->
+      <div class="card-body py-4">
+
+
+        <form class="form w-100" novalidate="novalidate" id="kt_perfil_in_form" data-kt-redirect-url="/" asp-controller="Perfiles" asp-action="Agregar" method="post">
+
+          <input asp-for="PerfilId" type="hidden" />
+          <div class="fv-row mb-8">
+            <label asp-for="Nombre" class="col-sm-2 col-form-label required">Nombre del perfil</label>
+            <div class="col-sm-6">
+              <input asp-for="Nombre" class="form-control bg-transparent" placeholder="Nombre del perfil" maxlength="45" />
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                <span asp-validation-for="Nombre"></span>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="fv-row mb-8">
+            <div class="col-sm-4">
+              <div class="form-check">
+                <label asp-for="Activo" class="form-check-label"></label>
+                <input asp-for="Activo" class="form-check-input" />
+              </div>
+            </div>
+          </div>
+          <div class="fv-row mb-8">
+            <div class="col-sm-12">
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                <span asp-validation-for="Opciones"></span>
+              </div>
+            </div>
+          </div>
+
+          <!--begin::Table-->
+          <table class="table align-middle table-row-dashed fs-6 gy-5">
+            <thead>
+              <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+
+                <th class="min-w-325px"></th>
+                <th class="min-w-125px">Agregar</th>
+                <th class="min-w-125px">Editar</th>
+                <th class="min-w-125px">Eliminar</th>
+                <th class="min-w-125px">Ejecutar</th>
+
+              </tr>
+            </thead>
+            <tbody class="text-gray-600 fw-semibold">
+              @{
+                var nombreSeccion = string.Empty;
+              }
+              @for (int i = 0; i < Model.Opciones.Count; i++)
+              {
+                <tr>
+                  <td>
+                    <input type="hidden" asp-for="@Model.Opciones[i].MenuId" />
+                    <input type="hidden" asp-for="@Model.Opciones[i].MenuNombre" />
+                    <input type="hidden" asp-for="@Model.Opciones[i].MenuSeccion" />
+                    @if (nombreSeccion != @Model.Opciones[i].MenuSeccion)
+                    {
+                      <h5 class="text-dark fw-bolder">@Model.Opciones[i].MenuSeccion</h5>
+                      nombreSeccion = @Model.Opciones[i].MenuSeccion;
+                    }
+                    <span class="px-3">
+                      @Model.Opciones[i].MenuNombre
+                    </span>
+                  </td>
+                  <td>
+                    <div class="form-check">
+                      <input type="checkbox" asp-for="@Model.Opciones[i].Agregar" class="form-check-input" />
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-check">
+                      <input type="checkbox" asp-for="@Model.Opciones[i].Editar" class="form-check-input" />
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-check">
+                      <input type="checkbox" asp-for="@Model.Opciones[i].Eliminar" class="form-check-input" />
+                    </div>
+                  </td>
+                  <td>
+                    <div class="form-check">
+                      <input type="checkbox" asp-for="@Model.Opciones[i].Ejecutar" class="form-check-input" />
+                    </div>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+          <div class="mb-10 text-end">
+
+            <button type="submit" id="kt_perfil_in_submit" class="btn btn-primary">
+              <!--begin::Indicator label-->
+              <span class="indicator-label">Guardar</span>
+              <!--end::Indicator label-->
+              <!--begin::Indicator progress-->
+              <span class="indicator-progress">
+                Por favor espere...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              </span>
+              <!--end::Indicator progress-->
+            </button>
+          </div>
+          @* <button type="submit">Guardar</button> *@
+        </form>
+
+
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+  </div>
+  <!--end::Content container-->
+</div>
+<!--end::Content-->
+@section scripts {
+
+  <script src="~/js/seguridad/perfiles/add.js" asp-append-version="true"></script>
+  <script src="~/assets/js/widgets.bundle.js"></script>
+  <script src="~/assets/js/custom/widgets.js"></script>
+  <script src="~/assets/js/custom/apps/chat/chat.js"></script>
+  <script src="~/assets/js/custom/utilities/modals/upgrade-plan.js" asp-append-version="true"></script>
+  <script src="~/assets/js/custom/utilities/modals/create-campaign.js" asp-append-version="true"></script>
+  <script src="~/assets/js/custom/utilities/modals/users-search.js" asp-append-version="true"></script>
+
+}
