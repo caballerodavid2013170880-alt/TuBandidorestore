@@ -35,6 +35,10 @@ public partial class Vehiculo
 
     public virtual Empresa? EmpresaIdempresaNavigation { get; set; }
 
+    public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
+
+    public virtual ICollection<Siniestro> Siniestros { get; set; } = new List<Siniestro>();
+
     public virtual Tipovehiculo TipovehiculoIdtipovehiculoNavigation { get; set; } = null!;
 
     public virtual ICollection<Vehiculoservicio> Vehiculoservicios { get; set; } = new List<Vehiculoservicio>();

@@ -61,6 +61,14 @@ public partial class Conductor
 
     public string? FirebaseId { get; set; }
 
+    public string? Nss { get; set; }
+
+    public string? Nacionalidad { get; set; }
+
+    public ulong? Visa { get; set; }
+
+    public string? TipoVisa { get; set; }
+
     public virtual ICollection<CalificacionConductor> CalificacionConductors { get; set; } = new List<CalificacionConductor>();
 
     public virtual ICollection<CalificacionUsuario> CalificacionUsuarios { get; set; } = new List<CalificacionUsuario>();
@@ -76,4 +84,6 @@ public partial class Conductor
     public virtual Regimenfiscalreceptor? IdregimenfiscalNavigation { get; set; }
 
     public virtual ICollection<LiquidacionCabecera> LiquidacionCabeceras { get; set; } = new List<LiquidacionCabecera>();
+
+    public virtual ICollection<Siniestro> Siniestros { get; set; } = new List<Siniestro>();
 }
