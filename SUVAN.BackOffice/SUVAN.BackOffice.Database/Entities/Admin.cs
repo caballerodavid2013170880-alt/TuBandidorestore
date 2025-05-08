@@ -21,6 +21,8 @@ public partial class Admin
 
     public string? FirebaseId { get; set; }
 
+    public string? Imagen { get; set; }
+
     public virtual ICollection<AdminEmpresa> AdminEmpresas { get; set; } = new List<AdminEmpresa>();
 
     public virtual Mfaportal? Mfaportal { get; set; }
