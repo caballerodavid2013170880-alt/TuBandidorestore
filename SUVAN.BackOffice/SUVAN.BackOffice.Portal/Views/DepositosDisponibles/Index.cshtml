@@ -5,7 +5,7 @@
 @{
     ViewData["Title"] = "Depósitos Disponibles";
 }
-@model List<SUVAN.BackOffice.Database.Entities.Empresa>
+@model List<SUVAN.BackOffice.Database.Entities.Depositosdisponible>
 
 @* @{
     var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.empresas);
@@ -17,7 +17,6 @@
 
 <!--begin::Toolbar-->
 <div id="kt_app_toolbar" class="app-toolbar ">
-    <!--begin::Toolbar container-->
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
         <!--begin::Toolbar wrapper-->
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
@@ -75,6 +74,36 @@
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-semibold">
+
+                        @foreach (var contenido in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="hidden" data-kt-empresa-table-filter="row_id" value="@contenido.IdDeposito" />
+                                    @contenido.ZonaNombre,
+                                    @contenido.DepositoNombre.
+                                    @contenido.TallerNombre
+                                </td>
+                                <td>
+                                    @{
+                                        var activo = contenido.Activo == true ? "Si" : "No";
+                                    }
+                                    @activo
+                                </td>
+
+@*                                 <td class="text-end">
+
+                                    @if (permisosPagina!.Editar)
+                                    {
+                                        <a href="~/configuracion/agregarempresa/@contenido.Idempresa" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                            <i class="ki-outline ki-pencil fs-3"></i>
+                                        </a>
+                                    }
+
+                                </td> *@
+                            </tr>
+
+                        }
                     </tbody>
                 </table>
                 <!--end::Table-->

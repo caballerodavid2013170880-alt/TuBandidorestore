@@ -19,4 +19,8 @@
     <ProjectReference Include="..\SUVAN.BackOffice.Utilities\SUVAN.BackOffice.Utilities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logistica\" />
+  </ItemGroup>
+
 </Project>
