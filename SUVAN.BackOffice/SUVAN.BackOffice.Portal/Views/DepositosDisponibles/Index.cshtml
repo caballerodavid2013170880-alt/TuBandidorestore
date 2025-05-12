@@ -7,13 +7,13 @@
 }
 @model List<SUVAN.BackOffice.Database.Entities.Depositosdisponible>
 
-@* @{
-    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.empresas);
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.depositosDisponibles);
     if (permisosPagina == null)
     {
         return;
     }
-} *@
+}
 
 <!--begin::Toolbar-->
 <div id="kt_app_toolbar" class="app-toolbar ">
@@ -30,7 +30,10 @@
             <!--end::Page title-->
             <!--begin::Actions-->
             <div class="d-flex align-items-center gap-2 gap-lg-3">
-                <a class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Depósito</a>
+                @if (permisosPagina!.Agregar)
+                {
+                    <a href="~/DepositosDisponibles/AgregarDeposito" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Depósito</a>
+                }
             </div>
             <!--end::Actions-->
         </div>
@@ -80,8 +83,12 @@
                             <tr>
                                 <td>
                                     <input type="hidden" data-kt-empresa-table-filter="row_id" value="@contenido.IdDeposito" />
-                                    @contenido.ZonaNombre,
-                                    @contenido.DepositoNombre.
+                                    @contenido.ZonaNombre
+                                </td>
+                                <td>
+                                    @contenido.DepositoNombre
+                                </td>
+                                <td>
                                     @contenido.TallerNombre
                                 </td>
                                 <td>
@@ -91,16 +98,20 @@
                                     @activo
                                 </td>
 
-@*                                 <td class="text-end">
-
+                                <td class="text-end">
                                     @if (permisosPagina!.Editar)
                                     {
-                                        <a href="~/configuracion/agregarempresa/@contenido.Idempresa" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                        <a href="~/DepositosDisponibles/AgregarDeposito/@contenido.IdDeposito" class="btn btn-icon btn-active-light-primary w-30px h-30px">
                                             <i class="ki-outline ki-pencil fs-3"></i>
                                         </a>
                                     }
-
-                                </td> *@
+                                    @if (permisosPagina!.Eliminar)
+                                    {
+                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-ruta-delete-item="" data-kt-ruta-table-filter="delete_row">
+                                            <i class="ki-outline ki-trash fs-3"></i>
+                                        </a>
+                                    }
+                                </td>
                             </tr>
 
                         }
@@ -115,7 +126,6 @@
     <!--end::Content container-->
 </div>
 <!--end::Content-->
-@section scripts {
-
-
+ @section scripts {
+    <script src="~/js/logistica/depositosdisponibles/table.js"></script>
 }

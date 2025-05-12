@@ -48,7 +48,7 @@ namespace SUVAN.BackOffice.Portal
       services.AddTransient<IUnidadesService, UnidadesService>();
       services.AddTransient<IPoliticasCompensacionService, PoliticasCompensacionService>();
       services.AddTransient<IMensajeAdminService, MensajeAdminService>();
-      services.AddTransient<IMotivoAuxilioVialService, MotivoAuxilioVialService>();
+      services.AddTransient<IDepositosDisponibles, DepositosDisponiblesService>();
     }
 
     /// <summary>
