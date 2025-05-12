@@ -83,5 +83,6 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
     politicaCompensacion = 69,
     politicaCompensacionEmpresa = 70,
     ReporteOperadores = 71,
+    MotivoAuxilioVial = 74,
   }
 }
