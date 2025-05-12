@@ -10,6 +10,7 @@ using SUVAN.BackOffice.Service.LogEntidades;
 using SUVAN.BackOffice.Service.Dashboard;
 using SUVAN.BackOffice.Service.MensajeriaService;
 using SUVAN.BackOffice.Service.Pago;
+using SUVAN.BackOffice.Service.Logistica;
 
 namespace SUVAN.BackOffice.Portal
 {
@@ -47,6 +48,7 @@ namespace SUVAN.BackOffice.Portal
       services.AddTransient<IUnidadesService, UnidadesService>();
       services.AddTransient<IPoliticasCompensacionService, PoliticasCompensacionService>();
       services.AddTransient<IMensajeAdminService, MensajeAdminService>();
+      services.AddTransient<IDepositosDisponibles, DepositosDisponiblesService>();
     }
 
     /// <summary>
