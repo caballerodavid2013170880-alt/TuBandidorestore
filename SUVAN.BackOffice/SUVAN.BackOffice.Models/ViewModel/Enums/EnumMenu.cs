@@ -85,5 +85,6 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
     ReporteOperadores = 71,
     logistica = 72,
     depositosDisponibles = 73,
+    MotivoAuxilioVial = 74,
   }
 }
