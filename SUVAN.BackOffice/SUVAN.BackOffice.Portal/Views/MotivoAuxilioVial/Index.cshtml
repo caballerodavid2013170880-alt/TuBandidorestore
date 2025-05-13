@@ -32,7 +32,7 @@
             <div class="d-flex align-items-center gap-2 gap-lg-3">
                 @if (permisosPagina!.Agregar)
                 {
-                    <a href="" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Motivo</a>
+                    <a href="~/MotivoAuxilioVial/AgregarMotivoAuxilioVial" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Motivo</a>
                 }
             </div>
             <!--end::Actions-->
@@ -55,7 +55,7 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                        <input type="text" data-kt-empresa-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+                        <input type="text" data-kt-motivoaux-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -88,6 +88,21 @@
                                     <input type="hidden" data-kt-empresa-table-filter="row_id" value="@contenido.Idmotivo" />
                                     @contenido.Nombre
                                 </td>
+
+                                <td class="text-end">
+                                    @if (permisosPagina!.Editar)
+                                    {
+                                        <a href="~/MotivoAuxilioVial/AgregarMotivoAuxilioVial/@contenido.Idmotivo" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                            <i class="ki-outline ki-pencil fs-3"></i>
+                                        </a>
+                                    }
+                                    @if (permisosPagina!.Eliminar)
+                                    {
+                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-motivoaux-delete-item="@contenido.Idmotivo" data-kt-motivoaux-table-filter="delete_row">
+                                            <i class="ki-outline ki-trash fs-3"></i>
+                                        </a>
+                                    }
+                                </td>
                             </tr>
 
                         }
@@ -105,5 +120,8 @@
 </div>
 <!--end::Content-->
 @section scripts {
-
+    <script src="~/js/logistica/motivoauxiliovial/table.js"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>
+    <script src="~/assets/js/custom/utilities/modals/users-search.js" asp-append-version="true"></script>
 }
