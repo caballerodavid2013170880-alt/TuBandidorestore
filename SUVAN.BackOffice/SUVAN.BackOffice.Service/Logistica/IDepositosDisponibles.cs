@@ -31,5 +31,14 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="id">Identificador del deposito.</param>
         /// <returns>ViewModel para el depósito especifico.</returns>
         Task<DepositosDisponiblesViewModel> GetDepositoViewModel(int id);
+
+
+        /// <summary>
+        /// Elimina un depósito en la base de datos.
+        /// </summary>
+        /// <param name="DepositoId">Identificador del deposito.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+        Task<bool> EliminarDeposito(int DepositoId);
     }
 }

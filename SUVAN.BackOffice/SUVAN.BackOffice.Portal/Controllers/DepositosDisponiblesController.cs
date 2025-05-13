@@ -5,6 +5,8 @@ using SUVAN.BackOffice.Service.Configuracion;
 using SUVAN.BackOffice.Service.MensajeriaService;
 using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Models.ViewModel.Configuracion;
+using SUVAN.BackOffice.Portal.Helper;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -53,6 +55,24 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
 
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EliminarDeposito([FromBody] DepositosDisponiblesViewModel model)
+        {
+            try
+            {
+                await depositosDisponibles.EliminarDeposito(model.DepositoId);
+
+
+                return Ok(new { success = true });
+
+
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = ex.Message });
+            }
         }
     }
 }

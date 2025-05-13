@@ -2,6 +2,7 @@
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Service.Configuracion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,6 +109,37 @@ namespace SUVAN.BackOffice.Service.Logistica
 
                 await context.SaveChangesAsync();
             }
+            return true;
+        }
+
+        /// <summary>
+        /// Elimina un depósito en la base de datos.
+        /// </summary>
+        /// <param name="DepositoId">Identificador del deposito.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+
+        public async Task<bool> EliminarDeposito(int DepositoId)
+        {
+            var deposito = await context.Depositosdisponibles.FirstOrDefaultAsync(x => x.IdDeposito == DepositoId);
+
+            if (deposito is null)
+            {
+                throw new Exception("No se encontro el Depósito");
+            }
+
+            // Desactivar temporamente el seguimiento de entidades relacionadas
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+
+            var delete = await context.Depositosdisponibles
+              .Where(x => x.IdDeposito == DepositoId)
+              .ExecuteDeleteAsync();
+
+            await context.SaveChangesAsync();
+
+            // Volver a activar el seguimiento de entidades relacionadas
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
         }
     }

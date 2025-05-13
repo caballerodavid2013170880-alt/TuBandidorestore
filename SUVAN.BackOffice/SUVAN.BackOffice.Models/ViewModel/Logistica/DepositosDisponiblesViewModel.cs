@@ -10,12 +10,13 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
     public class DepositosDisponiblesViewModel
     {
+        [Required(ErrorMessage = "El Depósito ID es reuqerido")]
         public int DepositoId { get; set; }
 
-        [Required(ErrorMessage = "La Zona Id es reuqerida")]
+        [Required(ErrorMessage = "La Zona Id es requerida")]
         public int ZonaId { get; set; }
 
-        [Required(ErrorMessage = "El Nombre de la Zona es requerido")]
+        [Required(ErrorMessage = "El Nombre de la Zona es requerida")]
         public string ZonaNombre { get; set; } = null!;
 
         [Required(ErrorMessage = "El Nombre del Deposito es requerido")]

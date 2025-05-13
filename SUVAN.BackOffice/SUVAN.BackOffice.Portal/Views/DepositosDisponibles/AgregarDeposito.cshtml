@@ -49,116 +49,69 @@
 
             <!--begin::Card body-->
             <div class="card-body py-4">
-
-
                 <form class="form w-100" novalidate="novalidate" id="kt_empresa_in_form" data-kt-redirect-url="/" asp-controller="DepositosDisponibles" asp-action="AgregarDeposito" method="post">
                     @Html.AntiForgeryToken()
                     <input asp-for="DepositoId" type="hidden" />
-                    <div class="fv-row mb-8">
-                        <div class="col-sm-12">
-                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                <div asp-validation-summary="All"></div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="ZonaId" class="col-form-label text-gray-600 required">Zona ID</label>
+                                <input asp-for="ZonaId" class="form-control bg-transparent" placeholder="Zona ID" maxlength="250" />
+                                <span asp-validation-for="ZonaId" class="invalid-feedback"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="ZonaNombre" class="col-form-label text-gray-600 required">Nombre de la Zona</label>
+                                <input asp-for="ZonaNombre" class="form-control bg-transparent" placeholder="Nombre de la Zona" />
+                                <span asp-validation-for="ZonaNombre" class="invalid-feedback"></span>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="ZonaId" class="col-sm-12 col-form-label text-gray-600 required">Zona ID</label>
-                                <div class="col-sm-12">
-                                    <input asp-for="ZonaId" class="form-control bg-transparent" placeholder="Zona ID" maxlength="250" />
-                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                        <span asp-validation-for="ZonaId"></span>
-                                    </div>
-
-                                </div>
+                            <div class="fv-row mb-3">
+                                <label asp-for="NombreDeposito" class="col-form-label text-gray-600 required">Nombre del Depósito</label>
+                                <input asp-for="NombreDeposito" class="form-control bg-transparent" placeholder="Nombre del Depósito" />
+                                <span asp-validation-for="NombreDeposito" class="invalid-feedback"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="ZonaNombre" class="col-sm-12 col-form-label text-gray-600 required">Nombre de la Zona</label>
-                                <div class="col-sm-12">
-                                    <input asp-for="ZonaNombre" class="form-control bg-transparent" placeholder="Nombre de la Zona" />
-                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                        <span asp-validation-for="ZonaNombre"></span>
-                                    </div>
-
-                                </div>
+                            <div class="fv-row mb-3">
+                                <label asp-for="TallerId" class="col-form-label text-gray-600 required">Taller ID</label>
+                                <input asp-for="TallerId" class="form-control bg-transparent" placeholder="Taller ID" />
+                                <span asp-validation-for="TallerId" class="invalid-feedback"></span>
                             </div>
                         </div>
-
                     </div>
+
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="NombreDeposito" class="col-sm-12 col-form-label text-gray-600 required">Nombre del Depósito</label>
-                                <div class="col-sm-12">
-                                    <input asp-for="NombreDeposito" class="form-control bg-transparent" placeholder="Nombre del Depósito" />
-                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                        <span asp-validation-for="NombreDeposito"></span>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="TallerId" class="col-sm-12 col-form-label text-gray-600 required">Taller ID</label>
-                                <div class="col-sm-12">
-                                    <input asp-for="TallerId" class="form-control bg-transparent" placeholder="Taller ID" />
-                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                        <span asp-validation-for="TallerId"></span>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="NombreTaller" class="col-sm-12 col-form-label text-gray-600 required">Nombre del Taller</label>
-                                <div class="col-sm-12">
-                                    <input asp-for="NombreTaller" class="form-control bg-transparent" placeholder="Nombre del Taller" />
-                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                        <span asp-validation-for="NombreTaller"></span>
-                                    </div>
-
-                                </div>
+                            <div class="fv-row mb-3">
+                                <label asp-for="NombreTaller" class="col-form-label text-gray-600 required">Nombre del Taller</label>
+                                <input asp-for="NombreTaller" class="form-control bg-transparent" placeholder="Nombre del Taller" />
+                                <span asp-validation-for="NombreTaller" class="invalid-feedback"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <div class="col-sm-4">
-                                    <div class="form-check">
-                                        <label asp-for="Activo" class="form-check-label"></label>
-                                        <input asp-for="Activo" class="form-check-input" />
-                                    </div>
-                                </div>
+                            <div class="form-check form-check-inline">
+                                <label asp-for="Activo" class="form-check-label">Activo</label>
+                                <input asp-for="Activo" class="form-check-input" />
                             </div>
                         </div>
                     </div>
 
-                    <div class="mb-10 text-end">
-
-                        <button type="submit" id="kt_empresa_in_submit" class="btn btn-primary">
-                            <!--begin::Indicator label-->
+                    <div class="text-end">
+                        <button type="submit" id="kt_empresa_in_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Guardar</span>
-                            <!--end::Indicator label-->
-                            <!--begin::Indicator progress-->
                             <span class="indicator-progress">
                                 Por favor espere...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                             </span>
-                            <!--end::Indicator progress-->
                         </button>
                     </div>
                 </form>
-
-
             </div>
             <!--end::Card body-->
         </div>

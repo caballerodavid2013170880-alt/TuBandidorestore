@@ -55,7 +55,7 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                        <input type="text" data-kt-empresa-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+                        <input type="text" data-kt-deposito-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -66,13 +66,13 @@
             <!--begin::Card body-->
             <div class="card-body py-4">
                 <!--begin::Table-->
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_empresa">
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_deposito">
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                             <th class="min-w-125px">Zona</th>
-                            <th class="min-w-125px">Activo</th>
-                            <th class="min-w-125px">Depósito</th>
+                            <th class="min-w-125px">Deposito</th>
                             <th class="min-w-125px">Taller</th>
+                            <th class="min-w-125px">Activo</th>
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
                     </thead>
@@ -82,7 +82,7 @@
                         {
                             <tr>
                                 <td>
-                                    <input type="hidden" data-kt-empresa-table-filter="row_id" value="@contenido.IdDeposito" />
+                                    <input type="hidden" data-kt-deposito-table-filter="row_id" value="@contenido.IdDeposito" />
                                     @contenido.ZonaNombre
                                 </td>
                                 <td>
@@ -107,7 +107,7 @@
                                     }
                                     @if (permisosPagina!.Eliminar)
                                     {
-                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-ruta-delete-item="" data-kt-ruta-table-filter="delete_row">
+                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-deposito-delete-item="@contenido.IdDeposito" data-kt-deposito-table-filter="delete_row">
                                             <i class="ki-outline ki-trash fs-3"></i>
                                         </a>
                                     }
@@ -127,5 +127,8 @@
 </div>
 <!--end::Content-->
  @section scripts {
-    <script src="~/js/logistica/depositosdisponibles/table.js"></script>
+    <script src="~/js/logistica/depositosdisponibles/table.js" asp-append-version="true"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>
+    <script src="~/assets/js/custom/utilities/modals/users-search.js" asp-append-version="true"></script>
 }
