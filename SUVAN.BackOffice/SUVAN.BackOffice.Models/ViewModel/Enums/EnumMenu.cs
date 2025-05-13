@@ -86,5 +86,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
     logistica = 72,
     depositosDisponibles = 73,
     MotivoAuxilioVial = 74,
-  }
+    FallaAuxilioVial = 75,
+    Siniestros = 76,
+    TipoDeServicios = 78,
+    }
 }
