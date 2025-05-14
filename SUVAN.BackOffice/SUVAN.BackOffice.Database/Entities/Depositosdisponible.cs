@@ -9,9 +9,13 @@ public partial class Depositosdisponible
 
     public int ZonaId { get; set; }
 
+    public string ZonaNombre { get; set; } = null!;
+
     public string DepositoNombre { get; set; } = null!;
 
-    public int TallerId { get; set; }
+    public int TalleId { get; set; }
+
+    public string TallerNombre { get; set; } = null!;
 
     public bool Activo { get; set; }
 
@@ -20,8 +24,4 @@ public partial class Depositosdisponible
     public virtual ICollection<Mecanico> Mecanicos { get; set; } = new List<Mecanico>();
 
     public virtual ICollection<Siniestro> Siniestros { get; set; } = new List<Siniestro>();
-
-    public virtual Taller Taller { get; set; } = null!;
-
-    public virtual Zona Zona { get; set; } = null!;
 }
