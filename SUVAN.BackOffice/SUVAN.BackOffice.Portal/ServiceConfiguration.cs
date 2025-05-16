@@ -50,6 +50,7 @@ namespace SUVAN.BackOffice.Portal
       services.AddTransient<IMensajeAdminService, MensajeAdminService>();
       services.AddTransient<IDepositosDisponibles, DepositosDisponiblesService>();
       services.AddTransient<IMotivoAuxilioVialService, MotivoAuxilioVialService>();
+      services.AddTransient<IZonaService, ZonaService>();
     }
 
     /// <summary>

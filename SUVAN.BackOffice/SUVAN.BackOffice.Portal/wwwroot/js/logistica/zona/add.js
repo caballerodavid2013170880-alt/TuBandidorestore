@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 // Class definition
-var KTDeposito = function () {
+var KTZona = function () {
     // Elements
     var form;
     var submitButton;
@@ -16,22 +16,10 @@ var KTDeposito = function () {
             {
                 fields: {
 
-                    'ZonaId': {
+                    'ZonaNombre': {
                         validators: {
                             notEmpty: {
-                                message: 'Seleccione una Zona'
-                            },
-                            stringLength: {
-                                min: 1,
-                                max: 10,
-                            },
-                        }
-                    },
-
-                    'NombreDeposito': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Nombre del Deposito requerido'
+                                message: 'Nombre de la Zona requerido'
                             },
                             stringLength: {
                                 min: 7,
@@ -41,20 +29,7 @@ var KTDeposito = function () {
                             },
                         }
                     },
-
-                    'TallerId': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Taller ID requerido'
-                            },
-                            stringLength: {
-                                min: 1,
-                                max: 10,
-
-                                message: 'deben tener entre 1 y 10 digitos',
-                            },
-                        }
-                    },
+                },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
                     bootstrap: new FormValidation.plugins.Bootstrap5({
@@ -89,8 +64,8 @@ var KTDeposito = function () {
     return {
         // Initialization
         init: function () {
-            form = document.querySelector('#kt_empresa_in_form');
-            submitButton = document.querySelector('#kt_empresa_in_submit');
+            form = document.querySelector('#kt_zona_in_form');
+            submitButton = document.querySelector('#kt_zona_in_submit');
 
 
             handleValidation();
@@ -103,5 +78,5 @@ var KTDeposito = function () {
 
 // On document ready
 KTUtil.onDOMContentLoaded(function () {
-    KTDeposito.init();
+    KTZona.init();
 });

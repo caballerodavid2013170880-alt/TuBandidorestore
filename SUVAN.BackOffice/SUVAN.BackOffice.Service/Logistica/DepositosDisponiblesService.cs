@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Service.Configuracion;
@@ -44,11 +45,9 @@ namespace SUVAN.BackOffice.Service.Logistica
                 vRet = new DepositosDisponiblesViewModel
                 {
                     DepositoId = deposito.IdDeposito,
-                    ZonaId = deposito.ZonaId!,
-                    ZonaNombre = deposito.ZonaNombre!,
+                    ZonaId = deposito.ZonaId,
                     NombreDeposito = deposito.DepositoNombre!,
-                    TallerId = deposito.TalleId!,
-                    NombreTaller = deposito.TallerNombre!,
+                    TallerId = deposito.TallerId,
                     Activo = deposito.Activo == true,
 
                 };
@@ -90,10 +89,8 @@ namespace SUVAN.BackOffice.Service.Logistica
                 throw new Exception("Ya existe un depósito con el mismo nombre");
 
             deposito.ZonaId = model.ZonaId;
-            deposito.ZonaNombre = model.ZonaNombre;
             deposito.DepositoNombre = model.NombreDeposito;
-            deposito.TalleId = model.TallerId;
-            deposito.TallerNombre = model.NombreTaller;
+            deposito.TallerId = model.TallerId;
             deposito.Activo = model.Activo ? true : false;
 
             if (model.DepositoId > 0)
@@ -105,7 +102,6 @@ namespace SUVAN.BackOffice.Service.Logistica
             else
             {
                 context.Depositosdisponibles.Add(deposito);
-                await context.SaveChangesAsync();
 
                 await context.SaveChangesAsync();
             }
@@ -141,6 +137,17 @@ namespace SUVAN.BackOffice.Service.Logistica
             // Volver a activar el seguimiento de entidades relacionadas
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
+        }
+
+        public List<ZonaViewModel> ObtenerZona()
+        {
+            var resul = (from o in context.Zonas
+                         select new ZonaViewModel()
+                         {
+                             ZonaId = o.IdZona,
+                             ZonaNombre = o.NombreZona,
+                         }).ToList();
+            return resul;
         }
     }
 }

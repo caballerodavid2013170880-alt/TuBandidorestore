@@ -89,5 +89,6 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
     FallaAuxilioVial = 75,
     Siniestros = 76,
     TipoDeServicios = 78,
+    Zona = 79,
     }
 }
