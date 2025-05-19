@@ -50,9 +50,8 @@ namespace SUVAN.BackOffice.Portal
       services.AddTransient<IMensajeAdminService, MensajeAdminService>();
       services.AddTransient<IDepositosDisponibles, DepositosDisponiblesService>();
       services.AddTransient<IMotivoAuxilioVialService, MotivoAuxilioVialService>();
-      services.AddTransient<ITipoServicioService, TipoServicioService>();
-      services.AddTransient<IFallaAuxilioVial, FallaAuxilioVialService>();
-        }
+      services.AddTransient<IZonaService, ZonaService>();
+    }
 
     /// <summary>
     /// Metodo de extension para inyectar dependencias de los servicios de seguridad y administracion de usuarios

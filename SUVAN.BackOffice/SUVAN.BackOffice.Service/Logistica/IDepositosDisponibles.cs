@@ -40,5 +40,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
         Task<bool> EliminarDeposito(int DepositoId);
+
+        List<ZonaViewModel> ObtenerZona();
     }
 }

@@ -31,6 +31,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task <IActionResult> AgregarDeposito(int id)
         {
             var agregarModel = await depositosDisponibles.GetDepositoViewModel(id);
+            agregarModel.ZonaView = depositosDisponibles.ObtenerZona();
             return View(agregarModel);
         }
 
@@ -39,6 +40,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
+                model.ZonaView = depositosDisponibles.ObtenerZona();
+
                 var result = await depositosDisponibles.AgregarDeposito(model);
 
                 if (result)
