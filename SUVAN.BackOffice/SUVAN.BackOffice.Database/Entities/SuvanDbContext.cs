@@ -163,6 +163,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Siniestro> Siniestros { get; set; }
 
+    public virtual DbSet<Taller> Tallers { get; set; }
+
     public virtual DbSet<TarifaEscalonadum> TarifaEscalonada { get; set; }
 
     public virtual DbSet<TarifaGeneral> TarifaGenerals { get; set; }
@@ -216,6 +218,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Viaje> Viajes { get; set; }
 
     public virtual DbSet<Viajeredondo> Viajeredondos { get; set; }
+
+    public virtual DbSet<Zona> Zonas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
@@ -1084,19 +1088,25 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("depositosdisponibles");
 
+            entity.HasIndex(e => e.TallerId, "fk_deposito_taller");
+
+            entity.HasIndex(e => e.ZonaId, "fk_deposito_zona");
+
             entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
             entity.Property(e => e.Activo).HasColumnName("activo");
             entity.Property(e => e.DepositoNombre)
                 .HasMaxLength(100)
                 .HasColumnName("deposito_nombre");
-            entity.Property(e => e.TalleId).HasColumnName("talle_id");
-            entity.Property(e => e.TallerNombre)
-                .HasMaxLength(100)
-                .HasColumnName("taller_nombre");
+            entity.Property(e => e.TallerId).HasColumnName("taller_id");
             entity.Property(e => e.ZonaId).HasColumnName("zona_id");
-            entity.Property(e => e.ZonaNombre)
-                .HasMaxLength(100)
-                .HasColumnName("zona_nombre");
+
+            entity.HasOne(d => d.Taller).WithMany(p => p.Depositosdisponibles)
+                .HasForeignKey(d => d.TallerId)
+                .HasConstraintName("fk_deposito_taller");
+
+            entity.HasOne(d => d.Zona).WithMany(p => p.Depositosdisponibles)
+                .HasForeignKey(d => d.ZonaId)
+                .HasConstraintName("fk_deposito_zona");
         });
 
         modelBuilder.Entity<Dia>(entity =>
@@ -2473,6 +2483,26 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_siniestro_vehiculo");
         });
 
+        modelBuilder.Entity<Taller>(entity =>
+        {
+            entity.HasKey(e => e.IdTaller).HasName("PRIMARY");
+
+            entity.ToTable("taller");
+
+            entity.HasIndex(e => e.ZonaIdzona, "fk_taller_zona");
+
+            entity.Property(e => e.IdTaller).HasColumnName("id_taller");
+            entity.Property(e => e.NombreTaller)
+                .HasMaxLength(255)
+                .HasColumnName("nombre_taller");
+            entity.Property(e => e.ZonaIdzona).HasColumnName("zona_idzona");
+
+            entity.HasOne(d => d.ZonaIdzonaNavigation).WithMany(p => p.Tallers)
+                .HasForeignKey(d => d.ZonaIdzona)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_taller_zona");
+        });
+
         modelBuilder.Entity<TarifaEscalonadum>(entity =>
         {
             entity.HasKey(e => new { e.ParadaIdparada, e.ParadaIdparada1, e.EmpresaIdempresa, e.RutaIdruta })
@@ -3242,6 +3272,18 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.Origennombre)
                 .HasMaxLength(1000)
                 .HasColumnName("origennombre");
+        });
+
+        modelBuilder.Entity<Zona>(entity =>
+        {
+            entity.HasKey(e => e.IdZona).HasName("PRIMARY");
+
+            entity.ToTable("zona");
+
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.NombreZona)
+                .HasMaxLength(255)
+                .HasColumnName("nombre_zona");
         });
 
         OnModelCreatingPartial(modelBuilder);
