@@ -14,7 +14,9 @@ namespace SUVAN.BackOffice.Models.ViewModel
 
   public class MenuItemViewModel
   {
-    public int Id { get; set; }
+        public List<MenuItemViewModel> SubMenuItems;
+
+        public int Id { get; set; }
     public string Titulo { get; set; } = string.Empty;
     public string Ruta { get; set; } = string.Empty;
     public string Icono { get; set; } = string.Empty;
