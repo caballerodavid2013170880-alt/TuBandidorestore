@@ -51,6 +51,7 @@ namespace SUVAN.BackOffice.Portal
       services.AddTransient<IDepositosDisponibles, DepositosDisponiblesService>();
       services.AddTransient<IMotivoAuxilioVialService, MotivoAuxilioVialService>();
       services.AddTransient<ITipoServicioService, TipoServicioService>();
+      services.AddTransient<IFallaAuxilioVial, FallaAuxilioVialService>();
         }
 
     /// <summary>
