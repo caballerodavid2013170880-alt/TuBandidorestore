@@ -7,6 +7,9 @@ using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 using SUVAN.BackOffice.Portal.Helper;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Newtonsoft.Json;
+using SUVAN.BackOffice.Database.Entities;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -15,7 +18,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         private readonly ILogger<DepositosDisponiblesController> _logger;
         private readonly IDepositosDisponibles depositosDisponibles;
 
-        public DepositosDisponiblesController(ILogger<DepositosDisponiblesController> logger,  
+        public DepositosDisponiblesController(ILogger<DepositosDisponiblesController> logger,
         IDepositosDisponibles depositosDisponibles)
 
         {
@@ -28,10 +31,11 @@ namespace SUVAN.BackOffice.Portal.Controllers
             var depositos = await depositosDisponibles.GetDepositos();
             return View(depositos);
         }
-        public async Task <IActionResult> AgregarDeposito(int id)
+        public async Task<IActionResult> AgregarDeposito(int id)
         {
             var agregarModel = await depositosDisponibles.GetDepositoViewModel(id);
-            agregarModel.ZonaView = depositosDisponibles.ObtenerZona();
+            agregarModel.TalleresView = depositosDisponibles.ObtenerTaller(agregarModel.ZonaId);
+            agregarModel.ZonaJson = JsonConvert.SerializeObject(agregarModel.ZonasView);
             return View(agregarModel);
         }
 
@@ -40,8 +44,6 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
-                model.ZonaView = depositosDisponibles.ObtenerZona();
-
                 var result = await depositosDisponibles.AgregarDeposito(model);
 
                 if (result)

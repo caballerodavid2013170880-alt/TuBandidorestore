@@ -7,6 +7,12 @@ var KTDeposito = function () {
     var submitButton;
     var validator;
 
+    const tallerSelect = document.getElementById('TallerId');
+    const zonaSelect = document.getElementById('ZonaId');
+    const zonaJsonInput = document.getElementById('ZonaJson');
+
+    let zonaConfiguration = {};
+    let tallerConfiguration = {};
 
     // Handle form
     var handleValidation = function (e) {
@@ -15,19 +21,6 @@ var KTDeposito = function () {
             form,
             {
                 fields: {
-
-                    'ZonaId': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Seleccione una Zona'
-                            },
-                            stringLength: {
-                                min: 1,
-                                max: 10,
-                            },
-                        }
-                    },
-
                     'NombreDeposito': {
                         validators: {
                             notEmpty: {
@@ -41,20 +34,7 @@ var KTDeposito = function () {
                             },
                         }
                     },
-
-                    'TallerId': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Taller ID requerido'
-                            },
-                            stringLength: {
-                                min: 1,
-                                max: 10,
-
-                                message: 'deben tener entre 1 y 10 digitos',
-                            },
-                        }
-                    },
+                },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
                     bootstrap: new FormValidation.plugins.Bootstrap5({
@@ -66,6 +46,48 @@ var KTDeposito = function () {
             }
         );
     }
+
+    const initData = () => {
+        try {
+            zonaConfiguration = JSON.parse(zonaJsonInput.value);
+        } catch (e) {
+        }
+    };
+
+    const clearSelect = (select) => {
+        while (select.options.length > 0) {
+            select.remove(0);
+        }
+    };
+
+    const initZonaAndTaller = () => {
+        zonaSelect.addEventListener('change', function (event) {
+            const zonaId = parseInt(event.target.value);
+            const zona = zonaConfiguration.find(z => z.ZonaId === zonaId);
+
+            clearSelect(tallerSelect);
+
+            const optionSeleccione = document.createElement('option');
+            optionSeleccione.value = "";
+            optionSeleccione.textContent = "Selecciona un taller";
+            tallerSelect.appendChild(optionSeleccione);
+
+            tallerConfiguration = zona.Talleres;
+
+            zona.Talleres.forEach(t => {
+                const option = document.createElement('option');
+                option.value = t.IdTaller;
+                option.textContent = t.TallerNombreId;
+                tallerSelect.appendChild(option);
+            });
+        });
+
+        tallerSelect.addEventListener('change', function (event) {
+            const tallerId = parseInt(event.target.value);
+            const taller = tallerConfiguration.find(t => t.IdTaller === tallerId);
+            console.log("Taller seleccionado:", taller);
+        });
+    };
 
     var handleSubmitValidation = function (e) {
         // Handle form submit
@@ -85,18 +107,20 @@ var KTDeposito = function () {
         });
     }
 
+    const initControls = () => {
+        initZonaAndTaller();
+        handleSubmitValidation();
+    };
+
     // Public functions
     return {
-        // Initialization
         init: function () {
-            form = document.querySelector('#kt_empresa_in_form');
-            submitButton = document.querySelector('#kt_empresa_in_submit');
-
+            form = document.querySelector('#kt_deposito_in_form');
+            submitButton = document.querySelector('#kt_deposito_in_submit');
 
             handleValidation();
-
-            handleSubmitValidation(); // use for form validation submit
-
+            initData();
+            initControls();
         }
     };
 }();

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.DepositosDisponiblesViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -30,7 +31,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// </summary>
         /// <param name="id">Identificador del deposito.</param>
         /// <returns>ViewModel para el depósito especifico.</returns>
-        Task<DepositosDisponiblesViewModel> GetDepositoViewModel(int id);
+        Task<DepositosDisponiblesViewModel> GetDepositoViewModel(int depositoId);
 
 
         /// <summary>
@@ -41,6 +42,13 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <exception cref="Exception"></exception>
         Task<bool> EliminarDeposito(int DepositoId);
 
-        List<ZonaViewModel> ObtenerZona();
+
+        /// <summary>
+        /// Obtiene el ViewModel del Taller
+        /// </summary>
+        /// <param name="zonaId">Identificador del Taller.</param>
+        /// <returns>ViewModel para el Taller especifico.</returns>
+
+        List<DepositosDisponiblesViewModel.TalleresViewModel> ObtenerTaller(int zonaId);
     }
 }
