@@ -14,64 +14,64 @@ using SUVAN.BackOffice.Service.Logistica;
 
 namespace SUVAN.BackOffice.Portal
 {
-  public static class ServiceConfiguration
-  {
-    /// <summary>
-    /// Metodo de extension para inyectar dependencias de los servicios
-    /// </summary>
-    /// <param name="services"></param>
-    public static void AddCatalogServices(this IServiceCollection services)
+    public static class ServiceConfiguration
     {
-      services.AddTransient<ITipoContenidoService, TipoContenidoService>();
-      services.AddTransient<IContenidoService, ContenidoService>();
-      services.AddTransient<IEmpresasService, EmpresasService>();
-      services.AddTransient<IConductorService, ConductorService>();
-      services.AddTransient<Service.Conductor.IConductorService, Service.Conductor.ConductorService>();
-      services.AddTransient<ITipoVehiculoService, TipoVehiculoService>();
-      services.AddTransient<IVehiculoService, VehiculoService>();
-      services.AddTransient<IParadasService, ParadasService>();
-      services.AddTransient<IRutasService, RutasService>();
-      services.AddTransient<ICodigoDescuentoService, CodigoDescuentoService>();
-      services.AddTransient<ICorridasService, CorridasService>();
-      services.AddTransient<IChoferUnidadService, ChoferUnidadService>();
-      services.AddTransient<IVariablesService, VariablesService>();
-      services.AddTransient<IReporteIngresosService, ReporteIngresosService>();
-      services.AddTransient<IDashboardService, DashboardService>();
-      services.AddTransient<INotificacionCorreoService, NotificacionCorreoService>();
-      services.AddTransient<ITarifaService, TarifaService>();
-      services.AddTransient<IPromocionesService, PromocionesService>();
-      services.AddTransient<IViajesService, ViajesService>();
-      services.AddTransient<IRastreoService, RastreoService>();
-      services.AddTransient<IClientesService, ClientesService>();
-      services.AddTransient<IOperadoresService, OperadoresService>();
-      services.AddTransient<IConversacionesService, ConversacionesService>();
-      services.AddTransient<IUnidadesService, UnidadesService>();
-      services.AddTransient<IPoliticasCompensacionService, PoliticasCompensacionService>();
-      services.AddTransient<IMensajeAdminService, MensajeAdminService>();
-      services.AddTransient<IDepositosDisponibles, DepositosDisponiblesService>();
-      services.AddTransient<IMotivoAuxilioVialService, MotivoAuxilioVialService>();
-      services.AddTransient<IZonaService, ZonaService>();
-      services.AddTransient<ITallerService, TallerService>();
+        /// <summary>
+        /// Metodo de extension para inyectar dependencias de los servicios
+        /// </summary>
+        /// <param name="services"></param>
+        public static void AddCatalogServices(this IServiceCollection services)
+        {
+            services.AddTransient<ITipoContenidoService, TipoContenidoService>();
+            services.AddTransient<IContenidoService, ContenidoService>();
+            services.AddTransient<IEmpresasService, EmpresasService>();
+            services.AddTransient<IConductorService, ConductorService>();
+            services.AddTransient<Service.Conductor.IConductorService, Service.Conductor.ConductorService>();
+            services.AddTransient<ITipoVehiculoService, TipoVehiculoService>();
+            services.AddTransient<IVehiculoService, VehiculoService>();
+            services.AddTransient<IParadasService, ParadasService>();
+            services.AddTransient<IRutasService, RutasService>();
+            services.AddTransient<ICodigoDescuentoService, CodigoDescuentoService>();
+            services.AddTransient<ICorridasService, CorridasService>();
+            services.AddTransient<IChoferUnidadService, ChoferUnidadService>();
+            services.AddTransient<IVariablesService, VariablesService>();
+            services.AddTransient<IReporteIngresosService, ReporteIngresosService>();
+            services.AddTransient<IDashboardService, DashboardService>();
+            services.AddTransient<INotificacionCorreoService, NotificacionCorreoService>();
+            services.AddTransient<ITarifaService, TarifaService>();
+            services.AddTransient<IPromocionesService, PromocionesService>();
+            services.AddTransient<IViajesService, ViajesService>();
+            services.AddTransient<IRastreoService, RastreoService>();
+            services.AddTransient<IClientesService, ClientesService>();
+            services.AddTransient<IOperadoresService, OperadoresService>();
+            services.AddTransient<IConversacionesService, ConversacionesService>();
+            services.AddTransient<IUnidadesService, UnidadesService>();
+            services.AddTransient<IPoliticasCompensacionService, PoliticasCompensacionService>();
+            services.AddTransient<IMensajeAdminService, MensajeAdminService>();
+            services.AddTransient<IDepositosDisponibles, DepositosDisponiblesService>();
+            services.AddTransient<IMotivoAuxilioVialService, MotivoAuxilioVialService>();
+            services.AddTransient<IZonaService, ZonaService>();
+            services.AddTransient<IFallaAuxilioVial, FallaAuxilioVialService>();
         }
 
-    /// <summary>
-    /// Metodo de extension para inyectar dependencias de los servicios de seguridad y administracion de usuarios
-    /// </summary>
-    /// <param name="services"></param>
-    public static void AddAdminServices(this IServiceCollection services)
-    {
-      services.AddTransient<IAdminService, AdminService>();
-      services.AddTransient<IPermisoService, PermisoService>();
-      services.AddTransient<IMenuService, MenuService>();
-      services.AddTransient<IUsuarioHelper, UsuarioHelper>();
-      services.AddTransient<IRutasHelper, RutasHelper>();
-      services.AddTransient<IAuthenticationClaimService, AuthenticationClaimService>();
-      services.AddTransient<IPerfilService, PerfilService>();
-      services.AddTransient<IMFAPortalService, MFAPortalService>();
-      services.AddTransient<IBitacoraWebService, BitacoraWebService>();
-      services.AddTransient<ILogTransaccionesEntidadesService, LogTransaccionesEntidadesService>();
-      services.AddTransient<INotificacionPushService, NotificacionPushService>();
+        /// <summary>
+        /// Metodo de extension para inyectar dependencias de los servicios de seguridad y administracion de usuarios
+        /// </summary>
+        /// <param name="services"></param>
+        public static void AddAdminServices(this IServiceCollection services)
+        {
+            services.AddTransient<IAdminService, AdminService>();
+            services.AddTransient<IPermisoService, PermisoService>();
+            services.AddTransient<IMenuService, MenuService>();
+            services.AddTransient<IUsuarioHelper, UsuarioHelper>();
+            services.AddTransient<IRutasHelper, RutasHelper>();
+            services.AddTransient<IAuthenticationClaimService, AuthenticationClaimService>();
+            services.AddTransient<IPerfilService, PerfilService>();
+            services.AddTransient<IMFAPortalService, MFAPortalService>();
+            services.AddTransient<IBitacoraWebService, BitacoraWebService>();
+            services.AddTransient<ILogTransaccionesEntidadesService, LogTransaccionesEntidadesService>();
+            services.AddTransient<INotificacionPushService, NotificacionPushService>();
 
+        }
     }
-  }
 }
