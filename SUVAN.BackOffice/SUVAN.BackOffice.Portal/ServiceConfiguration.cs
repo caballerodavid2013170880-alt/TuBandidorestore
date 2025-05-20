@@ -52,6 +52,7 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<IMotivoAuxilioVialService, MotivoAuxilioVialService>();
             services.AddTransient<IZonaService, ZonaService>();
             services.AddTransient<IFallaAuxilioVial, FallaAuxilioVialService>();
+            services.AddTransient<ITallerService, TallerService>();
         }
 
         /// <summary>
