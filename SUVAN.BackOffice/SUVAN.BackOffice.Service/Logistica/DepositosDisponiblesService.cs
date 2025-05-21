@@ -2,6 +2,7 @@
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel;
+using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Service.Configuracion;
 using System;
@@ -9,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.DepositosDisponiblesViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -23,7 +25,7 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public async Task<List<Depositosdisponible>> GetDepositos()
         {
-            var depositos = await context.Depositosdisponibles.ToListAsync();
+            var depositos = await context.Depositosdisponibles.Include(d => d.Zona).Include(d => d.Taller).ToListAsync();
 
             return depositos!;
         }
@@ -33,28 +35,51 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// </summary>
         /// <param name="id">Identificador del deposito.</param>
         /// <returns>ViewModel para el depósito especifico.</returns>
-        public async Task<DepositosDisponiblesViewModel> GetDepositoViewModel(int id)
+        /// 
+
+        public async Task<DepositosDisponiblesViewModel> GetDepositoViewModel(int depositoId)
         {
-            DepositosDisponiblesViewModel vRet = new DepositosDisponiblesViewModel();
-            var deposito = await context.Depositosdisponibles.FirstOrDefaultAsync(x => x.IdDeposito == id);
+            DepositosDisponiblesViewModel depositosUnidadViewModel = await GetDeposito(depositoId);
 
-            if (deposito == null)
-                return vRet;
-            else
-            {
-                vRet = new DepositosDisponiblesViewModel
+            return depositosUnidadViewModel;
+
+        }
+
+        public async Task<DepositosDisponiblesViewModel> GetDeposito(int id)
+        {
+            var deposito = await context.Depositosdisponibles
+                .Where(x => x.IdDeposito == id)
+                .Select(d => new DepositosDisponiblesViewModel
                 {
-                    DepositoId = deposito.IdDeposito,
-                    ZonaId = deposito.ZonaId,
-                    NombreDeposito = deposito.DepositoNombre!,
-                    TallerId = deposito.TallerId,
-                    Activo = deposito.Activo == true,
+                    DepositoId = d.IdDeposito,
+                    NombreDeposito = d.DepositoNombre!,
+                    ZonaId = d.ZonaId,
+                    TallerId = d.TallerId,
+                    Activo = d.Activo == true
+                })
+                .FirstOrDefaultAsync();
 
-                };
+            var zonas = await context.Zonas
+                .Select(z => new ZonasViewModel
+                {
+                    ZonaId = z.IdZona,
+                    ZonaNombre = z.NombreZona,
+                    Talleres = context.Tallers
+                        .Where(t => t.ZonaIdzona == z.IdZona)
+                        .Select(t => new TalleresViewModel
+                        {
+                            IdTaller = t.IdTaller,
+                            NombreTaller = t.NombreTaller
+                        }).ToList()
+                }).ToListAsync();
+
+            if (deposito != null)
+            {
+                deposito.ZonasView = zonas;
+                return deposito;
             }
 
-            return vRet;
-
+            return new DepositosDisponiblesViewModel { ZonasView = zonas };
         }
 
         /// <summary>
@@ -124,7 +149,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                 throw new Exception("No se encontro el Depósito");
             }
 
-            // Desactivar temporamente el seguimiento de entidades relacionadas
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
 
@@ -134,20 +158,29 @@ namespace SUVAN.BackOffice.Service.Logistica
 
             await context.SaveChangesAsync();
 
-            // Volver a activar el seguimiento de entidades relacionadas
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
         }
 
-        public List<ZonaViewModel> ObtenerZona()
+
+        /// <summary>
+        /// Obtiene el ViewModel del Taller
+        /// </summary>
+        /// <param name="zonaId">Identificador del Taller.</param>
+        /// <returns>ViewModel para el Taller especifico.</returns>
+
+        public List<DepositosDisponiblesViewModel.TalleresViewModel> ObtenerTaller(int zonaId)
         {
-            var resul = (from o in context.Zonas
-                         select new ZonaViewModel()
-                         {
-                             ZonaId = o.IdZona,
-                             ZonaNombre = o.NombreZona,
-                         }).ToList();
-            return resul;
+            var talleres = context.Tallers
+                .Where(t => t.ZonaIdzona == zonaId)
+                .Select(t => new DepositosDisponiblesViewModel.TalleresViewModel
+                {
+                    IdTaller = t.IdTaller,
+                    NombreTaller = t.NombreTaller
+                }).ToList();
+
+            return talleres;
         }
+
     }
 }

@@ -3,12 +3,12 @@
 @inject IUsuarioHelper UsuarioHelper
 
 @{
-    ViewData["Title"] = "Zona";
+    ViewData["Title"] = "Taller";
 }
-@model List<SUVAN.BackOffice.Database.Entities.Zona>
+@model List<SUVAN.BackOffice.Database.Entities.Taller>
 
 @{
-    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Zona);
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Taller);
     if (permisosPagina == null)
     {
         return;
@@ -23,7 +23,7 @@
             <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
                 <!--begin::Title-->
-                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Zonas</h1>
+                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Talleres</h1>
                 <!--end::Title-->
 
             </div>
@@ -32,7 +32,7 @@
             <div class="d-flex align-items-center gap-2 gap-lg-3">
                 @if (permisosPagina!.Agregar)
                 {
-                    <a href="~/Zona/AgregarZona" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Zona</a>
+                    <a href="~/Taller/AgregarTaller" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Taller</a>
                 }
             </div>
             <!--end::Actions-->
@@ -55,7 +55,7 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                        <input type="text" data-kt-zona-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+                        <input type="text" data-kt-taller-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
                     </div>
                     <!--end::Search-->
                 </div>
@@ -66,39 +66,42 @@
             <!--begin::Card body-->
             <div class="card-body py-4">
                 <!--begin::Table-->
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_zona">
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_taller">
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                            <th class="min-w-125px">Número de Zona</th>
+                            <th class="min-w-125px">Número de Taller</th>
+                            <th class="min-w-125px">Zona</th>
                             <th class="min-w-125px">Nombre</th>
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-semibold">
-                         @foreach (var contenido in Model)
+                        @foreach (var contenido in Model)
                         {
                             <tr>
                                 <td>
-                                    @contenido.IdZona
+                                    @contenido.IdTaller
                                 </td>
                                 <td>
-                                    @contenido.NombreZona
+                                    @contenido.ZonaIdzonaNavigation.NombreZona
                                 </td>
-
-                                 <td class="text-end">
-                                    @if (permisosPagina!.Editar)
+                                <td>
+                                    @contenido.NombreTaller
+                                </td>
+                                <td class="text-end">
+                                     @if (permisosPagina!.Editar)
                                     {
-                                        <a href="~/Zona/AgregarZona/@contenido.IdZona" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                        <a href="~/Taller/AgregarTaller/@contenido.IdTaller" class="btn btn-icon btn-active-light-primary w-30px h-30px">
                                             <i class="ki-outline ki-pencil fs-3"></i>
                                         </a>
                                     }
                                     @if (permisosPagina!.Eliminar)
                                     {
-                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-zona-delete-item="@contenido.IdZona" data-kt-zona-table-filter="delete_row">
+                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-taller-delete-item="@contenido.IdTaller" data-kt-taller-table-filter="delete_row">
                                             <i class="ki-outline ki-trash fs-3"></i>
                                         </a>
-                                    }
-                                </td> 
+                                    } 
+                                </td>
                             </tr>
                         }
                     </tbody>
@@ -113,7 +116,7 @@
 </div>
 <!--end::Content-->
 @section scripts {
-    <script src="~/js/logistica/zona/table.js" asp-append-version="true"></script>
+    <script src="~/js/logistica/taller/table.js" asp-append-version="true"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
     <script src="~/assets/js/custom/utilities/modals/users-search.js" asp-append-version="true"></script>

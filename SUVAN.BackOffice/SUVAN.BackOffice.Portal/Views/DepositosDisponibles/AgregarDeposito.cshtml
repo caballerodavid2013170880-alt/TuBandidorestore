@@ -49,15 +49,16 @@
 
             <!--begin::Card body-->
             <div class="card-body py-4">
-                <form class="form w-100" novalidate="novalidate" id="kt_empresa_in_form" data-kt-redirect-url="/" asp-controller="DepositosDisponibles" asp-action="AgregarDeposito" method="post">
+                <form class="form w-100" novalidate="novalidate" id="kt_deposito_in_form" data-kt-redirect-url="/" asp-controller="DepositosDisponibles" asp-action="AgregarDeposito" method="post">
                     @Html.AntiForgeryToken()
+                    <input asp-for="ZonaJson" type="hidden" id="ZonaJson" />
                     <input asp-for="DepositoId" type="hidden" />
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
                                 <label asp-for="ZonaId" class="col-form-label text-gray-600 required">Elige la Zona</label>
-                                <select asp-for="ZonaId" asp-items="new SelectList(Model.ZonaView, nameof(ZonaViewModel.ZonaId), nameof(ZonaViewModel.IdNombre), Model.ZonaId)" class="form-control">
-                                    <option value="0">Seleccione..</option>
+                                <select asp-for="ZonaId" asp-items="new SelectList(Model.ZonasView, nameof(DepositosDisponiblesViewModel.ZonasViewModel.ZonaId), nameof(DepositosDisponiblesViewModel.ZonasViewModel.IdNombre), Model.ZonaId)" class="form-control">
+                                    <option value="">Selecciona una Zona</option>
                                 </select>
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                     <span asp-validation-for="ZonaId"></span>
@@ -66,9 +67,13 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="TallerId" class="col-form-label text-gray-600 required">Taller ID</label>
-                                <input asp-for="TallerId" class="form-control bg-transparent" placeholder="Taller ID" maxlength="250" />
-                                <span asp-validation-for="TallerId" class="invalid-feedback"></span>
+                                <label asp-for="TallerId" class="col-form-label text-gray-600 required">Elige el Taller</label>
+                                <select asp-for="TallerId" asp-items="new SelectList(Model.TalleresView, nameof(DepositosDisponiblesViewModel.TalleresViewModel.IdTaller), nameof(DepositosDisponiblesViewModel.TalleresViewModel.TallerNombreId), Model.TallerId)" class="form-control">
+                                    <option value="">Selecciona un taller</option>
+                                </select>
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="TallerId"></span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -88,7 +93,7 @@
                         </div>
                     </div>
                     <div class="text-end">
-                        <button type="submit" id="kt_empresa_in_submit" class="btn btn-primary btn-sm">
+                        <button type="submit" id="kt_deposito_in_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Guardar</span>
                             <span class="indicator-progress">
                                 Por favor espere...
