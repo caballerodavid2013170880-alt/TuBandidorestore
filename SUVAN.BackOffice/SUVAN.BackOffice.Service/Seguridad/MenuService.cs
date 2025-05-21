@@ -89,7 +89,9 @@ namespace SUVAN.BackOffice.Service.Seguridad
                     }
 
                     menuItem.SubMenuItems = subMenuItems;
-                    menuItems.Add(menuItem);
+                    if (menu.Idmenu !=90)
+                    { menuItems.Add(menuItem); }
+                    
                 }
             }
 

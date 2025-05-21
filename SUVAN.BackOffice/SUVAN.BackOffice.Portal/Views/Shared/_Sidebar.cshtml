@@ -59,19 +59,23 @@
 
                                 @foreach (var subMenu in menu.SubMenuItems)
                                 {
-                                    <!--begin:Menu item-->
-                                    <div class="menu-item">
-                                        <!--begin:Menu link-->
-                                        <a class="menu-link" href="@subMenu.Ruta" title="@subMenu.Titulo" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                                    /*20/05/2025 Ac MENU DESPLEGABLE ORIGINAL
+                                            <!--begin:Menu item-->
+                                            <div class="menu-item">
+                                            <!--begin:Menu link-->
+                                            <a class="menu-link" href="@subMenu.Ruta" title="@subMenu.Titulo" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
                                             <span class="menu-bullet">
-                                                <span class="bullet bullet-dot"></span>
+                                            <span class="bullet bullet-dot"></span>
                                             </span>
                                             <span class="menu-title">@subMenu.Titulo</span>
-                                        </a>
-                                        <!--end:Menu link-->
-                                    </div>
+                                            </a>
+                                            <!--end:Menu link-->
+                                            </div>
+                                            */
+
+
                                     <!--end:Menu item-->
-                                    @if (subMenu.SubMenuItems != null && subMenu.SubMenuItems.Any())
+                                    /*@if (subMenu.SubMenuItems != null && subMenu.SubMenuItems.Any())
                                     {
                                         <!--begin:Submenu de tercer nivel-->
                                         <div class="menu-sub menu-sub-accordion">
@@ -93,6 +97,57 @@
                                         </div>
                                         <!--end:Submenu de tercer nivel-->
                                     }
+                                    */
+
+
+
+                                            @if (subMenu.Id==90 && subMenu.SubMenuItems != null && subMenu.SubMenuItems.Any())
+                                            {
+                                                <!--begin:Menu item con submenú desplegable-->
+                                                <div class="menu-item menu-accordion" data-kt-menu-trigger="click">
+                                                    <!--begin:Menu link-->
+                                                    <span class="menu-link">
+                                                        <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                        </span>
+                                                        <span class="menu-title">@subMenu.Titulo</span>
+                                                        <span class="menu-arrow"></span>
+                                                    </span>
+                                                    <!--end:Menu link-->
+                                                    <div class="menu-sub menu-sub-accordion">
+                                                        @foreach (var opcionHija in subMenu.SubMenuItems)
+                                                        {
+                                                            <div class="menu-item">
+                                                                <!--begin:Menu link-->
+                                                                <a class="menu-link" href="@opcionHija.Ruta" title="@opcionHija.Titulo" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                                                                    <span class="menu-bullet">
+                                                                        <span class="bullet bullet-dot"></span>
+                                                                    </span>
+                                                                    <span class="menu-title">@opcionHija.Titulo</span>
+                                                                </a>
+                                                                <!--end:Menu link-->
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                                <!--end:Menu item con submenú desplegable-->
+                                            }
+                                            else
+                                            {
+                                                <!-- Si no hay hijos, se muestra como un link normal -->
+                                                <div class="menu-item">
+                                                    <a class="menu-link" href="@subMenu.Ruta" title="@subMenu.Titulo" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
+                                                        <span class="menu-bullet">
+                                                            <span class="bullet bullet-dot"></span>
+                                                        </span>
+                                                        <span class="menu-title">@subMenu.Titulo</span>
+                                                    </a>
+                                                </div>
+                                            }
+
+
+
+
                                 }
                             </div>
                             <!--end:Menu sub-->
