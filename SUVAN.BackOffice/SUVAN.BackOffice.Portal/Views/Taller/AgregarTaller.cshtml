@@ -3,7 +3,7 @@
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
 @{
-    ViewData["Title"] = "Talleres";
+    ViewData["Title"] = "Taller";
 }
 
 @model TallerViewModel
@@ -57,7 +57,7 @@
                             <div class="fv-row mb-3">
                                 <label asp-for="ZonaIdzona" class="col-form-label text-gray-600 required">Elige la Zona</label>
                                 <select asp-for="ZonaIdzona" asp-items="new SelectList(Model.ZonaView, nameof(ZonaViewModel.ZonaId), nameof(ZonaViewModel.IdNombre), Model.ZonaIdzona)" class="form-control">
-                                    <option value="0">Seleccione..</option>
+                                    <option value="">Selecciona una Zona</option>
                                 </select>
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                     <span asp-validation-for="ZonaIdzona"></span>
@@ -91,7 +91,7 @@
 </div>
 <!--end::Content-->
 @section scripts {
-@*     <script src="~/js/logistica/depositosdisponibles/add.js"></script> *@
+    <script src="~/js/logistica/taller/add.js"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }

@@ -58,7 +58,7 @@
                             <div class="fv-row mb-3">
                                 <label asp-for="ZonaId" class="col-form-label text-gray-600 required">Elige la Zona</label>
                                 <select asp-for="ZonaId" asp-items="new SelectList(Model.ZonasView, nameof(DepositosDisponiblesViewModel.ZonasViewModel.ZonaId), nameof(DepositosDisponiblesViewModel.ZonasViewModel.IdNombre), Model.ZonaId)" class="form-control">
-                                    <option value="0">Seleccione..</option>
+                                    <option value="">Selecciona una Zona</option>
                                 </select>
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                     <span asp-validation-for="ZonaId"></span>
@@ -69,7 +69,7 @@
                             <div class="fv-row mb-3">
                                 <label asp-for="TallerId" class="col-form-label text-gray-600 required">Elige el Taller</label>
                                 <select asp-for="TallerId" asp-items="new SelectList(Model.TalleresView, nameof(DepositosDisponiblesViewModel.TalleresViewModel.IdTaller), nameof(DepositosDisponiblesViewModel.TalleresViewModel.TallerNombreId), Model.TallerId)" class="form-control">
-                                    <option value="0">Seleccione..</option>
+                                    <option value="">Selecciona un taller</option>
                                 </select>
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                     <span asp-validation-for="TallerId"></span>
