@@ -11,7 +11,7 @@ public partial class Mecanico
 
     public string Apellido { get; set; } = null!;
 
-    public int Numero { get; set; }
+    public string? Numero { get; set; }
 
     public DateTime FechaIngreso { get; set; }
 
