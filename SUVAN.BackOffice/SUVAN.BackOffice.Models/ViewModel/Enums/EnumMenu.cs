@@ -91,5 +91,6 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
     TipoDeServicios = 78,
     Zona = 79,
     Taller = 80,
+    Mecanico = 91,
     }
 }

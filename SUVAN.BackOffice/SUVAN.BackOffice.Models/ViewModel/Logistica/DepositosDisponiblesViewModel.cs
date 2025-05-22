@@ -26,6 +26,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public List<TalleresViewModel> TalleresView { get; set; } = new();
 
+        public string DepsoitoIdNombre => $"{DepositoId} - {NombreDeposito}";
+
         public class ZonasViewModel
         {
             public int ZonaId { get; set; }
