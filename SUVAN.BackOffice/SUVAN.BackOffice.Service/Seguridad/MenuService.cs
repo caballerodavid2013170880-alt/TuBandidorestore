@@ -31,12 +31,11 @@ namespace SUVAN.BackOffice.Service.Seguridad
             List<MenuViewModel> menuItems = new List<MenuViewModel>();
             var permisos = await permisoService.GetPermisoByUsuario(perfilId);
 
-
             var permisosGroup = permisos.GroupBy(x => x.MenuIdmenuNavigation.MenuIdpadre);
 
-            foreach (var permisoGroup in permisosGroup)
+            foreach (var permisoGroup in permisosGroup.OrderBy(pg => pg.Key)) // Ordenar grupos de menú principal
             {
-                var menuId = permisoGroup.Key!;
+                var menuId = permisoGroup.Key;
                 var menu = await context.Menus.FirstOrDefaultAsync(x => x.Idmenu == menuId);
 
                 if (menu != null)
@@ -52,50 +51,50 @@ namespace SUVAN.BackOffice.Service.Seguridad
                         }
                     };
 
-                    List<MenuItemViewModel> subMenuItems = new List<MenuItemViewModel>();
-
-                    foreach (var permiso in permisoGroup)
-                    {
-                        var subMenu = permiso.MenuIdmenuNavigation;
-
-                        if (subMenu != null)
+                    // Ordenar submenús alfabéticamente antes de procesarlos
+                    var subMenuItems = permisoGroup
+                        .Select(permiso => new MenuItemViewModel
                         {
-                            var subMenuItem = new MenuItemViewModel
+                            Id = permiso.MenuIdmenuNavigation.Idmenu,
+                            Titulo = permiso.MenuIdmenuNavigation.Titulo!,
+                            Icono = permiso.MenuIdmenuNavigation.Icono!,
+                            Ruta = permiso.MenuIdmenuNavigation.Ruta!,
+                        })
+                        .OrderBy(subMenu => subMenu.Titulo) // Ordenar submenús
+                        .ToList();
+
+                    foreach (var subMenuItem in subMenuItems)
+                    {
+                        // Ordenar opciones hijas dentro del submenú
+                        var opcionesHijas = permisos
+                            .Where(x => x.MenuIdmenuNavigation.MenuIdpadre == subMenuItem.Id)
+                            .Select(x => new MenuItemViewModel
                             {
-                                Id = subMenu.Idmenu,
-                                Titulo = subMenu.Titulo!,
-                                Icono = subMenu.Icono!,
-                                Ruta = subMenu.Ruta!,
-                            };
+                                Id = x.MenuIdmenuNavigation.Idmenu,
+                                Titulo = x.MenuIdmenuNavigation.Titulo!,
+                                Icono = x.MenuIdmenuNavigation.Icono!,
+                                Ruta = x.MenuIdmenuNavigation.Ruta!,
+                            })
+                            .OrderBy(opcion => opcion.Titulo) // Ordenar opciones hijas
+                            .ToList();
 
-                            // Busca opciones hijas dentro del submenú
-                            var opcionesHijas = permisos.Where(x => x.MenuIdmenuNavigation.MenuIdpadre == subMenu.Idmenu)
-                                                        .Select(x => new MenuItemViewModel
-                                                        {
-                                                            Id = x.MenuIdmenuNavigation.Idmenu,
-                                                            Titulo = x.MenuIdmenuNavigation.Titulo!,
-                                                            Icono = x.MenuIdmenuNavigation.Icono!,
-                                                            Ruta = x.MenuIdmenuNavigation.Ruta!,
-                                                        })
-                                                        .ToList();
-
-                            if (opcionesHijas.Any())
-                            {
-                                subMenuItem.SubMenuItems = opcionesHijas;
-                            }
-
-                            subMenuItems.Add(subMenuItem);
+                        if (opcionesHijas.Any())
+                        {
+                            subMenuItem.SubMenuItems = opcionesHijas;
                         }
                     }
 
                     menuItem.SubMenuItems = subMenuItems;
-                    if (menu.Idmenu !=90)
-                    { menuItems.Add(menuItem); }
-                    
+
+                    if (menu.Idmenu != 90)
+                    {
+                        menuItems.Add(menuItem);
+                    }
                 }
             }
 
-            return menuItems;
+            // Ordenar los menús principales antes de devolver la lista
+            return menuItems.OrderBy(menu => menu.MenuItem.Titulo).ToList();
         }
     }
 }

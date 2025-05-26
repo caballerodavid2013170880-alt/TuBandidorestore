@@ -23,12 +23,12 @@
             <!--begin::Menu-->
             <div class="menu menu-column menu-rounded menu-sub-indention fw-bold px-6" id="kt_app_sidebar_menu" data-kt-menu="true" data-kt-menu-expand="false">
 
-                <!--****"1" -->
+                
                                 @{
                     var menuOptions = await UsuarioHelper.GetOpcionesMenu(User);
                     if (menuOptions != null)
                     {
-                        // ***1
+                        
 
 
                         int totalMenuOptions = menuOptions.Count();
@@ -36,11 +36,7 @@
 
                 @foreach (var menu in menuOptions)  
                 {
-                            currentIndex++;
-                            if (currentIndex == totalMenuOptions)
-                            {
-                                continue; // Esta línea omite la última opción
-                            }
+
                     <!--begin:Menu item-->
                     <div data-kt-menu-trigger="click" class="menu-item menu-accordion">
                         <!--begin:Menu link-->
@@ -59,46 +55,7 @@
 
                                 @foreach (var subMenu in menu.SubMenuItems)
                                 {
-                                    /*20/05/2025 Ac MENU DESPLEGABLE ORIGINAL
-                                            <!--begin:Menu item-->
-                                            <div class="menu-item">
-                                            <!--begin:Menu link-->
-                                            <a class="menu-link" href="@subMenu.Ruta" title="@subMenu.Titulo" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
-                                            <span class="menu-bullet">
-                                            <span class="bullet bullet-dot"></span>
-                                            </span>
-                                            <span class="menu-title">@subMenu.Titulo</span>
-                                            </a>
-                                            <!--end:Menu link-->
-                                            </div>
-                                            */
-
-
-                                    <!--end:Menu item-->
-                                    /*@if (subMenu.SubMenuItems != null && subMenu.SubMenuItems.Any())
-                                    {
-                                        <!--begin:Submenu de tercer nivel-->
-                                        <div class="menu-sub menu-sub-accordion">
-                                            @foreach (var opcionHija in subMenu.SubMenuItems)
-                                            {
-                                                <!--begin:Menu item-->
-                                                <div class="menu-item">
-                                                    <!--begin:Menu link-->
-                                                            <a class="menu-link" href="@opcionHija.Ruta" title="@opcionHija.Titulo" data-bs-toggle="tooltip" data-bs-trigger="hover" data-bs-dismiss="click" data-bs-placement="right">
-                                                        <span class="menu-bullet">
-                                                            <span class="bullet bullet-dot"></span>
-                                                        </span>
-                                                        <span class="menu-title">@opcionHija.Titulo</span>
-                                                    </a>
-                                                    <!--end:Menu link-->
-                                                </div>
-                                                <!--end:Menu item-->
-                                            }
-                                        </div>
-                                        <!--end:Submenu de tercer nivel-->
-                                    }
-                                    */
-
+                                    
 
 
                                             @if (subMenu.Id==90 && subMenu.SubMenuItems != null && subMenu.SubMenuItems.Any())
