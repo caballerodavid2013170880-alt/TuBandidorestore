@@ -15,7 +15,5 @@ public partial class Preventivo
 
     public virtual ICollection<CausaMantenimiento> CausaMantenimientos { get; set; } = new List<CausaMantenimiento>();
 
-    public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
-
     public virtual TipoServicio TiposervicioIdtiposervicioNavigation { get; set; } = null!;
 }

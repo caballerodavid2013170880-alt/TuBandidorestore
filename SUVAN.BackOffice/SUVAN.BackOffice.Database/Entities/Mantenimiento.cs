@@ -5,47 +5,83 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class Mantenimiento
 {
-    public int Idmantenimiento { get; set; }
+    public int IdMantenimiento { get; set; }
 
-    public int DepositoIddeposito { get; set; }
+    public int IdDeposito { get; set; }
 
-    public int MecanicoIdmecanico { get; set; }
+    public int IdTiposervicio { get; set; }
 
-    public int VehiculoIdvehiculo { get; set; }
+    public int OrdenServicio { get; set; }
 
-    public string DepositoVehiculo { get; set; } = null!;
+    public int? IdPreventivo { get; set; }
 
-    public int TiposervicioIdtiposervicio { get; set; }
+    public int IdVehiculo { get; set; }
 
-    public int PreventivoIdpreventivo { get; set; }
+    public int? IdTaller { get; set; }
 
-    public int CausamantenimientoIdcausamantenimiento { get; set; }
+    public int? IdMecanico { get; set; }
 
-    public string Tanque { get; set; } = null!;
+    public DateTime? FechaProgramacion { get; set; }
 
-    public string KmsEntrada { get; set; } = null!;
+    public DateTime? FechaIngreso { get; set; }
 
-    public string FechaProgramada { get; set; } = null!;
+    public string? HoraIngreso { get; set; }
 
-    public string FechaCaptura { get; set; } = null!;
+    public DateTime? FinTaller { get; set; }
 
-    public string DesasignaVehiculo { get; set; } = null!;
+    public string? HoraFinTaller { get; set; }
 
-    public string Observaciones { get; set; } = null!;
+    public DateTime? FechaEntrega { get; set; }
 
-    public int MantenimientodetalleIdmantenimientodetalle { get; set; }
+    public string? HoraEntrega { get; set; }
 
-    public virtual CausaMantenimiento CausamantenimientoIdcausamantenimientoNavigation { get; set; } = null!;
+    public string? NivelTanque { get; set; }
 
-    public virtual Depositosdisponible DepositoIddepositoNavigation { get; set; } = null!;
+    public int? Kilometraje { get; set; }
 
-    public virtual MantenimientoDetalle MantenimientodetalleIdmantenimientodetalleNavigation { get; set; } = null!;
+    public string? Genero { get; set; }
 
-    public virtual Mecanico MecanicoIdmecanicoNavigation { get; set; } = null!;
+    public string? Estatus { get; set; }
 
-    public virtual Preventivo PreventivoIdpreventivoNavigation { get; set; } = null!;
+    public short? Color { get; set; }
 
-    public virtual TipoServicio TiposervicioIdtiposervicioNavigation { get; set; } = null!;
+    public string? Comentarios { get; set; }
 
-    public virtual Vehiculo VehiculoIdvehiculoNavigation { get; set; } = null!;
+    public float? TotalOrden { get; set; }
+
+    public short? Iva { get; set; }
+
+    public string? Recibio { get; set; }
+
+    public string? Entrego { get; set; }
+
+    public DateTime? FechaCaptura { get; set; }
+
+    public short? TipoAfe { get; set; }
+
+    public string? Vale { get; set; }
+
+    public int? IdTipoMantenimiento { get; set; }
+
+    public int? FoReOp { get; set; }
+
+    public short? Refac { get; set; }
+
+    public string? ObservacionesOperador { get; set; }
+
+    public string? ComentariosTecnico { get; set; }
+
+    public string? Refacciones { get; set; }
+
+    public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
+
+    public virtual Mecanico? IdMecanicoNavigation { get; set; }
+
+    public virtual Taller? IdTallerNavigation { get; set; }
+
+    public virtual TipoMantenimiento? IdTipoMantenimientoNavigation { get; set; }
+
+    public virtual TipoServicio IdTiposervicioNavigation { get; set; } = null!;
+
+    public virtual Vehiculo IdVehiculoNavigation { get; set; } = null!;
 }

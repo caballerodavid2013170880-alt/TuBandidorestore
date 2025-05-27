@@ -11,7 +11,5 @@ public partial class CausaMantenimiento
 
     public int PreventivoIdpreventivo { get; set; }
 
-    public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
-
     public virtual Preventivo PreventivoIdpreventivoNavigation { get; set; } = null!;
 }
