@@ -80,7 +80,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             {
                 mecanico = new Mecanico();
             }
-            /*
+            
 
             // valida si un Mecanico existe con el mismo nombre
             var mecanicoExistente = await context.Mecanicos.FirstOrDefaultAsync(x =>
