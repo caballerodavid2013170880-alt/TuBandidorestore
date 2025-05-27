@@ -13,14 +13,6 @@ public partial class Mantenimiento
 
     public int VehiculoIdvehiculo { get; set; }
 
-    public string Vehiculo { get; set; } = null!;
-
-    public string Marca { get; set; } = null!;
-
-    public string Modelo { get; set; } = null!;
-
-    public string Placa { get; set; } = null!;
-
     public string DepositoVehiculo { get; set; } = null!;
 
     public int TiposervicioIdtiposervicio { get; set; }
@@ -39,19 +31,15 @@ public partial class Mantenimiento
 
     public string DesasignaVehiculo { get; set; } = null!;
 
-    public string Reparacion { get; set; } = null!;
-
-    public float Cantidad { get; set; }
-
-    public string Referencia { get; set; } = null!;
-
-    public float Valor { get; set; }
-
     public string Observaciones { get; set; } = null!;
+
+    public int MantenimientodetalleIdmantenimientodetalle { get; set; }
 
     public virtual CausaMantenimiento CausamantenimientoIdcausamantenimientoNavigation { get; set; } = null!;
 
     public virtual Depositosdisponible DepositoIddepositoNavigation { get; set; } = null!;
+
+    public virtual MantenimientoDetalle MantenimientodetalleIdmantenimientodetalleNavigation { get; set; } = null!;
 
     public virtual Mecanico MecanicoIdmecanicoNavigation { get; set; } = null!;
 

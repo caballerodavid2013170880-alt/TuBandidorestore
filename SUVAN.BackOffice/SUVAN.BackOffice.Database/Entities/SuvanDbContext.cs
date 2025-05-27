@@ -16,7 +16,7 @@ public partial class SuvanDbContext : DbContext
     }
 
     public SuvanDbContext(DbContextOptions<SuvanDbContext> options, IConfiguration configuration)
-        : base(options)
+    : base(options)
     {
         this.configuration = configuration;
     }
@@ -110,6 +110,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Logtransaccionesentidade> Logtransaccionesentidades { get; set; }
 
     public virtual DbSet<Mantenimiento> Mantenimientos { get; set; }
+
+    public virtual DbSet<MantenimientoDetalle> MantenimientoDetalles { get; set; }
 
     public virtual DbSet<Mecanico> Mecanicos { get; set; }
 
@@ -1596,6 +1598,8 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasIndex(e => e.DepositoIddeposito, "fk_mantenimiento_deposito");
 
+            entity.HasIndex(e => e.MantenimientodetalleIdmantenimientodetalle, "fk_mantenimiento_mantenimientodetalle");
+
             entity.HasIndex(e => e.MecanicoIdmecanico, "fk_mantenimiento_mecanico");
 
             entity.HasIndex(e => e.PreventivoIdpreventivo, "fk_mantenimiento_preventivo");
@@ -1605,7 +1609,6 @@ public partial class SuvanDbContext : DbContext
             entity.HasIndex(e => e.VehiculoIdvehiculo, "fk_mantenimiento_vehiculo");
 
             entity.Property(e => e.Idmantenimiento).HasColumnName("idmantenimiento");
-            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
             entity.Property(e => e.CausamantenimientoIdcausamantenimiento).HasColumnName("causamantenimiento_idcausamantenimiento");
             entity.Property(e => e.DepositoIddeposito).HasColumnName("deposito_iddeposito");
             entity.Property(e => e.DepositoVehiculo)
@@ -1623,34 +1626,16 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.KmsEntrada)
                 .HasMaxLength(100)
                 .HasColumnName("kms_entrada");
-            entity.Property(e => e.Marca)
-                .HasMaxLength(100)
-                .HasColumnName("marca");
+            entity.Property(e => e.MantenimientodetalleIdmantenimientodetalle).HasColumnName("mantenimientodetalle_idmantenimientodetalle");
             entity.Property(e => e.MecanicoIdmecanico).HasColumnName("mecanico_idmecanico");
-            entity.Property(e => e.Modelo)
-                .HasMaxLength(100)
-                .HasColumnName("modelo");
             entity.Property(e => e.Observaciones)
                 .HasMaxLength(100)
                 .HasColumnName("observaciones");
-            entity.Property(e => e.Placa)
-                .HasMaxLength(100)
-                .HasColumnName("placa");
             entity.Property(e => e.PreventivoIdpreventivo).HasColumnName("preventivo_idpreventivo");
-            entity.Property(e => e.Referencia)
-                .HasMaxLength(100)
-                .HasColumnName("referencia");
-            entity.Property(e => e.Reparacion)
-                .HasMaxLength(100)
-                .HasColumnName("reparacion");
             entity.Property(e => e.Tanque)
                 .HasMaxLength(100)
                 .HasColumnName("tanque");
             entity.Property(e => e.TiposervicioIdtiposervicio).HasColumnName("tiposervicio_idtiposervicio");
-            entity.Property(e => e.Valor).HasColumnName("valor");
-            entity.Property(e => e.Vehiculo)
-                .HasMaxLength(100)
-                .HasColumnName("vehiculo");
             entity.Property(e => e.VehiculoIdvehiculo).HasColumnName("vehiculo_idvehiculo");
 
             entity.HasOne(d => d.CausamantenimientoIdcausamantenimientoNavigation).WithMany(p => p.Mantenimientos)
@@ -1662,6 +1647,11 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => d.DepositoIddeposito)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_mantenimiento_deposito");
+
+            entity.HasOne(d => d.MantenimientodetalleIdmantenimientodetalleNavigation).WithMany(p => p.Mantenimientos)
+                .HasForeignKey(d => d.MantenimientodetalleIdmantenimientodetalle)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_mantenimiento_mantenimientodetalle");
 
             entity.HasOne(d => d.MecanicoIdmecanicoNavigation).WithMany(p => p.Mantenimientos)
                 .HasForeignKey(d => d.MecanicoIdmecanico)
@@ -1684,6 +1674,23 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_mantenimiento_vehiculo");
         });
 
+        modelBuilder.Entity<MantenimientoDetalle>(entity =>
+        {
+            entity.HasKey(e => e.Idmantenimientodetalle).HasName("PRIMARY");
+
+            entity.ToTable("mantenimiento_detalle");
+
+            entity.Property(e => e.Idmantenimientodetalle).HasColumnName("idmantenimientodetalle");
+            entity.Property(e => e.Cantidad).HasColumnName("cantidad");
+            entity.Property(e => e.Referencia)
+                .HasMaxLength(100)
+                .HasColumnName("referencia");
+            entity.Property(e => e.Reparacion)
+                .HasMaxLength(100)
+                .HasColumnName("reparacion");
+            entity.Property(e => e.Valor).HasColumnName("valor");
+        });
+
         modelBuilder.Entity<Mecanico>(entity =>
         {
             entity.HasKey(e => e.IdMecanico).HasName("PRIMARY");
@@ -1704,7 +1711,9 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .HasColumnName("nombre");
-            entity.Property(e => e.Numero).HasColumnName("numero");
+            entity.Property(e => e.Numero)
+                .HasMaxLength(100)
+                .HasColumnName("numero");
 
             entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.Mecanicos)
                 .HasForeignKey(d => d.IdDeposito)

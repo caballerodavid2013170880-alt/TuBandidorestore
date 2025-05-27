@@ -38,7 +38,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         {
             MecanicoViewModel vRet = new MecanicoViewModel();
             var mecanico = await context.Mecanicos.FirstOrDefaultAsync(x => x.IdMecanico == id);
-            /*
+
             if (mecanico == null)
                 return vRet;
             else
@@ -54,7 +54,7 @@ namespace SUVAN.BackOffice.Service.Logistica
                     IdDeposito = mecanico.IdDeposito!,
                 };
             }
-            */
+
             return vRet;
         }
 
@@ -97,7 +97,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             mecanico.FechaIngreso = model.FechaIngreso;
             mecanico.Activo = model.Activo;
             mecanico.IdDeposito = model.IdDeposito;
-            */
+
             if (model.IdMecanico > 0)
             {
                 context.Mecanicos.Entry(mecanico);
