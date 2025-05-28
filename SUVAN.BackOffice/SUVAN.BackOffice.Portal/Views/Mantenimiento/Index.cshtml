@@ -1,0 +1,333 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+
+@{
+    ViewData["Title"] = "Mantenimiento";
+}
+@model List<SUVAN.BackOffice.Database.Entities.Mantenimiento>
+
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Mecanico);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+
+<style>
+    .separador {
+        background-color: #f8f8f8;
+        padding: 15px;
+        border-radius: 8px;
+        color: white;
+        margin-left: 1%;
+        margin-right: 1%;
+        margin-bottom: 20px;
+    }
+
+    .tabla-ajustada {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .tabla-ajustada th, .tabla-ajustada td {
+            padding: 2px 4px;
+            text-align: left;
+    }
+
+    .tabla-ajustada th {
+            white-space: nowrap;
+            font-weight: bold;
+            width: 80px;
+    }
+</style>
+
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <!--begin::Toolbar wrapper-->
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <!--begin::Page title-->
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <!--begin::Title-->
+                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Mantenimiento</h1>
+                <!--end::Title-->
+
+            </div>
+            <!--end::Page title-->
+            <!--begin::Actions-->
+            <div class="d-flex align-items-center gap-2 gap-lg-3">
+                @if (permisosPagina!.Agregar)
+                {
+                    <a href="~/Mantenimiento/AgregarOrden" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Nueva Orden</a>
+                }
+            </div>
+            <!--end::Actions-->
+        </div>
+        <!--end::Toolbar wrapper-->
+    </div>
+    <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <!--begin::Content container-->
+    <div id="kt_app_content_container" class="app-container container-fluid">
+        <!--begin::Card-->
+        <div class="card">
+            <!--begin::Card header-->
+            <div class="card-header border-0 pt-6">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <!--begin::Search-->
+                    <div class="d-flex align-items-center position-relative my-1">
+                        <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                        <input type="text" data-kt-mantenimiento-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+                    </div>
+                    <!--end::Search-->
+                </div>
+                <!--begin::Card title-->
+                <div class="card-toolbar flex-row-fluid justify-content-end gap-5">
+                    <!--begin::Export dropdown-->
+                    <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                        <i class="ki-duotone ki-exit-down fs-2"><span class="path1"></span><span class="path2"></span></i>
+                        Imprimir Orden
+                    </button>
+                    <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                        <i class="ki-duotone ki-exit-down fs-2"><span class="path1"></span><span class="path2"></span></i>
+                        Datos del Vehículo
+                    </button>
+                    <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                        <i class="ki-duotone ki-exit-down fs-2"><span class="path1"></span><span class="path2"></span></i>
+                        Refacciones
+                    </button>
+                    <button type="button" class="btn btn-light-primary" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end">
+                        <i class="ki-duotone ki-exit-down fs-2"><span class="path1"></span><span class="path2"></span></i>
+                        Estatus Autorización
+                    </button>
+                    <!--begin::Menu-->
+                    <div id="kt_datatable_example_export_menu" class="menu menu-sub menu-sub-dropdown menu-column menu-rounded menu-gray-600 menu-state-bg-light-primary fw-semibold fs-7 w-200px py-4" data-kt-menu="true">
+
+                        <!--begin::Menu item-->
+                        <div class="menu-item px-3">
+                            <a href="#" class="menu-link px-3" data-kt-export="excel">
+                                Imprimir Orden
+                            </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                            <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                                Datos del Vehiculo
+                            </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                            <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                                Refacciones
+                            </a>
+                        </div>
+
+                        <div class="menu-item px-3">
+                            <a href="#" class="menu-link px-3" data-kt-export="pdf">
+                                Estatus Autorización
+                            </a>
+                        </div>
+                        <!--end::Menu item-->
+                    </div>
+                    <div id="kt_datatable_example_buttons" class="d-none"></div>
+                </div>
+            </div>
+            <!--end::Card header-->
+            <!--begin::Card body-->
+            <div class="card-body py-4">
+                <!--begin::Table-->
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_mantenimiento">
+                    <thead>
+                        <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                            <th class="min-w-125px">No. de Orden</th>
+                            <th class="min-w-125px">Depósito</th>
+                            <th class="min-w-125px">Taller</th>
+                            <th class="min-w-125px">Tipo de Servicio</th>
+                            <th class="min-w-125px">Vehículo</th>
+                            <th class="min-w-125px">Mecanico</th>
+                            <th class="min-w-125px">Fecha de Entrega</th>
+                            <th class="min-w-125px">Refacción</th>
+                            <th class="min-w-125px">Estatus</th>
+                            <th class="min-w-125px">Acciones</th>
+                        </tr>
+                    </thead>
+                     <tbody class="text-gray-600 fw-semibold">
+                        <tr>
+                            <td>001</td>
+                            <td>Depósito Central</td>
+                            <td>Taller Norte</td>
+                            <td>Preventivo</td>
+                            <td>Ford Fiesta</td>
+                            <td>Juan Pérez</td>
+                            <td>2025-06-01</td>
+                            <td>Filtro de aceite</td>
+                            <td>En proceso</td>
+                            <td class="text-end">
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-pencil fs-3"></i>
+                                </a>
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-trash fs-3"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>002</td>
+                            <td>Depósito Sur</td>
+                            <td>Taller Express</td>
+                            <td>Preventivo</td>
+                            <td>Chevrolet Aveo</td>
+                            <td>Carlos Gómez</td>
+                            <td>2025-06-02</td>
+                            <td>Bujías</td>
+                            <td>Completado</td>
+                            <td class="text-end">
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-pencil fs-3"></i>
+                                </a>
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-trash fs-3"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>003</td>
+                            <td>Depósito Este</td>
+                            <td>Taller Rápido</td>
+                            <td>Correctivo</td>
+                            <td>Nissan Versa</td>
+                            <td>Pedro Martínez</td>
+                            <td>2025-06-03</td>
+                            <td>Aceite sintético</td>
+                            <td>Pendiente</td>
+                            <td class="text-end">
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-pencil fs-3"></i>
+                                </a>
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-trash fs-3"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>004</td>
+                            <td>Depósito Oeste</td>
+                            <td>Taller Elite</td>
+                            <td>Correctivo</td>
+                            <td>Honda Civic</td>
+                            <td>María López</td>
+                            <td>2025-06-04</td>
+                            <td>Balatas</td>
+                            <td>En espera</td>
+                            <td class="text-end">
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-pencil fs-3"></i>
+                                </a>
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-trash fs-3"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>005</td>
+                            <td>Depósito Central</td>
+                            <td>Taller Norte</td>
+                            <td>Preventivo</td>
+                            <td>Volkswagen Jetta</td>
+                            <td>Eduardo Ramírez</td>
+                            <td>2025-06-05</td>
+                            <td>Alternador</td>
+                            <td>En proceso</td>
+                            <td class="text-end">
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-pencil fs-3"></i>
+                                </a>
+                                <a href="#" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                    <i class="ki-outline ki-trash fs-3"></i>
+                                </a>
+                            </td>
+                        </tr>
+
+                        @*  @foreach (var contenido in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @contenido.IdMantenimiento
+                                </td>
+                                <td>
+                                    @contenido.IdDepositoNavigation.DepositoNombre
+                                </td>
+                                <td>
+                                    @contenido?.IdTallerNavigation?.NombreTaller
+                                </td>
+                                <td>
+                                    @contenido?.IdTiposervicioNavigation.Nombre
+                                </td>
+                                <td>
+                                    @contenido?.IdVehiculoNavigation.Marca + " " + @contenido?.IdVehiculoNavigation.Modelo
+                                </td>
+                                <td>
+                                    @contenido?.IdMecanicoNavigation?.Nombre
+                                </td>
+                                <td>
+                                    @contenido?.FechaEntrega
+                                </td>
+                                <td>
+                                    @contenido?.Refacciones
+                                </td>
+                                <td>
+                                    @contenido?.Estatus
+                                </td>
+                                <td class="text-end">
+                                    @if (permisosPagina!.Editar)
+                                    {
+                                        <a href="~/Mantenimiento/AgregarMantenimiento/@contenido?.IdMantenimiento" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                            <i class="ki-outline ki-pencil fs-3"></i>
+                                        </a>
+                                    }
+                                    @if (permisosPagina!.Eliminar)
+                                    {
+                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-mantenimiento-delete-item="@contenido?.IdMantenimiento" data-kt-mantenimiento-table-filter="delete_row">
+                                            <i class="ki-outline ki-trash fs-3"></i>
+                                        </a>
+                                    }
+                                </td>
+                            </tr>
+                        } *@
+                    </tbody>
+                </table>
+                <!--end::Table-->
+            </div>
+
+            <div class="card-body py-4 separador">
+                <table class="table align-middle fs-6 gy-3 tabla-ajustada" id="kt_table_mantenimiento">
+                    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                        <th class="min-w-125px">Kilometraje:</th>
+                        <td>100</td>
+                    </tr>
+                    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                        <th class="min-w-125px">Observaciones:</th>
+                        <td>Cambio de aceite</td>
+                    </tr>
+                </table>
+            </div>
+
+            <!--end::Card body-->
+        </div>
+        <!--end::Card-->
+    </div>
+    <!--end::Content container-->
+</div>
+<!--end::Content-->
+@section scripts {
+    <script src="~/js/logistica/mantenimiento/table.js" asp-append-version="true"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>
+    <script src="~/assets/js/custom/utilities/modals/users-search.js" asp-append-version="true"></script>
+}
