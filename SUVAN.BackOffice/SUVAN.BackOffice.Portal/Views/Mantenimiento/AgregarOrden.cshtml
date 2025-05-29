@@ -1,0 +1,192 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Logistica;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "Mantenimiento";
+}
+
+@* @{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Mecanico);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+    var isAgaregarText = Model.IdMecanico == 0 ? "Agregar" : "Editar";
+} *@
+
+
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+    <!--begin::Toolbar container-->
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <!--begin::Toolbar wrapper-->
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <!--begin::Page title-->
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <!--begin::Title-->
+                <a href="~/Mantenimiento/Index" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+                    <i class="ki-duotone ki-left fs-1 pe-5">
+                    </i>
+                    <span>@* @isAgaregarText *@ Orden Mantenimiento</span>
+                </a>
+                <!--end::Title-->
+
+            </div>
+            <!--end::Page title-->
+
+        </div>
+        <!--end::Toolbar wrapper-->
+    </div>
+    <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <!--begin::Content container-->
+    <div id="kt_app_content_container" class="app-container container-fluid">
+        <!--begin::Card-->
+        <div class="card">
+            <div class="card-body py-4">
+                <form class="form w-100" novalidate="novalidate" id="kt_mecanico_in_form" data-kt-redirect-url="/">
+                    @Html.AntiForgeryToken()
+                    <div class="row">
+                        <!-- Panel Izquierdo -->
+                        <div class="col-md-8">
+                            <div class="row mb-6">
+                                <div class="col-sm-6 mb-3">
+                                    <label class="required">Taller</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value=0>Selecciona un Taller</option>
+                                        <option value=1>22 - Taller Norte</option>
+                                        <option value=2>32 - Taller Express</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="required">Tipo</label>
+                                    <input class="form-control form-control-sm" placeholder="Tipo" />
+                                </div>
+
+                                <div class="col-sm-6 mb-3">
+                                    <label class="required">Mecánico</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value=0>Selecciona un Mecánico</option>
+                                        <option value=1>13 - Carlos Gómez</option>
+                                        <option value=2>16 - Pedro Martínez</option>
+                                    </select>
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="required">Vehículo</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value=0>Selecciona un Vehículo</option>
+                                        <option value=1>26 - Nissan Versa</option>
+                                        <option value=2>56 - Honda Civic</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-4 mb-3">
+                                    <label class="required">Marca</label>
+                                    <input class="form-control form-control-sm" placeholder="Marca" />
+                                </div>
+                                <div class="col-sm-4 mb-3">
+                                    <label class="required">Modelo</label>
+                                    <input class="form-control form-control-sm" placeholder="Modelo" />
+                                </div>
+                                <div class="col-sm-4 mb-3">
+                                    <label class="required">Placas</label>
+                                    <input class="form-control form-control-sm" placeholder="Placas" />
+                                </div>
+
+                                <div class="col-sm-6 mb-3">
+                                    <label class="required">Depósito Vehículo</label>
+                                    <input class="form-control form-control-sm" placeholder="Depósito Vehículo" />
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="required">Tipo de Servicio</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value=0>Selecciona un Tipo de Servicio</option>
+                                        <option value=1>Preventivo</option>
+                                        <option value=2>Correctivo</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-6 mb-3">
+                                    <label class="required">Preventivo</label>
+                                    <input class="form-control form-control-sm" placeholder="Preventivo" />
+                                </div>
+                                <div class="col-sm-6 mb-3">
+                                    <label class="required">Causa Mantenimiento</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value=0>Selecciona una Causa</option>
+                                        <option value=1>Preventivo</option>
+                                        <option value=2>Correctivo</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Panel Derecho -->
+                        <div class="col-md-4">
+                            <div class="row mb-6">
+                                <div class="col-sm-12 mb-3">
+                                    <label class="required">Tanque</label>
+                                    <select class="form-select form-select-sm">
+                                        <option value=0>Selecciona el tamaño de Tanque</option>
+                                        <option value=1>1/4</option>
+                                        <option value=2>1/8</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-12 mb-3">
+                                    <label class="required">Kms. Entrada</label>
+                                    <input class="form-control form-control-sm" placeholder="Kms. Entrada" />
+                                </div>
+
+                                <div class="col-sm-12 mb-3">
+                                    <label class="required">Fecha Programada</label>
+                                    <input type="date" class="form-control form-control-sm" />
+                                </div>
+
+                                <div class="col-sm-12 mb-3">
+                                    <label class="required">Fecha Captura</label>
+                                    <input type="date" class="form-control form-control-sm" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_mantenimiento">
+                        <thead>
+                            <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                <th class="min-w-125px">Reparación</th>
+                                <th class="min-w-125px">Cantidad</th>
+                                <th class="min-w-125px">Referencia</th>
+                                <th class="min-w-125px">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 fw-semibold">
+                        </tbody>
+                    </table>
+                    <div class="text-end mt-3">
+                        <button type="submit" id="kt_mecanico_in_submit" class="btn btn-primary btn-sm">
+                            <span class="indicator-label">Guardar</span>
+                            <span class="indicator-progress">
+                                Por favor espere...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card-->
+    </div>
+    <!--end::Content container-->
+</div>
+<!--end::Content-->
+@section scripts {
+    <script src="~/js/logistica/mecanico/add.js"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>
+}

@@ -1937,13 +1937,13 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<Marca>(entity =>
         {
-            entity.HasKey(e => e.CMarca).HasName("PRIMARY");
+            entity.HasKey(e => e.IdMarca).HasName("PRIMARY");
 
             entity.ToTable("marca");
 
-            entity.Property(e => e.CMarca)
+            entity.Property(e => e.IdMarca)
                 .ValueGeneratedNever()
-                .HasColumnName("c_marca");
+                .HasColumnName("id_marca");
             entity.Property(e => e.Descrip)
                 .HasMaxLength(20)
                 .IsFixedLength()
@@ -3967,10 +3967,38 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("zona");
 
+            entity.HasIndex(e => e.IdEmpresa, "fk_zona_empresa");
+
             entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Activo)
+                .HasColumnType("bit(1)")
+                .HasColumnName("activo");
+            entity.Property(e => e.Domicilio)
+                .HasMaxLength(80)
+                .HasColumnName("domicilio");
+            entity.Property(e => e.FechaApertura)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_apertura");
+            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
             entity.Property(e => e.NombreZona)
                 .HasMaxLength(255)
                 .HasColumnName("nombre_zona");
+            entity.Property(e => e.Responsable)
+                .HasMaxLength(60)
+                .HasColumnName("responsable");
+            entity.Property(e => e.Rfc)
+                .HasMaxLength(13)
+                .HasColumnName("rfc");
+            entity.Property(e => e.Telefono1)
+                .HasMaxLength(15)
+                .HasColumnName("telefono_1");
+            entity.Property(e => e.Telefono2)
+                .HasMaxLength(15)
+                .HasColumnName("telefono_2");
+
+            entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Zonas)
+                .HasForeignKey(d => d.IdEmpresa)
+                .HasConstraintName("fk_zona_empresa");
         });
 
         OnModelCreatingPartial(modelBuilder);

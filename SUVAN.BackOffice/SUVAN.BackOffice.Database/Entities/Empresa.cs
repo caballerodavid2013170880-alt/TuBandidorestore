@@ -42,4 +42,6 @@ public partial class Empresa
     public virtual ICollection<Vehiculo> Vehiculos { get; set; } = new List<Vehiculo>();
 
     public virtual ICollection<Viaje> Viajes { get; set; } = new List<Viaje>();
+
+    public virtual ICollection<Zona> Zonas { get; set; } = new List<Zona>();
 }
