@@ -93,6 +93,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
     Taller = 80,
     Mecanico = 91,
     TipoReparacion = 94,
-    Catalogos = 90
+    Catalogos = 90,
+    Marca=95,
     }
 }

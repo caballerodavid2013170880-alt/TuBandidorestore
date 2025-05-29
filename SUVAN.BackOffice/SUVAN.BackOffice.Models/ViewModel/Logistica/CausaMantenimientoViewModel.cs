@@ -33,5 +33,11 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
             public string IdNombreS => $"{IdTiposervicio} - {ServicioNombre}";
         }
+        public class MarcaViewModel
+        {
+            public int Id_Marca { get; set; }
+            public string descrip { get; set; }
+            = null!;
+        }
     }
 }
