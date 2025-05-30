@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Logistica;
 
 namespace SUVAN.BackOffice.Portal.Controllers
@@ -20,7 +21,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var zona = await zonaService.GetZona();
+            var zona = await zonaService.GetZona(User.GetEmpresaId());
             return View(zona);
         }
 
@@ -35,7 +36,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
-                var result = await zonaService.AgregarZona(model);
+                int IdEmpresa = User.GetEmpresaId();
+                var result = await zonaService.AgregarZona(model, IdEmpresa);
 
                 if (result)
                 {

@@ -14,7 +14,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// Obtiene el listado de las Zonas desde la base de datos.
         /// </summary>
         /// <returns>Lista de Zonas.</returns>
-        Task<List<Zona>> GetZona();
+        Task<List<Zona>> GetZona(int IdEmpresa);
 
         /// <summary>
         /// Obtiene el ViewModel de la zona específica.
@@ -29,7 +29,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="model">ViewModel con los datos de la zona.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        Task<bool> AgregarZona(ZonaViewModel model);
+        Task<bool> AgregarZona(ZonaViewModel model, int IdEmpresa);
 
         /// <summary>
         /// Elimina una zona en la base de datos.

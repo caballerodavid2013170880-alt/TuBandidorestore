@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
@@ -18,9 +19,10 @@ namespace SUVAN.BackOffice.Service.Logistica
             this.context = context;
         }
 
-        public async Task<List<Zona>> GetZona()
+        public async Task<List<Zona>> GetZona(int IdEmpresa)
         {
-            var zona = await context.Zonas.ToListAsync();
+
+            var zona = await context.Zonas.Include(z => z.IdEmpresaNavigation).Where(z => z.IdEmpresa == IdEmpresa).ToListAsync();
 
             return zona!;
         }
@@ -43,6 +45,13 @@ namespace SUVAN.BackOffice.Service.Logistica
                 {
                     ZonaId = zona.IdZona!,
                     ZonaNombre = zona.NombreZona!,
+                    Rfc = zona.Rfc!,
+                    Domicilio = zona.Domicilio!,
+                    Telefono1 = zona.Telefono1!,
+                    Telefono2 = zona.Telefono2!,
+                    Responsable = zona.Responsable!,
+                    FechaApertura = zona.FechaApertura!,
+                    Activo = zona.Activo!,
                 };
             }
 
@@ -55,7 +64,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="model">ViewModel con los datos de la zona.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> AgregarZona(ZonaViewModel model)
+        public async Task<bool> AgregarZona(ZonaViewModel model, int IdEmpresa)
         {
             Zona zona;
 
@@ -72,15 +81,44 @@ namespace SUVAN.BackOffice.Service.Logistica
                 zona = new Zona();
             }
 
-            // valida si un depósito existe con el mismo nombre
-            var zonaExistente = await context.Zonas.FirstOrDefaultAsync(x =>
-            x.NombreZona!.ToLower() == model.ZonaNombre!.ToLower()
-            && x.IdZona != model.ZonaId);
+            // Valida si el nombre de la zona esta duplicado en la misma empresa
+            var zonaExistenteNombre = await context.Zonas.FirstOrDefaultAsync(x =>
+                x.NombreZona!.Trim().ToLower() == model.ZonaNombre!.Trim().ToLower() &&
+                x.IdEmpresa == IdEmpresa &&
+                x.IdZona != model.ZonaId);
 
-            if (zonaExistente is not null)
+            if (zonaExistenteNombre is not null)
                 throw new Exception("Ya existe una Zona con el mismo nombre");
 
+
+            // Valida si el RFC esta duplicado en la misma empresa
+            var zonaExistenteRFC = await context.Zonas.FirstOrDefaultAsync(x =>
+                x.Rfc!.Trim().ToLower() == model.Rfc!.Trim().ToLower() &&
+                x.IdEmpresa == IdEmpresa &&
+                x.IdZona != model.ZonaId);
+
+            if (zonaExistenteRFC is not null)
+                throw new Exception("Ya existe una Zona con el mismo RFC");
+
+
+            // Valida si el RFC esta duplicado en otra empresa con diferente nombre
+            var zonaRFCOtraEmpresa = await context.Zonas.FirstOrDefaultAsync(x =>
+                x.Rfc!.Trim().ToLower() == model.Rfc!.Trim().ToLower() &&
+                x.IdEmpresa != IdEmpresa &&
+                x.NombreZona!.Trim().ToLower() != model.ZonaNombre!.Trim().ToLower());
+
+            if (zonaRFCOtraEmpresa is not null)
+                throw new Exception("Este RFC ya está registrado en otra empresa");
+
             zona.NombreZona = model.ZonaNombre;
+            zona.Rfc = model.Rfc;
+            zona.Domicilio = model.Domicilio;
+            zona.Telefono1 = model.Telefono1;
+            zona.Telefono2 = model.Telefono2;
+            zona.Responsable = model.Responsable;
+            zona.FechaApertura = model.FechaApertura;
+            zona.IdEmpresa = IdEmpresa;
+            zona.Activo = model.Activo;
 
             if (model.ZonaId > 0)
             {
@@ -93,7 +131,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                 context.Zonas.Add(zona);
                 await context.SaveChangesAsync();
 
-                await context.SaveChangesAsync();
             }
             return true;
         }
