@@ -51,29 +51,11 @@
             <div class="card-body py-4">
                 <form class="form w-100" novalidate="novalidate" id="kt_deposito_in_form" data-kt-redirect-url="/" asp-controller="DepositosDisponibles" asp-action="AgregarDeposito" method="post">
                     @Html.AntiForgeryToken()
-                    <input asp-for="ZonaJson" type="hidden" id="ZonaJson" />
                     <input asp-for="DepositoId" type="hidden" />
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-3">
-                                <label asp-for="ZonaId" class="col-form-label text-gray-600 required">Elige la Zona</label>
-                                <select asp-for="ZonaId" asp-items="new SelectList(Model.ZonasView, nameof(DepositosDisponiblesViewModel.ZonasViewModel.ZonaId), nameof(DepositosDisponiblesViewModel.ZonasViewModel.IdNombre), Model.ZonaId)" class="form-control">
-                                    <option value="">Selecciona una Zona</option>
-                                </select>
-                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                    <span asp-validation-for="ZonaId"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-3">
-                                <label asp-for="TallerId" class="col-form-label text-gray-600 required">Elige el Taller</label>
-                                <select asp-for="TallerId" asp-items="new SelectList(Model.TalleresView, nameof(DepositosDisponiblesViewModel.TalleresViewModel.IdTaller), nameof(DepositosDisponiblesViewModel.TalleresViewModel.TallerNombreId), Model.TallerId)" class="form-control">
-                                    <option value="">Selecciona un taller</option>
-                                </select>
-                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                    <span asp-validation-for="TallerId"></span>
-                                </div>
+                    <div class="fv-row mb-8">
+                        <div class="col-sm-12">
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                <div asp-validation-summary="All"></div>
                             </div>
                         </div>
                     </div>
@@ -85,6 +67,85 @@
                                 <span asp-validation-for="NombreDeposito" class="invalid-feedback"></span>
                             </div>
                         </div>
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="Dirección" class="col-form-label text-gray-600 required">Dirección</label>
+                                <input asp-for="Dirección" class="form-control bg-transparent" placeholder="Dirección" />
+                                <span asp-validation-for="Dirección" class="invalid-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="fv-row mb-3">
+                                <label asp-for="Ciudad" class="col-form-label text-gray-600 required">Ciudad</label>
+                                <input asp-for="Ciudad" class="form-control bg-transparent" placeholder="Ciudad" />
+                                <span asp-validation-for="Ciudad" class="invalid-feedback"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="fv-row mb-3">
+                                <label asp-for="Cp" class="col-form-label text-gray-600 required">Código Postal</label>
+                                <input asp-for="Cp" class="form-control bg-transparent" placeholder="Código Postal" />
+                                <span asp-validation-for="Cp" class="invalid-feedback"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="fv-row mb-3">
+                                <label asp-for="Teléfono" class="col-form-label text-gray-600 required">Teléfono</label>
+                                <input asp-for="Teléfono" class="form-control bg-transparent" placeholder="Teléfono" maxlength="10" />
+                                <span asp-validation-for="Teléfono" class="invalid-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="Rfc" class="col-form-label text-gray-600 required">Rfc</label>
+                                <input asp-for="Rfc" class="form-control bg-transparent" placeholder="Rfc" />
+                                <span asp-validation-for="Rfc" class="invalid-feedback"></span>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="Responsable" class="col-form-label text-gray-600 required">Responsable</label>
+                                <input asp-for="Responsable" class="form-control bg-transparent" placeholder="Responsable" />
+                                <span asp-validation-for="Responsable" class="invalid-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="ZonaId" class="col-form-label text-gray-600 required">Selecciona una Zona</label>
+                                <select asp-for="ZonaId" asp-items="new SelectList(Model.ZonasView, nameof(DepositosDisponiblesViewModel.ZonasViewModel.ZonaId), nameof(DepositosDisponiblesViewModel.ZonasViewModel.IdNombre), Model.ZonaId)" class="form-control">
+                                    <option value="">Selecciona una Zona</option>
+                                </select>
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="ZonaId"></span>
+                                </div>
+                            </div>
+                        </div>
+@*                         <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="TallerId" class="col-form-label text-gray-600 required">Elige el Taller</label>
+                                <select asp-for="TallerId" asp-items="new SelectList(Model.TalleresView, nameof(DepositosDisponiblesViewModel.TalleresViewModel.IdTaller), nameof(DepositosDisponiblesViewModel.TalleresViewModel.TallerNombreId), Model.TallerId)" class="form-control">
+                                    <option value="">Selecciona un taller</option>
+                                </select>
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="TallerId"></span>
+                                </div>
+                            </div>
+                        </div> *@
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="NombreCorto" class="col-form-label text-gray-600 required">Nombre Corto del Depósito</label>
+                                <input asp-for="NombreCorto" class="form-control bg-transparent" placeholder="Nombre Corto" />
+                                <span asp-validation-for="NombreCorto" class="invalid-feedback"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-sm-6">
                             <div class="form-check form-check-inline">
                                 <label asp-for="Activo" class="form-check-label">Activo</label>

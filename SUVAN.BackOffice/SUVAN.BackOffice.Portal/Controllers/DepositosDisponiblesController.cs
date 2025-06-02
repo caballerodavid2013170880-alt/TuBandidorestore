@@ -28,23 +28,31 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var depositos = await depositosDisponibles.GetDepositos();
+            var depositos = await depositosDisponibles.GetDepositos(User.GetEmpresaId());
             return View(depositos);
         }
         public async Task<IActionResult> AgregarDeposito(int id)
         {
             var agregarModel = await depositosDisponibles.GetDepositoViewModel(id);
-            agregarModel.TalleresView = depositosDisponibles.ObtenerTaller(agregarModel.ZonaId);
-            agregarModel.ZonaJson = JsonConvert.SerializeObject(agregarModel.ZonasView);
+            agregarModel.ZonasView = depositosDisponibles.ObtenerZona(User.GetEmpresaId());
             return View(agregarModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AgregarDeposito(DepositosDisponiblesViewModel model)
+        public async Task<IActionResult> AgregarDeposito(DepositosDisponiblesViewModel model, int IdEmpresa)
         {
             try
             {
-                var result = await depositosDisponibles.AgregarDeposito(model);
+                IdEmpresa = User.GetEmpresaId();
+
+                model.ZonasView = depositosDisponibles.ObtenerZona(IdEmpresa);
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var result = await depositosDisponibles.AgregarDeposito(model, IdEmpresa);
 
                 if (result)
                 {

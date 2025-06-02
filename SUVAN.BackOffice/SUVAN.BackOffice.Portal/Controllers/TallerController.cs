@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Logistica;
 
 namespace SUVAN.BackOffice.Portal.Controllers
@@ -27,17 +29,23 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
         public async Task<IActionResult> AgregarTaller(int id)
         {
-            var agregarModel = await taller.GetTallerViewModel(id);
-            agregarModel.ZonaView = taller.ObtenerZona();
+            var agregarModel = await taller.GetTallerViewModel(id, User.GetEmpresaId());
+            agregarModel.DepositoView = taller.ObtenerDeposito(agregarModel.ZonaIdzona);
+            agregarModel.ZonaJson = JsonConvert.SerializeObject(agregarModel.ZonaView);
             return View(agregarModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AgregarTaller(TallerViewModel model)
+        public async Task<IActionResult> AgregarTaller(TallerViewModel model, int id)
         {
             try
             {
-                model.ZonaView = taller.ObtenerZona();
+                model.DepositoView = taller.ObtenerDeposito(model.ZonaIdzona);
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
 
                 var result = await taller.AgregarTaller(model);
 

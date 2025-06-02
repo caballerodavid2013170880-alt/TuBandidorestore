@@ -69,9 +69,11 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_taller">
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                            <th class="min-w-125px">Número de Taller</th>
-                            <th class="min-w-125px">Zona</th>
                             <th class="min-w-125px">Nombre</th>
+                            <th class="min-w-125px">Zona</th>
+                            <th class="min-w-125px">Depósito</th>
+                            <th class="min-w-125px">Domicilio</th>
+                            <th class="min-w-125px">Teléfono</th>
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
                     </thead>
@@ -80,13 +82,19 @@
                         {
                             <tr>
                                 <td>
-                                    @contenido.IdTaller
+                                    @contenido.NombreTaller
                                 </td>
                                 <td>
                                     @contenido.ZonaIdzonaNavigation.NombreZona
                                 </td>
                                 <td>
-                                    @contenido.NombreTaller
+                                    @contenido.IdDepositoNavigation.DepositoNombre
+                                </td>
+                                <td>
+                                    @contenido.Domicilio
+                                </td>
+                                <td>
+                                    @contenido.Telefono
                                 </td>
                                 <td class="text-end">
                                      @if (permisosPagina!.Editar)

@@ -11,9 +11,29 @@ public partial class Depositosdisponible
 
     public string DepositoNombre { get; set; } = null!;
 
-    public int TallerId { get; set; }
-
     public bool Activo { get; set; }
+
+    public string Dirección { get; set; } = null!;
+
+    public string Ciudad { get; set; } = null!;
+
+    public string Responsable { get; set; } = null!;
+
+    public string Teléfono { get; set; } = null!;
+
+    public string? LocFor { get; set; }
+
+    public string? RPerson { get; set; }
+
+    public int IdEmpresa { get; set; }
+
+    public string NombreCorto { get; set; } = null!;
+
+    public string Rfc { get; set; } = null!;
+
+    public string Cp { get; set; } = null!;
+
+    public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
 
     public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
 
@@ -21,7 +41,7 @@ public partial class Depositosdisponible
 
     public virtual ICollection<Siniestro> Siniestros { get; set; } = new List<Siniestro>();
 
-    public virtual Taller Taller { get; set; } = null!;
+    public virtual ICollection<Taller> Tallers { get; set; } = new List<Taller>();
 
     public virtual Zona Zona { get; set; } = null!;
 }

@@ -1124,21 +1124,58 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("depositosdisponibles");
 
-            entity.HasIndex(e => e.TallerId, "fk_deposito_taller");
-
             entity.HasIndex(e => e.ZonaId, "fk_deposito_zona");
+
+            entity.HasIndex(e => e.IdEmpresa, "fk_depositosdisponibles_empresa");
 
             entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
             entity.Property(e => e.Activo).HasColumnName("activo");
+            entity.Property(e => e.Ciudad)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("ciudad");
+            entity.Property(e => e.Cp)
+                .HasMaxLength(5)
+                .IsFixedLength()
+                .HasColumnName("cp");
             entity.Property(e => e.DepositoNombre)
                 .HasMaxLength(100)
                 .HasColumnName("deposito_nombre");
-            entity.Property(e => e.TallerId).HasColumnName("taller_id");
+            entity.Property(e => e.Dirección)
+                .HasMaxLength(70)
+                .IsFixedLength()
+                .HasColumnName("dirección");
+            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
+            entity.Property(e => e.LocFor)
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasColumnName("loc_for");
+            entity.Property(e => e.NombreCorto)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("nombre_corto");
+            entity.Property(e => e.RPerson)
+                .HasMaxLength(100)
+                .IsFixedLength()
+                .HasColumnName("r_person");
+            entity.Property(e => e.Responsable)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("responsable");
+            entity.Property(e => e.Rfc)
+                .HasMaxLength(15)
+                .IsFixedLength()
+                .HasColumnName("rfc");
+            entity.Property(e => e.Teléfono)
+                .HasMaxLength(30)
+                .IsFixedLength()
+                .HasColumnName("teléfono");
             entity.Property(e => e.ZonaId).HasColumnName("zona_id");
 
-            entity.HasOne(d => d.Taller).WithMany(p => p.Depositosdisponibles)
-                .HasForeignKey(d => d.TallerId)
-                .HasConstraintName("fk_deposito_taller");
+            entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Depositosdisponibles)
+                .HasForeignKey(d => d.IdEmpresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_depositosdisponibles_empresa");
 
             entity.HasOne(d => d.Zona).WithMany(p => p.Depositosdisponibles)
                 .HasForeignKey(d => d.ZonaId)
@@ -2817,13 +2854,49 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("taller");
 
+            entity.HasIndex(e => e.IdDeposito, "fk_taller_deposito");
+
             entity.HasIndex(e => e.ZonaIdzona, "fk_taller_zona");
 
             entity.Property(e => e.IdTaller).HasColumnName("id_taller");
+            entity.Property(e => e.Central)
+                .HasColumnType("bit(1)")
+                .HasColumnName("central");
+            entity.Property(e => e.Contacto)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("contacto");
+            entity.Property(e => e.Domicilio)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("domicilio");
+            entity.Property(e => e.Email)
+                .HasMaxLength(100)
+                .IsFixedLength()
+                .HasColumnName("email");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.Iva).HasColumnName("iva");
             entity.Property(e => e.NombreTaller)
                 .HasMaxLength(255)
                 .HasColumnName("nombre_taller");
+            entity.Property(e => e.Refaccion)
+                .HasColumnType("bit(1)")
+                .HasColumnName("refaccion");
+            entity.Property(e => e.TTaller)
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasColumnName("t_taller");
+            entity.Property(e => e.Telefono)
+                .HasMaxLength(15)
+                .IsFixedLength()
+                .HasColumnName("telefono");
+            entity.Property(e => e.ValorUnitario).HasColumnName("valor_unitario");
             entity.Property(e => e.ZonaIdzona).HasColumnName("zona_idzona");
+
+            entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.Tallers)
+                .HasForeignKey(d => d.IdDeposito)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_taller_deposito");
 
             entity.HasOne(d => d.ZonaIdzonaNavigation).WithMany(p => p.Tallers)
                 .HasForeignKey(d => d.ZonaIdzona)

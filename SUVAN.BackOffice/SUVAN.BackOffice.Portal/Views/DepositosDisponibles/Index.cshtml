@@ -69,9 +69,12 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_deposito">
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                            <th class="min-w-125px">Nombre</th>
                             <th class="min-w-125px">Zona</th>
-                            <th class="min-w-125px">Deposito</th>
-                            <th class="min-w-125px">Taller</th>
+                            <th class="min-w-125px">Ciudad</th>
+                            <th class="min-w-125px">Dirección</th>
+                            <th class="min-w-125px">Responsable</th>
+                            <th class="min-w-125px">Empresa</th>
                             <th class="min-w-125px">Activo</th>
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
@@ -82,14 +85,22 @@
                         {
                             <tr>
                                 <td>
-                                    <input type="hidden" data-kt-deposito-table-filter="row_id" value="@contenido.IdDeposito" />
-                                    @contenido.Zona.NombreZona
-                                </td>
-                                <td>
                                     @contenido.DepositoNombre
                                 </td>
                                 <td>
-                                    @contenido.Taller.NombreTaller
+                                    @contenido.Zona.NombreZona
+                                </td>
+                                <td>
+                                    @contenido.Ciudad
+                                </td>
+                                <td>
+                                    @contenido.Dirección
+                                </td>
+                                <td>
+                                    @contenido.Responsable
+                                </td>
+                                <td>
+                                    @contenido.IdEmpresaNavigation.Nombrecorto
                                 </td>
                                 <td>
                                     @{

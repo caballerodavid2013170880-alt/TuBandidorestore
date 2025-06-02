@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.DepositosDisponiblesViewModel;
 
 namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
@@ -30,6 +31,9 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public int IdEmpresa { get; set; }
 
         public ulong Activo { get; set; }
+
+        public List<DepositosViewModel> Depositos { get; set; } = new();
+
         public bool ActivoBool
         {
             get => Activo != 0;
@@ -42,6 +46,15 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public int EmpresaId { get; set; }
             public string? NombreCorto { get; set; }
             public string IdNombre => $"{EmpresaId} - {NombreCorto}";
+        }
+
+        public class DepositosViewModel
+        {
+            public int DepositoId { get; set; }
+
+            public string NombreDeposito { get; set; } = null!;
+
+            public string DepositoNombreId => $"{DepositoId} - {NombreDeposito}";
         }
     }
 }

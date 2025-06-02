@@ -27,6 +27,8 @@ public partial class Empresa
 
     public virtual ICollection<Datosfacturacionemisor> Datosfacturacionemisors { get; set; } = new List<Datosfacturacionemisor>();
 
+    public virtual ICollection<Depositosdisponible> Depositosdisponibles { get; set; } = new List<Depositosdisponible>();
+
     public virtual Regimenfiscalreceptor? IdregimenfiscalNavigation { get; set; }
 
     public virtual ICollection<Politicascompensacion> Politicascompensacions { get; set; } = new List<Politicascompensacion>();

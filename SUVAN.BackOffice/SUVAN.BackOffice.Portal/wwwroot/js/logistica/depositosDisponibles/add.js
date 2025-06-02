@@ -7,13 +7,6 @@ var KTDeposito = function () {
     var submitButton;
     var validator;
 
-    const tallerSelect = document.getElementById('TallerId');
-    const zonaSelect = document.getElementById('ZonaId');
-    const zonaJsonInput = document.getElementById('ZonaJson');
-
-    let zonaConfiguration = {};
-    let tallerConfiguration = {};
-
     // Handle form
     var handleValidation = function (e) {
         // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
@@ -28,30 +21,105 @@ var KTDeposito = function () {
                             },
                             stringLength: {
                                 min: 7,
-                                max: 20,
+                                max: 100,
 
-                                message: 'deben tener entre 7 y 20 caracteres',
+                                message: 'deben tener entre 7 y 100 caracteres',
                             },
+                        }
+                    },
+                    'Dirección': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Dirección requerida'
+                            },
+                            stringLength: {
+                                min: 7,
+                                max: 70,
+
+                                message: 'deben tener entre 7 y 70 caracteres',
+                            },
+                        }
+                    },
+                    'Ciudad': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Ciudad requerida'
+                            },
+                            stringLength: {
+                                min: 7,
+                                max: 50,
+
+                                message: 'deben tener entre 7 y 50 caracteres',
+                            },
+                        }
+                    },
+                    'Cp': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Código Postal requerido'
+                            },
+                            regexp: {
+                                regexp: /^\d{4,5}$/,
+                                message: 'El Código Postal no es válido',
+                            }
+                        }
+                    },
+                    'Teléfono': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Número telefónico requerido'
+                            },
+                            regexp: {
+                                regexp: /^[0-9]{10}$/,
+                                message: 'El número debe tener 10 dígitos'
+                            }
                         }
                     },
                     'ZonaId': {
                         validators: {
                             notEmpty: {
-                                message: 'Debes de seleccionar una Zona',
+                                message: 'Zona requerida',
                                 callback: function (value, validator, $field) {
                                     return value !== "";
                                 }
                             }
                         }
                     },
-                    'TallerId': {
+                    'Rfc': {
                         validators: {
                             notEmpty: {
-                                message: 'Debes de seleccionar un Taller',
-                                callback: function (value, validator, $field) {
-                                    return value !== "";
-                                }
+                                message: 'RFC requerido'
+                            },
+                            regexp: {
+                                regexp: /^([A-Z&Ññ]{3,4})(\d{6})([A-V1-9])([A-Z\d]{1,4})$/,
+                                message: 'El RFC no es válido ',
                             }
+                        }
+                    },
+                    'NombreCorto': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Nombre corto requerido'
+                            },
+                            stringLength: {
+                                min: 4,
+                                max: 8,
+
+                                message: 'deben tener entre 4 y 8 caracteres',
+                            },
+                        }
+                    },
+                    'Responsable': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Nombre corto requerido'
+                            },
+                            stringLength: {
+                                min: 7,
+                                max: 50,
+
+                                message: 'deben tener entre 7 y 50 caracteres',
+                            },
                         }
                     },
                 },
@@ -66,48 +134,6 @@ var KTDeposito = function () {
             }
         );
     }
-
-    const initData = () => {
-        try {
-            zonaConfiguration = JSON.parse(zonaJsonInput.value);
-        } catch (e) {
-        }
-    };
-
-    const clearSelect = (select) => {
-        while (select.options.length > 0) {
-            select.remove(0);
-        }
-    };
-
-    const initZonaAndTaller = () => {
-        zonaSelect.addEventListener('change', function (event) {
-            const zonaId = parseInt(event.target.value);
-            const zona = zonaConfiguration.find(z => z.ZonaId === zonaId);
-
-            clearSelect(tallerSelect);
-
-            const optionSeleccione = document.createElement('option');
-            optionSeleccione.value = "";
-            optionSeleccione.textContent = "Selecciona un taller";
-            tallerSelect.appendChild(optionSeleccione);
-
-            tallerConfiguration = zona.Talleres;
-
-            zona.Talleres.forEach(t => {
-                const option = document.createElement('option');
-                option.value = t.IdTaller;
-                option.textContent = t.TallerNombreId;
-                tallerSelect.appendChild(option);
-            });
-        });
-
-        tallerSelect.addEventListener('change', function (event) {
-            const tallerId = parseInt(event.target.value);
-            const taller = tallerConfiguration.find(t => t.IdTaller === tallerId);
-            console.log("Taller seleccionado:", taller);
-        });
-    };
 
     var handleSubmitValidation = function (e) {
         // Handle form submit
@@ -128,7 +154,6 @@ var KTDeposito = function () {
     }
 
     const initControls = () => {
-        initZonaAndTaller();
         handleSubmitValidation();
     };
 
@@ -138,8 +163,11 @@ var KTDeposito = function () {
             form = document.querySelector('#kt_deposito_in_form');
             submitButton = document.querySelector('#kt_deposito_in_submit');
 
+            document.querySelector("#Teléfono").addEventListener("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
             handleValidation();
-            initData();
             initControls();
         }
     };

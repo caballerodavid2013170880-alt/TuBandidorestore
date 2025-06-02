@@ -16,15 +16,33 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public string NombreDeposito { get; set; } = null!;
 
-        public int TallerId { get; set; }
-
         public bool Activo { get; set; } = true;
 
         public string ZonaJson { get; set; } = string.Empty;
 
+        public string Dirección { get; set; } = null!;
+
+        public string Ciudad { get; set; } = null!;
+
+        public string Responsable { get; set; } = null!;
+
+        public string Teléfono { get; set; } = null!;
+
+        public string? LocFor { get; set; }
+
+        public string? RPerson { get; set; }
+
+        public int IdEmpresa { get; set; }
+
+        public string NombreCorto { get; set; } = null!;
+
+        public string Rfc { get; set; } = null!;
+
+        public string Cp { get; set; } = null!;
+
         public List<ZonasViewModel> ZonasView { get; set; } = new();
 
-        public List<TalleresViewModel> TalleresView { get; set; } = new();
+        public List<EmpresaViewModel> EmpresaView { get; set; } = new();
 
         public string DepsoitoIdNombre => $"{DepositoId} - {NombreDeposito}";
 
@@ -33,17 +51,16 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public int ZonaId { get; set; }
             public string ZonaNombre { get; set; } = null!;
             public string IdNombre => $"{ZonaId} - {ZonaNombre}";
-            public List<TalleresViewModel> Talleres { get; set; } = new();
 
         }
 
-        public class TalleresViewModel
+        public class EmpresaViewModel
         {
-            public int IdTaller { get; set; }
+            public int IdEmpresa { get; set; }
 
-            public string NombreTaller { get; set; } = null!;
+            public string NombreCorto{ get; set; } = null!;
 
-            public string TallerNombreId => $"{IdTaller} - {NombreTaller}";
+            public string TallerNombreId => $"{IdEmpresa} - {NombreCorto}";
         }
 
     }

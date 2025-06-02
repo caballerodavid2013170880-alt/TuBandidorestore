@@ -57,7 +57,7 @@ var KTTallerList = function () {
                 const parent = e.target.closest('tr');
 
                 // Get user name
-                const contenidoName = parent.querySelectorAll('td')[2].innerText;
+                const contenidoName = parent.querySelectorAll('td')[0].innerText;
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({

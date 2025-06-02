@@ -18,13 +18,13 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="model">ViewModel con los datos del depósito.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        Task<bool> AgregarDeposito(DepositosDisponiblesViewModel model);
+        Task<bool> AgregarDeposito(DepositosDisponiblesViewModel model, int IdEmpresa);
 
         /// <summary>
         /// Obtiene el listado de Depositos desde la base de datos.
         /// </summary>
         /// <returns>Lista de Depositos.</returns>
-        Task<List<Depositosdisponible>> GetDepositos();
+        Task<List<Depositosdisponible>> GetDepositos(int IdEmpresa);
 
         /// <summary>
         /// Obtiene el ViewModel del depósito específico.
@@ -49,6 +49,6 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="zonaId">Identificador del Taller.</param>
         /// <returns>ViewModel para el Taller especifico.</returns>
 
-        List<DepositosDisponiblesViewModel.TalleresViewModel> ObtenerTaller(int zonaId);
+        List<DepositosDisponiblesViewModel.ZonasViewModel> ObtenerZona(int IdEmpresa);
     }
 }

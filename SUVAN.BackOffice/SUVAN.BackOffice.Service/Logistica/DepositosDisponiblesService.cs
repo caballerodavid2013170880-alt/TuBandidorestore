@@ -23,9 +23,9 @@ namespace SUVAN.BackOffice.Service.Logistica
             this.context = context;
         }
 
-        public async Task<List<Depositosdisponible>> GetDepositos()
+        public async Task<List<Depositosdisponible>> GetDepositos(int IdEmpresa)
         {
-            var depositos = await context.Depositosdisponibles.Include(d => d.Zona).Include(d => d.Taller).ToListAsync();
+            var depositos = await context.Depositosdisponibles.Where(e => e.IdEmpresa == IdEmpresa).Include(em => em.IdEmpresaNavigation).Include(d => d.Zona).ToListAsync();
 
             return depositos!;
         }
@@ -47,39 +47,30 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public async Task<DepositosDisponiblesViewModel> GetDeposito(int id)
         {
-            var deposito = await context.Depositosdisponibles
-                .Where(x => x.IdDeposito == id)
-                .Select(d => new DepositosDisponiblesViewModel
-                {
-                    DepositoId = d.IdDeposito,
-                    NombreDeposito = d.DepositoNombre!,
-                    ZonaId = d.ZonaId,
-                    TallerId = d.TallerId,
-                    Activo = d.Activo == true
-                })
-                .FirstOrDefaultAsync();
 
-            var zonas = await context.Zonas
-                .Select(z => new ZonasViewModel
-                {
-                    ZonaId = z.IdZona,
-                    ZonaNombre = z.NombreZona,
-                    Talleres = context.Tallers
-                        .Where(t => t.ZonaIdzona == z.IdZona)
-                        .Select(t => new TalleresViewModel
-                        {
-                            IdTaller = t.IdTaller,
-                            NombreTaller = t.NombreTaller
-                        }).ToList()
-                }).ToListAsync();
+            DepositosDisponiblesViewModel vRet = new DepositosDisponiblesViewModel();
+            var deposito = await context.Depositosdisponibles.FirstOrDefaultAsync(x => x.IdDeposito == id);
 
-            if (deposito != null)
+            if (deposito == null)
+                return vRet;
+            else
             {
-                deposito.ZonasView = zonas;
-                return deposito;
+                vRet = new DepositosDisponiblesViewModel
+                {
+                    DepositoId = deposito.IdDeposito!,
+                    NombreDeposito = deposito.DepositoNombre!,
+                    ZonaId = deposito.ZonaId!,
+                    Activo = deposito.Activo!,
+                    Dirección = deposito.Dirección!,
+                    Ciudad = deposito.Ciudad!,
+                    Responsable = deposito.Responsable!,
+                    Teléfono = deposito.Teléfono!,
+                    NombreCorto = deposito.NombreCorto!,
+                    Rfc = deposito.Rfc!,
+                    Cp = deposito.Cp!,
+                };
             }
-
-            return new DepositosDisponiblesViewModel { ZonasView = zonas };
+            return vRet;
         }
 
         /// <summary>
@@ -88,7 +79,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="model">ViewModel con los datos del depósito.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> AgregarDeposito(DepositosDisponiblesViewModel model)
+        public async Task<bool> AgregarDeposito(DepositosDisponiblesViewModel model, int IdEmpresa)
         {
             Depositosdisponible deposito;
 
@@ -111,12 +102,32 @@ namespace SUVAN.BackOffice.Service.Logistica
             && x.IdDeposito != model.DepositoId);
 
             if (depositoExistente is not null)
-                throw new Exception("Ya existe un depósito con el mismo nombre");
+                throw new Exception("Ya existe un Depósito con el mismo nombre");
 
-            deposito.ZonaId = model.ZonaId;
-            deposito.DepositoNombre = model.NombreDeposito;
-            deposito.TallerId = model.TallerId;
+            // Valida si el RFC esta duplicado en la misma empresa
+            var zonaExistenteRFC = await context.Depositosdisponibles.FirstOrDefaultAsync(x =>
+                x.Rfc!.Trim().ToLower() == model.Rfc!.Trim().ToLower() &&
+                x.IdEmpresa == IdEmpresa &&
+                x.IdDeposito != model.DepositoId);
+
+            if (zonaExistenteRFC is not null)
+                throw new Exception("Ya existe un Depósito con el mismo RFC");
+
+            deposito.IdDeposito = model.DepositoId!;
+            deposito.DepositoNombre = model.NombreDeposito!;
+            deposito.ZonaId = model.ZonaId!;
             deposito.Activo = model.Activo ? true : false;
+            deposito.Dirección = model.Dirección!;
+            deposito.Ciudad = model.Ciudad!;
+            deposito.Responsable = model.Responsable!;
+            deposito.Teléfono = model.Teléfono!;
+            deposito.NombreCorto = model.NombreCorto!;
+            deposito.IdEmpresa = IdEmpresa;
+            deposito.LocFor = model.LocFor;
+            deposito.RPerson = model.RPerson;
+            deposito.Rfc = model.Rfc!;
+            deposito.Cp = model.Cp!;
+
 
             if (model.DepositoId > 0)
             {
@@ -164,22 +175,22 @@ namespace SUVAN.BackOffice.Service.Logistica
 
 
         /// <summary>
-        /// Obtiene el ViewModel del Taller
+        /// Obtiene el ViewModel de la Zona
         /// </summary>
         /// <param name="zonaId">Identificador del Taller.</param>
         /// <returns>ViewModel para el Taller especifico.</returns>
 
-        public List<DepositosDisponiblesViewModel.TalleresViewModel> ObtenerTaller(int zonaId)
+        public List<DepositosDisponiblesViewModel.ZonasViewModel> ObtenerZona(int IdEmpresa)
         {
-            var talleres = context.Tallers
-                .Where(t => t.ZonaIdzona == zonaId)
-                .Select(t => new DepositosDisponiblesViewModel.TalleresViewModel
-                {
-                    IdTaller = t.IdTaller,
-                    NombreTaller = t.NombreTaller
-                }).ToList();
+            var resul = (from o in context.Zonas
+                         where o.IdEmpresa == IdEmpresa
+                         select new DepositosDisponiblesViewModel.ZonasViewModel()
+                         {
+                             ZonaId = o.IdZona,
+                             ZonaNombre = o.NombreZona
+                         }).ToList();
 
-            return talleres;
+            return resul;
         }
 
     }

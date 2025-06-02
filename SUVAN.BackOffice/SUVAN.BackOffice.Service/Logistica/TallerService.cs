@@ -1,11 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FacturacionPegaso;
+using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Utilities.Tools;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.ZonaViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -20,7 +24,7 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public async Task<List<Taller>> GetTaller()
         {
-            var talleres = await context.Tallers.Include(t => t.ZonaIdzonaNavigation).ToListAsync();
+            var talleres = await context.Tallers.Include(t => t.ZonaIdzonaNavigation).Include(t => t.IdDepositoNavigation).ToListAsync();
 
             return talleres;
         }
@@ -30,24 +34,58 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// </summary>
         /// <param name="id">Identificador del taller.</param>
         /// <returns>ViewModel para el taller especifico.</returns>
-        public async Task<TallerViewModel> GetTallerViewModel(int id)
+        public async Task<TallerViewModel> GetTallerViewModel(int id, int IdEmpresa)
         {
-            TallerViewModel vRet = new TallerViewModel();
-            var taller = await context.Tallers.FirstOrDefaultAsync(x => x.IdTaller == id);
 
-            if (taller == null)
-                return vRet;
-            else
-            {
-                vRet = new TallerViewModel
+            var taller = await context.Tallers
+                .Where(x => x.IdTaller == id)
+                .Select(d => new TallerViewModel
                 {
-                    IdTaller = taller.IdTaller!,
-                    NombreTaller = taller.NombreTaller!,
-                    ZonaIdzona = taller.ZonaIdzona!,
-                };
+                    IdTaller = d.IdTaller,
+                    NombreTaller = d.NombreTaller!,
+                    Domicilio = d.Domicilio,
+                    Contacto = d.Contacto,
+                    Telefono = d.Telefono,
+                    Email = d.Email,
+                    ZonaIdzona = d.ZonaIdzona,
+                    IdDeposito = d.IdDeposito,
+                })
+                .FirstOrDefaultAsync();
+
+            //var zonas = await context.Zonas
+            //    .Select(z => new TallerViewModel.ZonasViewModel
+            //    {
+            //        ZonaId = z.IdZona,
+            //        ZonaNombre = z.NombreZona,
+            //        Depositos = context.Depositosdisponibles
+            //            .Where(t => t.ZonaId == z.IdZona)
+            //            .Select(t => new TallerViewModel.DepositosViewModel
+            //            {
+            //                DepositoId = t.IdDeposito,
+            //                NombreDeposito = t.DepositoNombre
+            //            }).ToList()
+            //    }).ToListAsync();
+
+            var zonas = await (from z in context.Zonas where z.IdEmpresa == IdEmpresa
+                             select new TallerViewModel.ZonasViewModel() {
+                                 ZonaId = z.IdZona,
+                                 ZonaNombre = z.NombreZona,
+                                 Depositos = context.Depositosdisponibles
+                                 .Where(d => d.ZonaId == z.IdZona)
+                                 .Select(d => new TallerViewModel.DepositosViewModel
+                                 {
+                                    DepositoId = d.IdDeposito,
+                                    NombreDeposito = d.DepositoNombre
+                                 }).ToList()
+                             }).ToListAsync();
+
+            if (taller != null)
+            {
+                taller.ZonaView = zonas;
+                return taller;
             }
 
-            return vRet;
+            return new TallerViewModel { ZonaView = zonas };
         }
 
         /// <summary>
@@ -83,7 +121,12 @@ namespace SUVAN.BackOffice.Service.Logistica
 
             taller.IdTaller = model.IdTaller;
             taller.NombreTaller = model.NombreTaller;
+            taller.Domicilio = model.Domicilio;
+            taller.Contacto = model.Contacto;
+            taller.Telefono = model.Telefono;
+            taller.Email = model.Email;
             taller.ZonaIdzona = model.ZonaIdzona;
+            taller.IdDeposito = model.IdDeposito;
 
             if (model.IdTaller > 0)
             {
@@ -131,15 +174,17 @@ namespace SUVAN.BackOffice.Service.Logistica
             return true;
         }
 
-        public List<ZonaViewModel> ObtenerZona()
+        public List<TallerViewModel.DepositosViewModel> ObtenerDeposito(int zonaId)
         {
-            var resul = (from o in context.Zonas
-                         select new ZonaViewModel()
-                         {
-                             ZonaId = o.IdZona,
-                             ZonaNombre = o.NombreZona,
-                         }).ToList();
-            return resul;
+            var deposito = context.Depositosdisponibles
+                .Where(t => t.ZonaId == zonaId)
+                .Select(t => new TallerViewModel.DepositosViewModel
+                {
+                    DepositoId = t.IdDeposito,
+                    NombreDeposito = t.DepositoNombre
+                }).ToList();
+
+            return deposito;
         }
     }
 }

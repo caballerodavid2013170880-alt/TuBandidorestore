@@ -21,7 +21,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// </summary>
         /// <param name="id">Identificador del taller.</param>
         /// <returns>ViewModel para el taller especifico.</returns>
-        Task<TallerViewModel> GetTallerViewModel(int id);
+        Task<TallerViewModel> GetTallerViewModel(int id, int IdEmpresa);
 
         /// <summary>
         /// Agrega o actualiza un taller en la base de datos.
@@ -31,7 +31,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <exception cref="Exception"></exception>
         Task<bool> AgregarTaller(TallerViewModel model);
 
-        List<ZonaViewModel> ObtenerZona();
+        List<TallerViewModel.DepositosViewModel> ObtenerDeposito(int zonaId);
 
         /// <summary>
         /// Elimina un taller en la base de datos.
