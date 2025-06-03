@@ -1,44 +1,53 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.AppSettingsModels;
 using SUVAN.BackOffice.Models.Auth.Token;
 using SUVAN.BackOffice.Service.MensajeriaService;
-using System.Configuration;
-using System.Net;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Text;
+using SUVAN.BackOffice.Service.Logistica;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace SUVAN.BackOffice.API
 {
     public class Startup
     {
         public IConfiguration Configuration { get; }
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
+
         public void ConfigureServices(IServiceCollection services)
         {
             var jwt = Configuration.GetSection("JWTSettings").Get<JWTSettings>();
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+            // ✅ Registro de configuración de servicios
             services.Configure<MailSettingsOptions>(Configuration.GetSection("MailSettings"));
             services.Configure<UnlimitPaySettingsOptions>(Configuration.GetSection("UnlimitPaySettings"));
             services.Configure<PayPalSettingsOptions>(Configuration.GetSection("PayPalSettingsOptions"));
             services.Configure<GlobalConfigsOptions>(Configuration.GetSection("GlobalConfigs"));
 
-            services.AddAuthentication(opttions =>
+            // ✅ Registro correcto de IMarcaService y verificación de inicialización
+            services.AddScoped<IMarcaService, MarcaService>();
+            Console.WriteLine("IMarcaService registrado correctamente.");
+
+            // ✅ Configuración de autenticación JWT
+            services.AddAuthentication(options =>
             {
-                opttions.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                opttions.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                opttions.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(o =>
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(o =>
             {
                 o.TokenValidationParameters = new TokenValidationParameters()
                 {
@@ -49,27 +58,31 @@ namespace SUVAN.BackOffice.API
                     ValidateAudience = jwt.ValidateAudience,
                     ValidateLifetime = jwt.ValidateLifetime,
                     ValidateIssuerSigningKey = jwt.ValidateIssuerSigningKey
-
                 };
                 o.MapInboundClaims = false;
             });
+
             services.AddAuthorization();
-            services.AddDbContext<SuvanDbContext>(options => options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+            services.AddDbContext<SuvanDbContext>(options =>
+                options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
             services.AddHttpContextAccessor();
-            services.AddControllers(options =>
-            {
-                options.GeneralRoutePrefix("Api/"); //Colocar el prefix de la aplicacion
-            });
-            services.AddSignalR();
-            services.AddOptions();
-            services.AddEndpointsApiExplorer();
+            services.AddControllers();
+
+            // ✅ Configuración de CORS mejorada
             services.AddCors(options =>
             {
-                options.AddPolicy("CORSPolicy", builder => builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().SetIsOriginAllowed((hosts) => true));
+                options.AddPolicy("CORSPolicy", builder =>
+                    builder.AllowAnyMethod()
+                        .AllowAnyHeader()
+                        .AllowCredentials()
+                        .SetIsOriginAllowed((hosts) => true));
             });
+
+            // ✅ Configuración de Swagger mejorada
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo() { Title = "SUVAN BackOffice API ", Version = "V1" });
+                c.SwaggerDoc("v1", new OpenApiInfo() { Title = "SUVAN BackOffice API", Version = "V1" });
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                 {
                     Description = @"JWT Authorization header using the bearer scheme",
@@ -79,7 +92,7 @@ namespace SUVAN.BackOffice.API
                     Scheme = "Bearer"
                 });
                 c.AddSecurityRequirement(new OpenApiSecurityRequirement()
-                      {
+                {
                     {
                         new OpenApiSecurityScheme
                         {
@@ -91,35 +104,43 @@ namespace SUVAN.BackOffice.API
                             Scheme="oauth2",
                             Name="Bearer",
                             In=ParameterLocation.Header
-
                         },
                         new List<string>()
                     }
-
-                      });
+                });
             });
-            // inyectamos los servicios
-            services.AddCatalogServices();
+
+            // ✅ Inicialización de servicios adicionales
+            services.AddSignalR();
+            services.AddOptions();
+            services.AddEndpointsApiExplorer();
         }
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+
             app.UseDefaultFiles();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors("CORSPolicy");
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers().RequireAuthorization();
                 endpoints.MapHub<HubSuVanService>("/Hub/Mensajeria");
             });
+
+            // ✅ Activación de Swagger
             app.UseSwagger();
             app.UseSwaggerUI();
-        }
 
+            // ✅ Mensaje de inicialización para depuración
+            logger.LogInformation("Aplicación inicializada correctamente.");
+        }
     }
 }

@@ -11,11 +11,14 @@ using SUVAN.BackOffice.Service.Dashboard;
 using SUVAN.BackOffice.Service.MensajeriaService;
 using SUVAN.BackOffice.Service.Pago;
 using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Portal.Controllers;
 
 namespace SUVAN.BackOffice.Portal
 {
     public static class ServiceConfiguration
     {
+        public static object Services { get; private set; }
+
         /// <summary>
         /// Metodo de extension para inyectar dependencias de los servicios
         /// </summary>
@@ -56,6 +59,8 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<ITipoServicioService, TipoServicioService>();
             services.AddTransient<IMecanicoService, MecanicoService>();
             services.AddTransient<ITipoReparacionService, TipoReparacionService>();
+            services.AddTransient<IMarcaService, MarcaService>();
+
         }
 
         /// <summary>
