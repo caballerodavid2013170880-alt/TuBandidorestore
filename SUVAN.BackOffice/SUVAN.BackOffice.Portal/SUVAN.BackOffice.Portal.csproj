@@ -24,7 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Views\Marca\AgregarMarca.cshtml.cshtml" />
+    <None Include="Views\Marca\AgregarMarca.cshtml" />
     <Content Include="Views\Marca\Index.cshtml" />
     <None Include="Views\Seguridad\VerificarOlvidoAppCond.cshtml" />
     <None Include="wwwroot\js\mensajeriaSignal\NotificacionesMsgAdmin.js" />
