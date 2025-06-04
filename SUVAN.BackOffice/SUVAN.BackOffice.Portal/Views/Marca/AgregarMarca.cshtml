@@ -7,10 +7,10 @@
     ViewData["Title"] = "Marca";
 }
 
-@model CausaMantenimientoViewModel.MarcaViewModel
+@model SUVAN.BackOffice.Database.Entities.Marca
 
 @{
-    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Marcas);
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Marca);
 
     if (permisosPagina == null)
 
@@ -19,7 +19,8 @@
         return;
 
     }
-
+    
+    //revisar linea///
     var isAgregarText = Model.IdMarca == 0 ? "Agregar" : "Editar";
 }
 
