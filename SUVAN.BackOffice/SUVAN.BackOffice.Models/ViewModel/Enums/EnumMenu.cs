@@ -95,5 +95,6 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
     TipoReparacion = 94,
     Catalogos = 90,
     Marca=95,
+    Mantenimiento = 92,
     }
 }
