@@ -2131,17 +2131,17 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<Modelo>(entity =>
         {
-            entity.HasKey(e => new { e.CMarca, e.CModelo })
+            entity.HasKey(e => new { e.IdMarca, e.IdModelo })
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
             entity.ToTable("modelo");
 
-            entity.Property(e => e.CMarca).HasColumnName("c_marca");
-            entity.Property(e => e.CModelo).HasColumnName("c_modelo");
+            entity.Property(e => e.IdMarca).HasColumnName("c_marca");
+            entity.Property(e => e.IdModelo).HasColumnName("c_modelo");
             entity.Property(e => e.ADesde).HasColumnName("a_desde");
             entity.Property(e => e.AHasta).HasColumnName("a_hasta");
-            entity.Property(e => e.CTipoV).HasColumnName("c_tipo_v");
+            entity.Property(e => e.IdTipoV).HasColumnName("c_tipo_v");
             entity.Property(e => e.Descrip)
                 .HasMaxLength(60)
                 .IsFixedLength()

@@ -5,15 +5,15 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class Modelo
 {
-    public short CMarca { get; set; }
+    public short IdMarca { get; set; }
 
-    public short CModelo { get; set; }
+    public short IdModelo { get; set; }
 
     public short? ADesde { get; set; }
 
     public short? AHasta { get; set; }
 
-    public short? CTipoV { get; set; }
+    public short? IdTipoV { get; set; }
 
     public string? Descrip { get; set; }
 

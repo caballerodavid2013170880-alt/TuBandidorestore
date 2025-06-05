@@ -30,17 +30,21 @@ namespace SUVAN.BackOffice.API
             var jwt = Configuration.GetSection("JWTSettings").Get<JWTSettings>();
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
 
-            // ✅ Registro de configuración de servicios
+            //  Registro de configuración de servicios
             services.Configure<MailSettingsOptions>(Configuration.GetSection("MailSettings"));
             services.Configure<UnlimitPaySettingsOptions>(Configuration.GetSection("UnlimitPaySettings"));
             services.Configure<PayPalSettingsOptions>(Configuration.GetSection("PayPalSettingsOptions"));
             services.Configure<GlobalConfigsOptions>(Configuration.GetSection("GlobalConfigs"));
 
-            // ✅ Registro correcto de IMarcaService y verificación de inicialización
+            //  Registro correcto de IMarcaService y verificación de inicialización
             services.AddScoped<IMarcaService, MarcaService>();
             Console.WriteLine("IMarcaService registrado correctamente.");
 
-            // ✅ Configuración de autenticación JWT
+            //  Registro correcto de IModeloService y verificación de inicialización
+            services.AddScoped<IModeloService, ModeloService>();
+            Console.WriteLine("IModeloService registrado correctamente.");
+
+            //  Configuración de autenticación JWT
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -69,7 +73,7 @@ namespace SUVAN.BackOffice.API
             services.AddHttpContextAccessor();
             services.AddControllers();
 
-            // ✅ Configuración de CORS mejorada
+            //  Configuración de CORS mejorada
             services.AddCors(options =>
             {
                 options.AddPolicy("CORSPolicy", builder =>
@@ -79,7 +83,7 @@ namespace SUVAN.BackOffice.API
                         .SetIsOriginAllowed((hosts) => true));
             });
 
-            // ✅ Configuración de Swagger mejorada
+            //  Configuración de Swagger mejorada
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo() { Title = "SUVAN BackOffice API", Version = "V1" });
@@ -110,7 +114,7 @@ namespace SUVAN.BackOffice.API
                 });
             });
 
-            // ✅ Inicialización de servicios adicionales
+            //  Inicialización de servicios adicionales
             services.AddSignalR();
             services.AddOptions();
             services.AddEndpointsApiExplorer();
@@ -135,11 +139,11 @@ namespace SUVAN.BackOffice.API
                 endpoints.MapHub<HubSuVanService>("/Hub/Mensajeria");
             });
 
-            // ✅ Activación de Swagger
+            //  Activación de Swagger
             app.UseSwagger();
             app.UseSwaggerUI();
 
-            // ✅ Mensaje de inicialización para depuración
+            //  Mensaje de inicialización para depuración
             logger.LogInformation("Aplicación inicializada correctamente.");
         }
     }
