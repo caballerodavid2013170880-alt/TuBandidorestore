@@ -9,30 +9,46 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
     public class MecanicoViewModel
     {
-        public List<DepositosDisponiblesViewModel> DepositoView { get; set; }
+        public List<DepositosViewModel> DepositoView { get; set; } = new();
+
+        public List<TallerViewModel> TallerView { get; set; } = new();
+
+        public string DepositoJson { get; set; } = string.Empty;
 
         public string NombreDeposito { get; set; } = null!;
+
+        public string NombreTaller { get; set; } = null!;
 
         public int IdMecanico { get; set; }
 
         public string Nombre { get; set; } = null!;
 
-        public string Apellido { get; set; } = null!;
-
-        public string? Numero { get; set; }
-
-        [DataType(DataType.Text)]
-        public DateTime FechaIngreso { get; set; }
+        public string Puesto { get; set; } = null!;
 
         public bool Activo { get; set; }
 
         public int IdDeposito { get; set; }
 
-        public MecanicoViewModel()
+        public int IdTaller { get; set; }
+
+        public class DepositosViewModel
         {
+            public int DepositoId { get; set; }
 
-            DepositoView = new List<DepositosDisponiblesViewModel>();
+            public string NombreDeposito { get; set; } = null!;
 
+            public string DepositoNombreId => $"{DepositoId} - {NombreDeposito}";
+
+            public List<TallerViewModel> Talleres { get; set; } = new();
+        }
+
+        public class TallerViewModel
+        {
+            public int IdTaller { get; set; }
+
+            public string NombreTaller { get; set; } = null!;
+
+            public string TallerNombreId => $"{IdTaller} - {NombreTaller}";
         }
     }
 }

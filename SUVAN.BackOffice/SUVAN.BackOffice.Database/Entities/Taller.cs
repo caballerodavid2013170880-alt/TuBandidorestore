@@ -35,5 +35,7 @@ public partial class Taller
 
     public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
 
+    public virtual ICollection<Mecanico> Mecanicos { get; set; } = new List<Mecanico>();
+
     public virtual Zona ZonaIdzonaNavigation { get; set; } = null!;
 }

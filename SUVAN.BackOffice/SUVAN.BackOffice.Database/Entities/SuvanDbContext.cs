@@ -1254,15 +1254,17 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<Especifi>(entity =>
         {
-            entity.HasKey(e => new { e.CMarca, e.CModVe, e.CEspeci })
+            entity.HasKey(e => new { e.IdEspeci, e.IdModVe, e.IdMarca })
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
             entity.ToTable("especifi");
 
-            entity.Property(e => e.CMarca).HasColumnName("c_marca");
-            entity.Property(e => e.CModVe).HasColumnName("c_mod_ve");
-            entity.Property(e => e.CEspeci).HasColumnName("c_especi");
+            entity.Property(e => e.IdEspeci)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("Id_especi");
+            entity.Property(e => e.IdModVe).HasColumnName("Id_mod_ve");
+            entity.Property(e => e.IdMarca).HasColumnName("Id_marca");
             entity.Property(e => e.Altura).HasColumnName("altura");
             entity.Property(e => e.Ancho).HasColumnName("ancho");
             entity.Property(e => e.CapAce).HasColumnName("cap_ace");
@@ -1978,9 +1980,7 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("marca");
 
-            entity.Property(e => e.IdMarca)
-                .ValueGeneratedNever()
-                .HasColumnName("id_marca");
+            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
             entity.Property(e => e.Descrip)
                 .HasMaxLength(20)
                 .IsFixedLength()
@@ -1995,26 +1995,29 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasIndex(e => e.IdDeposito, "fk_mecanico_deposito");
 
+            entity.HasIndex(e => e.IdTaller, "fk_mecanico_taller");
+
             entity.Property(e => e.IdMecanico).HasColumnName("id_mecanico");
             entity.Property(e => e.Activo).HasColumnName("activo");
-            entity.Property(e => e.Apellido)
-                .HasMaxLength(50)
-                .HasColumnName("apellido");
-            entity.Property(e => e.FechaIngreso)
-                .HasColumnType("datetime")
-                .HasColumnName("fecha_ingreso");
             entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdTaller).HasColumnName("id_taller");
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .HasColumnName("nombre");
-            entity.Property(e => e.Numero)
-                .HasMaxLength(100)
-                .HasColumnName("numero");
+            entity.Property(e => e.Puesto)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("puesto");
 
             entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.Mecanicos)
                 .HasForeignKey(d => d.IdDeposito)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_mecanico_deposito");
+
+            entity.HasOne(d => d.IdTallerNavigation).WithMany(p => p.Mecanicos)
+                .HasForeignKey(d => d.IdTaller)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_mecanico_taller");
         });
 
         modelBuilder.Entity<Membresium>(entity =>
@@ -2131,17 +2134,19 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<Modelo>(entity =>
         {
-            entity.HasKey(e => new { e.CMarca, e.CModelo })
+            entity.HasKey(e => new { e.IdMarca, e.IdModelo, e.IdTipoV })
                 .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
             entity.ToTable("modelo");
 
-            entity.Property(e => e.CMarca).HasColumnName("c_marca");
-            entity.Property(e => e.CModelo).HasColumnName("c_modelo");
+            entity.Property(e => e.IdMarca)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("Id_marca");
+            entity.Property(e => e.IdModelo).HasColumnName("Id_modelo");
+            entity.Property(e => e.IdTipoV).HasColumnName("Id_tipo_v");
             entity.Property(e => e.ADesde).HasColumnName("a_desde");
             entity.Property(e => e.AHasta).HasColumnName("a_hasta");
-            entity.Property(e => e.CTipoV).HasColumnName("c_tipo_v");
             entity.Property(e => e.Descrip)
                 .HasMaxLength(60)
                 .IsFixedLength()

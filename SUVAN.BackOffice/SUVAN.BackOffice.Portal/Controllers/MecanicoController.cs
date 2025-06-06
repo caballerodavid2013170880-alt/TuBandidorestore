@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Logistica;
 
 namespace SUVAN.BackOffice.Portal.Controllers
@@ -26,8 +28,9 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
         public async Task<IActionResult> AgregarMecanico(int id)
         {
-            var agregarModel = await mecanicoService.GetMecanicoViewModel(id);
-            agregarModel.DepositoView = mecanicoService.ObtenerDeposito();
+            var agregarModel = await mecanicoService.GetMecanicoViewModel(id, User.GetEmpresaId());
+            agregarModel.TallerView = mecanicoService.ObtenerTaller(agregarModel.IdDeposito);
+            agregarModel.DepositoJson = JsonConvert.SerializeObject(agregarModel.DepositoView);
             return View(agregarModel);
         }
 
@@ -36,7 +39,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
-                model.DepositoView = mecanicoService.ObtenerDeposito();
+                model.TallerView = mecanicoService.ObtenerTaller(model.IdDeposito);
 
                 var result = await mecanicoService.AgregarMecanico(model);
 

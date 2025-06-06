@@ -52,20 +52,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                 })
                 .FirstOrDefaultAsync();
 
-            //var zonas = await context.Zonas
-            //    .Select(z => new TallerViewModel.ZonasViewModel
-            //    {
-            //        ZonaId = z.IdZona,
-            //        ZonaNombre = z.NombreZona,
-            //        Depositos = context.Depositosdisponibles
-            //            .Where(t => t.ZonaId == z.IdZona)
-            //            .Select(t => new TallerViewModel.DepositosViewModel
-            //            {
-            //                DepositoId = t.IdDeposito,
-            //                NombreDeposito = t.DepositoNombre
-            //            }).ToList()
-            //    }).ToListAsync();
-
             var zonas = await (from z in context.Zonas where z.IdEmpresa == IdEmpresa
                              select new TallerViewModel.ZonasViewModel() {
                                  ZonaId = z.IdZona,

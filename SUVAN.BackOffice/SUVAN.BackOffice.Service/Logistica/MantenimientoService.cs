@@ -41,10 +41,9 @@ namespace SUVAN.BackOffice.Service.Logistica
                                    select new MecanicoViewModel
                                    {
                                        Nombre = m.Nombre,
-                                       Apellido = m.Apellido,
-                                       Numero = m.Numero,
                                        NombreDeposito = m.IdDepositoNavigation.DepositoNombre,
-                                       FechaIngreso = m.FechaIngreso,
+                                       NombreTaller = m.IdTallerNavigation.NombreTaller,
+                                       Puesto = m.Puesto,
                                        
                                    }).ToListAsync();
 

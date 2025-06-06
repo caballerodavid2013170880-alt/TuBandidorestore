@@ -113,7 +113,7 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Elige el Taller</label>
+                                <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Elige el Depósito</label>
                                 <select asp-for="IdDeposito" asp-items="new SelectList(Model.DepositoView, nameof(TallerViewModel.DepositosViewModel.DepositoId), nameof(TallerViewModel.DepositosViewModel.DepositoNombreId), Model.IdDeposito)" class="form-control">
                                     <option value="">Selecciona un depósito</option>
                                 </select>

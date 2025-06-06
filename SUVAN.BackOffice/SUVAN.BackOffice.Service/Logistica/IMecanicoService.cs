@@ -21,7 +21,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// </summary>
         /// <param name="id">Identificador del mecanico.</param>
         /// <returns>ViewModel para el mecanico especifico.</returns>
-        Task<MecanicoViewModel> GetMecanicoViewModel(int id);
+        Task<MecanicoViewModel> GetMecanicoViewModel(int id, int IdEmpresa);
 
         /// <summary>
         /// Agrega o actualiza un mecanico en la base de datos.
@@ -40,6 +40,6 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         Task<bool> EliminarMecanico(int MecanicoId);
 
-        List<DepositosDisponiblesViewModel> ObtenerDeposito();
+        List<MecanicoViewModel.TallerViewModel> ObtenerTaller(int depositoId);
     }
 }

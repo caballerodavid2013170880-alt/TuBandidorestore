@@ -70,10 +70,9 @@
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                             <th class="min-w-125px">Nombre</th>
-                            <th class="min-w-125px">Apellidos</th>
-                            <th class="min-w-125px">Numero</th>
-                            <th class="min-w-125px">Fecha de Ingreso</th>
-                            <th class="min-w-125px">Deposito</th>
+                            <th class="min-w-125px">Puesto</th>
+                            <th class="min-w-125px">Depósito</th>
+                            <th class="min-w-125px">Taller</th>
                             <th class="min-w-125px">Activo</th>
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
@@ -86,13 +85,10 @@
                                     @contenido.Nombre
                                 </td>
                                 <td>
-                                    @contenido.Apellido
+                                    @contenido.Puesto
                                 </td>
                                 <td>
-                                    @contenido.Numero
-                                </td>
-                                <td>
-                                    @contenido.FechaIngreso.ToShortDateString()
+                                    @contenido.IdTallerNavigation.NombreTaller
                                 </td>
                                 <td>
                                     @contenido.IdDepositoNavigation.DepositoNombre
