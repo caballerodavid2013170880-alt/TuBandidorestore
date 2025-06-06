@@ -14,7 +14,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// Obtiene el listado de los Mecanicos desde la base de datos.
         /// </summary>
         /// <returns>Lista de Mecanicos</returns>
-        Task<List<Mecanico>> GetMecanico();
+        Task<List<Mecanico>> GetMecanico(int IdEmpresa);
 
         /// <summary>
         /// Obtiene el ViewModel del mecanico específico.

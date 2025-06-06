@@ -85,16 +85,9 @@
                         showModalTaller.show();
                         configurarTabla(data, [
                             { title: "Nombre del Mecánico", data: "nombre", className: 'min-w-125px text-center' },
-                            { title: "Apellidos", data: "apellido", className: 'min-w-125px text-center' },
-                            { title: "Teléfono", data: "numero", className: 'min-w-125px text-center' },
-                            { title: "Nombre del Depósito", data: "nombreDeposito", className: 'min-w-125px text-center' },
-                            { title: "Fecha de Ingreso", data: "fechaIngreso", className: 'min-w-125px text-center',
-                                render: function (data) {
-                                    if (!data) return "";
-                                    const fecha = new Date(data);
-                                    return fecha.toLocaleDateString();
-                                }
-                            }
+                            { title: "Puesto", data: "puesto", className: 'min-w-125px text-center' },
+                            { title: "Taller", data: "nombreTaller", className: 'min-w-125px text-center' },
+                            { title: "Depósito", data: "nombreDeposito", className: 'min-w-125px text-center' },
                         ], function (rowData) {
                             inputMecanico.value = rowData.nombre;
                         });

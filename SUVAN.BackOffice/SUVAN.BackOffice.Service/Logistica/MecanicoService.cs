@@ -23,9 +23,9 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// Obtiene el listado de los Mecanicos desde la base de datos.
         /// </summary>
         /// <returns>Lista de Mecanicos</returns>
-        public async Task<List<Mecanico>> GetMecanico()
+        public async Task<List<Mecanico>> GetMecanico(int IdEmpresa)
         {
-            var mecanico = await context.Mecanicos.Include(d => d.IdDepositoNavigation).Include(t => t.IdTallerNavigation).ToListAsync();
+            var mecanico = await context.Mecanicos.Where(e => e.IdDepositoNavigation.IdEmpresa == IdEmpresa).Include(d => d.IdDepositoNavigation).Include(t => t.IdTallerNavigation).ToListAsync();
 
             return mecanico!;
         }

@@ -22,7 +22,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var mecanico = await mecanicoService.GetMecanico();
+            var mecanico = await mecanicoService.GetMecanico(User.GetEmpresaId());
             return View(mecanico);
         }
 

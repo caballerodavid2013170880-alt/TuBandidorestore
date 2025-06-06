@@ -22,9 +22,9 @@ namespace SUVAN.BackOffice.Service.Logistica
             this.context = context;
         }
 
-        public async Task<List<Taller>> GetTaller()
+        public async Task<List<Taller>> GetTaller(int IdEmpresa)
         {
-            var talleres = await context.Tallers.Include(t => t.ZonaIdzonaNavigation).Include(t => t.IdDepositoNavigation).ToListAsync();
+            var talleres = await context.Tallers.Where(e => e.IdDepositoNavigation.IdEmpresa == IdEmpresa ).Include(t => t.ZonaIdzonaNavigation).Include(t => t.IdDepositoNavigation).ToListAsync();
 
             return talleres;
         }

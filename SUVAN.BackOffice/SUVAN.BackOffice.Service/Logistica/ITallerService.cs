@@ -14,7 +14,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// Obtiene el listado de Talleres desde la base de datos.
         /// </summary>
         /// <returns>Lista de Talleres.</returns>
-        Task<List<Taller>> GetTaller();
+        Task<List<Taller>> GetTaller(int IdEmpresa);
 
         /// <summary>
         /// Obtiene el ViewModel del taller específico.
