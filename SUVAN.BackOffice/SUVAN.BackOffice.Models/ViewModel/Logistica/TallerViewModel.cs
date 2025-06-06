@@ -20,9 +20,13 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public int ZonaIdzona { get; set; }
 
+        public string NombreZona { get; set; } = string.Empty;
+
         public string NombreTaller { get; set; } = null!;
 
         public int IdDeposito { get; set; }
+
+        public string NombreDeposito { get; set; } = string.Empty;
 
         public string? TTaller { get; set; }
 

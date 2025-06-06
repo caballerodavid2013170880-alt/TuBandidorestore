@@ -10,6 +10,9 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
     public class MecanicoViewModel
     {
         public List<DepositosDisponiblesViewModel> DepositoView { get; set; }
+
+        public string NombreDeposito { get; set; } = null!;
+
         public int IdMecanico { get; set; }
 
         public string Nombre { get; set; } = null!;

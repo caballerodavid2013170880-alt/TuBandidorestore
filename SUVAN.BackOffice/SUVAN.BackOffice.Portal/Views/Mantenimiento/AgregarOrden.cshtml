@@ -56,11 +56,13 @@
                             <div class="row mb-6">
                                 <div class="col-sm-6 mb-3">
                                     <label class="required">Taller</label>
-                                    <select class="form-select form-select-sm">
-                                        <option value=0>Selecciona un Taller</option>
-                                        <option value=1>22 - Taller Norte</option>
-                                        <option value=2>32 - Taller Express</option>
-                                    </select>
+                                    <div class="input-group input-group-sm">
+                                        <input class="form-control" id="tallerID" placeholder="Taller" readonly />
+                                        <input type="hidden" id="tallerIDHidden" name="idTaller">
+                                        <span class="input-group-text" id="iconoTaller" style="cursor:pointer;">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="col-sm-6 mb-3">
                                     <label class="required">Tipo</label>
@@ -69,11 +71,13 @@
 
                                 <div class="col-sm-6 mb-3">
                                     <label class="required">Mecánico</label>
-                                    <select class="form-select form-select-sm">
-                                        <option value=0>Selecciona un Mecánico</option>
-                                        <option value=1>13 - Carlos Gómez</option>
-                                        <option value=2>16 - Pedro Martínez</option>
-                                    </select>
+                                    <div class="input-group input-group-sm">
+                                        <input class="form-control" id="mecanicoID" placeholder="Mecánico" readonly />
+                                        <input type="hidden" id="mecanicoIDHidden" name="idTaller">
+                                        <span class="input-group-text" id="iconoMecanico" style="cursor:pointer;">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="col-sm-6 mb-3">
                                     <label class="required">Vehículo</label>
@@ -184,9 +188,36 @@
     </div>
     <!--end::Content container-->
 </div>
+
+<!-- Ventana modal-->
+<div class="modal modal-lg fade" tabindex="-1" id="kt_modal_mantenimiento_taller" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitulo">Título</h5>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <div class="modal-body" id="modal-body">
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_tabla_mantenimiento">
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--end::Content-->
 @section scripts {
-    <script src="~/js/logistica/mecanico/add.js"></script>
+    <script src="~/js/logistica/mantenimiento/add.js"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }
