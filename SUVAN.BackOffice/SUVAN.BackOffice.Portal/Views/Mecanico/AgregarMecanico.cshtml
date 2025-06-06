@@ -51,7 +51,15 @@
             <div class="card-body py-4">
                 <form class="form w-100" novalidate="novalidate" id="kt_mecanico_in_form" data-kt-redirect-url="/" asp-controller="Mecanico" asp-action="AgregarMecanico" method="post">
                     @Html.AntiForgeryToken()
+                    <input asp-for="DepositoJson" type="hidden" id="DepositoJson" />
                     <input asp-for="IdMecanico" type="hidden" />
+                    <div class="fv-row mb-8">
+                        <div class="col-sm-12">
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                <div asp-validation-summary="All"></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
@@ -62,25 +70,9 @@
                         </div>
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="Apellido" class="col-form-label text-gray-600 required">Apellidos</label>
-                                <input asp-for="Apellido" class="form-control bg-transparent" placeholder="Apellidos" />
-                                <span asp-validation-for="Apellido" class="invalid-feedback"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-3">
-                                <label asp-for="FechaIngreso" class="col-form-label text-gray-600 required">Fecha de Ingreso</label>
-                                <input asp-for="FechaIngreso" class="form-control bg-transparent" placeholder="" />
-                                <span asp-validation-for="FechaIngreso" class="invalid-feedback"></span>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-3">
-                                <label asp-for="Numero" class="col-form-label text-gray-600 required" maxlength="10">Número Telefónico</label>
-                                <input asp-for="Numero" class="form-control bg-transparent" placeholder="Número Telefónico" />
-                                <span asp-validation-for="Numero" class="invalid-feedback"></span>
+                                <label asp-for="Puesto" class="col-form-label text-gray-600 required">Puesto</label>
+                                <input asp-for="Puesto" class="form-control bg-transparent" placeholder="Puesto" />
+                                <span asp-validation-for="Puesto" class="invalid-feedback"></span>
                             </div>
                         </div>
                     </div>
@@ -88,7 +80,7 @@
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
                                 <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Elige el Depósito</label>
-                                <select asp-for="IdDeposito" asp-items="new SelectList(Model.DepositoView, nameof(DepositosDisponiblesViewModel.DepositoId), nameof(DepositosDisponiblesViewModel.DepsoitoIdNombre), Model.IdDeposito)" class="form-control">
+                                <select asp-for="IdDeposito" asp-items="new SelectList(Model.DepositoView, nameof(MecanicoViewModel.DepositosViewModel.DepositoId), nameof(MecanicoViewModel.DepositosViewModel.DepositoNombreId), Model.IdDeposito)" class="form-control">
                                     <option value="">Selecciona una Deposito</option>
                                 </select>
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
@@ -96,6 +88,19 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="IdTaller" class="col-form-label text-gray-600 required">Elige el Taller</label>
+                                <select asp-for="IdTaller" asp-items="new SelectList(Model.TallerView, nameof(MecanicoViewModel.TallerViewModel.IdTaller), nameof(MecanicoViewModel.TallerViewModel.TallerNombreId), Model.IdTaller)" class="form-control">
+                                    <option value="">Selecciona un taller</option>
+                                </select>
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="IdTaller"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
                         <div class="col-sm-6">
                             <div class="form-check form-check-inline">
                                 <label asp-for="Activo" class="form-check-label">Activo</label>

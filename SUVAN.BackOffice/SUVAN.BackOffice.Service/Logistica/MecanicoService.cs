@@ -23,9 +23,9 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// Obtiene el listado de los Mecanicos desde la base de datos.
         /// </summary>
         /// <returns>Lista de Mecanicos</returns>
-        public async Task<List<Mecanico>> GetMecanico()
+        public async Task<List<Mecanico>> GetMecanico(int IdEmpresa)
         {
-            var mecanico = await context.Mecanicos.Include(d => d.IdDepositoNavigation).ToListAsync();
+            var mecanico = await context.Mecanicos.Where(e => e.IdDepositoNavigation.IdEmpresa == IdEmpresa).Include(d => d.IdDepositoNavigation).Include(t => t.IdTallerNavigation).ToListAsync();
 
             return mecanico!;
         }
@@ -34,28 +34,43 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// </summary>
         /// <param name="id">Identificador del mecanico.</param>
         /// <returns>ViewModel para el mecanico especifico.</returns>
-        public async Task<MecanicoViewModel> GetMecanicoViewModel(int id)
+        public async Task<MecanicoViewModel> GetMecanicoViewModel(int id, int IdEmpresa)
         {
-            MecanicoViewModel vRet = new MecanicoViewModel();
-            var mecanico = await context.Mecanicos.FirstOrDefaultAsync(x => x.IdMecanico == id);
-
-            if (mecanico == null)
-                return vRet;
-            else
-            {
-                vRet = new MecanicoViewModel
+            var mecanico = await context.Mecanicos
+                .Where(x => x.IdMecanico == id)
+                .Select(d => new MecanicoViewModel
                 {
-                    IdMecanico = mecanico.IdMecanico!,
-                    Nombre = mecanico.Nombre!,
-                    Apellido = mecanico.Apellido!,
-                    Numero = mecanico.Numero!,
-                    FechaIngreso = mecanico.FechaIngreso!,
-                    Activo = mecanico.Activo!,
-                    IdDeposito = mecanico.IdDeposito!,
-                };
+                    IdMecanico = d.IdMecanico,
+                    Nombre = d.Nombre!,
+                    Puesto = d.Puesto,
+                    Activo = d.Activo,
+                    IdTaller = d.IdTaller,
+                    IdDeposito = d.IdDeposito,
+                })
+                .FirstOrDefaultAsync();
+
+            var deposito = await (from z in context.Depositosdisponibles
+                               where z.IdEmpresa == IdEmpresa
+                               select new MecanicoViewModel.DepositosViewModel()
+                               {
+                                   DepositoId = z.IdDeposito,
+                                   NombreDeposito = z.DepositoNombre,
+                                   Talleres = context.Tallers
+                                   .Where(d => d.IdDeposito == z.IdDeposito)
+                                   .Select(d => new MecanicoViewModel.TallerViewModel
+                                   {
+                                       IdTaller = d.IdTaller,
+                                       NombreTaller = d.NombreTaller
+                                   }).ToList()
+                               }).ToListAsync();
+
+            if (mecanico != null)
+            {
+                mecanico.DepositoView = deposito;
+                return mecanico;
             }
 
-            return vRet;
+            return new MecanicoViewModel { DepositoView = deposito };
         }
 
         /// <summary>
@@ -92,9 +107,8 @@ namespace SUVAN.BackOffice.Service.Logistica
 
             mecanico.IdMecanico = model.IdMecanico;
             mecanico.Nombre = model.Nombre;
-            mecanico.Apellido = model.Apellido;
-            mecanico.Numero = model.Numero;
-            mecanico.FechaIngreso = model.FechaIngreso;
+            mecanico.Puesto = model.Puesto;
+            mecanico.IdTaller = model.IdTaller;
             mecanico.Activo = model.Activo;
             mecanico.IdDeposito = model.IdDeposito;
 
@@ -144,15 +158,17 @@ namespace SUVAN.BackOffice.Service.Logistica
             return true;
         }
 
-        public List<DepositosDisponiblesViewModel> ObtenerDeposito()
+        public List<MecanicoViewModel.TallerViewModel> ObtenerTaller(int depositoId)
         {
-            var resul = (from o in context.Depositosdisponibles
-                         select new DepositosDisponiblesViewModel()
-                         {
-                             DepositoId = o.IdDeposito,
-                             NombreDeposito = o.DepositoNombre,
-                         }).ToList();
-            return resul;
+            var taller = context.Tallers
+                .Where(t => t.IdDeposito == depositoId)
+                .Select(t => new MecanicoViewModel.TallerViewModel
+                {
+                    IdTaller = t.IdTaller,
+                    NombreTaller = t.NombreTaller
+                }).ToList();
+
+            return taller;
         }
     }
 }

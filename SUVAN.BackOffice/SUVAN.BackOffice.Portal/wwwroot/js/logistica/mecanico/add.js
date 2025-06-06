@@ -7,6 +7,13 @@ var KTMecanico = function () {
     var submitButton;
     var validator;
 
+    const tallerSelect = document.getElementById('IdTaller');
+    const depositoSelect = document.getElementById('IdDeposito');
+    const depositoJsonInput = document.getElementById('DepositoJson');
+
+    let depositoConfiguration = {};
+    let tallerConfiguration = {};
+
 
     // Handle form
     var handleValidation = function (e) {
@@ -18,42 +25,34 @@ var KTMecanico = function () {
                     'Nombre': {
                         validators: {
                             notEmpty: {
-                                message: 'El Nombre es requerido'
+                                message: 'Nombre requerido'
                             }
                         }
                     },
-                    'Apellido': {
+                    'Puesto': {
                         validators: {
                             notEmpty: {
-                                message: 'Los Apellidos son requeridos'
+                                message: 'Puesto requerido'
                             }
                         }
                     },
                     'IdDeposito': {
                         validators: {
                             notEmpty: {
-                                message: 'Debes de seleccionar una Zona',
+                                message: 'Depósito requerido',
                                 callback: function (value, validator, $field) {
                                     return value !== "";
                                 }
                             }
                         }
                     },
-                    'Numero': {
+                    'IdTaller': {
                         validators: {
                             notEmpty: {
-                                message: 'Número telefónico requerido'
-                            },
-                            regexp: {
-                                regexp: /^[0-9]{10}$/,
-                                message: 'El número debe tener 10 dígitos'
-                            }
-                        }
-                    },
-                    'FechaIngreso': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Fecha de Ingreso es requerida'
+                                message: 'Taller requerido',
+                                callback: function (value, validator, $field) {
+                                    return value !== "";
+                                }
                             }
                         }
                     },
@@ -70,6 +69,48 @@ var KTMecanico = function () {
         );
 
     }
+
+    const initData = () => {
+        try {
+            depositoConfiguration = JSON.parse(depositoJsonInput.value);
+        } catch (e) {
+        }
+    };
+
+    const clearSelect = (select) => {
+        while (select.options.length > 0) {
+            select.remove(0);
+        }
+    };
+
+    const initDepositoAndTaller = () => {
+        depositoSelect.addEventListener('change', function (event) {
+            const depositoId = parseInt(event.target.value);
+            const deposito = depositoConfiguration.find(z => z.DepositoId === depositoId);
+
+            clearSelect(tallerSelect);
+
+            const optionSeleccione = document.createElement('option');
+            optionSeleccione.value = "";
+            optionSeleccione.textContent = "Selecciona un taller";
+            tallerSelect.appendChild(optionSeleccione);
+
+            tallerConfiguration = deposito.Talleres;
+
+            deposito.Talleres.forEach(t => {
+                const option = document.createElement('option');
+                option.value = t.IdTaller;
+                option.textContent = t.TallerNombreId;
+                tallerSelect.appendChild(option);
+            });
+        });
+
+        tallerSelect.addEventListener('change', function (event) {
+            const tallerId = parseInt(event.target.value);
+            const taller = tallerConfiguration.find(t => t.IdTaller === tallerId);
+            console.log("Taller seleccionado:", taller);
+        });
+    };
 
     var handleSubmitValidation = function (e) {
         // Handle form submit
@@ -89,35 +130,12 @@ var KTMecanico = function () {
         });
     }
 
-    const handleControls = () => {
+    const initControls = () => {
+        initDepositoAndTaller();
+        handleSubmitValidation();
+    };
 
-        $("#FechaIngreso").daterangepicker({
-            singleDatePicker: true,
-            locale: {
-                format: "DD/MM/YYYY",
-                applyLabel: "Aceptar",
-                cancelLabel: "Cancelar",
-                daysOfWeek: ["Do", "Lu", "Ma", "Mi", "Ju", "Vi", "Sa"],
-                monthNames: [
-                    "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
-                    "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"
-                ]
-            },
-            startDate: moment(),
-            minDate: moment()
-        });
 
-        document.getElementById("Numero").addEventListener("input", function () {
-            this.value = this.value.replace(/\D/g, "").slice(0, 10);
-        });
-
-        document.getElementById("Nombre").addEventListener("input", function () {
-            this.value = this.value.toUpperCase();
-        });
-        document.getElementById("Apellido").addEventListener("input", function () {
-                this.value = this.value.toUpperCase();
-        });
-    }
 
     // Public functions
     return {
@@ -127,9 +145,8 @@ var KTMecanico = function () {
             submitButton = document.querySelector('#kt_mecanico_in_submit');
 
             handleValidation();
-            handleControls();
-
-            handleSubmitValidation();
+            initData();
+            initControls();
         }
     };
 }();

@@ -23,7 +23,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var t = await taller.GetTaller();
+            var t = await taller.GetTaller(User.GetEmpresaId());
             return View(t);
         }
 
@@ -36,7 +36,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AgregarTaller(TallerViewModel model, int id)
+        public async Task<IActionResult> AgregarTaller(TallerViewModel model)
         {
             try
             {

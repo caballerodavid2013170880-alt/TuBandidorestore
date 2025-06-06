@@ -5,11 +5,11 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class Especifi
 {
-    public short CMarca { get; set; }
+    public short IdEspeci { get; set; }
 
-    public short CModVe { get; set; }
+    public short IdModVe { get; set; }
 
-    public short CEspeci { get; set; }
+    public short IdMarca { get; set; }
 
     public short? TipoCom { get; set; }
 

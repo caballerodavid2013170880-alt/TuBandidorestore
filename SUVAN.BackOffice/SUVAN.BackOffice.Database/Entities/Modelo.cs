@@ -13,7 +13,7 @@ public partial class Modelo
 
     public short? AHasta { get; set; }
 
-    public short? IdTipoV { get; set; }
+    public short IdTipoV { get; set; }
 
     public string? Descrip { get; set; }
 

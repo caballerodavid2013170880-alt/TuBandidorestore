@@ -22,9 +22,9 @@ namespace SUVAN.BackOffice.Service.Logistica
             this.context = context;
         }
 
-        public async Task<List<Taller>> GetTaller()
+        public async Task<List<Taller>> GetTaller(int IdEmpresa)
         {
-            var talleres = await context.Tallers.Include(t => t.ZonaIdzonaNavigation).Include(t => t.IdDepositoNavigation).ToListAsync();
+            var talleres = await context.Tallers.Where(e => e.IdDepositoNavigation.IdEmpresa == IdEmpresa ).Include(t => t.ZonaIdzonaNavigation).Include(t => t.IdDepositoNavigation).ToListAsync();
 
             return talleres;
         }
@@ -51,20 +51,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                     IdDeposito = d.IdDeposito,
                 })
                 .FirstOrDefaultAsync();
-
-            //var zonas = await context.Zonas
-            //    .Select(z => new TallerViewModel.ZonasViewModel
-            //    {
-            //        ZonaId = z.IdZona,
-            //        ZonaNombre = z.NombreZona,
-            //        Depositos = context.Depositosdisponibles
-            //            .Where(t => t.ZonaId == z.IdZona)
-            //            .Select(t => new TallerViewModel.DepositosViewModel
-            //            {
-            //                DepositoId = t.IdDeposito,
-            //                NombreDeposito = t.DepositoNombre
-            //            }).ToList()
-            //    }).ToListAsync();
 
             var zonas = await (from z in context.Zonas where z.IdEmpresa == IdEmpresa
                              select new TallerViewModel.ZonasViewModel() {
