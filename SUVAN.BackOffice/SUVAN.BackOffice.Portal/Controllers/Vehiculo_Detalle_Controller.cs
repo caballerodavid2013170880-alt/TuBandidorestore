@@ -4,6 +4,7 @@ using SUVAN.BackOffice.Service.Logistica;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using SUVAN.BackOffice.Portal.Models; // Asegúrate de que esta es la ubicación correcta de ErrorViewModel
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -29,11 +30,11 @@ namespace SUVAN.BackOffice.Portal.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener la lista de vehículos.");
-                return View("Error", new { message = "No se pudo obtener los vehículos." });
+                return View("Error", new ErrorViewModel { Message = "No se pudo obtener los vehículos." });
             }
         }
 
-        // 📌 Formulario para agregar vehículo
+        // Formulario para agregar vehículo
         public async Task<IActionResult> AgregarVehiculo(int id)
         {
             try
@@ -44,11 +45,11 @@ namespace SUVAN.BackOffice.Portal.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al cargar el formulario de agregar vehículo.");
-                return View("Error", new { message = "No se pudo cargar el vehículo." });
+                return View("Error", new ErrorViewModel { Message = "No se pudo cargar el vehículo." });
             }
         }
 
-        // 📌 Método para agregar un vehículo
+        // Agregar un vehículo
         [HttpPost]
         public async Task<IActionResult> AgregarVehiculo(Database.Entities.VehiculoDetalle model)
         {
@@ -78,7 +79,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
         }
 
-        // 📌 Método para eliminar un vehículo
+        // Eliminar un vehículo
         [HttpPost]
         public async Task<IActionResult> EliminarVehiculo([FromBody] Database.Entities.VehiculoDetalle model)
         {

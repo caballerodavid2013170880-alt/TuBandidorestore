@@ -3,21 +3,25 @@
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
 
-@{
-    ViewData["Title"] = "Vehículo Detalle";
-}
-
 @model SUVAN.BackOffice.Database.Entities.VehiculoDetalle
 
 @{
+    ViewData["Title"] = "Vehículo Detalle";
+
+
+
     var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.VehiculoDetalle);
 
 
 
+    // Validación de permisos
+
     if (permisosPagina == null)
 
     {
-
+        <div class="alert alert-danger" role="alert">
+            No tienes permisos para acceder a esta página.
+        </div>
         return;
 
     }
@@ -30,7 +34,7 @@
 }
 
 <!--begin::Toolbar-->
-<div id="kt_app_toolbar" class="app-toolbar ">
+<div id="kt_app_toolbar" class="app-toolbar">
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
@@ -48,7 +52,8 @@
     <div id="kt_app_content_container" class="app-container container-fluid">
         <div class="card">
             <div class="card-body py-4">
-                <form class="form w-100" novalidate="novalidate" id="kt_vehiculo_in_form" data-kt-redirect-url="/" asp-controller="VehiculoDetalle" asp-action="AgregarVehiculo" method="post">
+                <form class="form w-100" novalidate="novalidate" id="kt_vehiculo_in_form"
+                      asp-controller="VehiculoDetalle" asp-action="AgregarVehiculo" method="post">
                     @Html.AntiForgeryToken()
                     <input asp-for="IdVehicDetalle" type="hidden" />
 
@@ -85,7 +90,7 @@
 </div>
 <!--end::Content-->
 @section scripts {
-    <script src="~\js\logistica\vehiculodetalle\add.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/add.js"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }
