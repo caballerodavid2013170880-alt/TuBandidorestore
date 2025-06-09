@@ -9,16 +9,13 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class SuvanDbContext : DbContext
 {
-    private readonly IConfiguration configuration;
-
     public SuvanDbContext()
     {
     }
 
-    public SuvanDbContext(DbContextOptions<SuvanDbContext> options, IConfiguration configuration)
+    public SuvanDbContext(DbContextOptions<SuvanDbContext> options)
         : base(options)
     {
-        this.configuration = configuration;
     }
 
     public virtual DbSet<Admin> Admins { get; set; }
@@ -78,8 +75,6 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Empresa> Empresas { get; set; }
 
     public virtual DbSet<EmpresaRutum> EmpresaRuta { get; set; }
-
-    public virtual DbSet<Especifi> Especifis { get; set; }
 
     public virtual DbSet<Estatusestacion> Estatusestacions { get; set; }
 
@@ -243,11 +238,11 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Variableglobal> Variableglobals { get; set; }
 
-    public virtual DbSet<VehMarca> VehMarcas { get; set; }
-
     public virtual DbSet<Vehiculo> Vehiculos { get; set; }
 
-    public virtual DbSet<VehiculoDetalle> VehiculoDetalles { get; set; }
+    public virtual DbSet<VehiculoDetalle> VehiculosDetalle { get; set; }
+
+    public virtual DbSet<VehiculoEspecificacione> VehiculoEspecificaciones { get; set; }
 
     public virtual DbSet<Vehiculoservicio> Vehiculoservicios { get; set; }
 
@@ -257,9 +252,10 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Zona> Zonas { get; set; }
 
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-     => optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
+        => optionsBuilder.UseMySql("server=54.175.149.151;database=survan_db;uid=survanusr;pwd=Qwerty!23.", Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1250,67 +1246,6 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.TipotarifaIdtipotarifa)
                 .HasDefaultValueSql("'1'")
                 .HasColumnName("tipotarifa_idtipotarifa");
-        });
-
-        modelBuilder.Entity<Especifi>(entity =>
-        {
-            entity.HasKey(e => new { e.IdEspeci, e.IdModVe, e.IdMarca })
-                .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
-
-            entity.ToTable("especifi");
-
-            entity.Property(e => e.IdEspeci)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("Id_especi");
-            entity.Property(e => e.IdModVe).HasColumnName("Id_mod_ve");
-            entity.Property(e => e.IdMarca).HasColumnName("Id_marca");
-            entity.Property(e => e.Altura).HasColumnName("altura");
-            entity.Property(e => e.Ancho).HasColumnName("ancho");
-            entity.Property(e => e.CapAce).HasColumnName("cap_ace");
-            entity.Property(e => e.CapCom).HasColumnName("cap_com");
-            entity.Property(e => e.CarEje).HasColumnName("car_eje");
-            entity.Property(e => e.CarMax).HasColumnName("car_max");
-            entity.Property(e => e.DimLlan).HasColumnName("dim_llan");
-            entity.Property(e => e.Largo).HasColumnName("largo");
-            entity.Property(e => e.LlanRep).HasColumnName("llan_rep");
-            entity.Property(e => e.McubCar).HasColumnName("mcub_car");
-            entity.Property(e => e.NoCilin).HasColumnName("no_cilin");
-            entity.Property(e => e.Obs)
-                .HasMaxLength(250)
-                .IsFixedLength()
-                .HasColumnName("obs");
-            entity.Property(e => e.Origen)
-                .HasMaxLength(1)
-                .IsFixedLength()
-                .HasColumnName("origen");
-            entity.Property(e => e.Pallets).HasColumnName("pallets");
-            entity.Property(e => e.PesoBru).HasColumnName("peso_bru");
-            entity.Property(e => e.PotMot)
-                .HasMaxLength(8)
-                .IsFixedLength()
-                .HasColumnName("pot_mot");
-            entity.Property(e => e.PulCub)
-                .HasMaxLength(6)
-                .IsFixedLength()
-                .HasColumnName("pul_cub");
-            entity.Property(e => e.RenEsp).HasColumnName("ren_esp");
-            entity.Property(e => e.TipoCom).HasColumnName("tipo_com");
-            entity.Property(e => e.TipoEje).HasColumnName("tipo_eje");
-            entity.Property(e => e.TipoMot)
-                .HasMaxLength(20)
-                .IsFixedLength()
-                .HasColumnName("tipo_mot");
-            entity.Property(e => e.TonCar).HasColumnName("ton_car");
-            entity.Property(e => e.TotLlan).HasColumnName("tot_llan");
-            entity.Property(e => e.Traccion)
-                .HasMaxLength(5)
-                .IsFixedLength()
-                .HasColumnName("traccion");
-            entity.Property(e => e.Transm)
-                .HasMaxLength(1)
-                .IsFixedLength()
-                .HasColumnName("transm");
         });
 
         modelBuilder.Entity<Estatusestacion>(entity =>
@@ -3626,28 +3561,6 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_variable");
         });
 
-        modelBuilder.Entity<VehMarca>(entity =>
-        {
-            entity.HasKey(e => new { e.Marca, e.Modelo, e.Especif })
-                .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
-
-            entity.ToTable("veh_marca");
-
-            entity.Property(e => e.Marca).HasColumnName("marca");
-            entity.Property(e => e.Modelo).HasColumnName("modelo");
-            entity.Property(e => e.Especif).HasColumnName("especif");
-            entity.Property(e => e.Asigna)
-                .HasMaxLength(1)
-                .IsFixedLength()
-                .HasColumnName("asigna");
-            entity.Property(e => e.Total).HasColumnName("total");
-            entity.Property(e => e.Usuario)
-                .HasMaxLength(20)
-                .IsFixedLength()
-                .HasColumnName("usuario");
-        });
-
         modelBuilder.Entity<Vehiculo>(entity =>
         {
             entity.HasKey(e => e.Idvehiculo).HasName("PRIMARY");
@@ -3704,28 +3617,26 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<VehiculoDetalle>(entity =>
         {
-            entity.HasKey(e => e.CVehic).HasName("PRIMARY");
+            entity.HasKey(e => e.IdVehicDetalle).HasName("PRIMARY");
 
             entity.ToTable("vehiculo_detalle");
 
-            entity.Property(e => e.CVehic)
+            entity.Property(e => e.IdVehicDetalle)
                 .HasMaxLength(10)
                 .IsFixedLength()
                 .HasColumnName("c_vehic");
             entity.Property(e => e.Anio).HasColumnName("anio");
             entity.Property(e => e.Area).HasColumnName("area");
             entity.Property(e => e.Baja).HasColumnName("baja");
-            entity.Property(e => e.CCognos)
+            entity.Property(e => e.IdCognos)
                 .HasMaxLength(15)
                 .IsFixedLength()
                 .HasColumnName("c_cognos");
-            entity.Property(e => e.CDeposito).HasColumnName("c_deposito");
-            entity.Property(e => e.CEspeci).HasColumnName("c_especi");
-            entity.Property(e => e.CMarca).HasColumnName("c_marca");
-            entity.Property(e => e.CModelo).HasColumnName("c_modelo");
-            entity.Property(e => e.CPlanta).HasColumnName("c_planta");
-            entity.Property(e => e.CRegion).HasColumnName("c_region");
-            entity.Property(e => e.CZona).HasColumnName("c_zona");
+            entity.Property(e => e.IdDeposito).HasColumnName("Iddeposito");
+            entity.Property(e => e.IdEspeci).HasColumnName("Idespeci");
+            entity.Property(e => e.IdMarca).HasColumnName("Idmarca");
+            entity.Property(e => e.IdEspeci).HasColumnName("Idmodelo");
+            entity.Property(e => e.IdZona).HasColumnName("IdZona");
             entity.Property(e => e.Caja)
                 .HasColumnType("bit(1)")
                 .HasColumnName("caja");
@@ -3850,7 +3761,7 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(3)
                 .IsFixedLength()
                 .HasColumnName("tipo_licencia_requerida");
-            entity.Property(e => e.Tipovehi).HasColumnName("tipovehi");
+            entity.Property(e => e.IdTipoVehi).HasColumnName("tipovehi");
             entity.Property(e => e.VRecupe).HasColumnName("v_recupe");
             entity.Property(e => e.VigenciaPermisoAceite)
                 .HasColumnType("datetime")
@@ -3864,6 +3775,67 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.VolumenMinimo)
                 .HasPrecision(7, 2)
                 .HasColumnName("volumen_minimo");
+        });
+
+        modelBuilder.Entity<VehiculoEspecificacione>(entity =>
+        {
+            entity.HasKey(e => new { e.IdEspeci, e.IdModVe, e.IdMarca })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
+
+            entity.ToTable("vehiculo_especificaciones");
+
+            entity.Property(e => e.IdEspeci)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("Id_especi");
+            entity.Property(e => e.IdModVe).HasColumnName("Id_mod_ve");
+            entity.Property(e => e.IdMarca).HasColumnName("Id_marca");
+            entity.Property(e => e.Altura).HasColumnName("altura");
+            entity.Property(e => e.Ancho).HasColumnName("ancho");
+            entity.Property(e => e.CapAce).HasColumnName("cap_ace");
+            entity.Property(e => e.CapCom).HasColumnName("cap_com");
+            entity.Property(e => e.CarEje).HasColumnName("car_eje");
+            entity.Property(e => e.CarMax).HasColumnName("car_max");
+            entity.Property(e => e.DimLlan).HasColumnName("dim_llan");
+            entity.Property(e => e.Largo).HasColumnName("largo");
+            entity.Property(e => e.LlanRep).HasColumnName("llan_rep");
+            entity.Property(e => e.McubCar).HasColumnName("mcub_car");
+            entity.Property(e => e.NoCilin).HasColumnName("no_cilin");
+            entity.Property(e => e.Obs)
+                .HasMaxLength(250)
+                .IsFixedLength()
+                .HasColumnName("obs");
+            entity.Property(e => e.Origen)
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasColumnName("origen");
+            entity.Property(e => e.Pallets).HasColumnName("pallets");
+            entity.Property(e => e.PesoBru).HasColumnName("peso_bru");
+            entity.Property(e => e.PotMot)
+                .HasMaxLength(8)
+                .IsFixedLength()
+                .HasColumnName("pot_mot");
+            entity.Property(e => e.PulCub)
+                .HasMaxLength(6)
+                .IsFixedLength()
+                .HasColumnName("pul_cub");
+            entity.Property(e => e.RenEsp).HasColumnName("ren_esp");
+            entity.Property(e => e.TipoCom).HasColumnName("tipo_com");
+            entity.Property(e => e.TipoEje).HasColumnName("tipo_eje");
+            entity.Property(e => e.TipoMot)
+                .HasMaxLength(20)
+                .IsFixedLength()
+                .HasColumnName("tipo_mot");
+            entity.Property(e => e.TonCar).HasColumnName("ton_car");
+            entity.Property(e => e.TotLlan).HasColumnName("tot_llan");
+            entity.Property(e => e.Traccion)
+                .HasMaxLength(5)
+                .IsFixedLength()
+                .HasColumnName("traccion");
+            entity.Property(e => e.Transm)
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasColumnName("transm");
         });
 
         modelBuilder.Entity<Vehiculoservicio>(entity =>
