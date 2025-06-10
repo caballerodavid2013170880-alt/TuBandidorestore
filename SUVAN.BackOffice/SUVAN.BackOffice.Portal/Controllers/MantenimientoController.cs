@@ -3,6 +3,7 @@ using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Logistica;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoViewModel;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -56,10 +57,11 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> ObtenerMecanico()
+        public async Task<IActionResult> ObtenerMecanico(int tallerId)
         {
-            var mecanicos = await mantenimiento.ObtenerMecanico(User.GetEmpresaId());
-            return Ok(mecanicos);
+            var mecanicos = await mantenimiento.ObtenerMecanico(tallerId);
+            return Json(mecanicos);
         }
+
     }
 }
