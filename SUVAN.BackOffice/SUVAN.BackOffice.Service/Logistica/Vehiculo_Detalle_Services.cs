@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-
 namespace SUVAN.BackOffice.Service.Logistica
 {
     public class VehiculoDetalleService : IVehiculoDetalleService
@@ -42,8 +41,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                 .Where(x => x.PlacaPe != null && x.PlacaPe.ToLower() == placaPeLower && x.IdVehicDetalle != model.IdVehicDetalle)
                 .FirstOrDefaultAsync();
 
-            if (vehiculoExistente is not null)
-                throw new Exception("Ya existe un vehículo con la misma placa");
 
             // Actualizar propiedades del vehículo
             vehiculo.IdZona = model.IdZona;

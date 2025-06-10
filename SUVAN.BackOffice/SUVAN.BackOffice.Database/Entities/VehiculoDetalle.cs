@@ -8,7 +8,6 @@ public partial class VehiculoDetalle
     public int IdVehiculo { get; set; }
     public int IdZona { get; set; }
     public int IdDeposito { get; set; }
-    public int IdMarca { get; set; }
     public int IdEspeci { get; set; }
     public int IdModelo { get; set; }
     public int IdPermisoAceite { get; set; }
@@ -46,7 +45,6 @@ public partial class VehiculoDetalle
     public float? KmAcum { get; set; }
     public string? StVehic { get; set; }
     public DateTime? FBaja { get; set; }
-    public short? TipoEje { get; set; }
     public string? ColInt { get; set; }
     public float? RegFed { get; set; }
     public short? EdregPl { get; set; }
@@ -74,7 +72,6 @@ public partial class VehiculoDetalle
     public string? TipoLicenciaRequerida { get; set; }
     public ulong? PermisoCargaAceite { get; set; }
 
-    
     public DateTime? VigenciaPermisoAceite { get; set; }
     public DateTime? VigenciaTarjetaCircula { get; set; }
 }
