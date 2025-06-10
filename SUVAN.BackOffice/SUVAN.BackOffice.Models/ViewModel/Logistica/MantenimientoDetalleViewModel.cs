@@ -31,6 +31,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public List<TipoReparacionViewModel> TipoReparacionView { get; set; } = new();
 
+        public List<GrupoReparacionViewModel> GrupoReparacionView { get; set; } = new();
+
         public class TipoReparacionViewModel
         {
             public short IdTipoReparacion { get; set; }
@@ -40,6 +42,17 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public int? Grupo { get; set; }
 
             public float? Valor { get; set; }
+        }
+
+        public class GrupoReparacionViewModel
+        {
+            public int IdGrupo { get; set; }
+
+            public string Descripcion { get; set; } = null!;
+
+            public string? Rubro { get; set; }
+
+            public string? Subrubro { get; set; }
         }
 
     }

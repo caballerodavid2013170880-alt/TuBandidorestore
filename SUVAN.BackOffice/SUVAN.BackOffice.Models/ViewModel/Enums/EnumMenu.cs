@@ -97,6 +97,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
     Marca=95,
     Mantenimiento = 92,
     Modelo=96,
-    VehiculoDetalle = 97
+    VehiculoDetalle = 97,
+    GrupoReparacion = 110
     }
 }
