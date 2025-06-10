@@ -16,13 +16,13 @@ namespace SUVAN.BackOffice.Service.Logistica
         //  Obtener todos los vehículos
         public async Task<List<VehiculoDetalle>> GetVehiculos()
         {
-            return await context.VehiculosDetalle.ToListAsync();
+            return await context.VehiculoDetalles.ToListAsync();
         }
 
         //  Obtener un vehículo por ID
         public async Task<VehiculoDetalle> GetVehiculoById(int id)
         {
-            return await context.VehiculosDetalle.FindAsync(id) ?? new VehiculoDetalle();
+            return await context.VehiculoDetalles.FindAsync(id) ?? new VehiculoDetalle();
         }
 
         //  Agregar o actualizar un vehículo
@@ -32,13 +32,13 @@ namespace SUVAN.BackOffice.Service.Logistica
             string placaNormalizada = model.PlacaPe?.Trim().ToLower();
 
             // 📌 Validación de duplicados (corregida)
-            var vehiculoExistente = await context.VehiculosDetalle
+            var vehiculoExistente = await context.VehiculoDetalles
                 .Where(x => !string.IsNullOrWhiteSpace(x.PlacaPe) &&
                             x.PlacaPe.ToLower() == placaNormalizada &&
-                            x.IdVehiculoDetalle != model.IdVehiculoDetalle)
+                            x.IdVehicDetalle != model.IdVehicDetalle)
                 .FirstOrDefaultAsync();
             //  Obtenemos el vehículo existente o creamos uno nuevo
-            var vehiculo = await context.VehiculosDetalle.FindAsync(model.IdVehicDetalle) ?? new VehiculoDetalle();
+            var vehiculo = await context.VehiculoDetalles.FindAsync(model.IdVehicDetalle) ?? new VehiculoDetalle();
 
             
             // Asignamos valores sin sobrescribir datos existentes con null
@@ -63,7 +63,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         //  Eliminar un vehículo
         public async Task<bool> EliminarVehiculo(int idVehicDetalle)
         {
-            var vehiculo = await context.VehiculosDetalle.FindAsync(idVehicDetalle);
+            var vehiculo = await context.VehiculoDetalles.FindAsync(idVehicDetalle);
 
             if (vehiculo is null)
                 return false;
@@ -80,6 +80,11 @@ namespace SUVAN.BackOffice.Service.Logistica
         }
 
         public Task<VehiculoDetalle> WGetVehiculoById(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<VehiculoDetalle?> GetVehiculoViewModel(int id)
         {
             throw new NotImplementedException();
         }
