@@ -93,7 +93,7 @@ namespace SUVAN.BackOffice.Service.Viajes
       var corridasResult = await (from ruta in _context.Ruta
                                   join corrida in _context.Corrida on ruta.Idruta equals corrida.RutaIdruta
                                   join corridaAsignacion in _context.CorridaAsignacions on corrida.Idcorrida equals corridaAsignacion.CorridaIdcorrida
-                                  join vehiculo in _context.Vehiculos on corridaAsignacion.VehiculoIdvehiculo equals vehiculo.Idvehiculo
+                                  join vehiculo in _context.Vehiculos on corridaAsignacion.VehiculoIdvehiculo equals vehiculo.IdVehiculo
                                   join tipoVehiculo in _context.Tipovehiculos on vehiculo.TipovehiculoIdtipovehiculo equals tipoVehiculo.Idtipovehiculo
                                   where ruta.Idruta == data.RutaId
                                   && corridaAsignacion.Fecha == fechaConsulta
@@ -452,7 +452,7 @@ namespace SUVAN.BackOffice.Service.Viajes
       var infoBoleto = await (from a in _context.Viajes
                               join b in _context.CorridaAsignacions on a.CorridaAsignacionIdcorridaAsignacion equals b.IdcorridaAsignacion
                               join c in _context.Corrida on b.CorridaIdcorrida equals c.Idcorrida
-                              join d in _context.Vehiculos on b.VehiculoIdvehiculo equals d.Idvehiculo
+                              join d in _context.Vehiculos on b.VehiculoIdvehiculo equals d.IdVehiculo
                               join e in _context.Conductors on b.ConductorIdconductor equals e.Idconductor
                               join f in _context.Parada on a.ParadaInicio equals f.Idparada
                               join g in _context.Parada on a.ParadaFin equals g.Idparada
@@ -524,7 +524,7 @@ namespace SUVAN.BackOffice.Service.Viajes
       var infoBoleto = await (from a in _context.Viajes
                               join b in _context.CorridaAsignacions on a.CorridaAsignacionIdcorridaAsignacion equals b.IdcorridaAsignacion
                               join c in _context.Corrida on b.CorridaIdcorrida equals c.Idcorrida
-                              join d in _context.Vehiculos on b.VehiculoIdvehiculo equals d.Idvehiculo
+                              join d in _context.Vehiculos on b.VehiculoIdvehiculo equals d.IdVehiculo
                               join e in _context.Conductors on b.ConductorIdconductor equals e.Idconductor
                               join f in _context.Parada on a.ParadaInicio equals f.Idparada
                               join g in _context.Parada on a.ParadaFin equals g.Idparada
@@ -1038,7 +1038,7 @@ namespace SUVAN.BackOffice.Service.Viajes
       var corridasResult = await (from ruta in _context.Ruta
                                   join corrida in _context.Corrida on ruta.Idruta equals corrida.RutaIdruta
                                   join corridaAsignacion in _context.CorridaAsignacions on corrida.Idcorrida equals corridaAsignacion.CorridaIdcorrida
-                                  join vehiculo in _context.Vehiculos on corridaAsignacion.VehiculoIdvehiculo equals vehiculo.Idvehiculo
+                                  join vehiculo in _context.Vehiculos on corridaAsignacion.VehiculoIdvehiculo equals vehiculo.IdVehiculo
                                   join tipoVehiculo in _context.Tipovehiculos on vehiculo.TipovehiculoIdtipovehiculo equals tipoVehiculo.Idtipovehiculo
                                   where ruta.Idruta == data.RutaId
                                   && corridaAsignacion.Fecha >= fechaConsulta

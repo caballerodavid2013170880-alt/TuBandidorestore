@@ -96,6 +96,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Fotografium> Fotografia { get; set; }
 
+    public virtual DbSet<GrupoReparacion> GrupoReparacions { get; set; }
+
     public virtual DbSet<Infracc> Infraccs { get; set; }
 
     public virtual DbSet<LiquidacionCabecera> LiquidacionCabeceras { get; set; }
@@ -240,7 +242,7 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Vehiculo> Vehiculos { get; set; }
 
-    public virtual DbSet<VehiculoDetalle> VehiculosDetalle { get; set; }
+    public virtual DbSet<VehiculoDetalle> VehiculoDetalles { get; set; }
 
     public virtual DbSet<VehiculoEspecificacione> VehiculoEspecificaciones { get; set; }
 
@@ -1509,6 +1511,29 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey<Fotografium>(d => d.UsuarioIdusuario)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_table1_usuario1");
+        });
+
+        modelBuilder.Entity<GrupoReparacion>(entity =>
+        {
+            entity.HasKey(e => e.IdGrupo).HasName("PRIMARY");
+
+            entity.ToTable("grupo_reparacion");
+
+            entity.Property(e => e.IdGrupo)
+                .ValueGeneratedNever()
+                .HasColumnName("id_grupo");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(60)
+                .IsFixedLength()
+                .HasColumnName("descripcion");
+            entity.Property(e => e.Rubro)
+                .HasMaxLength(2)
+                .IsFixedLength()
+                .HasColumnName("rubro");
+            entity.Property(e => e.Subrubro)
+                .HasMaxLength(2)
+                .IsFixedLength()
+                .HasColumnName("subrubro");
         });
 
         modelBuilder.Entity<Infracc>(entity =>
@@ -3013,13 +3038,11 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<TipoEje>(entity =>
         {
-            entity.HasKey(e => e.CEje).HasName("PRIMARY");
+            entity.HasKey(e => e.IdTipoEje).HasName("PRIMARY");
 
             entity.ToTable("tipo_eje");
 
-            entity.Property(e => e.CEje)
-                .ValueGeneratedNever()
-                .HasColumnName("c_eje");
+            entity.Property(e => e.IdTipoEje).HasColumnName("Id_tipo_eje");
             entity.Property(e => e.Descrip)
                 .HasMaxLength(50)
                 .IsFixedLength();
@@ -3061,13 +3084,19 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("tipo_reparacion");
 
+            entity.HasIndex(e => e.IdGrupo, "fk_tipoReparacion_grupo");
+
             entity.Property(e => e.IdTipoReparacion).HasColumnName("id_tipo_reparacion");
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(100)
                 .IsFixedLength()
                 .HasColumnName("descripcion");
-            entity.Property(e => e.Grupo).HasColumnName("grupo");
+            entity.Property(e => e.IdGrupo).HasColumnName("id_grupo");
             entity.Property(e => e.Valor).HasColumnName("valor");
+
+            entity.HasOne(d => d.IdGrupoNavigation).WithMany(p => p.TipoReparacions)
+                .HasForeignKey(d => d.IdGrupo)
+                .HasConstraintName("fk_tipoReparacion_grupo");
         });
 
         modelBuilder.Entity<TipoServicio>(entity =>
@@ -3563,7 +3592,7 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<Vehiculo>(entity =>
         {
-            entity.HasKey(e => e.Idvehiculo).HasName("PRIMARY");
+            entity.HasKey(e => e.IdVehiculo).HasName("PRIMARY");
 
             entity.ToTable("vehiculo");
 
@@ -3571,7 +3600,7 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasIndex(e => e.TipovehiculoIdtipovehiculo, "fk_vehiculo_tipovehiculo1_idx");
 
-            entity.Property(e => e.Idvehiculo).HasColumnName("idvehiculo");
+            entity.Property(e => e.IdVehiculo).HasColumnName("Id_vehiculo");
             entity.Property(e => e.Activo)
                 .HasColumnType("bit(1)")
                 .HasColumnName("activo");
@@ -3621,22 +3650,14 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("vehiculo_detalle");
 
-            entity.Property(e => e.IdVehicDetalle)
-                .HasMaxLength(10)
-                .IsFixedLength()
-                .HasColumnName("c_vehic");
+            entity.Property(e => e.IdVehicDetalle).HasColumnName("Id_Vehic_Detalle");
             entity.Property(e => e.Anio).HasColumnName("anio");
             entity.Property(e => e.Area).HasColumnName("area");
-            entity.Property(e => e.Baja).HasColumnName("baja");
-            entity.Property(e => e.IdCognos)
-                .HasMaxLength(15)
+            entity.Property(e => e.Asigna)
+                .HasMaxLength(1)
                 .IsFixedLength()
-                .HasColumnName("c_cognos");
-            entity.Property(e => e.IdDeposito).HasColumnName("Iddeposito");
-            entity.Property(e => e.IdEspeci).HasColumnName("Idespeci");
-            entity.Property(e => e.IdMarca).HasColumnName("Idmarca");
-            entity.Property(e => e.IdEspeci).HasColumnName("Idmodelo");
-            entity.Property(e => e.IdZona).HasColumnName("IdZona");
+                .HasColumnName("asigna");
+            entity.Property(e => e.Baja).HasColumnName("baja");
             entity.Property(e => e.Caja)
                 .HasColumnType("bit(1)")
                 .HasColumnName("caja");
@@ -3692,10 +3713,24 @@ public partial class SuvanDbContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("factura");
             entity.Property(e => e.Gasoline).HasColumnName("gasoline");
+            entity.Property(e => e.IdCognos)
+                .HasMaxLength(15)
+                .IsFixedLength()
+                .HasColumnName("Id_cognos");
+            entity.Property(e => e.IdDeposito).HasColumnName("Id_deposito");
+            entity.Property(e => e.IdEspeci).HasColumnName("Id_especi");
+            entity.Property(e => e.IdMarca).HasColumnName("Id_marca");
+            entity.Property(e => e.IdModelo).HasColumnName("Id_modelo");
             entity.Property(e => e.IdPermisoAceite)
                 .HasMaxLength(30)
                 .IsFixedLength()
-                .HasColumnName("id_permiso_aceite");
+                .HasColumnName("Id_permiso_aceite");
+            entity.Property(e => e.IdTipoEje).HasColumnName("Id_tipo_eje");
+            entity.Property(e => e.IdTipovehi).HasColumnName("Id_tipovehi");
+            entity.Property(e => e.IdVehiculo)
+                .HasMaxLength(45)
+                .HasColumnName("Id_vehiculo");
+            entity.Property(e => e.IdZona).HasColumnName("Id_zona");
             entity.Property(e => e.KmAcum).HasColumnName("km_acum");
             entity.Property(e => e.KmGaran).HasColumnName("km_garan");
             entity.Property(e => e.LocFor)
@@ -3756,12 +3791,15 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.Tariave)
                 .HasColumnType("bit(1)")
                 .HasColumnName("tariave");
-            entity.Property(e => e.TipoEje).HasColumnName("tipo_eje");
             entity.Property(e => e.TipoLicenciaRequerida)
                 .HasMaxLength(3)
                 .IsFixedLength()
                 .HasColumnName("tipo_licencia_requerida");
-            entity.Property(e => e.IdTipoVehi).HasColumnName("tipovehi");
+            entity.Property(e => e.Total).HasColumnName("total");
+            entity.Property(e => e.Usuario)
+                .HasMaxLength(20)
+                .IsFixedLength()
+                .HasColumnName("usuario");
             entity.Property(e => e.VRecupe).HasColumnName("v_recupe");
             entity.Property(e => e.VigenciaPermisoAceite)
                 .HasColumnType("datetime")
@@ -3779,7 +3817,7 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<VehiculoEspecificacione>(entity =>
         {
-            entity.HasKey(e => new { e.IdEspeci, e.IdModVe, e.IdMarca })
+            entity.HasKey(e => new { e.IdEspeci, e.IdMarca, e.IdVehiculo })
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
@@ -3788,8 +3826,8 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.IdEspeci)
                 .ValueGeneratedOnAdd()
                 .HasColumnName("Id_especi");
-            entity.Property(e => e.IdModVe).HasColumnName("Id_mod_ve");
             entity.Property(e => e.IdMarca).HasColumnName("Id_marca");
+            entity.Property(e => e.IdVehiculo).HasColumnName(" id_vehiculo");
             entity.Property(e => e.Altura).HasColumnName("altura");
             entity.Property(e => e.Ancho).HasColumnName("ancho");
             entity.Property(e => e.CapAce).HasColumnName("cap_ace");

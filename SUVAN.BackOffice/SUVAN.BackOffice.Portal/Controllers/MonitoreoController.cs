@@ -69,7 +69,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         CorrDataJSON.Add(new CorridasAsignadasJSONModel
         {
           IdcorridaAsignacion = corrida.IdcorridaAsignacion,
-          IdVehiculo = corrida.VehiculoIdvehiculoNavigation.Idvehiculo,
+          IdVehiculo = corrida.VehiculoIdvehiculoNavigation.IdVehiculo,
           Placa = corrida.VehiculoIdvehiculoNavigation.Placas,
           IdConductor = corrida.ConductorIdconductorNavigation.Idconductor,
           NombreConductor = corrida.ConductorIdconductorNavigation.Nombre,

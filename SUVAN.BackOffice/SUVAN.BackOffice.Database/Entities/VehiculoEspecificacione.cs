@@ -7,7 +7,7 @@ public partial class VehiculoEspecificacione
 {
     public short IdEspeci { get; set; }
 
-    public short IdModVe { get; set; }
+    public int IdVehiculo { get; set; }
 
     public short IdMarca { get; set; }
 

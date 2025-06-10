@@ -18,12 +18,12 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         // 📌 Obtener todos los vehículos
         public async Task<List<VehiculoDetalle>> GetVehiculos()
-            => await context.VehiculosDetalle.ToListAsync();
+            => await context.VehiculoDetalles.ToListAsync();
 
         // 📌 Obtener un vehículo por ID
         public async Task<VehiculoDetalle> GetVehiculoViewModel(int id)
         {
-            var vehiculo = await context.VehiculosDetalle.FirstOrDefaultAsync(x => x.IdVehicDetalle == id);
+            var vehiculo = await context.VehiculoDetalles.FirstOrDefaultAsync(x => x.IdVehicDetalle == id);
             return vehiculo ?? new VehiculoDetalle();
         }
 
@@ -31,14 +31,14 @@ namespace SUVAN.BackOffice.Service.Logistica
         public async Task<bool> AgregarVehiculo(VehiculoDetalle model)
         {
             VehiculoDetalle vehiculo = model.IdVehicDetalle > 0
-                ? await context.VehiculosDetalle.FirstOrDefaultAsync(x => x.IdVehicDetalle == model.IdVehicDetalle)
+                ? await context.VehiculoDetalles.FirstOrDefaultAsync(x => x.IdVehicDetalle == model.IdVehicDetalle)
                 ?? throw new Exception("No se encontró el vehículo")
                 : new VehiculoDetalle();
 
             // Validación de duplicados por PlacaPe
             var placaPeLower = model.PlacaPe?.ToLower();
 
-            var vehiculoExistente = await context.VehiculosDetalle
+            var vehiculoExistente = await context.VehiculoDetalles
                 .Where(x => x.PlacaPe != null && x.PlacaPe.ToLower() == placaPeLower && x.IdVehicDetalle != model.IdVehicDetalle)
                 .FirstOrDefaultAsync();
 
@@ -58,20 +58,20 @@ namespace SUVAN.BackOffice.Service.Logistica
             vehiculo.VigenciaTarjetaCircula = model.VigenciaTarjetaCircula ?? vehiculo.VigenciaTarjetaCircula;
 
             if (model.IdVehicDetalle > 0)
-                context.VehiculosDetalle.Update(vehiculo);
+                context.VehiculoDetalles.Update(vehiculo);
             else
-                context.VehiculosDetalle.Add(vehiculo);
+                context.VehiculoDetalles.Add(vehiculo);
 
             await context.SaveChangesAsync();
             return true;
         }// 📌 Eliminar un vehículo
         public async Task<bool> EliminarVehiculo(int idVehicDetalle)
         {
-            var vehiculo = await context.VehiculosDetalle.FirstOrDefaultAsync(x => x.IdVehicDetalle == idVehicDetalle);
+            var vehiculo = await context.VehiculoDetalles.FirstOrDefaultAsync(x => x.IdVehicDetalle == idVehicDetalle);
             if (vehiculo is null)
                 throw new Exception("No se encontró el vehículo");
 
-            context.VehiculosDetalle.Remove(vehiculo);
+            context.VehiculoDetalles.Remove(vehiculo);
             await context.SaveChangesAsync();
 
             return true;

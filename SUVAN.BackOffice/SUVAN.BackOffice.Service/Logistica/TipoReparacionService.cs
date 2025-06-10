@@ -43,7 +43,7 @@ namespace SUVAN.BackOffice.Service.Logistica
                 {
                     IdTipoReparacion = reparacion.IdTipoReparacion!,
                     Descripcion = reparacion.Descripcion!,
-                    Grupo = reparacion.Grupo!,
+                    Grupo = reparacion.IdGrupo!,
                     Valor = reparacion.Valor!,
                 };
             }
@@ -83,7 +83,7 @@ namespace SUVAN.BackOffice.Service.Logistica
                 throw new Exception("Ya existe una Reparación con la misma descripción");
 
             reparacion.Descripcion = model.Descripcion;
-            reparacion.Grupo = model.Grupo;
+            reparacion.IdGrupo = model.Grupo;
             reparacion.Valor = model.Valor;
 
             if (model.IdTipoReparacion > 0)

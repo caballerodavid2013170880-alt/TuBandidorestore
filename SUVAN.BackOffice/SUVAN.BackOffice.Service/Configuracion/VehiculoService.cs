@@ -51,7 +51,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
       if (id > 0)
       {
         vehiculo = await context.Vehiculos
-       .FirstOrDefaultAsync(x => x.Idvehiculo == id);
+       .FirstOrDefaultAsync(x => x.IdVehiculo == id);
       }
 
       AgregarUnidadViewModel viewModel = new();
@@ -109,7 +109,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
       if (model.UnidadId > 0)
       {
-        vehiculo = await context.Vehiculos.FirstOrDefaultAsync(x => x.Idvehiculo == model.UnidadId);
+        vehiculo = await context.Vehiculos.FirstOrDefaultAsync(x => x.IdVehiculo == model.UnidadId);
 
         if (vehiculo == null)
         {
@@ -122,7 +122,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
 
       var existeVehiculo = await context.Vehiculos
-        .FirstOrDefaultAsync(x => (x.Placas == model.Placas && x.EmpresaIdempresa == empresaId) && x.Idvehiculo != model.UnidadId);
+        .FirstOrDefaultAsync(x => (x.Placas == model.Placas && x.EmpresaIdempresa == empresaId) && x.IdVehiculo != model.UnidadId);
 
       if (existeVehiculo != null)
       {
@@ -131,7 +131,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
       //validar el numero economico si ya existe
       var existeNumeroEconomico = await context.Vehiculos
-        .FirstOrDefaultAsync(x => (x.Numeroeconomico == model.NumeroEconomico && x.EmpresaIdempresa == empresaId) && x.Idvehiculo != model.UnidadId);
+        .FirstOrDefaultAsync(x => (x.Numeroeconomico == model.NumeroEconomico && x.EmpresaIdempresa == empresaId) && x.IdVehiculo != model.UnidadId);
 
       if (existeNumeroEconomico != null)
       {
@@ -167,7 +167,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
         model.Servicios = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ServicioUnidadViewModel>>(model.ServiciosJson);
       }
-      await AgregarServiciosVehiculo(model.Servicios!, vehiculo.Idvehiculo);
+      await AgregarServiciosVehiculo(model.Servicios!, vehiculo.IdVehiculo);
 
       return true;
     }

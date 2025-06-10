@@ -37,7 +37,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
             public string? Descripcion { get; set; }
 
-            public short? Grupo { get; set; }
+            public int? Grupo { get; set; }
 
             public float? Valor { get; set; }
         }

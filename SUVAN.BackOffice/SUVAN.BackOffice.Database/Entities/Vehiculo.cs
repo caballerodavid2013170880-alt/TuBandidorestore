@@ -5,7 +5,7 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class Vehiculo
 {
-    public int Idvehiculo { get; set; }
+    public int IdVehiculo { get; set; }
 
     public sbyte TipovehiculoIdtipovehiculo { get; set; }
 

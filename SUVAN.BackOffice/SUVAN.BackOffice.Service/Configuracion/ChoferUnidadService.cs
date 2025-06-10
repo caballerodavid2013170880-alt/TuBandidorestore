@@ -77,7 +77,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         }).ToList(),
         Vehiculos = unidades.Select(x => new VehiculoVewModel
         {
-          UnidadId = x.Idvehiculo,
+          UnidadId = x.IdVehiculo,
           Descripcion = $"{x.TipovehiculoIdtipovehiculoNavigation.Nombre} - {x.Placas}",
         }).ToList()
       };
@@ -684,7 +684,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         .OrderBy(x => x.TipovehiculoIdtipovehiculoNavigation.Nombre)
         .Select(x => new VehiculoVewModel
         {
-          UnidadId = x.Idvehiculo,
+          UnidadId = x.IdVehiculo,
           Descripcion = $"{x.TipovehiculoIdtipovehiculoNavigation.Nombre} - {x.Placas}",
         })
         .ToListAsync();
