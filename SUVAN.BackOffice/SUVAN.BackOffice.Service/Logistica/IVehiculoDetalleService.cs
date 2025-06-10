@@ -7,6 +7,13 @@ namespace SUVAN.BackOffice.Service.Logistica
     public interface IVehiculoDetalleService
     {
         /// <summary>
+        /// Actualiza la información de un vehículo existente.
+        /// </summary>
+        /// <param name="model">Modelo con los datos actualizados.</param>
+        /// <returns>True si la actualización fue exitosa, false en caso contrario.</returns>
+        Task<bool> ActualizarVehiculo(VehiculoDetalle model);
+
+        /// <summary>
         /// Agrega un nuevo vehículo al sistema.
         /// </summary>
         /// <param name="model">Modelo con los datos del vehículo.</param>
@@ -25,12 +32,12 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// </summary>
         /// <returns>Lista de vehículos disponibles.</returns>
         Task<List<VehiculoDetalle>> GetVehiculos();
-
-        /// <summary>
-        /// Obtiene los datos de un vehículo específico por su ID.
-        /// </summary>
-        /// <param name="id">ID único del vehículo.</param>
-        /// <returns>El modelo del vehículo si existe, null en caso contrario.</returns>
-        Task<VehiculoDetalle?> GetVehiculoViewModel(int id);
+        Task<VehiculoDetalle> WGetVehiculoById(int id);
     }
+
+    /// <summary>
+    /// Obtiene los datos de un vehículo específico por su ID.
+    /// </summary>
+    /// <param name="id">ID único del vehículo.</param>
+    /// <returns>El modelo del vehículo si existe, null en caso contrario.</
 }

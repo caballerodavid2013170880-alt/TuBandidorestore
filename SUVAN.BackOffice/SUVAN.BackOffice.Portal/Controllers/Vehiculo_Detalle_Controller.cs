@@ -4,7 +4,8 @@ using SUVAN.BackOffice.Service.Logistica;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using SUVAN.BackOffice.Portal.Models; // Asegúrate de que esta es la ubicación correcta de ErrorViewModel
+using SUVAN.BackOffice.Portal.Models;
+using SUVAN.BackOffice.Database.Entities;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -19,7 +20,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             _vehiculoDetalleService = vehiculoDetalleService ?? throw new ArgumentNullException(nameof(vehiculoDetalleService));
         }
 
-        // 📌 Listado de vehículos
+        // Listado de vehículos
         public async Task<IActionResult> Index()
         {
             try
@@ -34,13 +35,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
         }
 
-        // Formulario para agregar vehículo
+        // Formulario para agregar o editar vehículo
         public async Task<IActionResult> AgregarVehiculo(int id)
         {
             try
             {
-                var agregarModel = await _vehiculoDetalleService.GetVehiculoViewModel(id);
-                return View(agregarModel);
+                var vehiculo = id > 0 ? await _vehiculoDetalleService.WGetVehiculoById(id) : new VehiculoDetalle();
+                return View(vehiculo);
             }
             catch (Exception ex)
             {
@@ -49,9 +50,9 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
         }
 
-        // Agregar un vehículo
+        // Agregar o editar un vehículo
         [HttpPost]
-        public async Task<IActionResult> AgregarVehiculo(Database.Entities.VehiculoDetalle model)
+        public async Task<IActionResult> AgregarVehiculo(VehiculoDetalle model)
         {
             if (!ModelState.IsValid)
             {
@@ -61,19 +62,22 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
             try
             {
-                var result = await _vehiculoDetalleService.AgregarVehiculo(model);
+                var result = model.IdVehicDetalle > 0
+                    ? await _vehiculoDetalleService.ActualizarVehiculo(model)
+                    : await _vehiculoDetalleService.AgregarVehiculo(model);
+
                 if (result)
                 {
                     return RedirectToAction("Index");
                 }
 
-                _logger.LogWarning("No se pudo agregar el vehículo.");
-                ModelState.AddModelError(string.Empty, "No se pudo agregar el vehículo.");
+                _logger.LogWarning("No se pudo guardar el vehículo.");
+                ModelState.AddModelError(string.Empty, "No se pudo guardar el vehículo.");
                 return View(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al agregar el vehículo.");
+                _logger.LogError(ex, "Error al guardar el vehículo.");
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
@@ -81,7 +85,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
         // Eliminar un vehículo
         [HttpPost]
-        public async Task<IActionResult> EliminarVehiculo([FromBody] Database.Entities.VehiculoDetalle model)
+        public async Task<IActionResult> EliminarVehiculo([FromBody] VehiculoDetalle model)
         {
             if (model?.IdVehicDetalle == null || model.IdVehicDetalle <= 0)
             {
