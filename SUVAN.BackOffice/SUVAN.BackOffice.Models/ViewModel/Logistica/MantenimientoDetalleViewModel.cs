@@ -31,15 +31,32 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public List<TipoReparacionViewModel> TipoReparacionView { get; set; } = new();
 
+        public List<GrupoReparacionViewModel> GrupoReparacionView { get; set; } = new();
+
         public class TipoReparacionViewModel
         {
             public short IdTipoReparacion { get; set; }
 
             public string? Descripcion { get; set; }
 
-            public short? Grupo { get; set; }
+            public int? IdGrupo { get; set; }
 
             public float? Valor { get; set; }
+
+            public List<GrupoReparacionViewModel> Grupos { get; set; } = new();
+        }
+
+        public class GrupoReparacionViewModel
+        {
+            public int IdGrupo { get; set; }
+
+            public string Descripcion { get; set; } = null!;
+
+            public string? Rubro { get; set; }
+
+            public string? Subrubro { get; set; }
+
+            public string GrupoDescripcionId => $"{IdGrupo} - {Descripcion}";
         }
 
     }

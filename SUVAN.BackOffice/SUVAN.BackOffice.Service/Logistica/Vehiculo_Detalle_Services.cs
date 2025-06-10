@@ -68,7 +68,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             if (vehiculo is null)
                 return false;
 
-            context.VehiculosDetalle.Remove(vehiculo);
+            context.VehiculoDetalles.Remove(vehiculo);
             await context.SaveChangesAsync();
 
             return true;

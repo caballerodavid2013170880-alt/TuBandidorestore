@@ -20,10 +20,10 @@ namespace SUVAN.BackOffice.Service.Comercial
         {
             var result = await(from u in _context.Vehiculos
                                where u.EmpresaIdempresa == empresaId
-                               orderby u.Idvehiculo descending
+                               orderby u.IdVehiculo descending
                                select new ObtenerUnidadesViewModel
                                {
-                                   Idunidad = u.Idvehiculo,
+                                   Idunidad = u.IdVehiculo,
                                    NombreUnidad = u.TipovehiculoIdtipovehiculoNavigation.Nombre,
                                    PlacasUnidad = u.Placas,
                                    NumeroEcoUnidad = u.Numeroeconomico,
@@ -37,7 +37,7 @@ namespace SUVAN.BackOffice.Service.Comercial
             var result = await (from u in _context.Vehiculos
                                 select new ObtenerUnidadesViewModel
                                 {
-                                    Idunidad = u.Idvehiculo,
+                                    Idunidad = u.IdVehiculo,
                                     NombreUnidad = u.TipovehiculoIdtipovehiculoNavigation.Nombre,
                                     PlacasUnidad = u.Placas,
                                     NumeroEcoUnidad = u.Numeroeconomico,
@@ -50,8 +50,8 @@ namespace SUVAN.BackOffice.Service.Comercial
         {
             List<ObtenerGeneralesUnidadesViewModel> model = new();
             model = await(from v in  _context.Vehiculos
-                          where v.Idvehiculo == unidadId
-                          orderby v.Idvehiculo descending
+                          where v.IdVehiculo == unidadId
+                          orderby v.IdVehiculo descending
                           select new ObtenerGeneralesUnidadesViewModel
                           {
                               TipoUnidad = v.TipovehiculoIdtipovehiculoNavigation.Nombre,
@@ -87,11 +87,11 @@ namespace SUVAN.BackOffice.Service.Comercial
         {
             List<SeguroUnidadViewModel> model = new();
             model = await (from u in _context.Vehiculos
-                           where u.Idvehiculo == unidadId
-                           orderby u.Idvehiculo descending
+                           where u.IdVehiculo == unidadId
+                           orderby u.IdVehiculo descending
                            select new SeguroUnidadViewModel
                            {
-                               Idunidad = u.Idvehiculo,
+                               Idunidad = u.IdVehiculo,
                                FechaFinSeguro = u.Fechafinseguro,
                                NumeroPoliza = u.Numeropoliza
                            }).ToListAsync();

@@ -2,6 +2,7 @@
 
     const initModalEvent = () => {
         const modalTaller = document.getElementById('kt_modal_mantenimiento_taller');
+
         if (!modalTaller) return;
 
         const showModalTaller = new bootstrap.Modal(modalTaller, {
@@ -12,15 +13,15 @@
         const iconoTaller = document.getElementById('iconoTaller');
         const iconoMecanico = document.getElementById('iconoMecanico');
         const inputTaller = document.getElementById('tallerID');
+        const inputTallerHidden = document.getElementById('tallerIDHidden');
         const inputMecanico = document.getElementById('mecanicoID');
 
         const tabla = $('#kt_tabla_mantenimiento');
 
         const configurarTabla = (data, columnas, onRowClick) => {
-
             if ($.fn.DataTable.isDataTable(tabla)) {
                 tabla.DataTable().destroy();
-                tabla.empty(); 
+                tabla.empty();
             }
 
             tabla.DataTable({
@@ -48,7 +49,6 @@
 
         if (iconoTaller) {
             iconoTaller.addEventListener('click', function () {
-
                 document.getElementById('modalTitulo').textContent = 'Talleres';
 
                 $.ajax({
@@ -57,6 +57,7 @@
                     success: function (data) {
                         showModalTaller.show();
                         configurarTabla(data, [
+                            { title: "ID", data: "idTaller", visible: false },
                             { title: "Nombre del Taller", data: "nombreTaller", className: 'min-w-125px text-justify' },
                             { title: "Zona", data: "nombreZona", className: 'min-w-125px text-center' },
                             { title: "Depósito", data: "nombreDeposito", className: 'min-w-125px text-center' },
@@ -64,6 +65,13 @@
                             { title: "Teléfono", data: "telefono", className: 'min-w-125px text-center' }
                         ], function (rowData) {
                             inputTaller.value = rowData.nombreTaller;
+                            inputTallerHidden.value = rowData.idTaller;
+
+                            inputMecanico.value = '';
+                            const inputMecanicoHidden = document.getElementById('mecanicoIDHidden');
+                            if (inputMecanicoHidden) {
+                                inputMecanicoHidden.value = '';
+                            }
                         });
                     },
                     error: function () {
@@ -75,11 +83,12 @@
 
         if (iconoMecanico) {
             iconoMecanico.addEventListener('click', function () {
+                const idTaller = inputTallerHidden.value;
 
-                document.getElementById('modalTitulo').textContent = 'Mecanicos';
+                document.getElementById('modalTitulo').textContent = 'Mecánicos';
 
                 $.ajax({
-                    url: "/Mantenimiento/ObtenerMecanico",
+                    url: `/Mantenimiento/ObtenerMecanico?tallerId=${idTaller}`,
                     type: 'GET',
                     success: function (data) {
                         showModalTaller.show();
@@ -110,4 +119,3 @@
 KTUtil.onDOMContentLoaded(function () {
     KTMantenimiento.init();
 });
-

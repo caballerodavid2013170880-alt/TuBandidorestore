@@ -26,6 +26,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> AgregarTipoReparacion(int id)
         {
             var agregarModel = await reparacionService.GetTipoReparacionViewModel(id);
+            agregarModel.Grupos = reparacionService.ObtenerGrupoReparacion();
             return View(agregarModel);
         }
 
@@ -34,6 +35,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
+                model.Grupos = reparacionService.ObtenerGrupoReparacion();
+
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
                 var result = await reparacionService.AgregarTipoReparacion(model);
 
                 if (result)

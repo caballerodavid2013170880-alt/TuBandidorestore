@@ -11,6 +11,6 @@ namespace SUVAN.BackOffice.Service.Logistica
     {
         Task<List<TallerViewModel>> ObtenerTaller(int IdEmpresa);
 
-        Task<List<MecanicoViewModel>> ObtenerMecanico(int IdEmpresa);
+        Task<List<MecanicoViewModel>> ObtenerMecanico(int tallerId);
     }
 }

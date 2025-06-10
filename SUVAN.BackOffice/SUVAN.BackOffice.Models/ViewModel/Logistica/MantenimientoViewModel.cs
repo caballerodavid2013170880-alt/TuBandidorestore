@@ -12,8 +12,9 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public class ReporteOrdenViewModel
         {
-            public string? Desde { get; set; } = string.Empty;
-            public string? Hasta { get; set; } = string.Empty;
+            public string Desde { get; set; } = string.Empty;
+            public string Hasta { get; set; } = string.Empty;
         }
+
     }
 }

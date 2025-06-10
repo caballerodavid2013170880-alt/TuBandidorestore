@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -24,6 +25,7 @@ namespace SUVAN.BackOffice.Service.Logistica
                                    where t.ZonaIdzonaNavigation.IdEmpresaNavigation.Idempresa == IdEmpresa
                                    select new TallerViewModel
                                    {
+                                       IdTaller = t.IdTaller,
                                        NombreTaller = t.NombreTaller,
                                        NombreZona = t.ZonaIdzonaNavigation.NombreZona,
                                        NombreDeposito = t.IdDepositoNavigation.DepositoNombre,
@@ -34,22 +36,19 @@ namespace SUVAN.BackOffice.Service.Logistica
             return resultado;
         }
 
-        public async Task<List<MecanicoViewModel>> ObtenerMecanico(int IdEmpresa)
+        public async Task<List<MecanicoViewModel>> ObtenerMecanico(int tallerId)
         {
-            var resultado = await (from m in context.Mecanicos
-                                   where m.IdDepositoNavigation.IdEmpresaNavigation.Idempresa == IdEmpresa
-                                   select new MecanicoViewModel
-                                   {
-                                       Nombre = m.Nombre,
-                                       NombreDeposito = m.IdDepositoNavigation.DepositoNombre,
-                                       NombreTaller = m.IdTallerNavigation.NombreTaller,
-                                       Puesto = m.Puesto,
-                                       
-                                   }).ToListAsync();
+            var mecanicos = await context.Mecanicos.Where(m => m.IdTaller == tallerId).Select(m => new MecanicoViewModel
+            {
+                    IdTaller = m.IdTaller,
+                    Nombre = m.Nombre,
+                    Puesto = m.Puesto,
+                    NombreTaller = m.IdTallerNavigation.NombreTaller,
+                    NombreDeposito = m.IdDepositoNavigation.DepositoNombre
 
-            return resultado;
+            }).ToListAsync();
+
+            return mecanicos;
         }
-
-
     }
 }

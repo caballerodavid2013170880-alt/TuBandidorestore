@@ -9,9 +9,11 @@ public partial class TipoReparacion
 
     public string? Descripcion { get; set; }
 
-    public short? Grupo { get; set; }
-
     public float? Valor { get; set; }
+
+    public int? IdGrupo { get; set; }
+
+    public virtual GrupoReparacion? IdGrupoNavigation { get; set; }
 
     public virtual ICollection<MantenimientoDet> MantenimientoDets { get; set; } = new List<MantenimientoDet>();
 }

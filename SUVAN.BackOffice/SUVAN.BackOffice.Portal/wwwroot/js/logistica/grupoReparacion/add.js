@@ -1,7 +1,7 @@
 ﻿"use strict";
 
 // Class definition
-var KTReparacion = function () {
+var KTGrupo = function () {
     // Elements
     var form;
     var submitButton;
@@ -15,28 +15,16 @@ var KTReparacion = function () {
             form,
             {
                 fields: {
-
                     'Descripcion': {
                         validators: {
                             notEmpty: {
                                 message: 'Descripción requerida'
                             },
-                        }
-                    },
-                    'IdGrupo': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Grupo requerido',
-                                callback: function (value, validator, $field) {
-                                    return value !== "";
-                                }
-                            }
-                        }
-                    },
-                    'Valor': {
-                        validators: {
-                            notEmpty: {
-                                message: 'Valor requerido'
+                            stringLength: {
+                                min: 7,
+                                max: 60,
+
+                                message: 'deben tener entre 7 y 60 caracteres',
                             },
                         }
                     },
@@ -71,19 +59,14 @@ var KTReparacion = function () {
         });
     }
 
+   
+
     // Public functions
     return {
         // Initialization
         init: function () {
-            form = document.querySelector('#kt_reparacion_in_form');
-            submitButton = document.querySelector('#kt_reparacion_in_submit');
-
-            document.querySelector("#Valor").addEventListener("input", function () {
-                this.value = this.value.replace(/[^0-9.]/g, '');
-                if ((this.value.match(/\./g) || []).length > 1) {
-                    this.value = this.value.slice(0, -1);
-                }
-            });
+            form = document.querySelector('#kt_grupo_in_form');
+            submitButton = document.querySelector('#kt_grupo_in_submit');
 
             handleValidation();
 
@@ -95,5 +78,5 @@ var KTReparacion = function () {
 
 // On document ready
 KTUtil.onDOMContentLoaded(function () {
-    KTReparacion.init();
+    KTGrupo.init();
 });
