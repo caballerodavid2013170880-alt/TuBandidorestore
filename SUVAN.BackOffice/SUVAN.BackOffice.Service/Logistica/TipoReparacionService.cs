@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -20,7 +21,7 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public async Task<List<TipoReparacion>> GetTipoReparacion()
         {
-            var rerparacion = await context.TipoReparacions.ToListAsync();
+            var rerparacion = await context.TipoReparacions.Include(g => g.IdGrupoNavigation).ToListAsync();
 
             return rerparacion!;
         }
@@ -43,7 +44,7 @@ namespace SUVAN.BackOffice.Service.Logistica
                 {
                     IdTipoReparacion = reparacion.IdTipoReparacion!,
                     Descripcion = reparacion.Descripcion!,
-                    Grupo = reparacion.IdGrupo!,
+                    IdGrupo = reparacion.IdGrupo!,
                     Valor = reparacion.Valor!,
                 };
             }
@@ -83,7 +84,7 @@ namespace SUVAN.BackOffice.Service.Logistica
                 throw new Exception("Ya existe una Reparación con la misma descripción");
 
             reparacion.Descripcion = model.Descripcion;
-            reparacion.IdGrupo = model.Grupo;
+            reparacion.IdGrupo = model.IdGrupo;
             reparacion.Valor = model.Valor;
 
             if (model.IdTipoReparacion > 0)
@@ -130,6 +131,23 @@ namespace SUVAN.BackOffice.Service.Logistica
             // Volver a activar el seguimiento de entidades relacionadas
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
+        }
+
+        /// <summary>
+        /// Obtiene el ViewModel del Grupo
+        /// </summary>
+        /// <returns>ViewModel para el Taller especifico.</returns>
+
+        public List<GrupoReparacionViewModel> ObtenerGrupoReparacion()
+        {
+            var resul = (from o in context.GrupoReparacions
+                         select new GrupoReparacionViewModel()
+                         {
+                             IdGrupo = o.IdGrupo,
+                             Descripcion = o.Descripcion
+                         }).ToList();
+
+            return resul;
         }
 
     }

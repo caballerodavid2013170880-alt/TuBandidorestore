@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -34,5 +35,11 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
         Task<bool> EliminarTipoReparacion(int IdReparacion);
+
+        /// <summary>
+        /// Obtiene el ViewModel del Grupo
+        /// </summary>
+        /// <returns>ViewModel para el Taller especifico.</returns>
+        List<GrupoReparacionViewModel> ObtenerGrupoReparacion();
     }
 }

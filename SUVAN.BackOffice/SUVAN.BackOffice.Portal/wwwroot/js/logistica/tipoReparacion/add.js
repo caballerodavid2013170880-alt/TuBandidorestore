@@ -23,11 +23,14 @@ var KTReparacion = function () {
                             },
                         }
                     },
-                    'Grupo': {
+                    'IdGrupo': {
                         validators: {
                             notEmpty: {
-                                message: 'Grupo requerido'
-                            },
+                                message: 'Grupo requerido',
+                                callback: function (value, validator, $field) {
+                                    return value !== "";
+                                }
+                            }
                         }
                     },
                     'Valor': {
@@ -81,11 +84,6 @@ var KTReparacion = function () {
                     this.value = this.value.slice(0, -1);
                 }
             });
-
-            document.querySelector("#Grupo").addEventListener("input", function () {
-                this.value = this.value.replace(/[^0-9]/g, '');
-            });
-
 
             handleValidation();
 

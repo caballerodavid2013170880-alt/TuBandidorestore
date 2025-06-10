@@ -39,9 +39,11 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
             public string? Descripcion { get; set; }
 
-            public int? Grupo { get; set; }
+            public int? IdGrupo { get; set; }
 
             public float? Valor { get; set; }
+
+            public List<GrupoReparacionViewModel> Grupos { get; set; } = new();
         }
 
         public class GrupoReparacionViewModel
@@ -53,6 +55,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public string? Rubro { get; set; }
 
             public string? Subrubro { get; set; }
+
+            public string GrupoDescripcionId => $"{IdGrupo} - {Descripcion}";
         }
 
     }
