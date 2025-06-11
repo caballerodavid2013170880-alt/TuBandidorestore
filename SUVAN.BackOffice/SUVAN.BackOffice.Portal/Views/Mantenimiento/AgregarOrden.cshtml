@@ -161,14 +161,39 @@
 
                     <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_mantenimiento">
                         <thead>
-                            <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                            <tr class="text-center text-muted fw-bold fs-7 text-uppercase gs-0">
                                 <th class="min-w-125px">Reparación</th>
                                 <th class="min-w-125px">Cantidad</th>
                                 <th class="min-w-125px">Referencia</th>
                                 <th class="min-w-125px">Valor</th>
                             </tr>
                         </thead>
-                        <tbody class="text-gray-600 fw-semibold">
+                        <tbody class="text-gray-600 fw-semibold" style="width: 800px; table-layout: fixed;">
+                            <tr>
+                                <td>
+                                    <div class="input-group input-group-sm w-100">
+                                        <span class="input-group-text rounded-start" id="iconoTaller" style="cursor:pointer;">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                        <input class="form-control rounded-end" readonly />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm w-100">
+                                        <input type="number" class="form-control" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm w-100">
+                                        <input type="text" class="form-control" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group input-group-sm w-100">
+                                        <input type="number" class="form-control" />
+                                    </div>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                     <div class="text-end mt-3">

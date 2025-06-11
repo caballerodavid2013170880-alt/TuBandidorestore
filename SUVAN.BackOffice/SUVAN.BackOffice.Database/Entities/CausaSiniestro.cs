@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace SUVAN.BackOffice.Database.Entities;
 
-public partial class CausaMantenimiento
+public partial class CausaSiniestro
 {
-    public int IdCausamantenimiento { get; set; }
+    public short IdCausaSiniestro { get; set; }
 
     public string? Descripcion { get; set; }
 }

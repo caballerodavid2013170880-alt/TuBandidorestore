@@ -32,6 +32,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<CausaMantenimiento> CausaMantenimientos { get; set; }
 
+    public virtual DbSet<CausaSiniestro> CausaSiniestros { get; set; }
+
     public virtual DbSet<Codigocorreo> Codigocorreos { get; set; }
 
     public virtual DbSet<Codigodescuento> Codigodescuentos { get; set; }
@@ -199,6 +201,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<TipoReparacion> TipoReparacions { get; set; }
 
     public virtual DbSet<TipoServicio> TipoServicios { get; set; }
+
+    public virtual DbSet<TipoSiniestro> TipoSiniestros { get; set; }
 
     public virtual DbSet<Tipocodigodescuento> Tipocodigodescuentos { get; set; }
 
@@ -457,18 +461,24 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("causa_mantenimiento");
 
-            entity.HasIndex(e => e.PreventivoIdpreventivo, "fk_causamantenimiento_preventivo");
-
             entity.Property(e => e.IdCausamantenimiento).HasColumnName("id_causamantenimiento");
-            entity.Property(e => e.Nombre)
-                .HasMaxLength(50)
-                .HasColumnName("nombre");
-            entity.Property(e => e.PreventivoIdpreventivo).HasColumnName("preventivo_idpreventivo");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(60)
+                .IsFixedLength()
+                .HasColumnName("descripcion");
+        });
 
-            entity.HasOne(d => d.PreventivoIdpreventivoNavigation).WithMany(p => p.CausaMantenimientos)
-                .HasForeignKey(d => d.PreventivoIdpreventivo)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_causamantenimiento_preventivo");
+        modelBuilder.Entity<CausaSiniestro>(entity =>
+        {
+            entity.HasKey(e => e.IdCausaSiniestro).HasName("PRIMARY");
+
+            entity.ToTable("causa_siniestro");
+
+            entity.Property(e => e.IdCausaSiniestro).HasColumnName("Id_causa_siniestro");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("descripcion");
         });
 
         modelBuilder.Entity<Codigocorreo>(entity =>
@@ -1519,9 +1529,7 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("grupo_reparacion");
 
-            entity.Property(e => e.IdGrupo)
-                .ValueGeneratedNever()
-                .HasColumnName("id_grupo");
+            entity.Property(e => e.IdGrupo).HasColumnName("id_grupo");
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(60)
                 .IsFixedLength()
@@ -3109,6 +3117,20 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<TipoSiniestro>(entity =>
+        {
+            entity.HasKey(e => e.IdTipoSiniestro).HasName("PRIMARY");
+
+            entity.ToTable("tipo_siniestro");
+
+            entity.Property(e => e.IdTipoSiniestro).HasColumnName("Id_tipo_siniestro");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(60)
+                .IsFixedLength()
+                .HasColumnName("descripcion");
+            entity.Property(e => e.IdCausaSiniestro).HasColumnName("Id_causa_siniestro");
         });
 
         modelBuilder.Entity<Tipocodigodescuento>(entity =>
