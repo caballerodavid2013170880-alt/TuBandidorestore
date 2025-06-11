@@ -10,20 +10,11 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
     {
         public int IdCausamantenimiento { get; set; }
 
-        public int PreventivoIdpreventivo { get; set; }
+        public string? Descripcion { get; set; } = null!;
 
-        public string Nombre { get; set; } = null!;
+        public string IdDescripcion => $"{IdCausamantenimiento} - {Descripcion}";
 
-        public List<PreventivoViewModel> PreventivoView { get; set; } = new();
-
-        public class PreventivoViewModel
-        {
-            public int Idpreventivo { get; set; }
-            public string PreventivoNombre { get; set; } = null!;
-            public string IdNombreP => $"{Idpreventivo} - {PreventivoNombre}";
-            public List<TipoServicioViewModel> TipoServicio { get; set; } = new();
-
-        }
+        public List<TipoServicioViewModel> TipoServicioView { get; set; } = new();
 
         public class TipoServicioViewModel
         {

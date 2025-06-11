@@ -64,6 +64,7 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<IVehiculoDetalleService, VehiculoDetalleService>();
             services.AddTransient<IMantenimientoService, MantenimientoService>();
             services.AddTransient<IGrupoReparacionService, GrupoReparacionService>();
+            services.AddTransient<ICausaMantenimientoService, CausaMantenimientoService>();
         }
 
         /// <summary>
