@@ -7,6 +7,14 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="ViewModel\Logistica\Vehiculo_Detalle_ViewModel.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Content Include="ViewModel\Logistica\Vehiculo_Detalle_ViewModel.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Http.Features" Version="5.0.17" />
 		<PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
 	</ItemGroup>

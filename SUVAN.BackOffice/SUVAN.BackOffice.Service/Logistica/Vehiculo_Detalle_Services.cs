@@ -40,7 +40,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             //  Obtenemos el vehículo existente o creamos uno nuevo
             var vehiculo = await context.VehiculoDetalles.FindAsync(model.IdVehicDetalle) ?? new VehiculoDetalle();
 
-            
+
             // Asignamos valores sin sobrescribir datos existentes con null
             vehiculo.IdZona = model.IdZona != default ? model.IdZona : vehiculo.IdZona;
             vehiculo.IdDeposito = model.IdDeposito != default ? model.IdDeposito : vehiculo.IdDeposito;
@@ -74,19 +74,19 @@ namespace SUVAN.BackOffice.Service.Logistica
             return true;
         }
 
-        public Task<bool> ActualizarVehiculo(VehiculoDetalle model)
+        public async Task<bool> ActualizarVehiculo(VehiculoDetalle model)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
-        public Task<VehiculoDetalle> WGetVehiculoById(int id)
+        public async Task<VehiculoDetalle> WGetVehiculoById(int id)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public Task<VehiculoDetalle?> GetVehiculoViewModel(int id)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

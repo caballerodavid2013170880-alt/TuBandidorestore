@@ -27,6 +27,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public string Color { get; set; } = string.Empty;
         public string Rotulo { get; set; } = string.Empty;
         public string PlacaPE { get; set; } = string.Empty;
+        public string? PlacaPe { get; set; }
         public string Serie { get; set; } = string.Empty;
         public string Motor { get; set; } = string.Empty;
         public string Carroc { get; set; } = string.Empty;
@@ -85,5 +86,6 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public int IdVehiculo { get; set; }
         public DateTime? VigenciaPermisoAceite { get; set; }
         public DateTime? VigenciaTarjetaCircula { get; set; }
+        public int IdVehiculoDetalle { get; set; }
     }
 }
