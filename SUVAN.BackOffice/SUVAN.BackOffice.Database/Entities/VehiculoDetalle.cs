@@ -9,29 +9,29 @@ public partial class VehiculoDetalle
 
     public string? IdVehiculo { get; set; }
 
-    public short? IdTipovehi { get; set; }
+    public int? IdTipovehi { get; set; }
 
-    public short? IdMarca { get; set; }
+    public int? IdMarca { get; set; }
 
-    public int IdZona { get; set; }
+    public int? IdZona { get; set; }
 
-    public int IdDeposito { get; set; }
+    public int? IdDeposito { get; set; }
 
-    public short? IdEspeci { get; set; }
+    public int? IdEspeci { get; set; }
 
-    public short? IdModelo { get; set; }
+    public int? IdModelo { get; set; }
 
-    public string? IdPermisoAceite { get; set; }
+    public int? IdPermisoAceite { get; set; }
 
-    public string? IdCognos { get; set; }
+    public int? IdCognos { get; set; }
 
-    public short? IdTipoEje { get; set; }
+    public int? IdTipoEje { get; set; }
 
-    public short? Negocio { get; set; }
+    public int? Negocio { get; set; }
 
-    public short? Area { get; set; }
+    public int? Area { get; set; }
 
-    public short? Anio { get; set; }
+    public int? Anio { get; set; }
 
     public string? Color { get; set; }
 
@@ -47,9 +47,9 @@ public partial class VehiculoDetalle
 
     public string? TarCirc { get; set; }
 
-    public short? Gasoline { get; set; }
+    public int? Gasoline { get; set; }
 
-    public short? Encierro { get; set; }
+    public int? Encierro { get; set; }
 
     public ulong? CopFac { get; set; }
 
@@ -87,9 +87,9 @@ public partial class VehiculoDetalle
 
     public float? RegFed { get; set; }
 
-    public short? EdregPl { get; set; }
+    public int? EdregPl { get; set; }
 
-    public short? ColEst { get; set; }
+    public int? ColEst { get; set; }
 
     public ulong? Caja { get; set; }
 
@@ -99,21 +99,21 @@ public partial class VehiculoDetalle
 
     public ulong? Rentado { get; set; }
 
-    public short? ColRuta { get; set; }
+    public int? ColRuta { get; set; }
 
-    public short? CauBaja { get; set; }
+    public int? CauBaja { get; set; }
 
     public float? VRecupe { get; set; }
 
     public float? KmGaran { get; set; }
 
-    public short? MesGara { get; set; }
+    public int? MesGara { get; set; }
 
     public string? EcoAnt { get; set; }
 
     public ulong? LocFor { get; set; }
 
-    public short? Baja { get; set; }
+    public int? Baja { get; set; }
 
     public int? PesoMinimo { get; set; }
 

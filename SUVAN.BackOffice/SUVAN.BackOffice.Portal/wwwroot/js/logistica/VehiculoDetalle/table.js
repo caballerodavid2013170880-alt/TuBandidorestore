@@ -1,101 +1,96 @@
 ﻿"use strict";
 
-var KTVehiculoList = function () {
+var KTVehiculoDetalleList = function () {
     var table = document.getElementById('kt_table_vehiculo_detalle');
     var datatable;
 
     var initVehiculoTable = function () {
-        const tableRows = table.querySelectorAll('tbody tr');
-
-        tableRows.forEach(row => {
-            const dataRow = row.querySelectorAll('td');
-        });
-
         datatable = $(table).DataTable({
-            "info": false,
-            'order': [],
-            "pageLength": 10,
-            "lengthChange": false,
-            'columnDefs': [
-                { orderable: false, targets: 4 } // Deshabilitar orden en columna de acciones
+            info: false,
+            order: [],
+            pageLength: 10,
+            lengthChange: false,
+            columnDefs: [
+                { orderable: false, targets: -1 } // Última columna (acciones)
             ]
         });
 
         datatable.on('draw', function () {
             handleDeleteRows();
         });
-    }
+    };
 
     var handleSearchDatatable = () => {
         const filterSearch = document.querySelector('[data-kt-vehiculo-table-filter="search"]');
         filterSearch.addEventListener('keyup', function (e) {
             datatable.search(e.target.value).draw();
         });
-    }
+    };
 
     var handleDeleteRows = () => {
         const deleteButtons = table.querySelectorAll('[data-kt-vehiculo-table-filter="delete_row"]');
 
-        deleteButtons.forEach(d => {
-            d.addEventListener('click', function (e) {
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function (e) {
                 e.preventDefault();
+
                 const parent = e.target.closest('tr');
-                const vehiculoName = parent.querySelectorAll('td')[3].innerText; // Placa
+                const vehiculoId = button.getAttribute('data-kt-vehiculo-id');
+                const nombreVehiculo = parent.querySelector('td').innerText;
 
                 Swal.fire({
-                    text: `¿Está seguro que desea eliminar el vehículo con placa ${vehiculoName}?`,
+                    text: `¿Deseas eliminar el vehículo "${nombreVehiculo}"?`,
                     icon: "warning",
                     showCancelButton: true,
-                    buttonsStyling: false,
                     confirmButtonText: "Sí, eliminar",
-                    cancelButtonText: "No, cancelar",
+                    cancelButtonText: "Cancelar",
+                    buttonsStyling: false,
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
                         cancelButton: "btn fw-bold btn-active-light-primary"
                     },
                     preConfirm: async () => {
-                        const vehiculoId = parseInt(d.getAttribute('data-kt-vehiculo-delete-item'));
-                        const response = await fetch('/VehiculoDetalle/EliminarVehiculo', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ vehiculoId: vehiculoId })
-                        });
-                        const data = await response.json();
-                        console.log(data);
+                        try {
+                            const response = await fetch('/VehiculoDetalle/Eliminar', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ Id_Vehic_Detalle: parseInt(vehiculoId) })
+                            });
+                            if (!response.ok) throw new Error('No se pudo eliminar');
+                            return await response.json();
+                        } catch (error) {
+                            Swal.showValidationMessage(`Error: ${error.message}`);
+                        }
                     }
-                }).then(function (result) {
-                    if (result.value) {
+                }).then(result => {
+                    if (result.isConfirmed) {
                         Swal.fire({
-                            text: `Usted eliminó el vehículo con placa ${vehiculoName}`,
+                            text: "Vehículo eliminado correctamente",
                             icon: "success",
                             buttonsStyling: false,
                             confirmButtonText: "Aceptar",
                             customClass: {
                                 confirmButton: "btn fw-bold btn-primary",
                             }
-                        }).then(function () {
+                        }).then(() => {
                             datatable.row($(parent)).remove().draw();
                         });
                     }
                 });
-            })
+            });
         });
-    }
+    };
 
     return {
         init: function () {
-            if (!table) {
-                return;
-            }
+            if (!table) return;
             initVehiculoTable();
             handleSearchDatatable();
             handleDeleteRows();
         }
-    }
+    };
 }();
 
 KTUtil.onDOMContentLoaded(function () {
-    KTVehiculoList.init();
+    KTVehiculoDetalleList.init();
 });

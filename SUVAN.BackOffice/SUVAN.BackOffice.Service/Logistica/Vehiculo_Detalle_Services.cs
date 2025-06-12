@@ -40,7 +40,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             //  Obtenemos el vehículo existente o creamos uno nuevo
             var vehiculo = await context.VehiculoDetalles.FindAsync(model.IdVehicDetalle) ?? new VehiculoDetalle();
 
-            
+
             // Asignamos valores sin sobrescribir datos existentes con null
             vehiculo.IdZona = model.IdZona != default ? model.IdZona : vehiculo.IdZona;
             vehiculo.IdDeposito = model.IdDeposito != default ? model.IdDeposito : vehiculo.IdDeposito;
