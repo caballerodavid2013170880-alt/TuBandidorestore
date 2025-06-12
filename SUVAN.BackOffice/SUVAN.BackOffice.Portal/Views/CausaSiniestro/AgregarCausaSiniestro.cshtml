@@ -24,7 +24,7 @@
 
 
 
-    var isAgregarText = Model.Id_causa_siniestro == 0 ? "Agregar" : "Editar";
+    var isAgregarText = Model.IdCausaSiniestro == 0 ? "Agregar" : "Editar";
 }
 
 <!--begin::Toolbar-->
@@ -48,7 +48,7 @@
             <div class="card-body py-4">
                 <form class="form w-100" novalidate="novalidate" id="kt_causa_siniestro_in_form" data-kt-redirect-url="/" asp-controller="CausaSiniestro" asp-action="AgregarCausaSiniestro" method="post">
                     @Html.AntiForgeryToken()
-                    <input asp-for="Id_causa_siniestro" type="hidden" />
+                    <input asp-for="IdCausaSiniestro" type="hidden" />
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">

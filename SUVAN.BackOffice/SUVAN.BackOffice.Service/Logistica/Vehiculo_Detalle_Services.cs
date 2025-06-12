@@ -74,19 +74,19 @@ namespace SUVAN.BackOffice.Service.Logistica
             return true;
         }
 
-        public Task<bool> ActualizarVehiculo(VehiculoDetalle model)
+        public async Task<bool> ActualizarVehiculo(VehiculoDetalle model)
         {
-            throw new NotImplementedException();
+            return false;
         }
 
-        public Task<VehiculoDetalle> WGetVehiculoById(int id)
+        public async Task<VehiculoDetalle> WGetVehiculoById(int id)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public Task<VehiculoDetalle?> GetVehiculoViewModel(int id)
         {
-            throw new NotImplementedException();
+            return null;
         }
     }
 }

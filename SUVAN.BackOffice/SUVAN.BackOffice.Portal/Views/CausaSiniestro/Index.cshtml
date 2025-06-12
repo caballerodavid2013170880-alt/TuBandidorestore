@@ -66,20 +66,20 @@
 
                         {
                             <tr>
-                                <td>@causa.Id_causa_siniestro</td>
+                                <td>@causa.IdCausaSiniestro</td>
                                 <td>@causa.Descripcion</td>
                                 <td class="text-end">
                                     @if (permisosPagina!.Editar)
 
                                     {
-                                        <a href="~/CausaSiniestro/AgregarCausaSiniestro/@causa.Id_causa_siniestro" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                        <a href="~/CausaSiniestro/AgregarCausaSiniestro/@causa.IdCausaSiniestro" class="btn btn-icon btn-active-light-primary w-30px h-30px">
                                             <i class="ki-outline ki-pencil fs-3"></i>
                                         </a>
                                     }
                                     @if (permisosPagina!.Eliminar)
 
                                     {
-                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-causa-siniestro-delete-item="@causa.Id_causa_siniestro" data-kt-causa-siniestro-table-filter="delete_row">
+                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-causa-siniestro-delete-item="@causa.IdCausaSiniestro" data-kt-causa-siniestro-table-filter="delete_row">
                                             <i class="ki-outline ki-trash fs-3"></i>
                                         </a>
                                     }

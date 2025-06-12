@@ -27,7 +27,7 @@
 
 
 
-    var isAgregarText = Model.IdVehicDetalle == 0 ? "Agregar" : "Editar";
+    var isAgregarText = Model != null ? Model.IdVehicDetalle == 0 ? "Agregar" : "Editar" : "";
 }
 
 <!--begin::Toolbar-->

@@ -1,12 +1,11 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class CausaSiniestro
 {
-    [Key]
-    public int Id_causa_siniestro { get; set; }
+    public short IdCausaSiniestro { get; set; }
 
     public string? Descripcion { get; set; }
 }

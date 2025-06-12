@@ -1,10 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -24,12 +20,12 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public async Task<CausaSiniestroViewModel> GetCausaSiniestroViewModel(int id)
         {
-            var causa = await context.CausaSiniestros.FirstOrDefaultAsync(x => x.Id_causa_siniestro == id);
+            var causa = await context.CausaSiniestros.FirstOrDefaultAsync(x => x.IdCausaSiniestro == id);
             if (causa == null) return new CausaSiniestroViewModel();
 
             return new CausaSiniestroViewModel
             {
-                Id_causa_siniestro = causa.Id_causa_siniestro,
+                Id_causa_siniestro = causa.IdCausaSiniestro,
                 Descripcion = causa.Descripcion
             };
         }
@@ -40,7 +36,7 @@ namespace SUVAN.BackOffice.Service.Logistica
 
             if (model.Id_causa_siniestro > 0)
             {
-                causa = await context.CausaSiniestros.FirstOrDefaultAsync(x => x.Id_causa_siniestro == model.Id_causa_siniestro);
+                causa = await context.CausaSiniestros.FirstOrDefaultAsync(x => x.IdCausaSiniestro == model.Id_causa_siniestro);
                 if (causa == null) throw new Exception("No se encontró la causa del siniestro");
             }
             else
@@ -49,7 +45,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             }
 
             var causaExistente = await context.CausaSiniestros.FirstOrDefaultAsync(x =>
-                x.Descripcion.ToLower() == model.Descripcion.ToLower() && x.Id_causa_siniestro != model.Id_causa_siniestro);
+                x.Descripcion.ToLower() == model.Descripcion.ToLower() && x.IdCausaSiniestro != model.Id_causa_siniestro);
 
             if (causaExistente is not null)
                 throw new Exception("Ya existe una causa de siniestro con la misma descripción");
@@ -71,11 +67,11 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public async Task<bool> EliminarCausaSiniestro(int IdCausaSiniestro)
         {
-            var causa = await context.CausaSiniestros.FirstOrDefaultAsync(x => x.Id_causa_siniestro == IdCausaSiniestro);
+            var causa = await context.CausaSiniestros.FirstOrDefaultAsync(x => x.IdCausaSiniestro == IdCausaSiniestro);
 
             if (causa is null) throw new Exception("No se encontró la causa del siniestro");
 
-            var delete = await context.CausaSiniestros.Where(x => x.Id_causa_siniestro == IdCausaSiniestro).ExecuteDeleteAsync();
+            var delete = await context.CausaSiniestros.Where(x => x.IdCausaSiniestro == IdCausaSiniestro).ExecuteDeleteAsync();
             await context.SaveChangesAsync();
 
             return delete > 0;
