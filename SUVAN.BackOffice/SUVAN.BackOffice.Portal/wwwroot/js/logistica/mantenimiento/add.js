@@ -11,10 +11,16 @@
         });
 
         const iconoTaller = document.getElementById('iconoTaller');
-        const iconoMecanico = document.getElementById('iconoMecanico');
         const inputTaller = document.getElementById('tallerID');
         const inputTallerHidden = document.getElementById('tallerIDHidden');
+
+        const iconoMecanico = document.getElementById('iconoMecanico');
         const inputMecanico = document.getElementById('mecanicoID');
+
+        const iconoCausa = document.getElementById('iconoCausaMantenimiento');
+        const inputCausa = document.getElementById('causaMantenimientoID');
+
+        const botonReparacion = document.getElementById('btn_agregar_reparacion')
 
         const tabla = $('#kt_tabla_mantenimiento');
 
@@ -46,6 +52,32 @@
                 showModalTaller.hide();
             });
         };
+
+        function agregarFilaReparacion(descripcion, unidades) {
+            const template = document.getElementById("template-fila-reparacion");
+            const tbody = document.getElementById("tablaReparaciones");
+
+            const nuevaFila = template.content.cloneNode(true);
+            const inputDescripcion = nuevaFila.querySelector(".reparacion-descripcion");
+            const inputCantidad = nuevaFila.querySelector(".cantidad");
+            const inputValor = nuevaFila.querySelector(".valor");
+            const btnEliminar = nuevaFila.querySelector(".btn-eliminar-fila");
+
+            inputDescripcion.value = `${descripcion} - Unidades: ${unidades}`;
+            inputDescripcion.dataset.unidades = unidades;
+
+            inputCantidad.addEventListener("input", function () {
+                const cantidad = parseFloat(inputCantidad.value) || 0;
+                const unidad = parseFloat(inputDescripcion.dataset.unidades) || 0;
+                inputValor.value = (cantidad * unidad).toFixed(2);
+            });
+
+            btnEliminar.addEventListener("click", function () {
+                btnEliminar.closest("tr").remove();
+            });
+
+            tbody.appendChild(nuevaFila);
+        }
 
         if (iconoTaller) {
             iconoTaller.addEventListener('click', function () {
@@ -103,6 +135,57 @@
                     },
                     error: function () {
                         alert('Error al obtener los mecánicos.');
+                    }
+                });
+            });
+        }
+
+        if (iconoCausa) {
+            iconoCausa.addEventListener('click', function () {
+
+                document.getElementById('modalTitulo').textContent = 'Causa Mantenimiento';
+
+                $.ajax({
+                    url: `/Mantenimiento/ObtenerCausaMantenimiento`,
+                    type: 'GET',
+                    success: function (data) {
+                        showModalTaller.show();
+                        configurarTabla(data, [
+                            { title: "Número de Causa", data: "idCausamantenimiento", className: 'min-w-125px text-center' },
+                            { title: "Descripción", data: "descripcion", className: 'min-w-125px text-center' },
+                        ], function (rowData) {
+                            inputCausa.value = rowData.descripcion;
+                        });
+                    },
+                    error: function () {
+                        alert('Error al obtener los mecánicos.');
+                    }
+                });
+            });
+        }
+
+
+
+        if (botonReparacion) {
+            botonReparacion.addEventListener('click', function () {
+                document.getElementById('modalTitulo').textContent = 'Reparaciones';
+
+                $.ajax({
+                    url: `/Mantenimiento/ObtenerTipoReparacion`,
+                    type: 'GET',
+                    success: function (data) {
+                        showModalTaller.show();
+
+                        configurarTabla(data, [
+                            { title: "Número de Reparación", data: "idTipoReparacion", className: 'min-w-125px text-start' },
+                            { title: "Descripción", data: "descripcion", className: 'min-w-125px text-start' },
+                            { title: "Unidad", data: "valor", className: 'min-w-125px text-center' },
+                        ], function (rowData) {
+                            agregarFilaReparacion(rowData.descripcion, rowData.valor);
+                        });
+                    },
+                    error: function () {
+                        alert('Error al obtener las reparaciones.');
                     }
                 });
             });

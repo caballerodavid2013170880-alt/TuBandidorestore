@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -49,6 +50,31 @@ namespace SUVAN.BackOffice.Service.Logistica
             }).ToListAsync();
 
             return mecanicos;
+        }
+
+        public async Task<List<TipoReparacionViewModel>> ObtenerTipoReparacion()
+        {
+            var resultado = await (from t in context.TipoReparacions
+                                   select new TipoReparacionViewModel
+                                   {
+                                       IdTipoReparacion = t.IdTipoReparacion,
+                                       Descripcion = t.Descripcion,
+                                       Valor = t.Valor,
+                                       
+                                   }).ToListAsync();
+            return resultado;
+        }
+
+        public async Task<List<CausaMantenimientoViewModel>> ObtenerCausaMantenimiento()
+        {
+            var resultado = await (from t in context.CausaMantenimientos
+                                   select new CausaMantenimientoViewModel
+                                   {
+                                       IdCausamantenimiento = t.IdCausamantenimiento,
+                                       Descripcion = t.Descripcion,
+
+                                   }).ToListAsync();
+            return resultado;
         }
     }
 }

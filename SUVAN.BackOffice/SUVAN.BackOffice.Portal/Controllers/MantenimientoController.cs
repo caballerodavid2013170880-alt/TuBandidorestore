@@ -63,5 +63,19 @@ namespace SUVAN.BackOffice.Portal.Controllers
             return Json(mecanicos);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> ObtenerTipoReparacion()
+        {
+            var reparacion = await mantenimiento.ObtenerTipoReparacion();
+            return Json(reparacion);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerCausaMantenimiento()
+        {
+            var causa = await mantenimiento.ObtenerCausaMantenimiento();
+            return Json(causa);
+        }
+
     }
 }
