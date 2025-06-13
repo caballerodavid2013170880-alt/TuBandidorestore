@@ -63,7 +63,7 @@
             const inputValor = nuevaFila.querySelector(".valor");
             const btnEliminar = nuevaFila.querySelector(".btn-eliminar-fila");
 
-            inputDescripcion.value = `${descripcion} - Unidades: ${unidades}`;
+            inputDescripcion.value = descripcion;
             inputDescripcion.dataset.unidades = unidades;
 
             inputCantidad.addEventListener("input", function () {
@@ -177,9 +177,8 @@
                         showModalTaller.show();
 
                         configurarTabla(data, [
-                            { title: "Número de Reparación", data: "idTipoReparacion", className: 'min-w-125px text-start' },
-                            { title: "Descripción", data: "descripcion", className: 'min-w-125px text-start' },
-                            { title: "Unidad", data: "valor", className: 'min-w-125px text-center' },
+                            { title: "Número de Reparación", data: "idTipoReparacion", className: 'min-w-125px text-center' },
+                            { title: "Descripción", data: "descripcion", className: 'min-w-125px text-center' },
                         ], function (rowData) {
                             agregarFilaReparacion(rowData.descripcion, rowData.valor);
                         });

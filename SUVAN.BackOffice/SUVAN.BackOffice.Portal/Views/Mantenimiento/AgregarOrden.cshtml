@@ -51,9 +51,9 @@
                 <form class="form w-100" novalidate="novalidate" id="kt_mecanico_in_form" data-kt-redirect-url="/">
                     @Html.AntiForgeryToken()
                     <div class="row">
-                        <div class="col-md-8">
+                        <div class="col-md-12">
                             <div class="row mb-6">
-                                <div class="col-sm-6 mb-3">
+                                <div class="col-sm-4 mb-3">
                                     <label class="required">Taller</label>
                                     <div class="input-group input-group-sm">
                                         <input class="form-control" id="tallerID" placeholder="Taller" readonly disabled />
@@ -63,48 +63,59 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 mb-3">
+                                <div class="col-sm-4 mb-3">
                                     <label class="required">Tipo</label>
-                                    <input class="form-control form-control-sm" placeholder="Tipo" />
+                                    <input class="form-control form-control-sm" placeholder="Tipo" readonly disabled/>
                                 </div>
-
-                                <div class="col-sm-6 mb-3">
+                                <div class="col-sm-4 mb-3">
                                     <label class="required">Mecánico</label>
                                     <div class="input-group input-group-sm">
-                                        <input class="form-control" id="mecanicoID" placeholder="Mecánico" readonly disabled/>
+                                        <input class="form-control" id="mecanicoID" placeholder="Mecánico" readonly disabled />
                                         <input type="hidden" id="mecanicoIDHidden" name="idTaller">
                                         <span class="input-group-text" id="iconoMecanico" style="cursor:pointer;">
                                             <i class="fas fa-search"></i>
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 mb-3">
+                                <div class="col-sm-3 mb-3">
                                     <label class="required">Vehículo</label>
+                                    <div class="input-group input-group-sm">
+                                        <input class="form-control" id="idVehiculo" placeholder="Vehículo" readonly disabled />
+                                        <input type="hidden" id="vehiculoDHidden" name="idVehiculo">
+                                        <span class="input-group-text" id="iconoVehiculo" style="cursor:pointer;">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 mb-3">
+                                    <label class="required">Marca</label>
+                                    <input class="form-control form-control-sm" placeholder="Marca" readonly disabled />
+                                </div>
+                                <div class="col-sm-3 mb-3">
+                                    <label class="required">Modelo</label>
+                                    <input class="form-control form-control-sm" placeholder="Modelo" readonly disabled />
+                                </div>
+                                <div class="col-sm-3 mb-3">
+                                    <label class="required">Placas</label>
+                                    <input class="form-control form-control-sm" placeholder="Placas" readonly disabled />
+                                </div>
+                                <div class="col-sm-4 mb-3">
+                                    <label class="required">Depósito Vehículo</label>
+                                    <input class="form-control form-control-sm" placeholder="Depósito Vehículo" readonly disabled />
+                                </div>
+                                <div class="col-sm-4 mb-3">
+                                    <label class="required">Kms. Entrada</label>
+                                    <input class="form-control form-control-sm" placeholder="Kms. Entrada" />
+                                </div>
+                                <div class="col-sm-4 mb-3">
+                                    <label class="required">Tanque</label>
                                     <select class="form-select form-select-sm">
-                                        <option value=0>Selecciona un Vehículo</option>
-                                        <option value=1>26 - Nissan Versa</option>
-                                        <option value=2>56 - Honda Civic</option>
+                                        <option value=0>Selecciona el tamaño de Tanque</option>
+                                        <option value=1>1/4</option>
+                                        <option value=2>1/8</option>
                                     </select>
                                 </div>
-
                                 <div class="col-sm-4 mb-3">
-                                    <label class="required">Marca</label>
-                                    <input class="form-control form-control-sm" placeholder="Marca" />
-                                </div>
-                                <div class="col-sm-4 mb-3">
-                                    <label class="required">Modelo</label>
-                                    <input class="form-control form-control-sm" placeholder="Modelo" />
-                                </div>
-                                <div class="col-sm-4 mb-3">
-                                    <label class="required">Placas</label>
-                                    <input class="form-control form-control-sm" placeholder="Placas" />
-                                </div>
-
-                                <div class="col-sm-6 mb-3">
-                                    <label class="required">Depósito Vehículo</label>
-                                    <input class="form-control form-control-sm" placeholder="Depósito Vehículo" />
-                                </div>
-                                <div class="col-sm-6 mb-3">
                                     <label class="required">Tipo de Servicio</label>
                                     <select class="form-select form-select-sm">
                                         <option value=0>Selecciona un Tipo de Servicio</option>
@@ -112,12 +123,17 @@
                                         <option value=2>Correctivo</option>
                                     </select>
                                 </div>
-
-                                <div class="col-sm-6 mb-3">
+                                <div class="col-sm-4 mb-3">
                                     <label class="required">Preventivo</label>
-                                    <input class="form-control form-control-sm" placeholder="Preventivo" />
+                                    <div class="input-group input-group-sm">
+                                        <input class="form-control" id="idPreventivo" placeholder="Preventivo" readonly disabled />
+                                        <input type="hidden" id="preventivoIDHidden" name="Preventivo">
+                                        <span class="input-group-text" id="iconoPreventivo" style="cursor:pointer;">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
                                 </div>
-                                <div class="col-sm-6 mb-3">
+                                <div class="col-sm-4 mb-3">
                                     <label class="required">Causa Mantenimiento</label>
                                     <div class="input-group input-group-sm">
                                         <input class="form-control" id="causaMantenimientoID" placeholder="Causa Mantenimiento" readonly disabled />
@@ -127,34 +143,16 @@
                                         </span>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="row mb-6">
-                                <div class="col-sm-12 mb-3">
-                                    <label class="required">Tanque</label>
-                                    <select class="form-select form-select-sm">
-                                        <option value=0>Selecciona el tamaño de Tanque</option>
-                                        <option value=1>1/4</option>
-                                        <option value=2>1/8</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-sm-12 mb-3">
-                                    <label class="required">Kms. Entrada</label>
-                                    <input class="form-control form-control-sm" placeholder="Kms. Entrada" />
-                                </div>
-
-                                <div class="col-sm-12 mb-3">
-                                    <label class="required">Fecha Programada</label>
-                                    <input type="date" class="form-control form-control-sm" />
-                                </div>
-
-                                <div class="col-sm-12 mb-3">
+                                <div class="col-sm-2 mb-3">
                                     <label class="required">Fecha Captura</label>
                                     <input type="date" class="form-control form-control-sm" />
                                 </div>
-                                <div class="text-end mb-3">
+                                <div class="col-sm-2 mb-3">
+                                    <label class="required">Fecha Programada</label>
+                                    <input type="date" class="form-control form-control-sm" />
+                                </div>
+                                <div class="col-sm-2 mb-3">
+                                    <label class="required invisible">Agregar Reparación</label>
                                     <button id="btn_agregar_reparacion" type="button" class="btn btn-primary btn-sm">
                                         <span class="indicator-label">Agregar Reparación</span>
                                     </button>
