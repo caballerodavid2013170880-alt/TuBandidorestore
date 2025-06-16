@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.CausaMantenimientoViewModel;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
@@ -17,5 +18,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         Task<List<TipoReparacionViewModel>> ObtenerTipoReparacion();
 
         Task<List<CausaMantenimientoViewModel>> ObtenerCausaMantenimiento();
+
+        Task<List<TipoServicioViewModel>> ObtenerTipoServicio();
     }
 }

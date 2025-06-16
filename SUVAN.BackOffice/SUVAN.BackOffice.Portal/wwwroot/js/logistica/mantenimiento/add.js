@@ -20,6 +20,9 @@
         const iconoCausa = document.getElementById('iconoCausaMantenimiento');
         const inputCausa = document.getElementById('causaMantenimientoID');
 
+        const iconoServicio = document.getElementById('iconoServicio');
+        const inputServicio = document.getElementById('idTipoServicio');
+
         const botonReparacion = document.getElementById('btn_agregar_reparacion')
 
         const tabla = $('#kt_tabla_mantenimiento');
@@ -164,7 +167,29 @@
             });
         }
 
+        if (iconoServicio) {
+            iconoServicio.addEventListener('click', function () {
 
+                document.getElementById('modalTitulo').textContent = 'Tipo de Servicio';
+
+                $.ajax({
+                    url: `/Mantenimiento/ObtenerTipoServicio`,
+                    type: 'GET',
+                    success: function (data) {
+                        showModalTaller.show();
+                        configurarTabla(data, [
+                            { title: "Número de Tipo de Servicio", data: "idTiposervicio", className: 'min-w-125px text-center' },
+                            { title: "Nombre del Servicio", data: "servicioNombre", className: 'min-w-125px text-center' },
+                        ], function (rowData) {
+                            inputServicio.value = rowData.servicioNombre;
+                        });
+                    },
+                    error: function () {
+                        alert('Error al obtener los mecánicos.');
+                    }
+                });
+            });
+        }
 
         if (botonReparacion) {
             botonReparacion.addEventListener('click', function () {

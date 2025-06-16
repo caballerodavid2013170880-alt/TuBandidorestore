@@ -117,11 +117,13 @@
                                 </div>
                                 <div class="col-sm-4 mb-3">
                                     <label class="required">Tipo de Servicio</label>
-                                    <select class="form-select form-select-sm">
-                                        <option value=0>Selecciona un Tipo de Servicio</option>
-                                        <option value=1>Preventivo</option>
-                                        <option value=2>Correctivo</option>
-                                    </select>
+                                    <div class="input-group input-group-sm">
+                                        <input class="form-control" id="idTipoServicio" placeholder="Tipo de Servicio" readonly disabled />
+                                        <input type="hidden" id="servicioIDHidden" name="tipoServicio">
+                                        <span class="input-group-text" id="iconoServicio" style="cursor:pointer;">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="col-sm-4 mb-3">
                                     <label class="required">Preventivo</label>

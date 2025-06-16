@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleViewModel;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.CausaMantenimientoViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -72,6 +73,18 @@ namespace SUVAN.BackOffice.Service.Logistica
                                    {
                                        IdCausamantenimiento = t.IdCausamantenimiento,
                                        Descripcion = t.Descripcion,
+
+                                   }).ToListAsync();
+            return resultado;
+        }
+
+        public async Task<List<TipoServicioViewModel>> ObtenerTipoServicio()
+        {
+            var resultado = await (from t in context.TipoServicios
+                                   select new TipoServicioViewModel
+                                   {
+                                       IdTiposervicio = t.IdTiposervicio,
+                                       ServicioNombre = t.Nombre,
 
                                    }).ToListAsync();
             return resultado;
