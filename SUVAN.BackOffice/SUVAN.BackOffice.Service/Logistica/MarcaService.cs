@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -13,59 +14,116 @@ namespace SUVAN.BackOffice.Service.Logistica
             this.context = context;
         }
 
-        public async Task<List<Marca>> GetMarcas()
+        public async Task<List<Marca>> GetMarca()
         {
-            return await context.Marcas.ToListAsync();
+
+            var marca = await context.Marcas.ToListAsync();
+
+            return marca!;
         }
 
-        public async Task<Marca> GetMarcaViewModel(int id)
+        /// <summary>
+        /// Obtiene el ViewModel de la marca específica.
+        /// </summary>
+        /// <param name="id">Identificador de la marca.</param>
+        /// <returns>ViewModel para la marca especifica.</returns>
+        public async Task<MarcaViewModel> GetMarcaViewModel(int id)
         {
+            MarcaViewModel vRet = new MarcaViewModel();
             var marca = await context.Marcas.FirstOrDefaultAsync(x => x.IdMarca == id);
-            return marca ?? new Marca();
-        }
-
-        public async Task<bool> AgregarMarca(Marca model)
-        {
-            Marca marca = model.IdMarca > 0
-                ? await context.Marcas.FirstOrDefaultAsync(x => x.IdMarca == model.IdMarca)
-                : new Marca();
 
             if (marca == null)
-                throw new Exception("No se encontró el servicio");
+                return vRet;
+            else
+            {
+                vRet = new MarcaViewModel
+                {
+                    IdMarca = marca.IdMarca!,
+                    Descripcion = marca.Descripcion!,
+                };
+            }
 
-            var marcaExistente = await context.Marcas.FirstOrDefaultAsync(x =>
-                x.Descrip!.ToLower() == model.Descrip!.ToLower() &&
-                x.IdMarca != model.IdMarca);
+            return vRet;
+        }
 
-            if (marcaExistente is not null)
-                throw new Exception("Ya existe un servicio con el mismo nombre");
-
-            marca.Descrip = model.Descrip;
+        /// <summary>
+        /// Agrega o actualiza una marca en la base de datos.
+        /// </summary>
+        /// <param name="model">ViewModel con los datos de la marca.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> AgregarMarca(MarcaViewModel model)
+        {
+            Marca marca;
 
             if (model.IdMarca > 0)
-                context.Marcas.Update(marca);
+            {
+                marca = await context.Marcas.FirstOrDefaultAsync(x => x.IdMarca == model.IdMarca);
+
+                if (marca == null)
+                    throw new Exception("No se encontro la Marca");
+
+            }
             else
+            {
+                marca = new Marca();
+            }
+
+            // Valida si la descripción de la marca esta duplicado en la misma empresa
+            var marcaExistenteDescripcion = await context.Marcas.FirstOrDefaultAsync(x =>
+            x.Descripcion!.ToLower() == model.Descripcion!.ToLower()
+            && x.IdMarca != model.IdMarca);
+
+            if (marcaExistenteDescripcion is not null)
+                throw new Exception("Ya existe una Marca con el mismo nombre");
+
+            marca.Descripcion = model.Descripcion;
+
+
+            if (model.IdMarca > 0)
+            {
+                context.Marcas.Entry(marca);
+
+                await context.SaveChangesAsync();
+            }
+            else
+            {
                 context.Marcas.Add(marca);
+                await context.SaveChangesAsync();
 
-            await context.SaveChangesAsync();
+            }
             return true;
         }
 
-        public async Task<bool> EliminarMarca(int idMarca)
-        {
-            var servicio = await context.Marcas.FirstOrDefaultAsync(x => x.IdMarca == idMarca);
-            if (servicio is null)
-                throw new Exception("No se encontró el servicio");
+        /// <summary>
+        /// Elimina una marca en la base de datos.
+        /// </summary>
+        /// <param name="IdMarca">Identificador de la marca.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
 
-            context.Marcas.Remove(servicio);
+        public async Task<bool> EliminarMarca(int IdMarca)
+        {
+            var marca = await context.Marcas.FirstOrDefaultAsync(x => x.IdMarca == IdMarca);
+
+            if (marca is null)
+            {
+                throw new Exception("No se encontro la Marca");
+            }
+
+            // Desactivar temporamente el seguimiento de entidades relacionadas
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+
+            var delete = await context.Marcas
+              .Where(x => x.IdMarca == IdMarca)
+              .ExecuteDeleteAsync();
+
             await context.SaveChangesAsync();
 
+            // Volver a activar el seguimiento de entidades relacionadas
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
-        }
-
-        public Task EliminarMarca(short idMarca)
-        {
-            throw new NotImplementedException();
         }
     }
 }

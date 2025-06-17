@@ -1,72 +1,82 @@
 ﻿"use strict";
 
-// Definición de la clase
+// Class definition
 var KTMarca = function () {
-    // Elementos
+    // Elements
     var form;
     var submitButton;
     var validator;
 
-    // Función para validar el formulario
-    var handleValidation = function () {
+
+    // Handle form
+    var handleValidation = function (e) {
+        // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
         validator = FormValidation.formValidation(
             form,
             {
                 fields: {
-                    'descrip': {
+
+                    'Descripcion': {
                         validators: {
                             notEmpty: {
-                                message: 'La descripción de la marca es requerida'
+                                message: 'Descripción requerida'
                             },
                             stringLength: {
-                                min: 3,
-                                max: 50,
-                                message: 'Debe tener entre 3 y 50 caracteres'
-                            }
+                                min: 7,
+                                max: 20,
+
+                                message: 'deben tener entre 7 y 20 caracteres',
+                            },
                         }
-                    }
+                    },
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
                     bootstrap: new FormValidation.plugins.Bootstrap5({
                         rowSelector: '.fv-row',
-                        eleInvalidClass: '',
-                        eleValidClass: ''
+                        eleInvalidClass: '',  // comment to enable invalid state icons
+                        eleValidClass: '' // comment to enable valid state icons
                     })
                 }
             }
         );
-    };
+    }
 
-    // Manejo del envío del formulario
-    var handleSubmitValidation = function () {
+    var handleSubmitValidation = function (e) {
+        // Handle form submit
         submitButton.addEventListener('click', function (e) {
-            e.preventDefault(); // Evita el envío por defecto
+            // Prevent button default action
+            e.preventDefault();
 
-            // Validar el formulario
+            // Validate form
             validator.validate().then(function (status) {
                 if (status == 'Valid') {
-                    submitButton.setAttribute('data-kt-indicator', 'on'); // Indicador de carga
-                    submitButton.disabled = true; // Evita múltiples envíos
-                    form.submit(); // Envía el formulario
+                    // Disable button to avoid multiple click
+                    submitButton.setAttribute('data-kt-indicator', 'on');
+                    submitButton.disabled = true;
+                    form.submit();
                 }
             });
         });
-    };
+    }
 
-    // Función pública de inicialización
+    // Public functions
     return {
+        // Initialization
         init: function () {
             form = document.querySelector('#kt_marca_in_form');
             submitButton = document.querySelector('#kt_marca_in_submit');
 
-            handleValidation(); // Configurar validaciones
-            handleSubmitValidation(); // Manejar envío del formulario
+
+            handleValidation();
+
+            handleSubmitValidation(); // use for form validation submit
+
         }
     };
 }();
 
-// Ejecutar cuando el DOM esté listo
+// On document ready
 KTUtil.onDOMContentLoaded(function () {
     KTMarca.init();
 });

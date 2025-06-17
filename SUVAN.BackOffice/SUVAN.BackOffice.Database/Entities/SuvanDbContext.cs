@@ -1948,10 +1948,10 @@ public partial class SuvanDbContext : DbContext
             entity.ToTable("marca");
 
             entity.Property(e => e.IdMarca).HasColumnName("id_marca");
-            entity.Property(e => e.Descrip)
+            entity.Property(e => e.Descripcion)
                 .HasMaxLength(20)
                 .IsFixedLength()
-                .HasColumnName("descrip");
+                .HasColumnName("descripcion");
         });
 
         modelBuilder.Entity<Mecanico>(entity =>

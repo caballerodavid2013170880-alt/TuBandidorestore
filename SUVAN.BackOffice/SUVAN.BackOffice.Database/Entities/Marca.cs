@@ -7,5 +7,5 @@ public partial class Marca
 {
     public short IdMarca { get; set; }
 
-    public string? Descrip { get; set; }
+    public string Descripcion { get; set; } = null!;
 }

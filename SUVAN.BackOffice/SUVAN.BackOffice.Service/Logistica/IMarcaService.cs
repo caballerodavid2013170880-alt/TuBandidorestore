@@ -1,43 +1,37 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using static SUVAN.BackOffice.Database.Entities.Marca;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
     public interface IMarcaService
     {
-        /// <summary>
-        /// Agrega una nueva marca al sistema.
-        /// </summary>
-        /// <param name="model">Modelo con los datos de la marca.</param>
-        /// <returns>True si la marca fue agregada correctamente, false en caso contrario.</returns>
-        Task<bool> AgregarMarca(Database.Entities.Marca model);
-        Task EliminarMarca(short idMarca);
+        Task<List<Marca>> GetMarca();
 
         /// <summary>
-        /// Elimina una marca existente por su ID.
+        /// Obtiene el ViewModel de la marca específica.
         /// </summary>
-        /// <param name="idMarca">ID único de la marca.</param>
-        /// <returns>True si la marca fue eliminada exitosamente, false si no se encontró.</returns>
-        /// 
-
-
-        // Task<bool> EliminarMarca(int idMarca);
+        /// <param name="id">Identificador de la marca.</param>
+        /// <returns>ViewModel para la marca especifica.</returns>
+        Task<MarcaViewModel> GetMarcaViewModel(int id);
 
         /// <summary>
-        /// Obtiene todas las marcas registradas en el sistema.
+        /// Agrega o actualiza una marca en la base de datos.
         /// </summary>
-        /// <returns>Lista de marcas disponibles.</returns>
-        /// 
-
-        Task<List<Database.Entities.Marca>> GetMarcas();
+        /// <param name="model">ViewModel con los datos de la marca.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+        Task<bool> AgregarMarca(MarcaViewModel model);
 
         /// <summary>
-        /// Obtiene los datos de una marca específica por su ID.
+        /// Elimina una marca en la base de datos.
         /// </summary>
-        /// <param name="id">ID único de la marca.</param>
-        /// <returns>El modelo de la marca si existe, null en caso contrario.</returns>
-        Task<Database.Entities.Marca?> GetMarcaViewModel(int id);
+        /// <param name="IdMarca">Identificador de la marca.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+        Task<bool> EliminarMarca(int IdMarca);
     }
 }

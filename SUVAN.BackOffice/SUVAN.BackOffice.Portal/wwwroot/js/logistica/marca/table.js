@@ -1,91 +1,141 @@
 ﻿"use strict";
 
 var KTMarcaList = function () {
-    // Define variables compartidas
+    // Define shared variables
     var table = document.getElementById('kt_table_marca');
     var datatable;
+    var toolbarBase;
+    var toolbarSelected;
+    var selectedCount;
 
-    // Inicializar la tabla Marca
-    var initMarcaTable = function () {
+    // Private functions
+    var initmarcasTable = function () {
+        // Set date data order
+        const tableRows = table.querySelectorAll('tbody tr');
+
+        tableRows.forEach(row => {
+            const dateRow = row.querySelectorAll('td');
+
+        });
+
+        // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
             "info": false,
             'order': [],
             "pageLength": 10,
             "lengthChange": false,
             'columnDefs': [
-                { orderable: false, targets: 1 } // Desactivar orden en la columna de acciones
+                { orderable: false, targets: 1 }, // Disable ordering on column 6 (actions)                
             ]
         });
 
+        // Re-init functions on every table re-draw -- more info: https://datatables.net/reference/event/draw
         datatable.on('draw', function () {
             handleDeleteRows();
         });
-    };
+    }
 
-    // Manejo de búsqueda en la tabla
+    // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
     var handleSearchDatatable = () => {
         const filterSearch = document.querySelector('[data-kt-marca-table-filter="search"]');
         filterSearch.addEventListener('keyup', function (e) {
             datatable.search(e.target.value).draw();
         });
-    };
+    }
 
-    // Manejo de eliminación de registros
+    // Delete subscirption
     var handleDeleteRows = () => {
+        // Select all delete buttons
         const deleteButtons = table.querySelectorAll('[data-kt-marca-table-filter="delete_row"]');
 
         deleteButtons.forEach(d => {
+            // Delete button on click
             d.addEventListener('click', function (e) {
                 e.preventDefault();
 
+                // Select parent row
                 const parent = e.target.closest('tr');
-                const descrip = parent.querySelectorAll('td')[1].innerText; // Obtener descripción de la marca
 
+                // Get user name
+                const contenidoName = parent.querySelectorAll('td')[1].innerText;
+
+                // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: `¿Está seguro que desea eliminar la marca "${descrip}"?`,
+                    text: `¿Esta seguro que desea eliminar la marca ${contenidoName}?`,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Sí, eliminar",
+                    buttonsStyling: false,
+                    confirmButtonText: "Si, eliminar",
                     cancelButtonText: "No, cancelar",
+                    customClass: {
+                        confirmButton: "btn fw-bold btn-danger",
+                        cancelButton: "btn fw-bold btn-active-light-primary"
+                    },
                     preConfirm: async () => {
-                        const marcaId = parseInt(d.getAttribute('data-kt-marca-delete-item'));
+
+                        const IdMarca = parseInt(d.getAttribute('data-kt-marca-delete-item'));
                         const response = await fetch('/Marca/EliminarMarca', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id_marca: marcaId })
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ IdMarca: IdMarca })
                         });
+                        const data = await response.json();
+                        console.log(data);
 
-                        return response.json();
+
                     }
                 }).then(function (result) {
                     if (result.value) {
                         Swal.fire({
-                            text: `La descripcion "${descrip}" ha sido eliminada`,
+                            text: `Usted eliminó la marca ${contenidoName}`,
                             icon: "success",
-                            confirmButtonText: "Aceptar"
+                            buttonsStyling: false,
+                            confirmButtonText: "Aceptar",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary",
+                            }
                         }).then(function () {
+                            // Remove current row
                             datatable.row($(parent)).remove().draw();
+                            //location.reload();
+                        }).then(function () {
+                            // Detect checked checkboxes
+                            toggleToolbars();
+                        });
+                    } else if (result.dismiss === 'cancel') {
+                        Swal.fire({
+                            text: result.value.message,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary",
+                            }
                         });
                     }
                 });
-            });
+            })
         });
-    };
+    }
 
     return {
+        // Public functions  
         init: function () {
             if (!table) {
                 return;
             }
 
-            initMarcaTable();
+            initmarcasTable();
             handleSearchDatatable();
             handleDeleteRows();
+
         }
-    };
+    }
 }();
 
-// Ejecutar cuando el DOM esté listo
+// On document ready
 KTUtil.onDOMContentLoaded(function () {
     KTMarcaList.init();
 });

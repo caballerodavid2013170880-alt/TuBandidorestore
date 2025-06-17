@@ -87,5 +87,15 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public DateTime? VigenciaPermisoAceite { get; set; }
         public DateTime? VigenciaTarjetaCircula { get; set; }
         public int IdVehiculoDetalle { get; set; }
+        public List<MarcaViewModel> Marcas { get; set; } = new();
+
+        public class MarcaViewModel
+        {
+            public int IdMarca { get; set; }
+
+            public string Descripcion { get; set; } = null!;
+
+            public string DescripcionMarcaId => $"{IdMarca} - {Descripcion}";
+        }
     }
 }
