@@ -13,86 +13,75 @@ var KTModelo = function () {
             form,
             {
                 fields: {
-                    'Id_marca': {
+                    'IdMarca': {
                         validators: {
                             notEmpty: {
-                                message: 'El ID de marca es requerido'
+                                message: 'Marca requerida',
+                                callback: function (value, validator, $field) {
+                                    return value !== "";
+                                }
                             }
                         }
                     },
-                    'Id_modelo': {
+                    'IdTipoV': {
                         validators: {
                             notEmpty: {
-                                message: 'El ID de modelo es requerido'
+                                message: 'Tipo de Vehículo requerido',
+                                callback: function (value, validator, $field) {
+                                    return value !== "";
+                                }
                             }
                         }
                     },
-                    'a_desde': {
+                    'AnioDesde': {
                         validators: {
                             notEmpty: {
-                                message: 'El año desde es requerido'
+                                message: 'Año Desde requerido'
                             },
-                            numeric: {
-                                message: 'Debe ser un número válido'
+                            regexp: {
+                                regexp: /^\d{4}$/,
+                                message: 'El año debe tener 4 dígitos'
                             }
                         }
                     },
-                    'a_hasta': {
+                    'AnioHasta': {
                         validators: {
                             notEmpty: {
-                                message: 'El año hasta es requerido'
+                                message: 'Año Desde requerido'
                             },
-                            numeric: {
-                                message: 'Debe ser un número válido'
+                            regexp: {
+                                regexp: /^\d{4}$/,
+                                message: 'El año debe tener 4 dígitos'
                             }
                         }
                     },
-                    'Id_tipo_v': {
+                    'Descripcion': {
                         validators: {
                             notEmpty: {
-                                message: 'El tipo de vehículo es requerido'
-                            }
-                        }
-                    },
-                    'descrip': {
-                        validators: {
-                            notEmpty: {
-                                message: 'La descripción es requerida'
+                                message: 'Descripción requerida'
                             },
                             stringLength: {
-                                min: 3,
-                                max: 50,
-                                message: 'Debe tener entre 3 y 50 caracteres'
-                            }
-                        }
-                    },
-                    'km_garan': {
-                        validators: {
-                            notEmpty: {
-                                message: 'El kilometraje de garantía es requerido'
+                                min: 7,
+                                max: 60,
+
+                                message: 'deben tener entre 7 y 60 caracteres',
                             },
-                            numeric: {
-                                message: 'Debe ser un número válido'
+                        }
+                    },
+                    'KmGarantia': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Kilómetros de Garantía requerido'
                             }
                         }
                     },
-                    'mes_gara': {
+                    'MesGarantia': {
                         validators: {
                             notEmpty: {
-                                message: 'Los meses de garantía son requeridos'
-                            },
-                            numeric: {
-                                message: 'Debe ser un número válido'
+                                message: 'Meses de Garantía requerida'
                             }
                         }
                     },
-                    'tipo_eje': {
-                        validators: {
-                            notEmpty: {
-                                message: 'El tipo de eje es requerido'
-                            }
-                        }
-                    }
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -128,8 +117,29 @@ var KTModelo = function () {
             form = document.querySelector('#kt_modelo_in_form');
             submitButton = document.querySelector('#kt_modelo_in_submit');
 
-            handleValidation(); // Configurar validaciones
-            handleSubmitValidation(); // Manejar envío del formulario
+            document.querySelector("#MesGarantia").addEventListener("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
+            document.querySelector("#AnioDesde").addEventListener("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
+            document.querySelector("#AnioHasta").addEventListener("input", function () {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+
+            document.querySelector("#KmGarantia").addEventListener("input", function () {
+                this.value = this.value.replace(/[^0-9.]/g, '');
+                if ((this.value.match(/\./g) || []).length > 1) {
+                    this.value = this.value.slice(0, -1);
+                }
+            });
+
+            handleValidation();
+
+            handleSubmitValidation();
+
         }
     };
 }();

@@ -7,7 +7,7 @@
     ViewData["Title"] = "Modelo";
 }
 
-@model SUVAN.BackOffice.Database.Entities.Modelo
+@model VehiculoDetalleViewModel.ModeloViewModel
 
 @{
     var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Modelo);
@@ -53,58 +53,59 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Id Marca</label>
-                                <input asp-for="IdMarca" class="form-control bg-transparent" placeholder="ID de la marca" />
-                                <span asp-validation-for="IdMarca" class="invalid-feedback"></span>
+                                <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Selecciona una Marca</label>
+                                <select asp-for="IdMarca" asp-items="new SelectList(Model.MarcasView, nameof(VehiculoDetalleViewModel.MarcaViewModel.IdMarca), nameof(VehiculoDetalleViewModel.MarcaViewModel.DescripcionMarcaId), Model.IdMarca)" class="form-control">
+                                    <option value="">Selecciona una Marca</option>
+                                </select>
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="IdMarca"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="Descrip" class="col-form-label text-gray-600 required">Descripción</label>
-                                <input asp-for="Descrip" class="form-control bg-transparent" placeholder="Descripción del modelo" />
-                                <span asp-validation-for="Descrip" class="invalid-feedback"></span>
+                                <label asp-for="Descripcion" class="col-form-label text-gray-600 required">Descripción</label>
+                                <input asp-for="Descripcion" class="form-control bg-transparent" placeholder="Descripción" />
+                                <span asp-validation-for="Descripcion" class="invalid-feedback"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="ADesde" class="col-form-label text-gray-600 required">Año Desde</label>
-                                <input asp-for="ADesde" class="form-control bg-transparent" type="number" placeholder="Año desde" />
-                                <span asp-validation-for="ADesde" class="invalid-feedback"></span>
+                                <label asp-for="AnioDesde" class="col-form-label text-gray-600 required">Año Desde</label>
+                                <input asp-for="AnioDesde" type="text" inputmode="numeric" class="form-control bg-transparent" placeholder="Año Desde" maxlength="4" />
+                                <span asp-validation-for="AnioDesde" class="invalid-feedback"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="AHasta" class="col-form-label text-gray-600 required">Año Hasta</label>
-                                <input asp-for="AHasta" class="form-control bg-transparent" type="number" placeholder="Año hasta" />
-                                <span asp-validation-for="AHasta" class="invalid-feedback"></span>
+                                <label asp-for="AnioHasta" class="col-form-label text-gray-600 required">Año Hasta</label>
+                                <input asp-for="AnioHasta" type="text" inputmode="numeric" class="form-control bg-transparent" placeholder="Año Hasta" maxlength="4" />
+                                <span asp-validation-for="AnioHasta" class="invalid-feedback"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="IdTipoV" class="col-form-label text-gray-600 required">Id Tipo Vehículo</label>
-                                <input asp-for="IdTipoV" class="form-control bg-transparent" placeholder="Tipo de vehículo" />
-                                <span asp-validation-for="IdTipoV" class="invalid-feedback"></span>
+                                <label asp-for="IdTipoV" class="col-form-label text-gray-600 required">Selecciona un Tipo de Vehículo</label>
+                                <select asp-for="IdTipoV" asp-items="new SelectList(Model.TipoVehiculoView, nameof(VehiculoDetalleViewModel.TipoVehiculoViewModel.TipoUnidadId), nameof(VehiculoDetalleViewModel.TipoVehiculoViewModel.NombreTipoId), Model.IdTipoV)" class="form-control">
+                                    <option value="">Selecciona un Tipo de Vehículo</option>
+                                </select>
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="IdTipoV"></span>
+                                </div>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="KmGaran" class="col-form-label text-gray-600 required">Kilómetros Garantía</label>
-                                <input asp-for="KmGaran" class="form-control bg-transparent" type="number" placeholder="Kilómetros de garantía" />
-                                <span asp-validation-for="KmGaran" class="invalid-feedback"></span>
+                                <label asp-for="KmGarantia" class="col-form-label text-gray-600 required">Kilómetros de Garantía</label>
+                                <input asp-for="KmGarantia" type="text" inputmode="numeric" class="form-control bg-transparent" placeholder="Kilómetros de Garantía" maxlength="8" />
+                                <span asp-validation-for="KmGarantia" class="invalid-feedback"></span>
                             </div>
                         </div>
                         <div class="col-sm-6">
                             <div class="fv-row mb-3">
-                                <label asp-for="MesGara" class="col-form-label text-gray-600 required">Meses Garantía</label>
-                                <input asp-for="MesGara" class="form-control bg-transparent" type="number" placeholder="Meses de garantía" />
-                                <span asp-validation-for="MesGara" class="invalid-feedback"></span>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-3">
-                                <label asp-for="TipoEje" class="col-form-label text-gray-600 required">Tipo de Eje</label>
-                                <input asp-for="TipoEje" class="form-control bg-transparent" placeholder="Tipo de eje" />
-                                <span asp-validation-for="TipoEje" class="invalid-feedback"></span>
+                                <label asp-for="MesGarantia" class="col-form-label text-gray-600 required">Meses de Garantía</label>
+                                <input asp-for="MesGarantia" type="text" inputmode="numeric" class="form-control bg-transparent" placeholder="Meses de Garantía" maxlength="2" />
+                                <span asp-validation-for="MesGarantia" class="invalid-feedback"></span>
                             </div>
                         </div>
                     </div>
@@ -125,7 +126,7 @@
 </div>
 <!--end::Content-->
 @section scripts {
-    <script src="~\js\logistica\modelo\add.js"></script>
+    <script src="~/js/logistica/modelo/add.js"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }

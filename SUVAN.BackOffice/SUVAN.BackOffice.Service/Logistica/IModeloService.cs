@@ -2,36 +2,41 @@
 using System.Threading.Tasks;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Database.Entities;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
+using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
     public interface IModeloService
     {
-        /// <summary>
-        /// Agrega un nuevo modelo al sistema.
-        /// </summary>
-        /// <param name="model">Modelo con los datos del modelo.</param>
-        /// <returns>True si el modelo fue agregado correctamente, false en caso contrario.</returns>
-        Task<bool> AgregarModelo(Modelo model);
+        Task<List<Modelo>> GetModelo();
 
         /// <summary>
-        /// Elimina un modelo existente por su ID.
+        /// Obtiene el ViewModel del Modelo específico.
         /// </summary>
-        /// <param name="idModelo">ID único del modelo.</param>
-        /// <returns>True si el modelo fue eliminado exitosamente, false si no se encontró.</returns>
-        Task EliminarModelo(short idModelo);
+        /// <param name="id">Identificador del modelo.</param>
+        /// <returns>ViewModel para el modelo especifico.</returns>
+        Task<ModeloViewModel> GetModeloViewModel(int id);
 
         /// <summary>
-        /// Obtiene todos los modelos registrados en el sistema.
+        /// Agrega o actualiza una modelo en la base de datos.
         /// </summary>
-        /// <returns>Lista de modelos disponibles.</returns>
-        Task<List<Modelo>> GetModelos();
+        /// <param name="model">ViewModel con los datos del modelo.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+        Task<bool> AgregarModelo(ModeloViewModel model);
 
         /// <summary>
-        /// Obtiene los datos de un modelo específico por su ID.
+        /// Elimina un modelo en la base de datos.
         /// </summary>
-        /// <param name="id">ID único del modelo.</param>
-        /// <returns>El modelo si existe, null en caso contrario.</returns>
-        Task<Modelo?> GetModeloViewModel(int id);
+        /// <param name="IdModelo">Identificador del modelo.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+
+        Task<bool> EliminarModelo(int IdModelo);
+
+        List<TipoVehiculoViewModel> ObtenerTipoVehiculo();
+
+        List<MarcaViewModel> ObtenerMarca();
     }
 }

@@ -2101,26 +2101,36 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<Modelo>(entity =>
         {
-            entity.HasKey(e => new { e.IdMarca, e.IdModelo, e.IdTipoV })
-                .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
+            entity.HasKey(e => e.IdModelo).HasName("PRIMARY");
 
             entity.ToTable("modelo");
 
-            entity.Property(e => e.IdMarca)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("Id_marca");
-            entity.Property(e => e.IdModelo).HasColumnName("Id_modelo");
-            entity.Property(e => e.IdTipoV).HasColumnName("Id_tipo_v");
-            entity.Property(e => e.ADesde).HasColumnName("a_desde");
-            entity.Property(e => e.AHasta).HasColumnName("a_hasta");
-            entity.Property(e => e.Descrip)
+            entity.HasIndex(e => e.IdMarca, "fk_modelo_marca");
+
+            entity.HasIndex(e => e.IdTipoV, "fk_modelo_tipo_v");
+
+            entity.Property(e => e.IdModelo).HasColumnName("id_modelo");
+            entity.Property(e => e.AnioDesde).HasColumnName("anio_desde");
+            entity.Property(e => e.AnioHasta).HasColumnName("anio_hasta");
+            entity.Property(e => e.Descripcion)
                 .HasMaxLength(60)
                 .IsFixedLength()
-                .HasColumnName("descrip");
-            entity.Property(e => e.KmGaran).HasColumnName("km_garan");
-            entity.Property(e => e.MesGara).HasColumnName("mes_gara");
+                .HasColumnName("descripcion");
+            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
+            entity.Property(e => e.IdTipoV).HasColumnName("id_tipo_v");
+            entity.Property(e => e.KmGarantia).HasColumnName("km_garantia");
+            entity.Property(e => e.MesGarantia).HasColumnName("mes_garantia");
             entity.Property(e => e.TipoEje).HasColumnName("tipo_eje");
+
+            entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.Modelos)
+                .HasForeignKey(d => d.IdMarca)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_modelo_marca");
+
+            entity.HasOne(d => d.IdTipoVNavigation).WithMany(p => p.Modelos)
+                .HasForeignKey(d => d.IdTipoV)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_modelo_tipo_v");
         });
 
         modelBuilder.Entity<Monedero>(entity =>

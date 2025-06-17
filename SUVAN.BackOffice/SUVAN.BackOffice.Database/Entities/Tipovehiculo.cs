@@ -15,5 +15,7 @@ public partial class Tipovehiculo
 
     public ulong? Activo { get; set; }
 
+    public virtual ICollection<Modelo> Modelos { get; set; } = new List<Modelo>();
+
     public virtual ICollection<Vehiculo> Vehiculos { get; set; } = new List<Vehiculo>();
 }

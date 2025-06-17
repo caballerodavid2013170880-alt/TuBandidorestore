@@ -55,15 +55,13 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_modelo">
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                            <th class="min-w-125px">Id_marca</th>
-                            <th class="min-w-125px">Id_modelo</th>
-                            <th class="min-w-100px">Año Desde</th>
-                            <th class="min-w-100px">Año Hasta</th>
-                            <th class="min-w-125px">Id_tipo_v</th>
-                            <th class="min-w-200px">Descripción</th>
-                            <th class="min-w-100px">Km Garantía</th>
-                            <th class="min-w-100px">Mes Garantía</th>
-                            <th class="min-w-100px">Tipo Eje</th>
+                            <th class="min-w-125px">Marca</th>
+                            <th class="min-w-125px">Modelo</th>
+                            <th class="min-w-125px">Tipo de Vehículo</th>
+                            <th class="min-w-125px">Año Desde</th>
+                            <th class="min-w-125px">Año Hasta</th>
+                            <th class="min-w-125px">Kms de Garantía</th>
+                            <th class="min-w-125px">Meses de Garantía</th>
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
                     </thead>
@@ -72,15 +70,13 @@
 
                         {
                             <tr>
-                                <td>@modelo.IdMarca</td>
-                                <td>@modelo.IdModelo</td>
-                                <td>@modelo.ADesde</td>
-                                <td>@modelo.AHasta</td>
-                                <td>@modelo.IdTipoV</td>
-                                <td>@modelo.Descrip</td>
-                                <td>@modelo.KmGaran</td>
-                                <td>@modelo.MesGara</td>
-                                <td>@modelo.TipoEje</td>
+                                <td>@modelo.IdMarcaNavigation.Descripcion</td>
+                                <td>@modelo.Descripcion</td>
+                                <td>@modelo.IdTipoVNavigation.Nombre</td>
+                                <td>@modelo.AnioDesde</td>
+                                <td>@modelo.AnioHasta</td>
+                                <td>@modelo.KmGarantia</td>
+                                <td>@modelo.MesGarantia</td>
                                 <td class="text-end">
                                     @if (permisosPagina!.Editar)
 

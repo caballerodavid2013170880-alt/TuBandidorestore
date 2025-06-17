@@ -5,21 +5,25 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class Modelo
 {
+    public int AnioDesde { get; set; }
+
+    public int AnioHasta { get; set; }
+
+    public string Descripcion { get; set; } = null!;
+
+    public float KmGarantia { get; set; }
+
+    public int MesGarantia { get; set; }
+
+    public int? TipoEje { get; set; }
+
     public short IdMarca { get; set; }
 
-    public short IdModelo { get; set; }
+    public sbyte IdTipoV { get; set; }
 
-    public short? ADesde { get; set; }
+    public int IdModelo { get; set; }
 
-    public short? AHasta { get; set; }
+    public virtual Marca IdMarcaNavigation { get; set; } = null!;
 
-    public short IdTipoV { get; set; }
-
-    public string? Descrip { get; set; }
-
-    public float? KmGaran { get; set; }
-
-    public short? MesGara { get; set; }
-
-    public short? TipoEje { get; set; }
+    public virtual Tipovehiculo IdTipoVNavigation { get; set; } = null!;
 }

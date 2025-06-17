@@ -69,13 +69,13 @@ namespace SUVAN.BackOffice.Service.Logistica
                 marca = new Marca();
             }
 
-            // Valida si la descripción de la marca esta duplicado en la misma empresa
+            // Valida si la descripción de la marca esta duplicado
             var marcaExistenteDescripcion = await context.Marcas.FirstOrDefaultAsync(x =>
             x.Descripcion!.ToLower() == model.Descripcion!.ToLower()
             && x.IdMarca != model.IdMarca);
 
             if (marcaExistenteDescripcion is not null)
-                throw new Exception("Ya existe una Marca con el mismo nombre");
+                throw new Exception("Ya existe una Marca con la misma descripción");
 
             marca.Descripcion = model.Descripcion;
 

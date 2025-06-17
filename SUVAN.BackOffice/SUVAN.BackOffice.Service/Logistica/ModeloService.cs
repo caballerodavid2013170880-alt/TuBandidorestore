@@ -1,6 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -13,59 +16,151 @@ namespace SUVAN.BackOffice.Service.Logistica
             this.context = context;
         }
 
-        public async Task<List<Modelo>> GetModelos()
+        public async Task<List<Modelo>> GetModelo()
         {
-            return await context.Modelos.ToListAsync();
+            var modelo = await context.Modelos.Include(m => m.IdMarcaNavigation).Include(t => t.IdTipoVNavigation).ToListAsync();
+
+            return modelo!;
         }
 
-        public async Task<Modelo> GetModeloViewModel(int id)
+
+        /// <summary>
+        /// Obtiene el ViewModel del Modelo específico.
+        /// </summary>
+        /// <param name="id">Identificador del modelo.</param>
+        /// <returns>ViewModel para el modelo especifico.</returns>
+        public async Task<ModeloViewModel> GetModeloViewModel(int id)
         {
+            ModeloViewModel vRet = new ModeloViewModel();
             var modelo = await context.Modelos.FirstOrDefaultAsync(x => x.IdModelo == id);
-            return modelo ?? new Modelo();
-        }
-
-        public async Task<bool> AgregarModelo(Modelo model)
-        {
-            Modelo modelo = model.IdModelo > 0
-                ? await context.Modelos.FirstOrDefaultAsync(x => x.IdModelo == model.IdModelo)
-                : new Modelo();
 
             if (modelo == null)
-                throw new Exception("No se encontró el modelo");
+                return vRet;
+            else
+            {
+                vRet = new ModeloViewModel
+                {
+                    IdModelo = modelo.IdModelo,
+                    IdMarca = modelo.IdMarca,
+                    IdTipoV = modelo.IdTipoV,
+                    AnioDesde = modelo.AnioDesde,
+                    AnioHasta = modelo.AnioHasta,
+                    Descripcion = modelo.Descripcion,
+                    KmGarantia = modelo.KmGarantia,
+                    MesGarantia = modelo.MesGarantia,
+                    TipoEje = modelo.TipoEje,
 
-            var modeloExistente = await context.Modelos.FirstOrDefaultAsync(x =>
-                x.Descrip!.ToLower() == model.Descrip!.ToLower() &&
-                x.IdModelo != model.IdModelo);
+                };
+            }
 
-            if (modeloExistente is not null)
-                throw new Exception("Ya existe un modelo con el mismo nombre");
+            return vRet;
+        }
 
-            modelo.Descrip = model.Descrip;
+        /// <summary>
+        /// Agrega o actualiza una modelo en la base de datos.
+        /// </summary>
+        /// <param name="model">ViewModel con los datos del modelo.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> AgregarModelo(ModeloViewModel model)
+        {
+            Modelo modelos;
 
             if (model.IdModelo > 0)
-                context.Modelos.Update(modelo);
+            {
+                modelos = await context.Modelos.FirstOrDefaultAsync(x => x.IdModelo == model.IdModelo);
+
+                if (modelos == null)
+                    throw new Exception("No se encontro el Modelo");
+
+            }
             else
-                context.Modelos.Add(modelo);
+            {
+                modelos = new Modelo();
+            }
 
-            await context.SaveChangesAsync();
+            // Valida si la descripción del modelo esta duplicado
+            var modeloExistenteDescripcion = await context.Modelos.FirstOrDefaultAsync(x =>
+            x.Descripcion!.ToLower() == model.Descripcion!.ToLower()
+            && x.IdModelo != model.IdModelo);
+
+            if (modeloExistenteDescripcion is not null)
+                throw new Exception("Ya existe un Modelo con la misma descripción");
+
+            modelos.Descripcion = model.Descripcion;
+            modelos.IdMarca = model.IdMarca;
+            modelos.IdTipoV = model.IdTipoV;
+            modelos.AnioDesde = model.AnioDesde;
+            modelos.AnioHasta = model.AnioHasta;
+            modelos.MesGarantia = model.MesGarantia;
+            modelos.KmGarantia = model.KmGarantia;
+
+            if (model.IdModelo > 0)
+            {
+                context.Modelos.Entry(modelos);
+
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                context.Modelos.Add(modelos);
+                await context.SaveChangesAsync();
+
+            }
             return true;
         }
 
-        public async Task<bool> EliminarModelo(int idModelo)
+        /// <summary>
+        /// Elimina un modelo en la base de datos.
+        /// </summary>
+        /// <param name="IdModelo">Identificador del modelo.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+
+        public async Task<bool> EliminarModelo(int IdModelo)
         {
-            var modelo = await context.Modelos.FirstOrDefaultAsync(x => x.IdModelo == idModelo);
+            var modelo = await context.Modelos.FirstOrDefaultAsync(x => x.IdModelo == IdModelo);
+
             if (modelo is null)
-                throw new Exception("No se encontró el modelo");
+            {
+                throw new Exception("No se encontro el Modelo");
+            }
 
-            context.Modelos.Remove(modelo);
+            // Desactivar temporamente el seguimiento de entidades relacionadas
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
+
+            var delete = await context.Modelos
+              .Where(x => x.IdModelo == IdModelo)
+              .ExecuteDeleteAsync();
+
             await context.SaveChangesAsync();
 
+            // Volver a activar el seguimiento de entidades relacionadas
+            context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
         }
 
-        public Task EliminarModelo(short idModelo)
+        public List<MarcaViewModel> ObtenerMarca()
         {
-            throw new NotImplementedException();
+            var resul = (from o in context.Marcas select new MarcaViewModel()
+                         {
+                             IdMarca = o.IdMarca,
+                             Descripcion = o.Descripcion
+                         }).ToList();
+
+            return resul;
+        }
+
+        public List<TipoVehiculoViewModel> ObtenerTipoVehiculo()
+        {
+            var resul = (from o in context.Tipovehiculos select new TipoVehiculoViewModel()
+                         {
+                             TipoUnidadId = o.Idtipovehiculo,
+                             Nombre = o.Nombre
+                         }).ToList();
+
+            return resul;
         }
     }
 }

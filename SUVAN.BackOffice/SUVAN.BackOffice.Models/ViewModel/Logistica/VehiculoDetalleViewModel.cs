@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SUVAN.BackOffice.Models.ViewModel.Configuracion;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -89,6 +90,37 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public int IdVehiculoDetalle { get; set; }
         public List<MarcaViewModel> Marcas { get; set; } = new();
 
+        public List<ModeloViewModel> Modelos { get; set; } = new();
+
+        public List<TipoVehiculoViewModel> TipoVehiculo { get; set; } = new();
+
+        public class ModeloViewModel
+        {
+            public short IdMarca { get; set; }
+
+            public int IdModelo { get; set; }
+
+            public sbyte IdTipoV { get; set; }
+
+            public int AnioDesde { get; set; }
+
+            public int AnioHasta { get; set; }
+
+            public string Descripcion { get; set; } = null!;
+
+            public float KmGarantia { get; set; }
+
+            public int MesGarantia { get; set; }
+
+            public int? TipoEje { get; set; }
+
+            public string DescripcionModeloId => $"{IdModelo} - {Descripcion}";
+
+            public List<MarcaViewModel> MarcasView { get; set; } = new();
+
+            public List<TipoVehiculoViewModel> TipoVehiculoView { get; set; } = new();
+        }
+
         public class MarcaViewModel
         {
             public int IdMarca { get; set; }
@@ -96,6 +128,16 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public string Descripcion { get; set; } = null!;
 
             public string DescripcionMarcaId => $"{IdMarca} - {Descripcion}";
+        }
+
+        public class TipoVehiculoViewModel
+        {
+            public int TipoUnidadId { get; set; }
+
+            public string? Nombre { get; set; } = null!;
+
+            public string NombreTipoId => $"{TipoUnidadId} - {Nombre}";
+
         }
     }
 }

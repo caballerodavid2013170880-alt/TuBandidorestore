@@ -3,97 +3,78 @@ using SUVAN.BackOffice.Service.Logistica;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
-using static SUVAN.BackOffice.Models.ViewModel.Logistica.CausaMantenimientoViewModel;
 using SUVAN.BackOffice.Portal.Models;
+using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Portal.Helper;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
     public class ModeloController : Controller
     {
         private readonly ILogger<ModeloController> _logger;
-        private readonly IModeloService _modeloService;
+        private readonly IModeloService modeloService;
 
-        public ModeloController(ILogger<ModeloController> logger, IModeloService modeloService)
+        public ModeloController(ILogger<ModeloController> logger,
+        IModeloService modeloService)
+
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _modeloService = modeloService ?? throw new ArgumentNullException(nameof(modeloService));
-        }
+            _logger = logger;
+            this.modeloService = modeloService;
 
+        }
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                var modelos = await _modeloService.GetModelos();
-                return View(modelos);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener la lista de modelos.");
-                return View("Error", new ErrorViewModel { Message = "No se pudo obtener los modelos." });
-            }
+            var modelo = await modeloService.GetModelo();
+            return View(modelo);
         }
 
         public async Task<IActionResult> AgregarModelo(int id)
         {
-            try
-            {
-                var agregarModel = await _modeloService.GetModeloViewModel(id);
-                return View(agregarModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al cargar el formulario de agregar modelo.");
-                return View("Error", new ErrorViewModel { Message = "No se pudo cargar el modelo." });
-            }
+            var agregarModel = await modeloService.GetModeloViewModel(id);
+            agregarModel.MarcasView = modeloService.ObtenerMarca();
+            agregarModel.TipoVehiculoView = modeloService.ObtenerTipoVehiculo();
+            return View(agregarModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AgregarModelo(Database.Entities.Modelo model)
+        public async Task<IActionResult> AgregarModelo(ModeloViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Modelo inválido en AgregarModelo.");
-                return View(model);
-            }
-
             try
             {
-                var result = await _modeloService.AgregarModelo(model);
+                var result = await modeloService.AgregarModelo(model);
+
                 if (result)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", "Modelo");
                 }
 
-                _logger.LogWarning("No se pudo agregar el modelo.");
-                ModelState.AddModelError(string.Empty, "No se pudo agregar el modelo.");
                 return View(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al agregar el modelo.");
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
+
+
         }
 
         [HttpPost]
-        public async Task<IActionResult> EliminarModelo([FromBody] Database.Entities.Modelo model)
+        public async Task<IActionResult> EliminarModelo([FromBody] ModeloViewModel model)
         {
-            if (model?.IdModelo == null || model.IdModelo <= 0)
-            {
-                _logger.LogWarning("ID inválido para eliminar modelo.");
-                return BadRequest(new { success = false, message = "ID de modelo inválido." });
-            }
-
             try
             {
-                await _modeloService.EliminarModelo(model.IdModelo);
+                await modeloService.EliminarModelo(model.IdModelo);
+
+
                 return Ok(new { success = true });
+
+
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al eliminar el modelo con ID {model.IdModelo}.");
-                return StatusCode(500, new { success = false, message = "Error interno al eliminar el modelo." });
+                return Ok(new { success = false, message = ex.Message });
             }
         }
     }
