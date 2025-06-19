@@ -41,5 +41,7 @@ public partial class Vehiculo
 
     public virtual Tipovehiculo TipovehiculoIdtipovehiculoNavigation { get; set; } = null!;
 
+    public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
+
     public virtual ICollection<Vehiculoservicio> Vehiculoservicios { get; set; } = new List<Vehiculoservicio>();
 }

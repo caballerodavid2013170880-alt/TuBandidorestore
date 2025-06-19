@@ -5,135 +5,145 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class VehiculoDetalle
 {
-    public int IdVehicDetalle { get; set; }
+    public int IdVehiculoDetalle { get; set; }
 
-    public string? IdVehiculo { get; set; }
+    public int IdVehiculo { get; set; }
 
-    public short? IdTipovehi { get; set; }
+    public sbyte IdTipoVehiculo { get; set; }
 
-    public short? IdMarca { get; set; }
+    public short IdMarca { get; set; }
 
     public int IdZona { get; set; }
 
     public int IdDeposito { get; set; }
 
-    public short? IdEspeci { get; set; }
+    public int? IdEspecificacion { get; set; }
 
-    public short? IdModelo { get; set; }
-
-    public string? IdPermisoAceite { get; set; }
+    public int IdModelo { get; set; }
 
     public string? IdCognos { get; set; }
 
-    public short? IdTipoEje { get; set; }
+    public int? IdTipoEje { get; set; }
 
-    public short? Negocio { get; set; }
+    public int? IdNegocio { get; set; }
 
-    public short? Area { get; set; }
+    public int? Area { get; set; }
 
-    public short? Anio { get; set; }
+    public int AnioVehiculo { get; set; }
 
-    public string? Color { get; set; }
+    public string ColorVehiculo { get; set; } = null!;
 
-    public ulong? Rotulo { get; set; }
+    public ulong? TieneRotulo { get; set; }
 
     public string? PlacaPe { get; set; }
 
-    public string? Serie { get; set; }
+    public string NumeroSerie { get; set; } = null!;
 
-    public string? Motor { get; set; }
+    public string NumeroMotor { get; set; } = null!;
 
-    public string? Carroc { get; set; }
+    public string Carroceria { get; set; } = null!;
 
-    public string? TarCirc { get; set; }
+    public string TarjetaCirculacion { get; set; } = null!;
 
-    public short? Gasoline { get; set; }
+    public int Gasolina { get; set; }
 
-    public short? Encierro { get; set; }
+    public int? Encierro { get; set; }
 
-    public ulong? CopFac { get; set; }
+    public ulong? CopiaFactura { get; set; }
 
-    public ulong? CopTcir { get; set; }
+    public ulong? CopiaTarjetaCir { get; set; }
 
-    public ulong? CopPla { get; set; }
+    public ulong? CopiaPlaca { get; set; }
 
-    public ulong? CopVer { get; set; }
+    public ulong? CopiaVerificacion { get; set; }
 
-    public ulong? CopPol { get; set; }
+    public ulong? CopiaPolizaSeguro { get; set; }
 
-    public string? NoCirc { get; set; }
+    public string? NoCircula { get; set; }
 
-    public string? DnoCirc { get; set; }
+    public string? DnoCircula { get; set; }
 
-    public string? Proveed { get; set; }
+    public string Proveedor { get; set; } = null!;
 
-    public DateTime? FCompra { get; set; }
+    public DateTime FechaCompra { get; set; }
 
-    public string? Factura { get; set; }
+    public string NumeroFactura { get; set; } = null!;
 
-    public float? Costo { get; set; }
+    public float CostoVehiculo { get; set; }
 
-    public ulong? Tariave { get; set; }
+    public ulong? TarifaVehicular { get; set; }
 
-    public string? Ntariave { get; set; }
+    public string? NombreTarifaVehicular { get; set; }
 
-    public float? KmAcum { get; set; }
+    public float KilometrajeAcumulado { get; set; }
 
-    public string? StVehic { get; set; }
+    public string? StVehiculo { get; set; }
 
-    public DateTime? FBaja { get; set; }
+    public DateTime FechaBaja { get; set; }
 
-    public string? ColInt { get; set; }
+    public string ColorInterior { get; set; } = null!;
 
     public float? RegFed { get; set; }
 
-    public short? EdregPl { get; set; }
+    public int? EdregPl { get; set; }
 
-    public short? ColEst { get; set; }
+    public int? ColEst { get; set; }
 
-    public ulong? Caja { get; set; }
+    public ulong? TieneCaja { get; set; }
 
-    public ulong? NecRem { get; set; }
+    public ulong? NecesitaRemolque { get; set; }
 
-    public ulong? Relevo { get; set; }
+    public ulong? VehiculoRelevo { get; set; }
 
     public ulong? Rentado { get; set; }
 
-    public short? ColRuta { get; set; }
+    public int? ColRuta { get; set; }
 
-    public short? CauBaja { get; set; }
+    public int? IdCausaBaja { get; set; }
 
-    public float? VRecupe { get; set; }
+    public float? ValorRecuperacion { get; set; }
 
-    public float? KmGaran { get; set; }
+    public float KilometrajeGarantia { get; set; }
 
-    public short? MesGara { get; set; }
+    public int MesesGarantia { get; set; }
 
-    public string? EcoAnt { get; set; }
+    public string? EconomicoAnterior { get; set; }
 
     public ulong? LocFor { get; set; }
 
-    public short? Baja { get; set; }
+    public int? IdBaja { get; set; }
 
-    public int? PesoMinimo { get; set; }
+    public int PesoMinimo { get; set; }
 
-    public int? PesoMaximo { get; set; }
+    public int PesoMaximo { get; set; }
 
-    public decimal? VolumenMinimo { get; set; }
+    public float VolumenMinimo { get; set; }
 
-    public decimal? VolumenMaximo { get; set; }
+    public float VolumenMaximo { get; set; }
 
-    public string? TipoLicenciaRequerida { get; set; }
+    public string TipoLicenciaRequerida { get; set; } = null!;
 
     public ulong? PermisoCargaAceite { get; set; }
 
-    public DateTime? VigenciaPermisoAceite { get; set; }
+    public DateTime VigenciaPermisoAceite { get; set; }
 
-    public DateTime? VigenciaTarjetaCircula { get; set; }
+    public DateTime? VigenciaTarjetaCirculacion { get; set; }
 
-    public string? Asigna { get; set; }
+    public ulong? Asignado { get; set; }
 
-    public int? Total { get; set; }
+    public float? TotalVehiculo { get; set; }
 
-    public string? Usuario { get; set; }
+    public string UsuarioCaptura { get; set; } = null!;
+
+    public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
+
+    public virtual Marca IdMarcaNavigation { get; set; } = null!;
+
+    public virtual Modelo IdModeloNavigation { get; set; } = null!;
+
+    public virtual Tipovehiculo IdTipoVehiculoNavigation { get; set; } = null!;
+
+    public virtual Vehiculo IdVehiculoNavigation { get; set; } = null!;
+
+    public virtual Zona IdZonaNavigation { get; set; } = null!;
 }

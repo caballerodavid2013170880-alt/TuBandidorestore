@@ -30,4 +30,6 @@ public partial class Zona
     public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
 
     public virtual ICollection<Taller> Tallers { get; set; } = new List<Taller>();
+
+    public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
 }

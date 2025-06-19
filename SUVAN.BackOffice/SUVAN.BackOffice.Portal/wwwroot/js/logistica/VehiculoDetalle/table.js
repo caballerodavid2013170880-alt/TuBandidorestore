@@ -35,7 +35,7 @@ var KTVehiculoDetalleList = function () {
                 e.preventDefault();
 
                 const parent = e.target.closest('tr');
-                const vehiculoId = button.getAttribute('data-kt-vehiculo-id');
+                const IdVehicDetalle = button.getAttribute('data-kt-vehiculo-delete-item');
                 const nombreVehiculo = parent.querySelector('td').innerText;
 
                 Swal.fire({
@@ -51,10 +51,10 @@ var KTVehiculoDetalleList = function () {
                     },
                     preConfirm: async () => {
                         try {
-                            const response = await fetch('/VehiculoDetalle/Eliminar', {
+                            const response = await fetch('/VehiculoDetalle/EliminarVehiculo', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ Id_Vehic_Detalle: parseInt(vehiculoId) })
+                                body: JSON.stringify({ IdVehicDetalle: parseInt(IdVehicDetalle) })
                             });
                             if (!response.ok) throw new Error('No se pudo eliminar');
                             return await response.json();

@@ -1,43 +1,42 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
     public interface IVehiculoDetalleService
     {
-        /// <summary>
-        /// Actualiza la información de un vehículo existente.
-        /// </summary>
-        /// <param name="model">Modelo con los datos actualizados.</param>
-        /// <returns>True si la actualización fue exitosa, false en caso contrario.</returns>
-        Task<bool> ActualizarVehiculo(VehiculoDetalle model);
+        Task<List<VehiculoDetalle>> GetVehiculoDetalle();
 
         /// <summary>
-        /// Agrega un nuevo vehículo al sistema.
+        /// Obtiene el ViewModel del VehiculoDetalle específico.
         /// </summary>
-        /// <param name="model">Modelo con los datos del vehículo.</param>
-        /// <returns>True si el vehículo fue agregado correctamente, false en caso contrario.</returns>
-        Task<bool> AgregarVehiculo(VehiculoDetalle model);
+        /// <param name="id">Identificador del VehiculoDetalle.</param>
+        /// <returns>ViewModel para el VehiculoDetalle especifico.</returns>
+        Task<VehiculoDetalleViewModel> GetVehiculoDetalleViewModel(int id);
 
         /// <summary>
-        /// Elimina un vehículo existente por su ID.
+        /// Agrega o actualiza un registro Vehiculo Detalle en la base de datos.
         /// </summary>
-        /// <param name="idVehicDetalle">ID único del vehículo.</param>
-        /// <returns>True si el vehículo fue eliminado exitosamente, false si no se encontró.</returns>
-        Task<bool> EliminarVehiculo(int idVehicDetalle);
+        /// <param name="model">ViewModel con los datos de Vehiculo Detalle.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+        Task<bool> AgregarVehiculoDetalle(VehiculoDetalleViewModel model, int IdEmpresa);
 
         /// <summary>
-        /// Obtiene todos los vehículos registrados en el sistema.
+        /// Elimina un registro de Vehiculo Detalle en la base de datos.
         /// </summary>
-        /// <returns>Lista de vehículos disponibles.</returns>
-        Task<List<VehiculoDetalle>> GetVehiculos();
-        Task<VehiculoDetalle> WGetVehiculoById(int id);
+        /// <param name="IdVehiculo">Identificador del Vehiculo Detalle.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+
+        Task<bool> EliminarVehiculoDetalle(int IdVehiculo);
+
+        Task<List<TipoVehiculoViewModel>> ObtenerTipoVehiculo();
+
+        Task<List<MarcaViewModel>> ObtenerMarcas();
     }
 
-    /// <summary>
-    /// Obtiene los datos de un vehículo específico por su ID.
-    /// </summary>
-    /// <param name="id">ID único del vehículo.</param>
-    /// <returns>El modelo del vehículo si existe, null en caso contrario.</
 }

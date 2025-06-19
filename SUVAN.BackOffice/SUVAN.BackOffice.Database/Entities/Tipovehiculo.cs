@@ -17,5 +17,7 @@ public partial class Tipovehiculo
 
     public virtual ICollection<Modelo> Modelos { get; set; } = new List<Modelo>();
 
+    public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
+
     public virtual ICollection<Vehiculo> Vehiculos { get; set; } = new List<Vehiculo>();
 }

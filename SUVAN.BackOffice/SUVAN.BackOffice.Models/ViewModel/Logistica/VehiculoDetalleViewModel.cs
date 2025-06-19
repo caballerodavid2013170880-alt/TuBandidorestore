@@ -7,87 +7,86 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
     public class VehiculoDetalleViewModel
     {
-        [Key]
-        public int IdVehicDetalle { get; set; }
+        public int IdVehiculoDetalle { get; set; }
 
         // Relaciones con otras entidades
+        public int IdVehiculo { get; set; }
+        public sbyte IdTipoVehiculo { get; set; }
+        public short IdMarca { get; set; }
         public int IdZona { get; set; }
         public int IdDeposito { get; set; }
-        public int IdMarca { get; set; }
-        public int IdEspeci { get; set; }
+        public int? IdEspecificacion { get; set; }
         public int IdModelo { get; set; }
-        public int IdPermisoAceite { get; set; }
-        public int IdCognos { get; set; }
-        public int IdTipoVehi { get; set; }
+        public string? IdCognos { get; set; }
+        public int? IdTipoEje { get; set; }
+        public int? IdNegocio { get; set; }
 
         // Información general del vehículo
-        [Required]
-        public string Negocio { get; set; } = string.Empty;
-        public string Area { get; set; } = string.Empty;
-        public int Anio { get; set; }
-        public string Color { get; set; } = string.Empty;
-        public string Rotulo { get; set; } = string.Empty;
-        public string PlacaPE { get; set; } = string.Empty;
+        public int? Area { get; set; }
+        public int AnioVehiculo { get; set; }
+        public string ColorVehiculo { get; set; } = null!;
+        public ulong? TieneRotulo { get; set; }
         public string? PlacaPe { get; set; }
-        public string Serie { get; set; } = string.Empty;
-        public string Motor { get; set; } = string.Empty;
-        public string Carroc { get; set; } = string.Empty;
-        public string TarCircula { get; set; } = string.Empty;
+        public string NumeroSerie { get; set; } = null!;
+        public string NumeroMotor { get; set; } = null!;
+        public string Carroceria { get; set; } = null!;
+        public string TarjetaCirculacion { get; set; } = null!;
 
         // Documentación y permisos
-        public string Gasoline { get; set; } = string.Empty;
-        public bool Encierro { get; set; }
-        public bool CopFac { get; set; }
-        public bool CopTCir { get; set; }
-        public bool CopPla { get; set; }
-        public bool CopVer { get; set; }
-        public bool CopPol { get; set; }
-        public int NoCirc { get; set; }
-        public string DnoCirc { get; set; } = string.Empty;
-        public string Proveed { get; set; } = string.Empty;
-        public DateTime? FCompra { get; set; }
-        public string Factura { get; set; } = string.Empty;
-        public decimal Costo { get; set; }
-        public decimal TariAve { get; set; }
-        public string NTariAve { get; set; } = string.Empty;
-        public int KmAcum { get; set; }
+        public int Gasolina { get; set; }
+        public int? Encierro { get; set; }
+        public ulong? CopiaFactura { get; set; }
+        public ulong? CopiaTarjetaCir { get; set; }
+        public ulong? CopiaPlaca { get; set; }
+        public ulong? CopiaVerificacion { get; set; }
+        public ulong? CopiaPolizaSeguro { get; set; }
+        public string? NoCircula { get; set; }
+        public string? DnoCircula { get; set; }
+        public string Proveedor { get; set; } = null!;
+        public DateTime FechaCompra { get; set; }
+        public string NumeroFactura { get; set; } = null!;
+        public float CostoVehiculo { get; set; }
+        public ulong? TarifaVehicular { get; set; }
+        public string? NombreTarifaVehicular { get; set; }
+        public float KilometrajeAcumulado { get; set; }
 
         // Estado del vehículo
-        public string StVehic { get; set; } = string.Empty;
-        public DateTime? FBaja { get; set; }
-        public string TipoEje { get; set; } = string.Empty;
-        public string ColInt { get; set; } = string.Empty;
-        public string RegFed { get; set; } = string.Empty;
-        public string EdregPl { get; set; } = string.Empty;
-        public string ColEst { get; set; } = string.Empty;
-        public bool Caja { get; set; }
-        public bool NecRem { get; set; }
-        public bool Relevo { get; set; }
-        public bool Rentado { get; set; }
+        public string? StVehiculo { get; set; }
+        public DateTime FechaBaja { get; set; }
+        public string ColorInterior { get; set; } = null!;
+        public float? RegFed { get; set; }
+        public int? EdregPl { get; set; }
+        public int? ColEst { get; set; }
+        public ulong? TieneCaja { get; set; }
+        public ulong? NecesitaRemolque { get; set; }
+        public ulong? VehiculoRelevo { get; set; }
+        public ulong? Rentado { get; set; }
 
         // Registro y recuperación
-        public string ColRuta { get; set; } = string.Empty;
-        public string CauBaja { get; set; } = string.Empty;
-        public bool VRecuperado { get; set; }
-        public int KmGaran { get; set; }
-        public int MesGara { get; set; }
-        public string EcoAnt { get; set; } = string.Empty;
-        public string LocFor { get; set; } = string.Empty;
-        public bool Baja { get; set; }
+        public int? ColRuta { get; set; }
+        public int? IdCausaBaja { get; set; }
+        public float? ValorRecuperacion { get; set; }
+        public float KilometrajeGarantia { get; set; }
+        public int MesesGarantia { get; set; }
+        public string? EconomicoAnterior { get; set; }
+        public ulong? LocFor { get; set; }
+        public int? IdBaja { get; set; }
 
         // Especificaciones de carga
-        public decimal PesoMinimo { get; set; }
-        public decimal PesoMaximo { get; set; }
-        public decimal VolumenMinimo { get; set; }
-        public decimal VolumenMaximo { get; set; }
+        public int PesoMinimo { get; set; }
+        public int PesoMaximo { get; set; }
+        public float VolumenMinimo { get; set; }
+        public float VolumenMaximo { get; set; }
 
         // Licencia y permisos
-        public string TipoLicenciaRequerida { get; set; } = string.Empty;
-        public bool PermisoCargaAceite { get; set; }
-        public int IdVehiculo { get; set; }
-        public DateTime? VigenciaPermisoAceite { get; set; }
-        public DateTime? VigenciaTarjetaCircula { get; set; }
-        public int IdVehiculoDetalle { get; set; }
+        public string TipoLicenciaRequerida { get; set; } = null!;
+        public ulong? PermisoCargaAceite { get; set; }
+        public DateTime VigenciaPermisoAceite { get; set; }
+        public DateTime? VigenciaTarjetaCirculacion { get; set; }
+        public ulong? Asignado { get; set; }
+        public float? TotalVehiculo { get; set; }
+        public string UsuarioCaptura { get; set; } = null!;
+
         public List<MarcaViewModel> Marcas { get; set; } = new();
 
         public List<ModeloViewModel> Modelos { get; set; } = new();
@@ -139,5 +138,6 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public string NombreTipoId => $"{TipoUnidadId} - {Nombre}";
 
         }
+
     }
 }

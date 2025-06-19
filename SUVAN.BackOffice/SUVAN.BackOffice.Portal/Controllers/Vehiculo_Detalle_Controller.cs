@@ -6,103 +6,90 @@ using System;
 using System.Threading.Tasks;
 using SUVAN.BackOffice.Portal.Models;
 using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Portal.Helper;
+using SUVAN.BackOffice.Service.Configuracion;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
     public class VehiculoDetalleController : Controller
     {
         private readonly ILogger<VehiculoDetalleController> _logger;
-        private readonly IVehiculoDetalleService _vehiculoDetalleService;
+        private readonly IVehiculoDetalleService vehiculoService;
 
-        public VehiculoDetalleController(ILogger<VehiculoDetalleController> logger, IVehiculoDetalleService vehiculoDetalleService)
+        public VehiculoDetalleController(ILogger<VehiculoDetalleController> logger,
+        IVehiculoDetalleService vehiculoService)
+
         {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _vehiculoDetalleService = vehiculoDetalleService ?? throw new ArgumentNullException(nameof(vehiculoDetalleService));
-        }
+            _logger = logger;
+            this.vehiculoService = vehiculoService;
 
-        // Listado de vehículos
+        }
         public async Task<IActionResult> Index()
         {
-            try
-            {
-                var vehiculos = await _vehiculoDetalleService.GetVehiculos();
-                return View(vehiculos);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener la lista de vehículos.");
-                return View("Error", new ErrorViewModel { Message = "No se pudo obtener los vehículos." });
-            }
+            var vehiculo = await vehiculoService.GetVehiculoDetalle();
+            return View(vehiculo);
         }
 
-        // Formulario para agregar o editar vehículo
-        public async Task<IActionResult> AgregarVehiculo(int id)
+        public async Task<IActionResult> AgregarVehiculoDetalle(int id)
         {
-            try
-            {
-                var vehiculo = id > 0 ? await _vehiculoDetalleService.WGetVehiculoById(id) : new VehiculoDetalle();
-                return View(vehiculo);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al cargar el formulario de agregar vehículo.");
-                return View("Error", new ErrorViewModel { Message = "No se pudo cargar el vehículo." });
-            }
+            var agregarModel = await vehiculoService.GetVehiculoDetalleViewModel(id);
+            return View(agregarModel);
         }
 
-        // Agregar o editar un vehículo
         [HttpPost]
-        public async Task<IActionResult> AgregarVehiculo(VehiculoDetalle model)
+        public async Task<IActionResult> AgregarVehiculoDetalle(VehiculoDetalleViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                _logger.LogWarning("Modelo inválido en AgregarVehiculo.");
-                return View(model);
-            }
-
             try
             {
-                var result = model.IdVehicDetalle > 0
-                    ? await _vehiculoDetalleService.ActualizarVehiculo(model)
-                    : await _vehiculoDetalleService.AgregarVehiculo(model);
+                int IdEmpresa = User.GetEmpresaId();
+                var result = await vehiculoService.AgregarVehiculoDetalle(model, IdEmpresa);
 
                 if (result)
                 {
-                    return RedirectToAction("Index");
+                    return RedirectToAction("Index", "VehiculoDetalle");
                 }
 
-                _logger.LogWarning("No se pudo guardar el vehículo.");
-                ModelState.AddModelError(string.Empty, "No se pudo guardar el vehículo.");
                 return View(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al guardar el vehículo.");
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
+
+
         }
 
-        // Eliminar un vehículo
         [HttpPost]
-        public async Task<IActionResult> EliminarVehiculo([FromBody] VehiculoDetalle model)
+        public async Task<IActionResult> EliminarVehiculoDetalle([FromBody] VehiculoDetalleViewModel model)
         {
-            if (model?.IdVehicDetalle == null || model.IdVehicDetalle <= 0)
-            {
-                _logger.LogWarning("ID inválido para eliminar vehículo.");
-                return BadRequest(new { success = false, message = "ID de vehículo inválido." });
-            }
-
             try
             {
-                await _vehiculoDetalleService.EliminarVehiculo(model.IdVehicDetalle);
+                await vehiculoService.EliminarVehiculoDetalle(model.IdVehiculoDetalle);
+
+
                 return Ok(new { success = true });
+
+
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $"Error al eliminar el vehículo con ID {model.IdVehicDetalle}.");
-                return StatusCode(500, new { success = false, message = "Error interno al eliminar el vehículo." });
+                return Ok(new { success = false, message = ex.Message });
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerTipoVehiculo()
+        {
+            var tipo = await vehiculoService.ObtenerTipoVehiculo();
+            return Json(tipo);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerMarca()
+        {
+            var tipo = await vehiculoService.ObtenerMarcas();
+            return Json(tipo);
         }
     }
 }

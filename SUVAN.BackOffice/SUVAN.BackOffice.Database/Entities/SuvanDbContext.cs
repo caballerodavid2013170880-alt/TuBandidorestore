@@ -3677,113 +3677,119 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<VehiculoDetalle>(entity =>
         {
-            entity.HasKey(e => e.IdVehicDetalle).HasName("PRIMARY");
+            entity.HasKey(e => e.IdVehiculoDetalle).HasName("PRIMARY");
 
             entity.ToTable("vehiculo_detalle");
 
-            entity.Property(e => e.IdVehicDetalle).HasColumnName("Id_Vehic_Detalle");
-            entity.Property(e => e.Anio).HasColumnName("anio");
+            entity.HasIndex(e => e.IdDeposito, "fk_vehiculo_detalle_deposito");
+
+            entity.HasIndex(e => e.IdMarca, "fk_vehiculo_detalle_marca");
+
+            entity.HasIndex(e => e.IdModelo, "fk_vehiculo_detalle_modelo");
+
+            entity.HasIndex(e => e.IdTipoVehiculo, "fk_vehiculo_detalle_tipovehiculo");
+
+            entity.HasIndex(e => e.IdVehiculo, "fk_vehiculo_detalle_vehiculo");
+
+            entity.HasIndex(e => e.IdZona, "fk_vehiculo_detalle_zona");
+
+            entity.Property(e => e.IdVehiculoDetalle).HasColumnName("id_vehiculo_detalle");
+            entity.Property(e => e.AnioVehiculo).HasColumnName("anio_vehiculo");
             entity.Property(e => e.Area).HasColumnName("area");
-            entity.Property(e => e.Asigna)
-                .HasMaxLength(1)
-                .IsFixedLength()
-                .HasColumnName("asigna");
-            entity.Property(e => e.Baja).HasColumnName("baja");
-            entity.Property(e => e.Caja)
+            entity.Property(e => e.Asignado)
                 .HasColumnType("bit(1)")
-                .HasColumnName("caja");
-            entity.Property(e => e.Carroc)
-                .HasMaxLength(20)
+                .HasColumnName("asignado");
+            entity.Property(e => e.Carroceria)
+                .HasMaxLength(30)
                 .IsFixedLength()
-                .HasColumnName("carroc");
-            entity.Property(e => e.CauBaja).HasColumnName("cau_baja");
+                .HasColumnName("carroceria");
             entity.Property(e => e.ColEst).HasColumnName("col_est");
-            entity.Property(e => e.ColInt)
-                .HasMaxLength(20)
-                .IsFixedLength()
-                .HasColumnName("col_int");
             entity.Property(e => e.ColRuta).HasColumnName("col_ruta");
-            entity.Property(e => e.Color)
+            entity.Property(e => e.ColorInterior)
                 .HasMaxLength(20)
                 .IsFixedLength()
-                .HasColumnName("color");
-            entity.Property(e => e.CopFac)
+                .HasColumnName("color_interior");
+            entity.Property(e => e.ColorVehiculo)
+                .HasMaxLength(20)
+                .IsFixedLength()
+                .HasColumnName("color_vehiculo");
+            entity.Property(e => e.CopiaFactura)
                 .HasColumnType("bit(1)")
-                .HasColumnName("cop_fac");
-            entity.Property(e => e.CopPla)
+                .HasColumnName("copia_factura");
+            entity.Property(e => e.CopiaPlaca)
                 .HasColumnType("bit(1)")
-                .HasColumnName("cop_pla");
-            entity.Property(e => e.CopPol)
+                .HasColumnName("copia_placa");
+            entity.Property(e => e.CopiaPolizaSeguro)
                 .HasColumnType("bit(1)")
-                .HasColumnName("cop_pol");
-            entity.Property(e => e.CopTcir)
+                .HasColumnName("copia_poliza_seguro");
+            entity.Property(e => e.CopiaTarjetaCir)
                 .HasColumnType("bit(1)")
-                .HasColumnName("cop_tcir");
-            entity.Property(e => e.CopVer)
+                .HasColumnName("copia_tarjeta_cir");
+            entity.Property(e => e.CopiaVerificacion)
                 .HasColumnType("bit(1)")
-                .HasColumnName("cop_ver");
-            entity.Property(e => e.Costo).HasColumnName("costo");
-            entity.Property(e => e.DnoCirc)
+                .HasColumnName("copia_verificacion");
+            entity.Property(e => e.CostoVehiculo).HasColumnName("costo_vehiculo");
+            entity.Property(e => e.DnoCircula)
                 .HasMaxLength(2)
                 .IsFixedLength()
-                .HasColumnName("dno_circ");
-            entity.Property(e => e.EcoAnt)
+                .HasColumnName("dno_circula");
+            entity.Property(e => e.EconomicoAnterior)
                 .HasMaxLength(10)
                 .IsFixedLength()
-                .HasColumnName("eco_ant");
+                .HasColumnName("economico_anterior");
             entity.Property(e => e.EdregPl).HasColumnName("edreg_pl");
             entity.Property(e => e.Encierro).HasColumnName("encierro");
-            entity.Property(e => e.FBaja)
+            entity.Property(e => e.FechaBaja)
                 .HasColumnType("datetime")
-                .HasColumnName("f_baja");
-            entity.Property(e => e.FCompra)
+                .HasColumnName("fecha_baja");
+            entity.Property(e => e.FechaCompra)
                 .HasColumnType("datetime")
-                .HasColumnName("f_compra");
-            entity.Property(e => e.Factura)
-                .HasMaxLength(15)
-                .IsFixedLength()
-                .HasColumnName("factura");
-            entity.Property(e => e.Gasoline).HasColumnName("gasoline");
+                .HasColumnName("fecha_compra");
+            entity.Property(e => e.Gasolina).HasColumnName("gasolina");
+            entity.Property(e => e.IdBaja).HasColumnName("id_baja");
+            entity.Property(e => e.IdCausaBaja).HasColumnName("id_causa_baja");
             entity.Property(e => e.IdCognos)
                 .HasMaxLength(15)
                 .IsFixedLength()
-                .HasColumnName("Id_cognos");
-            entity.Property(e => e.IdDeposito).HasColumnName("Id_deposito");
-            entity.Property(e => e.IdEspeci).HasColumnName("Id_especi");
-            entity.Property(e => e.IdMarca).HasColumnName("Id_marca");
-            entity.Property(e => e.IdModelo).HasColumnName("Id_modelo");
-            entity.Property(e => e.IdPermisoAceite)
-                .HasMaxLength(30)
-                .IsFixedLength()
-                .HasColumnName("Id_permiso_aceite");
-            entity.Property(e => e.IdTipoEje).HasColumnName("Id_tipo_eje");
-            entity.Property(e => e.IdTipovehi).HasColumnName("Id_tipovehi");
-            entity.Property(e => e.IdVehiculo)
-                .HasMaxLength(45)
-                .HasColumnName("Id_vehiculo");
-            entity.Property(e => e.IdZona).HasColumnName("Id_zona");
-            entity.Property(e => e.KmAcum).HasColumnName("km_acum");
-            entity.Property(e => e.KmGaran).HasColumnName("km_garan");
+                .HasColumnName("id_cognos");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdEspecificacion).HasColumnName("id_especificacion");
+            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
+            entity.Property(e => e.IdModelo).HasColumnName("id_modelo");
+            entity.Property(e => e.IdNegocio).HasColumnName("id_negocio");
+            entity.Property(e => e.IdTipoEje).HasColumnName("id_tipo_eje");
+            entity.Property(e => e.IdTipoVehiculo).HasColumnName("id_tipo_vehiculo");
+            entity.Property(e => e.IdVehiculo).HasColumnName("id_vehiculo");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.KilometrajeAcumulado).HasColumnName("kilometraje_acumulado");
+            entity.Property(e => e.KilometrajeGarantia).HasColumnName("kilometraje_garantia");
             entity.Property(e => e.LocFor)
                 .HasColumnType("bit(1)")
                 .HasColumnName("loc_for");
-            entity.Property(e => e.MesGara).HasColumnName("mes_gara");
-            entity.Property(e => e.Motor)
-                .HasMaxLength(30)
-                .IsFixedLength()
-                .HasColumnName("motor");
-            entity.Property(e => e.NecRem)
+            entity.Property(e => e.MesesGarantia).HasColumnName("meses_garantia");
+            entity.Property(e => e.NecesitaRemolque)
                 .HasColumnType("bit(1)")
-                .HasColumnName("nec_rem");
-            entity.Property(e => e.Negocio).HasColumnName("negocio");
-            entity.Property(e => e.NoCirc)
+                .HasColumnName("necesita_remolque");
+            entity.Property(e => e.NoCircula)
                 .HasMaxLength(2)
                 .IsFixedLength()
-                .HasColumnName("no_circ");
-            entity.Property(e => e.Ntariave)
+                .HasColumnName("no_circula");
+            entity.Property(e => e.NombreTarifaVehicular)
                 .HasMaxLength(25)
                 .IsFixedLength()
-                .HasColumnName("ntariave");
+                .HasColumnName("nombre_tarifa_vehicular");
+            entity.Property(e => e.NumeroFactura)
+                .HasMaxLength(15)
+                .IsFixedLength()
+                .HasColumnName("numero_factura");
+            entity.Property(e => e.NumeroMotor)
+                .HasMaxLength(30)
+                .IsFixedLength()
+                .HasColumnName("numero_motor");
+            entity.Property(e => e.NumeroSerie)
+                .HasMaxLength(30)
+                .IsFixedLength()
+                .HasColumnName("numero_serie");
             entity.Property(e => e.PermisoCargaAceite)
                 .HasColumnType("bit(1)")
                 .HasColumnName("permiso_carga_aceite");
@@ -3793,57 +3799,82 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(9)
                 .IsFixedLength()
                 .HasColumnName("placa_pe");
-            entity.Property(e => e.Proveed)
+            entity.Property(e => e.Proveedor)
                 .HasMaxLength(5)
                 .IsFixedLength()
-                .HasColumnName("proveed");
+                .HasColumnName("proveedor");
             entity.Property(e => e.RegFed).HasColumnName("reg_fed");
-            entity.Property(e => e.Relevo)
-                .HasColumnType("bit(1)")
-                .HasColumnName("relevo");
             entity.Property(e => e.Rentado)
                 .HasColumnType("bit(1)")
                 .HasColumnName("rentado");
-            entity.Property(e => e.Rotulo)
-                .HasColumnType("bit(1)")
-                .HasColumnName("rotulo");
-            entity.Property(e => e.Serie)
-                .HasMaxLength(30)
-                .IsFixedLength()
-                .HasColumnName("serie");
-            entity.Property(e => e.StVehic)
+            entity.Property(e => e.StVehiculo)
                 .HasMaxLength(1)
                 .IsFixedLength()
-                .HasColumnName("st_vehic");
-            entity.Property(e => e.TarCirc)
+                .HasColumnName("st_vehiculo");
+            entity.Property(e => e.TarifaVehicular)
+                .HasColumnType("bit(1)")
+                .HasColumnName("tarifa_vehicular");
+            entity.Property(e => e.TarjetaCirculacion)
                 .HasMaxLength(20)
                 .IsFixedLength()
-                .HasColumnName("tar_circ");
-            entity.Property(e => e.Tariave)
+                .HasColumnName("tarjeta_circulacion");
+            entity.Property(e => e.TieneCaja)
                 .HasColumnType("bit(1)")
-                .HasColumnName("tariave");
+                .HasColumnName("tiene_caja");
+            entity.Property(e => e.TieneRotulo)
+                .HasColumnType("bit(1)")
+                .HasColumnName("tiene_rotulo");
             entity.Property(e => e.TipoLicenciaRequerida)
                 .HasMaxLength(3)
                 .IsFixedLength()
                 .HasColumnName("tipo_licencia_requerida");
-            entity.Property(e => e.Total).HasColumnName("total");
-            entity.Property(e => e.Usuario)
+            entity.Property(e => e.TotalVehiculo).HasColumnName("total_vehiculo");
+            entity.Property(e => e.UsuarioCaptura)
                 .HasMaxLength(20)
                 .IsFixedLength()
-                .HasColumnName("usuario");
-            entity.Property(e => e.VRecupe).HasColumnName("v_recupe");
+                .HasColumnName("usuario_captura");
+            entity.Property(e => e.ValorRecuperacion).HasColumnName("valor_recuperacion");
+            entity.Property(e => e.VehiculoRelevo)
+                .HasColumnType("bit(1)")
+                .HasColumnName("vehiculo_relevo");
             entity.Property(e => e.VigenciaPermisoAceite)
                 .HasColumnType("datetime")
                 .HasColumnName("vigencia_permiso_aceite");
-            entity.Property(e => e.VigenciaTarjetaCircula)
+            entity.Property(e => e.VigenciaTarjetaCirculacion)
                 .HasColumnType("datetime")
-                .HasColumnName("vigencia_tarjeta_circula");
-            entity.Property(e => e.VolumenMaximo)
-                .HasPrecision(7, 2)
-                .HasColumnName("volumen_maximo");
-            entity.Property(e => e.VolumenMinimo)
-                .HasPrecision(7, 2)
-                .HasColumnName("volumen_minimo");
+                .HasColumnName("vigencia_tarjeta_circulacion");
+            entity.Property(e => e.VolumenMaximo).HasColumnName("volumen_maximo");
+            entity.Property(e => e.VolumenMinimo).HasColumnName("volumen_minimo");
+
+            entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.VehiculoDetalles)
+                .HasForeignKey(d => d.IdDeposito)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_detalle_deposito");
+
+            entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.VehiculoDetalles)
+                .HasForeignKey(d => d.IdMarca)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_detalle_marca");
+
+            entity.HasOne(d => d.IdModeloNavigation).WithMany(p => p.VehiculoDetalles)
+                .HasForeignKey(d => d.IdModelo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_detalle_modelo");
+
+            entity.HasOne(d => d.IdTipoVehiculoNavigation).WithMany(p => p.VehiculoDetalles)
+                .HasForeignKey(d => d.IdTipoVehiculo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_detalle_tipovehiculo");
+
+            entity.HasOne(d => d.IdVehiculoNavigation).WithMany(p => p.VehiculoDetalles)
+                .HasForeignKey(d => d.IdVehiculo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_detalle_vehiculo");
+
+            entity.HasOne(d => d.IdZonaNavigation).WithMany(p => p.VehiculoDetalles)
+                .HasForeignKey(d => d.IdZona)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_detalle_zona");
         });
 
         modelBuilder.Entity<VehiculoEspecificacione>(entity =>

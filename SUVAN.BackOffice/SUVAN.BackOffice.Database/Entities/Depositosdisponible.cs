@@ -43,5 +43,7 @@ public partial class Depositosdisponible
 
     public virtual ICollection<Taller> Tallers { get; set; } = new List<Taller>();
 
+    public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
+
     public virtual Zona Zona { get; set; } = null!;
 }

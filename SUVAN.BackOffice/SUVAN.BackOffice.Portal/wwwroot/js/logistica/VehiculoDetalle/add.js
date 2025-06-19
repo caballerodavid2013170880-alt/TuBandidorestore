@@ -1,411 +1,110 @@
-﻿"use strict";
+﻿var KTDetalle = function () {
 
-// Definición de la clase
-var KTVehiculoDetalle = function () {
-    var form;
-    var submitButton;
-    var validator;
+    const initModalEvent = () => {
+        const modalDetalle = document.getElementById('kt_modal_detalle');
 
-    var handleValidation = function () {
-        validator = FormValidation.formValidation(
-            form,
-            {
-                fields: {
-                    
-                    'Id_vehiculo': {
-                        validators: {
-                            notEmpty: { message: 'El número de vehículo es requerido' }
-                        }
-                    },
-                    'Id_tipovehi': {
-                        validators: {
-                            notEmpty: { message: 'El número de tipo de vehículo es requerido' },
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    },
-                    'Id_marca': {
-                        validators: {
-                            notEmpty: { message: 'El número de la marca es requerido' },
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    },
-                    'Id_zona': {
-                        validators: {
-                            notEmpty: { message: 'El número de la zona es requerido' },
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    },
-                    'Id_deposito': {
-                        validators: {
-                            notEmpty: { message: 'El número del depósito es requerido' },
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    },
+        if (!modalDetalle) return;
 
-                    'IdEspeci': {
-                        validators: {
-                            notEmpty: { message: 'El número de espesificacion es requerido' },
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    },
-                    'IdModelo': {
-                        validators: {
-                            notEmpty: { message: 'El número de modelo es requerido' },
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    },
-                    'IdPermisoAceite': {
-                        validators: {
-                            notEmpty: { message: 'El número de permiso de aceite es requerido' },
-                            stringLength: { max: 30, message: 'Máximo 30 caracteres' }
-                        }
-                    },
-                    'IdCognos': {
-                        validators: {
-                            notEmpty: { message: 'El número de Cognos es requerido' },
-                            stringLength: { max: 15, message: 'Máximo 15 caracteres' }
-                        }
-                    },
-                    'IdTipoEje': {
-                        validators: {
-                            notEmpty: { message: 'El número de tipo de eje es requerido' },
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    },
+        const showModalDetalle = new bootstrap.Modal(modalDetalle, {
+            keyboard: false,
+            backdrop: 'static'
+        });
 
-                   
-                    'Negocio': {
-                        validators: {
-                            notEmpty: { message: 'El negocio es requerido' },
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    },
-                    'Area': {
-                        validators: {
-                            notEmpty: { message: 'El área es requerida' },
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    },
-                    'Anio': {
-                        validators: {
-                            notEmpty: { message: 'El año es requerido' },
-                            numeric: { message: 'Debe ser un número válido' },
-                            between: {
-                                min: 1980,
-                                max: new Date().getFullYear(),
-                                message: 'Debe estar entre 1980 y el año actual'
-                            }
-                        }
-                    },
+        const iconoTipoVehiculo = document.getElementById('iconoTipoVehiculo');
+        const inputTipoVehiculo = document.getElementById('IdTipoVehiculo');
+        const inputTipoVehiculoVisible = document.getElementById('IdTipoVehiculoVisible');
 
-                    
-                    'Color': {
-                        validators: {
-                            notEmpty: { message: 'El color es requerido' },
-                            stringLength: { max: 20, message: 'Máximo 20 caracteres' }
-                        }
-                    },
-                    'Rotulo': {
-                        validators: {
-                            between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                        }
-                    },
-                    'PlacaPe': {
-                        validators: {
-                            notEmpty: { message: 'La placa es requerida' },
-                            stringLength: { min: 9, max: 9, message: 'Debe tener exactamente 9 caracteres' }
-                        }
-                    },
-                    'Serie': {
-                        validators: {
-                            notEmpty: { message: 'La serie es requerida' },
-                            stringLength: { max: 30, message: 'Máximo 30 caracteres' }
-                        }
-                    },
-                    'Motor': {
-                        validators: {
-                            notEmpty: { message: 'El motor es requerido' },
-                            stringLength: { max: 30, message: 'Máximo 30 caracteres' }
-                        }
-                    },
-                    'Carroc': {
-                        validators: {
-                            notEmpty: { message: 'El tipo de carrocería es requerido' },
-                            stringLength: { max: 20, message: 'Máximo 20 caracteres' }
-                        }
-                    },
-                    'TarCirc': {
-                        validators: {
-                            notEmpty: { message: 'La tarjeta de circulación es requerida' },
-                            stringLength: { max: 20, message: 'Máximo 20 caracteres' }
-                        }
-                    },
+        const iconoMarca = document.getElementById('iconoMarca');
+        const inputMarca = document.getElementById('IdMarca');
+        const inputMarcaVisible = document.getElementById('IdMarcaVisible');
 
-                   
-                    'Gasoline': {
-                        validators: {
-                            numeric: { message: 'Debe ser un número válido' }
-                        }
-                    }
-                },
+        const tabla = $('#kt_tabla_detalle');
 
-
-                'Encierro': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-                'CopFac': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-                'CopTcir': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-                'CopPla': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-                'CopVer': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-                'CopPol': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-
-                
-                'NoCirc': {
-                    validators: {
-                        notEmpty: { message: 'El número de circulación es requerido' },
-                        stringLength: { max: 2, message: 'Debe tener máximo 2 caracteres' }
-                    }
-                },
-                'DnoCirc': {
-                    validators: {
-                        notEmpty: { message: 'El número de documento de circulación es requerido' },
-                        stringLength: { max: 2, message: 'Debe tener máximo 2 caracteres' }
-                    }
-                },
-                'Proveed': {
-                    validators: {
-                        notEmpty: { message: 'El código de proveedor es requerido' },
-                        stringLength: { max: 5, message: 'Debe tener máximo 5 caracteres' }
-                    }
-                },
-
-              
-                'FCompra': {
-                    validators: {
-                        notEmpty: { message: 'La fecha de compra es requerida' },
-                        date: { format: 'YYYY-MM-DD', message: 'Debe ser una fecha válida' },
-                        callback: {
-                            message: 'No puede ser futura',
-                            callback: function (input) {
-                                return new Date(input.value) <= new Date();
-                            }
-                        }
-                    }
-                },
-                'FBaja': {
-                    validators: {
-                        notEmpty: { message: 'La fecha de baja es requerida' },
-                        date: { format: 'YYYY-MM-DD', message: 'Debe ser una fecha válida' },
-                        callback: {
-                            message: 'Debe ser posterior a la fecha de compra',
-                            callback: function (input) {
-                                var baja = new Date(input.value);
-                                var compra = new Date(document.querySelector('[name="FCompra"]').value);
-                                return baja >= compra;
-                            }
-                        }
-                    }
-                },
-
-               
-                'Factura': {
-                    validators: {
-                        notEmpty: { message: 'El número de factura es requerido' },
-                        stringLength: { max: 15, message: 'Máximo 15 caracteres' }
-                    }
-                },
-                'Costo': {
-                    validators: {
-                        notEmpty: { message: 'El costo es requerido' },
-                        numeric: { message: 'Debe ser un valor positivo' },
-                        greaterThan: { min: 0, message: 'Debe ser mayor que cero' }
-                    }
-                },
-
-                
-                'Tariave': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-                'Ntariave': {
-                    validators: {
-                        notEmpty: { message: 'El nombre de la tarifa es requerido' },
-                        stringLength: { max: 25, message: 'Máximo 25 caracteres' }
-                    }
-                },
-                'KmAcum': {
-                    validators: {
-                        notEmpty: { message: 'El kilometraje acumulado es requerido' },
-                        numeric: { message: 'Debe ser un número válido' },
-                        greaterThan: { min: 0, message: 'Debe ser mayor o igual a 0' }
-                    }
-                },
-
-                
-                'StVehic': {
-                    validators: {
-                        notEmpty: { message: 'El estado del vehículo es requerido' },
-                        stringLength: { max: 1, message: 'Debe ser un solo carácter' }
-                    
-                }
-            },
-                'ColInt': {
-                    validators: {
-                        notEmpty: { message: 'El color interior es requerido' },
-                        stringLength: { max: 20, message: 'Máximo 20 caracteres' }
-                    }
-                },
-                'ColEst': {
-                    validators: {
-                        notEmpty: { message: 'El estado del color es requerido' },
-                        numeric: { message: 'Debe ser un número válido' }
-                    }
-                },
-                'ColRuta': {
-                    validators: {
-                        notEmpty: { message: 'La ruta del color es requerida' },
-                        numeric: { message: 'Debe ser un número válido' }
-                    }
-                },
-
-                
-                'RegFed': {
-                    validators: {
-                        numeric: { message: 'Debe ser un número válido' }
-                    }
-                },
-                'EdregPl': {
-                    validators: {
-                        numeric: { message: 'Debe ser un número válido' }
-                    }
-                },
-
-                'Caja': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-                'NecRem': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-                'Relevo': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-                'Rentado': {
-                    validators: {
-                        between: { min: 0, max: 1, message: 'Solo puede ser 0 o 1' }
-                    }
-                },
-
-               
-                'KmGaran': {
-                    validators: {
-                        numeric: { message: 'Debe ser un número válido' },
-                        greaterThan: { min: 0, message: 'Debe ser mayor o igual a 0' }
-                    }
-                },
-                'MesGara': {
-                    validators: {
-                        numeric: { message: 'Debe ser un número válido' }
-                    }
-                },
-                'VRecupe': {
-                    validators: {
-                        numeric: { message: 'Debe ser un número válido' }
-                    }
-                },
-
-                
-                'VigenciaPermisoAceite': {
-                    validators: {
-                        date: { format: 'YYYY-MM-DD', message: 'Debe ser una fecha válida' }
-                    }
-                },
-                'VigenciaTarjetaCircula': {
-                    validators: {
-                        date: { format: 'YYYY-MM-DD', message: 'Debe ser una fecha válida' }
-                    }
-                },
-
-               
-                'TipoLicenciaRequerida': {
-                    validators: {
-                        stringLength: { max: 3, message: 'Máximo 3 caracteres' }
-                    }
-                },
-                'Usuario': {
-                    validators: {
-                        notEmpty: { message: 'El usuario es requerido' },
-                        stringLength: { max: 20, message: 'Máximo 20 caracteres' }
-                    }
-                }
-            ,
-            plugins: {
-            trigger: new FormValidation.plugins.Trigger(),
-            bootstrap: new FormValidation.plugins.Bootstrap5({
-                rowSelector: '.fv-row'
-            })
-        }
-        
-    
-
+        const configurarTabla = (data, columnas, onRowClick) => {
+            if ($.fn.DataTable.isDataTable(tabla)) {
+                tabla.DataTable().destroy();
+                tabla.empty();
             }
-        );
-    };
 
-    var handleSubmitValidation = function () {
-        submitButton.addEventListener('click', function (e) {
-            e.preventDefault(); // Evita el envío por defecto
-
-            validator.validate().then(function (status) {
-                if (status == 'Valid') {
-                    submitButton.setAttribute('data-kt-indicator', 'on'); // Indicador de carga
-                    submitButton.disabled = true; // Evita múltiples envíos
-                    form.submit(); // Envía el formulario
+            tabla.DataTable({
+                data: data,
+                columns: columnas,
+                pageLength: 10,
+                lengthChange: false,
+                searching: false,
+                ordering: false,
+                info: false,
+                createdRow: function (row, data) {
+                    $(row).addClass('text-gray-600 fw-semibold');
+                },
+                headerCallback: function (thead) {
+                    $(thead).find('th').addClass('text-center text-muted fw-bold fs-7 text-uppercase gs-0');
                 }
             });
-        });
-    };
+
+            tabla.find('tbody').off('click').on('click', 'tr', function () {
+                const rowData = tabla.DataTable().row(this).data();
+                onRowClick(rowData);
+                showModalDetalle.hide();
+            });
+        };
+
+        if (iconoTipoVehiculo) {
+            iconoTipoVehiculo.addEventListener('click', function () {
+                document.getElementById('modalTitulo').textContent = 'Tipos de Vehículo';
+
+                $.ajax({
+                    url: "/VehiculoDetalle/ObtenerTipoVehiculo",
+                    type: 'GET',
+                    success: function (data) {
+                        showModalDetalle.show();
+                        configurarTabla(data, [
+                            { title: "Número de Tipo de Vehículo", data: "tipoUnidadId", className: 'min-w-125px text-justify' },
+                            { title: "Nombre", data: "nombre", className: 'min-w-125px text-justify' }
+                        ], function (rowData) {
+                            inputTipoVehiculo.value = rowData.tipoUnidadId;
+                            inputTipoVehiculoVisible.value = rowData.nombre;
+                        });
+                    },
+                    error: function () {
+                        alert('Error al obtener los Tipos de Vehículos.');
+                    }
+                });
+            });
+        }
+
+        if (iconoMarca) {
+            iconoMarca.addEventListener('click', function () {
+                document.getElementById('modalTitulo').textContent = 'Marcas';
+
+                $.ajax({
+                    url: "/VehiculoDetalle/ObtenerMarca",
+                    type: 'GET',
+                    success: function (data) {
+                        showModalDetalle.show();
+                        configurarTabla(data, [
+                            { title: "Número de Marca", data: "idMarca", className: 'min-w-125px text-justify' },
+                            { title: "Descripción", data: "descripcion", className: 'min-w-125px text-justify' }
+                        ], function (rowData) {
+                            inputMarca.value = rowData.idMarca;
+                            inputMarcaVisible.value = rowData.descripcion;
+                        });
+                    },
+                    error: function () {
+                        alert('Error al obtener las Marcas.');
+                    }
+                });
+            });
+        }
+    }
 
     return {
         init: function () {
-            form = document.querySelector('#kt_vehiculo_detalle_form');
-            submitButton = document.querySelector('#kt_vehiculo_detalle_submit');
-
-            handleValidation(); // Configurar validaciones
-            handleSubmitValidation(); // Manejar envío del formulario
+            initModalEvent();
         }
     };
 }();
 
-// Ejecutar cuando el DOM esté listo
 KTUtil.onDOMContentLoaded(function () {
-    KTVehiculoDetalle.init();
+    KTDetalle.init();
 });
