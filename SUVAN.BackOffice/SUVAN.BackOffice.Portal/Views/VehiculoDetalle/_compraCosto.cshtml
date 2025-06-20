@@ -1,0 +1,90 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Models.ViewModel.Logistica
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "Vehiculo Detalles";
+}
+@model VehiculoDetalleViewModel
+
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.VehiculoDetalle);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+
+<div class="card card-bordered mb-5">
+    <div class="card-header">
+        <h3 class="card-title">Compra y Costos</h3>
+    </div>
+    <div class="card-body py-2">
+        <div class="row">
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="Proveedor" class="col-form-label text-gray-600 required">Proveedor</label>
+                    <input asp-for="Proveedor" class="form-control form-control-sm bg-transparent" placeholder="Proveedor" />
+                    <span asp-validation-for="Proveedor" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="FechaCompra" class="col-form-label text-gray-600 required">Fecha de Compra</label>
+                    <input asp-for="FechaCompra" class="form-control form-control-sm bg-transparent" placeholder="Fecha de Compra" />
+                    <span asp-validation-for="FechaCompra" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="NumeroFactura" class="col-form-label text-gray-600 required">Número de Factura</label>
+                    <input asp-for="NumeroFactura" class="form-control form-control-sm bg-transparent" placeholder="Número de Factura" />
+                    <span asp-validation-for="NumeroFactura" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="CostoVehiculo" class="col-form-label text-gray-600 required">Costo de Vehículo</label>
+                    <input asp-for="CostoVehiculo" class="form-control form-control-sm bg-transparent" placeholder="Costo de Vehículo" />
+                    <span asp-validation-for="CostoVehiculo" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="TarifaVehicular" class="col-form-label text-gray-600 required">¿Tiene Tarifa Vehícular?</label>
+                    <select asp-for="TarifaVehicular" class="form-control form-control-sm">
+                        <option value="">Selecciona una Opción</option>
+                        <option value="1">Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                    <span asp-validation-for="TarifaVehicular" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="NombreTarifaVehicular" class="col-form-label text-gray-600 required">Nombre Tarifa Vehícular</label>
+                    <input asp-for="NombreTarifaVehicular" class="form-control form-control-sm bg-transparent" placeholder="Nombre Tarifa Vehícular" />
+                    <span asp-validation-for="NombreTarifaVehicular" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="KilometrajeAcumulado" class="col-form-label text-gray-600 required">Kilometraje Acumulado</label>
+                    <input asp-for="KilometrajeAcumulado" class="form-control form-control-sm bg-transparent" placeholder="Kilometraje Acumulado" />
+                    <span asp-validation-for="KilometrajeAcumulado" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="text-end mt-4">
+            <button type="button" class="btn btn-primary btn-sm" onclick="irASiguienteTab('garantiaestado')">Siguiente</button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/add.js"></script>
+}

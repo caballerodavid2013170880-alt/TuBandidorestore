@@ -1,0 +1,122 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Logistica;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "Vehiculo Detalles";
+}
+
+@model VehiculoDetalleViewModel
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.VehiculoDetalle);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+    var isAgaregarText = Model.IdVehiculoDetalle == 0 ? "Agregar" : "Editar";
+}
+
+<div id="kt_app_toolbar" class="app-toolbar ">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <a href="~/VehiculoDetalle/Index" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+                    <i class="ki-duotone ki-left fs-1 pe-5">
+                    </i>
+                    <span>@isAgaregarText Detalle</span>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container mt-5">
+    <div class="mx-auto d-flex flex-column align-items-center">
+        <ul class="nav nav-pills d-flex justify-content-center mb-2" id="listaHorizontalFila1">
+            <li class="nav-item">
+                <a class="nav-link active" id="datosgenerales-tab" data-bs-toggle="tab" href="#datosgenerales">Datos Generales del Vehículo</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" id="ubicaciondocumentacion-tab" data-bs-toggle="tab" href="#ubicaciondocumentacion">Ubicación y Documentación</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" id="compracosto-tab" data-bs-toggle="tab" href="#compracosto">Compra y Costos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" id="garantiaestado-tab" data-bs-toggle="tab" href="#garantiaestado">Garantía y Estado del Vehículo</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" id="especificaciones-tab" data-bs-toggle="tab" href="#especificaciones">Especificaciones Técnicas</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled" id="permisoslicencias-tab" data-bs-toggle="tab" href="#permisoslicencias">Permisos y Licencias</a>
+            </li>
+        </ul>
+    </div>
+
+    <form class="form w-100" id="kt_detalle_in_form" data-kt-redirect-url="/" asp-controller="VehiculoDetalle" asp-action="AgregarVehiculoDetalle" method="post">
+        @Html.AntiForgeryToken()
+        <input asp-for="IdVehiculoDetalle" type="hidden" />
+        <div class="tab-content" id="contenidoPestanas">
+            <div class="tab-pane fade show active" id="datosgenerales">
+                @await Html.PartialAsync("_datosGenerales", Model)
+            </div>
+
+            <div class="tab-pane fade" id="ubicaciondocumentacion">
+                @await Html.PartialAsync("_ubicacionDocumentacion", Model)
+            </div>
+
+            <div class="tab-pane fade" id="compracosto">
+                @await Html.PartialAsync("_compraCosto", Model)
+            </div>
+
+            <div class="tab-pane fade" id="garantiaestado">
+                @await Html.PartialAsync("_garantiaEstado", Model)
+            </div>
+
+            <div class="tab-pane fade" id="especificaciones">
+                @await Html.PartialAsync("_especificacionesTecnicas", Model)
+            </div>
+
+            <div class="tab-pane fade" id="permisoslicencias">
+                @await Html.PartialAsync("_permisosLicencias", Model)
+            </div>
+        </div>
+    </form>
+</div>
+
+<div class="modal modal-lg fade" tabindex="-1" id="kt_modal_detalle" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitulo">Título</h5>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <div class="modal-body" id="modal-body">
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_tabla_detalle">
+                </table>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<!--end::Content-->
+@* <script type="text/javascript">
+    window.userId = @Model.Idusuario;
+</script> *@
+@section scripts {
+    <script src="~/js/logistica/vehiculodetalle/add.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>
+}

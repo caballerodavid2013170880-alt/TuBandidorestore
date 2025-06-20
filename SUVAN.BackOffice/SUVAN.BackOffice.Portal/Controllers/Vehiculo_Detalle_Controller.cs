@@ -30,10 +30,49 @@ namespace SUVAN.BackOffice.Portal.Controllers
             return View(vehiculo);
         }
 
-        public async Task<IActionResult> AgregarVehiculoDetalle(int id)
+        //public async Task<IActionResult> AgregarVehiculoDetalle(int id)
+        //{
+        //    var agregarModel = await vehiculoService.GetVehiculoDetalleViewModel(id);
+        //    return View(agregarModel);
+        //}
+
+        public async Task<IActionResult> NavegacionVehiculoDetalle(int id)
         {
             var agregarModel = await vehiculoService.GetVehiculoDetalleViewModel(id);
             return View(agregarModel);
+        }
+
+        public IActionResult DatosGenerales()
+        {
+
+            return PartialView("_datosGenerales");
+        }
+        public IActionResult UbicacionDocumentacion()
+        {
+
+            return PartialView("_ubicacionDocumentacion");
+        }
+        public IActionResult CompraCosto()
+        {
+
+            return PartialView("_compraCosto");
+        }
+        public IActionResult GarantiaEstado()
+        {
+
+            return PartialView("_garantiaEstado");
+        }
+
+        public IActionResult EspecificacionesTecnicas()
+        {
+
+            return PartialView("_especificacionesTecnicas");
+        }
+
+        public IActionResult PermisosLicencias()
+        {
+
+            return PartialView("_permisosLicencias");
         }
 
         [HttpPost]

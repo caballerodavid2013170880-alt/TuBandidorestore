@@ -1,0 +1,98 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Models.ViewModel.Logistica
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "Vehiculo Detalles";
+}
+@model VehiculoDetalleViewModel
+
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.VehiculoDetalle);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+
+<div class="card card-bordered mb-5">
+    <div class="card-header">
+        <h3 class="card-title">Especificaciones Técnicas</h3>
+    </div>
+    <div class="card-body py-2">
+        <div class="row">
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="IdEspecificacion" class="col-form-label text-gray-600 required">Especificaciones Técnicas</label>
+                    <div class="input-group input-group-sm">
+                        <input asp-for="IdEspecificacion" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Especificaciones" readonly disabled />
+                        <span class="input-group-text" id="iconoZona" style="cursor:pointer;">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <span asp-validation-for="IdEspecificacion" class="invalid-feedback d-block"></span>
+                </div>
+            </div>
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="TieneCaja" class="col-form-label text-gray-600 required">Tiene Caja</label>
+                    <select asp-for="TieneCaja" class="form-control form-control-sm">
+                        <option value="">Selecciona una Opción</option>
+                        <option value="1">Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                    <span asp-validation-for="TieneCaja" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="NecesitaRemolque" class="col-form-label text-gray-600 required">Necesita Remolque</label>
+                    <select asp-for="NecesitaRemolque" class="form-control form-control-sm">
+                        <option value="">Selecciona una Opción</option>
+                        <option value="1">Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                    <span asp-validation-for="NecesitaRemolque" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="PesoMinimo" class="col-form-label text-gray-600 required">Peso Minimo</label>
+                    <input asp-for="PesoMinimo" class="form-control form-control-sm bg-transparent" placeholder="Peso Minimo" />
+                    <span asp-validation-for="PesoMinimo" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="PesoMaximo" class="col-form-label text-gray-600 required">Peso Máximo</label>
+                    <input asp-for="PesoMaximo" class="form-control form-control-sm bg-transparent" placeholder="Peso Máximo" />
+                    <span asp-validation-for="PesoMaximo" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="VolumenMinimo" class="col-form-label text-gray-600 required">Volumen Minimo</label>
+                    <input asp-for="VolumenMinimo" class="form-control form-control-sm bg-transparent" placeholder="Volumen Minimo" />
+                    <span asp-validation-for="VolumenMinimo" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="VolumenMaximo" class="col-form-label text-gray-600 required">Volumen Máximo</label>
+                    <input asp-for="VolumenMaximo" class="form-control form-control-sm bg-transparent" placeholder="Volumen Máximo" />
+                    <span asp-validation-for="VolumenMaximo" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="text-end mt-4">
+            <button type="button" class="btn btn-primary btn-sm" onclick="irASiguienteTab('permisoslicencias')">Siguiente</button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/add.js"></script>
+}
