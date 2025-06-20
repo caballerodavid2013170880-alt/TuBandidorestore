@@ -22,6 +22,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<AdminEmpresa> AdminEmpresas { get; set; }
 
+    public virtual DbSet<BajaVehi> BajaVehis { get; set; }
+
     public virtual DbSet<Bitacoraloginweb> Bitacoraloginwebs { get; set; }
 
     public virtual DbSet<CalificacionConductor> CalificacionConductors { get; set; }
@@ -29,6 +31,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<CalificacionCorridaasignacion> CalificacionCorridaasignacions { get; set; }
 
     public virtual DbSet<CalificacionUsuario> CalificacionUsuarios { get; set; }
+
+    public virtual DbSet<CausaBaja> CausaBajas { get; set; }
 
     public virtual DbSet<CausaMantenimiento> CausaMantenimientos { get; set; }
 
@@ -347,6 +351,19 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_admin_empresa_perfil1");
         });
 
+        modelBuilder.Entity<BajaVehi>(entity =>
+        {
+            entity.HasKey(e => e.IdBaja).HasName("PRIMARY");
+
+            entity.ToTable("baja_vehi");
+
+            entity.Property(e => e.IdBaja).HasColumnName("id_baja");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(70)
+                .IsFixedLength()
+                .HasColumnName("descripcion");
+        });
+
         modelBuilder.Entity<Bitacoraloginweb>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
@@ -452,6 +469,27 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey<CalificacionUsuario>(d => d.ViajeIdviaje)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_viaje_calificacion2");
+        });
+
+        modelBuilder.Entity<CausaBaja>(entity =>
+        {
+            entity.HasKey(e => e.IdCausaBaja).HasName("PRIMARY");
+
+            entity.ToTable("causa_baja");
+
+            entity.HasIndex(e => e.IdBaja, "fk_cuasaBaja_baja");
+
+            entity.Property(e => e.IdCausaBaja).HasColumnName("id_causa_baja");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(70)
+                .IsFixedLength()
+                .HasColumnName("descripcion");
+            entity.Property(e => e.IdBaja).HasColumnName("id_baja");
+
+            entity.HasOne(d => d.IdBajaNavigation).WithMany(p => p.CausaBajas)
+                .HasForeignKey(d => d.IdBaja)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cuasaBaja_baja");
         });
 
         modelBuilder.Entity<CausaMantenimiento>(entity =>
