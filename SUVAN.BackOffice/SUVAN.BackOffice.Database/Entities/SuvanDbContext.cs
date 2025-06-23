@@ -3097,7 +3097,9 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("tipo_eje");
 
-            entity.Property(e => e.IdTipoEje).HasColumnName("Id_tipo_eje");
+            entity.Property(e => e.IdTipoEje)
+                .ValueGeneratedNever()
+                .HasColumnName("Id_tipo_eje");
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(50)
                 .IsFixedLength()
@@ -3720,7 +3722,13 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("vehiculo_detalle");
 
+            entity.HasIndex(e => e.IdBaja, "fk_vehiculo_detalle_baja_idx");
+
+            entity.HasIndex(e => e.IdCausaBaja, "fk_vehiculo_detalle_causaBaja_idx");
+
             entity.HasIndex(e => e.IdDeposito, "fk_vehiculo_detalle_deposito");
+
+            entity.HasIndex(e => e.IdTipoEje, "fk_vehiculo_detalle_eje");
 
             entity.HasIndex(e => e.IdMarca, "fk_vehiculo_detalle_marca");
 
@@ -3885,6 +3893,16 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.VolumenMaximo).HasColumnName("volumen_maximo");
             entity.Property(e => e.VolumenMinimo).HasColumnName("volumen_minimo");
 
+            entity.HasOne(d => d.IdBajaNavigation).WithMany(p => p.VehiculoDetalles)
+                .HasForeignKey(d => d.IdBaja)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_detalle_baja");
+
+            entity.HasOne(d => d.IdCausaBajaNavigation).WithMany(p => p.VehiculoDetalles)
+                .HasForeignKey(d => d.IdCausaBaja)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_detalle_causaBaja");
+
             entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdDeposito)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -3899,6 +3917,11 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => d.IdModelo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_vehiculo_detalle_modelo");
+
+            entity.HasOne(d => d.IdTipoEjeNavigation).WithMany(p => p.VehiculoDetalles)
+                .HasForeignKey(d => d.IdTipoEje)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_detalle_eje");
 
             entity.HasOne(d => d.IdTipoVehiculoNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdTipoVehiculo)

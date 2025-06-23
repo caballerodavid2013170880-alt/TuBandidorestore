@@ -23,7 +23,7 @@ public partial class VehiculoDetalle
 
     public string? IdCognos { get; set; }
 
-    public int? IdTipoEje { get; set; }
+    public int IdTipoEje { get; set; }
 
     public int? IdNegocio { get; set; }
 
@@ -99,7 +99,7 @@ public partial class VehiculoDetalle
 
     public int? ColRuta { get; set; }
 
-    public int? IdCausaBaja { get; set; }
+    public int IdCausaBaja { get; set; }
 
     public float? ValorRecuperacion { get; set; }
 
@@ -111,7 +111,7 @@ public partial class VehiculoDetalle
 
     public ulong? LocFor { get; set; }
 
-    public int? IdBaja { get; set; }
+    public int IdBaja { get; set; }
 
     public int PesoMinimo { get; set; }
 
@@ -135,11 +135,17 @@ public partial class VehiculoDetalle
 
     public string UsuarioCaptura { get; set; } = null!;
 
+    public virtual BajaVehi IdBajaNavigation { get; set; } = null!;
+
+    public virtual CausaBaja IdCausaBajaNavigation { get; set; } = null!;
+
     public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
 
     public virtual Marca IdMarcaNavigation { get; set; } = null!;
 
     public virtual Modelo IdModeloNavigation { get; set; } = null!;
+
+    public virtual TipoEje IdTipoEjeNavigation { get; set; } = null!;
 
     public virtual Tipovehiculo IdTipoVehiculoNavigation { get; set; } = null!;
 

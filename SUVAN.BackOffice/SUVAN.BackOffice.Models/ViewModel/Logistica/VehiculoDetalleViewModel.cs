@@ -19,7 +19,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public int? IdEspecificacion { get; set; }
         public int IdModelo { get; set; }
         public string? IdCognos { get; set; }
-        public int? IdTipoEje { get; set; }
+        public int IdTipoEje { get; set; }
         public int? IdNegocio { get; set; }
 
         // Información general del vehículo
@@ -65,13 +65,13 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         // Registro y recuperación
         public int? ColRuta { get; set; }
-        public int? IdCausaBaja { get; set; }
+        public int IdCausaBaja { get; set; }
         public float? ValorRecuperacion { get; set; }
         public float KilometrajeGarantia { get; set; }
         public int MesesGarantia { get; set; }
         public string? EconomicoAnterior { get; set; }
         public ulong? LocFor { get; set; }
-        public int? IdBaja { get; set; }
+        public int IdBaja { get; set; }
 
         // Especificaciones de carga
         public int PesoMinimo { get; set; }

@@ -8,7 +8,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
     public class TipoEjeViewModel
     {
-        public short IdTipoEje { get; set; }
+        public int IdTipoEje { get; set; }
 
         public string Descripcion { get; set; } = null!;
 

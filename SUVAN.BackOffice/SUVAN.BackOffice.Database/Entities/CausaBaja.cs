@@ -12,4 +12,6 @@ public partial class CausaBaja
     public string Descripcion { get; set; } = null!;
 
     public virtual BajaVehi IdBajaNavigation { get; set; } = null!;
+
+    public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
 }

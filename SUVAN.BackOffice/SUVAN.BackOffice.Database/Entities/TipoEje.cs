@@ -5,7 +5,9 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class TipoEje
 {
-    public short IdTipoEje { get; set; }
+    public int IdTipoEje { get; set; }
 
     public string Descripcion { get; set; } = null!;
+
+    public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
 }
