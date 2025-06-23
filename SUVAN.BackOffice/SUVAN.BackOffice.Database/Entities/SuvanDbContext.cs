@@ -3098,9 +3098,10 @@ public partial class SuvanDbContext : DbContext
             entity.ToTable("tipo_eje");
 
             entity.Property(e => e.IdTipoEje).HasColumnName("Id_tipo_eje");
-            entity.Property(e => e.Descrip)
+            entity.Property(e => e.Descripcion)
                 .HasMaxLength(50)
-                .IsFixedLength();
+                .IsFixedLength()
+                .HasColumnName("descripcion");
         });
 
         modelBuilder.Entity<TipoMantenimiento>(entity =>

@@ -7,5 +7,5 @@ public partial class TipoEje
 {
     public short IdTipoEje { get; set; }
 
-    public string? Descrip { get; set; }
+    public string Descripcion { get; set; } = null!;
 }

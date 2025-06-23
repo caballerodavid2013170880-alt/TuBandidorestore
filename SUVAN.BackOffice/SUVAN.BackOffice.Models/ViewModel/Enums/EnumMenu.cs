@@ -100,6 +100,9 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
         VehiculoDetalle = 97,
         CausaSiniestro = 98,
         GrupoReparacion = 110,
-        CausaMantenimiento = 111
+        CausaMantenimiento = 111,
+        BajaVehiculo = 112,
+        CausaBaja = 113,
+        TipoEje = 114,
     }
 }

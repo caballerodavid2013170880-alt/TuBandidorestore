@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
@@ -93,6 +94,10 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public List<TipoVehiculoViewModel> TipoVehiculo { get; set; } = new();
 
+        public List<BajaVehiViewModel> BajaVehiculo { get; set; } = new();
+
+        public List<CausaBajaViewModel> CausaBaja { get; set; } = new();
+
         public class ModeloViewModel
         {
             public short IdMarca { get; set; }
@@ -136,6 +141,27 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public string? Nombre { get; set; } = null!;
 
             public string NombreTipoId => $"{TipoUnidadId} - {Nombre}";
+
+        }
+
+        public partial class CausaBajaViewModel
+        {
+            public int IdCausaBaja { get; set; }
+
+            public int IdBaja { get; set; }
+
+            public string Descripcion { get; set; } = null!;
+
+            public List<BajaVehiViewModel> BajaVehiculoView { get; set; } = new();
+
+        }
+
+        public partial class BajaVehiViewModel
+        {
+            public int IdBaja { get; set; }
+            public string Descripcion { get; set; } = null!;
+
+            public string DescripcionId => $"{IdBaja} - {Descripcion}";
 
         }
 
