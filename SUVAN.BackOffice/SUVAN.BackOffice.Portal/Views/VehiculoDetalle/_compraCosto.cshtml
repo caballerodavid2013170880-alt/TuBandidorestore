@@ -31,7 +31,7 @@
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="FechaCompra" class="col-form-label text-gray-600 required">Fecha de Compra</label>
-                    <input asp-for="FechaCompra" class="form-control form-control-sm bg-transparent" placeholder="Fecha de Compra" />
+                    <input asp-for="FechaCompra" id="FechaCompra" class="form-control form-control-sm bg-transparent" placeholder="Fecha de Compra" />
                     <span asp-validation-for="FechaCompra" class="invalid-feedback"></span>
                 </div>
             </div>
@@ -45,21 +45,24 @@
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="CostoVehiculo" class="col-form-label text-gray-600 required">Costo de Vehículo</label>
-                    <input asp-for="CostoVehiculo" class="form-control form-control-sm bg-transparent" placeholder="Costo de Vehículo" />
+                    <input asp-for="CostoVehiculo" id="CostoVehiculo" type="text" class="form-control form-control-sm bg-transparent" placeholder="Costo de Vehículo" />
                     <span asp-validation-for="CostoVehiculo" class="invalid-feedback"></span>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-sm-4 mb-2">
+            <div class="col-sm-2 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="TarifaVehicular" class="col-form-label text-gray-600 required">¿Tiene Tarifa Vehícular?</label>
-                    <select asp-for="TarifaVehicular" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
+                    <label asp-for="TarifaVehicular" class="col-form-label text-gray-600 required d-block">¿Tiene Tarifa Vehícular?</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="TarifaVehicular" value="1" id="radioTarifaSi">
+                        <label class="form-check-label" for="radioTarifaSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="TarifaVehicular" value="0" id="radioTarifaNo">
+                        <label class="form-check-label" for="radioTarifaNo">No</label>
+                    </div>
                     <span asp-validation-for="TarifaVehicular" class="invalid-feedback"></span>
                 </div>
             </div>
@@ -73,12 +76,13 @@
             <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="KilometrajeAcumulado" class="col-form-label text-gray-600 required">Kilometraje Acumulado</label>
-                    <input asp-for="KilometrajeAcumulado" class="form-control form-control-sm bg-transparent" placeholder="Kilometraje Acumulado" />
+                    <input asp-for="KilometrajeAcumulado" id="KilometrajeAcumulado" type="text" class="form-control form-control-sm bg-transparent" placeholder="Kilometraje Acumulado" />
                     <span asp-validation-for="KilometrajeAcumulado" class="invalid-feedback"></span>
                 </div>
             </div>
         </div>
-        <div class="text-end mt-4">
+        <div class="d-flex justify-content-between mt-5">
+            <button type="button" class="btn btn-primary btn-sm" onclick="irATabAnterior()">Anterior</button>
             <button type="button" class="btn btn-primary btn-sm" onclick="irASiguienteTab('garantiaestado')">Siguiente</button>
         </div>
     </div>
@@ -87,4 +91,5 @@
 @section scripts {
     <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
     <script src="~/js/logistica/vehiculodetalle/add.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/validaciones.js"></script>
 }

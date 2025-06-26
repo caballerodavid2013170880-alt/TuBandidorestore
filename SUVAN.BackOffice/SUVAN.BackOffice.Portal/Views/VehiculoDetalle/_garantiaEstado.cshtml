@@ -21,28 +21,56 @@
     </div>
     <div class="card-body py-2">
         <div class="row">
-            <div class="col-sm-3 mb-2">
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="IdBaja" class="col-form-label text-gray-600 required">Baja</label>
+                    <div class="input-group input-group-sm">
+                        <input value="@Model.DescripcionBaja" id="IdBajaVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Baja" readonly disabled />
+                        <span class="input-group-text" id="iconoBaja" style="cursor:pointer;">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <span asp-validation-for="IdBaja" class="invalid-feedback d-block"></span>
+                    <input asp-for="IdBaja" type="hidden" />
+                </div>
+            </div>
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="IdCausaBaja" class="col-form-label text-gray-600 required">Causa Baja</label>
+                    <div class="input-group input-group-sm">
+                        <input value="@Model.DescripcionCausaBaja" id="IdCausaBajaVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Causa Baja" readonly disabled />
+                        <span class="input-group-text" id="iconoCausaBaja" style="cursor:pointer;">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <span asp-validation-for="IdCausaBaja" class="invalid-feedback d-block"></span>
+                    <input asp-for="IdCausaBaja" type="hidden" />
+                </div>
+            </div>
+            <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="KilometrajeGarantia" class="col-form-label text-gray-600 required">Kilometraje de Garantía</label>
-                    <input asp-for="KilometrajeGarantia" class="form-control form-control-sm bg-transparent" placeholder="Kilometraje de Garantía" />
+                    <input asp-for="KilometrajeGarantia" id="KilometrajeGarantia" type="text" class="form-control form-control-sm bg-transparent" placeholder="Kilometraje de Garantía" />
                     <span asp-validation-for="KilometrajeGarantia" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-3 mb-2">
+        </div>
+        <div class="row">
+            <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="MesesGarantia" class="col-form-label text-gray-600 required">Meses de Garantía</label>
-                    <input asp-for="MesesGarantia" class="form-control form-control-sm bg-transparent" placeholder="Meses de Garantía" />
+                    <input asp-for="MesesGarantia" id="MesesGarantia" type="text" class="form-control form-control-sm bg-transparent" placeholder="Meses de Garantía" />
                     <span asp-validation-for="MesesGarantia" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-3 mb-2">
+            <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="FechaBaja" class="col-form-label text-gray-600 required">Fecha de Baja</label>
-                    <input asp-for="FechaBaja" class="form-control form-control-sm bg-transparent" placeholder="Fecha de Baja" />
+                    <input asp-for="FechaBaja" id="FechaBaja" class="form-control form-control-sm bg-transparent" placeholder="Fecha de Baja" />
                     <span asp-validation-for="FechaBaja" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-3 mb-2">
+            <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="EconomicoAnterior" class="col-form-label text-gray-600 required">Económico Anterior</label>
                     <input asp-for="EconomicoAnterior" class="form-control form-control-sm bg-transparent" placeholder="Económico Anterior" />
@@ -50,7 +78,8 @@
                 </div>
             </div>
         </div>
-        <div class="text-end mt-4">
+        <div class="d-flex justify-content-between mt-5">
+            <button type="button" class="btn btn-primary btn-sm" onclick="irATabAnterior()">Anterior</button>
             <button type="button" class="btn btn-primary btn-sm" onclick="irASiguienteTab('especificaciones')">Siguiente</button>
         </div>
     </div>
@@ -59,4 +88,5 @@
 @section scripts {
     <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
     <script src="~/js/logistica/vehiculodetalle/add.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/validaciones.js"></script>
 }

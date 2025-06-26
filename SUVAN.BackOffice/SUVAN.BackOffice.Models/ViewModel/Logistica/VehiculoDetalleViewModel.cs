@@ -9,17 +9,25 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
     public class VehiculoDetalleViewModel
     {
         public int IdVehiculoDetalle { get; set; }
+        public string MarcasJson { get; set; } = string.Empty;
+        public string ZonaJson { get; set; } = string.Empty;
 
         // Relaciones con otras entidades
         public int IdVehiculo { get; set; }
         public sbyte IdTipoVehiculo { get; set; }
+        public string? NombreTipoV { get; set; } = null!;
         public short IdMarca { get; set; }
+        public string DescripcionMarca { get; set; } = null!;
         public int IdZona { get; set; }
+        public string NombreZona { get; set; } = null!;
         public int IdDeposito { get; set; }
+        public string NombreDeposito { get; set; } = null!;
         public int? IdEspecificacion { get; set; }
         public int IdModelo { get; set; }
+        public string DescripcionModelo { get; set; } = null!;
         public string? IdCognos { get; set; }
         public int IdTipoEje { get; set; }
+        public string DescripcionEje { get; set; } = null!;
         public int? IdNegocio { get; set; }
 
         // Información general del vehículo
@@ -66,12 +74,15 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         // Registro y recuperación
         public int? ColRuta { get; set; }
         public int IdCausaBaja { get; set; }
+        public string DescripcionCausaBaja { get; set; } = null!;
         public float? ValorRecuperacion { get; set; }
         public float KilometrajeGarantia { get; set; }
         public int MesesGarantia { get; set; }
         public string? EconomicoAnterior { get; set; }
-        public ulong? LocFor { get; set; }
+        //public ulong? LocFor { get; set; }
+        public ulong? LocFor = 1;
         public int IdBaja { get; set; }
+        public string DescripcionBaja { get; set; } = null!;
 
         // Especificaciones de carga
         public int PesoMinimo { get; set; }
@@ -86,7 +97,9 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public DateTime? VigenciaTarjetaCirculacion { get; set; }
         public ulong? Asignado { get; set; }
         public float? TotalVehiculo { get; set; }
-        public string UsuarioCaptura { get; set; } = null!;
+        //public string UsuarioCaptura { get; set; } = null!;
+
+        public string UsuarioCaptura = "Jordan";
 
         public List<MarcaViewModel> Marcas { get; set; } = new();
 
@@ -97,6 +110,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public List<BajaVehiViewModel> BajaVehiculo { get; set; } = new();
 
         public List<CausaBajaViewModel> CausaBaja { get; set; } = new();
+        public List<ZonaViewModel> Zonas { get; set; } = new();
 
         public class ModeloViewModel
         {
@@ -132,6 +146,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public string Descripcion { get; set; } = null!;
 
             public string DescripcionMarcaId => $"{IdMarca} - {Descripcion}";
+
+            public List<ModeloViewModel> Modelos { get; set; } = new();
         }
 
         public class TipoVehiculoViewModel

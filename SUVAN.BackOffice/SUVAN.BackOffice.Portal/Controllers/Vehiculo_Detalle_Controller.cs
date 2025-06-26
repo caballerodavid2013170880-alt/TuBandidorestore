@@ -8,6 +8,9 @@ using SUVAN.BackOffice.Portal.Models;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Configuracion;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Newtonsoft.Json;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -39,12 +42,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> NavegacionVehiculoDetalle(int id)
         {
             var agregarModel = await vehiculoService.GetVehiculoDetalleViewModel(id);
+            agregarModel.MarcasJson = JsonConvert.SerializeObject(agregarModel.Marcas);
+            agregarModel.ZonaJson = JsonConvert.SerializeObject(agregarModel.Zonas);
             return View(agregarModel);
         }
 
         public IActionResult DatosGenerales()
         {
-
             return PartialView("_datosGenerales");
         }
         public IActionResult UbicacionDocumentacion()
@@ -76,12 +80,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> AgregarVehiculoDetalle(VehiculoDetalleViewModel model)
+        public async Task<IActionResult> NavegacionVehiculoDetalle(VehiculoDetalleViewModel model)
         {
             try
             {
                 int IdEmpresa = User.GetEmpresaId();
-                var result = await vehiculoService.AgregarVehiculoDetalle(model, IdEmpresa);
+                string Usuario = User.GetPerfilId();
+                var result = await vehiculoService.AgregarVehiculoDetalle(model, IdEmpresa, Usuario);
 
                 if (result)
                 {
@@ -129,6 +134,48 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             var tipo = await vehiculoService.ObtenerMarcas();
             return Json(tipo);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerTipoEje()
+        {
+            var eje = await vehiculoService.ObtenerTipoEje();
+            return Json(eje);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerBajaVehi()
+        {
+            var baja = await vehiculoService.ObtenerBajaVehi();
+            return Json(baja);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerCausaBaja()
+        {
+            var causa = await vehiculoService.ObtenerCausaBaja();
+            return Json(causa);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerModelo(int idMarca)
+        {
+            var modelo =  await vehiculoService.ObtenerModelo(idMarca);
+            return Json(modelo);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerZona()
+        {
+            var zona = await vehiculoService.ObtenerZona(User.GetEmpresaId());
+            return Json(zona);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerDeposito(int idZona)
+        {
+            var deposito = await vehiculoService.ObtenerDepositos(idZona);
+            return Json(deposito);
         }
     }
 }

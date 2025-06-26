@@ -53,8 +53,10 @@
         </ul>
     </div>
 
-    <form class="form w-100" id="kt_detalle_in_form" data-kt-redirect-url="/" asp-controller="VehiculoDetalle" asp-action="AgregarVehiculoDetalle" method="post">
+    <form class="form w-100" id="kt_detalle_in_form" data-kt-redirect-url="/" asp-controller="VehiculoDetalle" asp-action="NavegacionVehiculoDetalle" method="post">
         @Html.AntiForgeryToken()
+        <input asp-for="MarcasJson" type="hidden" id="MarcasJson" />
+        <input asp-for="ZonaJson" type="hidden" id="ZonaJson" />
         <input asp-for="IdVehiculoDetalle" type="hidden" />
         <div class="tab-content" id="contenidoPestanas">
             <div class="tab-pane fade show active" id="datosgenerales">
@@ -117,6 +119,7 @@
 @section scripts {
     <script src="~/js/logistica/vehiculodetalle/add.js"></script>
     <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/validaciones.js"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }

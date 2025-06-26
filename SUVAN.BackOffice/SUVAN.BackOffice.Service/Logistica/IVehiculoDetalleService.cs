@@ -23,7 +23,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="model">ViewModel con los datos de Vehiculo Detalle.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        Task<bool> AgregarVehiculoDetalle(VehiculoDetalleViewModel model, int IdEmpresa);
+        Task<bool> AgregarVehiculoDetalle(VehiculoDetalleViewModel model, int IdEmpresa, string Usuario);
 
         /// <summary>
         /// Elimina un registro de Vehiculo Detalle en la base de datos.
@@ -37,6 +37,18 @@ namespace SUVAN.BackOffice.Service.Logistica
         Task<List<TipoVehiculoViewModel>> ObtenerTipoVehiculo();
 
         Task<List<MarcaViewModel>> ObtenerMarcas();
+
+        Task<List<TipoEjeViewModel>> ObtenerTipoEje();
+
+        Task<List<BajaVehiViewModel>> ObtenerBajaVehi();
+
+        Task<List<CausaBajaViewModel>> ObtenerCausaBaja();
+
+        Task<List<ModeloViewModel>> ObtenerModelo(int marcaId);
+
+        Task<List<ZonaViewModel>> ObtenerZona(int IdEmpresa);
+
+        Task<List<ZonaViewModel.DepositosViewModel>> ObtenerDepositos(int IdZona);
     }
 
 }

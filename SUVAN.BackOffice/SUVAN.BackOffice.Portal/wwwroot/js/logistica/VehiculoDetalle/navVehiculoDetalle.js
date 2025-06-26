@@ -61,12 +61,53 @@ function loadPartialView(targetDiv, url) {
     }
 }
 
+function irATabAnterior() {
+    const tabs = Array.from(document.querySelectorAll('a[data-bs-toggle="tab"]'));
+    const currentTab = tabs.find(tab => tab.classList.contains('active'));
+
+    const currentIndex = tabs.indexOf(currentTab);
+    if (currentIndex > 0) {
+        const anteriorTab = tabs[currentIndex - 1];
+        anteriorTab.classList.remove('disabled'); 
+        new bootstrap.Tab(anteriorTab).show();
+    }
+}
+
 
 function irASiguienteTab(tabId) {
     const siguienteTab = document.querySelector(`a[data-bs-toggle="tab"][href="#${tabId}"]`);
+
     if (siguienteTab) {
         siguienteTab.classList.remove('disabled');
 
         new bootstrap.Tab(siguienteTab).show();
     }
 }
+
+function toggleNombreTarifaVehicular() {
+    const valor = $('input[name="TarifaVehicular"]:checked').val();
+    const $inputNombreTarifa = $('#NombreTarifaVehicular');
+
+    if (valor === '1') {
+        $inputNombreTarifa.prop('disabled', false);
+    } else {
+        $inputNombreTarifa.prop('disabled', true).val('');
+    }
+}
+
+function togglePermisoCargaAceite() {
+    const valor = $('input[name="PermisoCargaAceite"]:checked').val();
+    const $inputVigenciaPermisoAceite = $('#VigenciaPermisoAceite');
+
+    if (valor === '1') {
+        $inputVigenciaPermisoAceite.prop('disabled', false);
+    } else {
+        $inputVigenciaPermisoAceite.prop('disabled', true).val('');
+    }
+}
+
+toggleNombreTarifaVehicular();
+togglePermisoCargaAceite();
+
+$('input[name="TarifaVehicular"]').on('change', toggleNombreTarifaVehicular);
+$('input[name="PermisoCargaAceite"]').on('change', togglePermisoCargaAceite);

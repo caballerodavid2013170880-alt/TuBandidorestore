@@ -7,6 +7,7 @@ using System.Linq;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleViewModel;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -34,84 +35,91 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <returns>ViewModel para el VehiculoDetalle especifico.</returns>
         public async Task<VehiculoDetalleViewModel> GetVehiculoDetalleViewModel(int id)
         {
-            VehiculoDetalleViewModel vRet = new VehiculoDetalleViewModel();
-            var vehiculo = await context.VehiculoDetalles.FirstOrDefaultAsync(x => x.IdVehiculoDetalle == id);
+            var vehiculo = await context.VehiculoDetalles.Include(v => v.IdMarcaNavigation).Include(v => v.IdModeloNavigation).
+                Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdBajaNavigation).Include(v => v.IdTipoEjeNavigation).
+                Include(v => v.IdCausaBajaNavigation).Include(v => v.IdDepositoNavigation).Include(v => v.IdZonaNavigation).
+                FirstOrDefaultAsync(x => x.IdVehiculoDetalle == id);
 
             if (vehiculo == null)
-                return vRet;
-            else
-            {
-                vRet = new VehiculoDetalleViewModel
-                {
-                    IdVehiculoDetalle = vehiculo.IdVehiculoDetalle,
-                    IdVehiculo = vehiculo.IdVehiculo,
-                    IdTipoVehiculo = vehiculo.IdTipoVehiculo,
-                    IdMarca = vehiculo.IdMarca,
-                    IdZona = vehiculo.IdZona,
-                    IdDeposito = vehiculo.IdDeposito,
-                    IdEspecificacion = vehiculo.IdEspecificacion,
-                    IdModelo = vehiculo.IdModelo,
-                    IdCognos = vehiculo.IdCognos,
-                    IdTipoEje = vehiculo.IdTipoEje,
-                    IdNegocio = vehiculo.IdNegocio,
-                    Area = vehiculo.Area,
-                    AnioVehiculo = vehiculo.AnioVehiculo,
-                    ColorVehiculo = vehiculo.ColorVehiculo,
-                    TieneRotulo = vehiculo.TieneRotulo,
-                    PlacaPe = vehiculo.PlacaPe,
-                    NumeroSerie = vehiculo.NumeroSerie,
-                    NumeroMotor = vehiculo.NumeroMotor,
-                    Carroceria = vehiculo.Carroceria,
-                    TarjetaCirculacion = vehiculo.TarjetaCirculacion,
-                    Gasolina = vehiculo.Gasolina,
-                    Encierro = vehiculo.Encierro,
-                    CopiaFactura = vehiculo.CopiaFactura,
-                    CopiaTarjetaCir = vehiculo.CopiaTarjetaCir,
-                    CopiaPlaca = vehiculo.CopiaPlaca,
-                    CopiaVerificacion = vehiculo.CopiaVerificacion,
-                    CopiaPolizaSeguro = vehiculo.CopiaPolizaSeguro,
-                    NoCircula = vehiculo.NoCircula,
-                    DnoCircula = vehiculo.DnoCircula,
-                    Proveedor = vehiculo.Proveedor,
-                    FechaCompra = vehiculo.FechaCompra,
-                    NumeroFactura = vehiculo.NumeroFactura,
-                    CostoVehiculo = vehiculo.CostoVehiculo,
-                    TarifaVehicular = vehiculo.TarifaVehicular,
-                    NombreTarifaVehicular = vehiculo.NombreTarifaVehicular,
-                    KilometrajeAcumulado = vehiculo.KilometrajeAcumulado,
-                    StVehiculo = vehiculo.StVehiculo,
-                    FechaBaja = vehiculo.FechaBaja,
-                    ColorInterior = vehiculo.ColorInterior,
-                    RegFed = vehiculo.RegFed,
-                    EdregPl = vehiculo.EdregPl,
-                    ColEst = vehiculo.ColEst,
-                    TieneCaja = vehiculo.TieneCaja,
-                    NecesitaRemolque = vehiculo.NecesitaRemolque,
-                    VehiculoRelevo = vehiculo.VehiculoRelevo,
-                    Rentado = vehiculo.Rentado,
-                    ColRuta = vehiculo.ColRuta,
-                    IdCausaBaja = vehiculo.IdCausaBaja,
-                    ValorRecuperacion = vehiculo.ValorRecuperacion,
-                    KilometrajeGarantia = vehiculo.KilometrajeGarantia,
-                    MesesGarantia = vehiculo.MesesGarantia,
-                    EconomicoAnterior = vehiculo.EconomicoAnterior,
-                    LocFor = vehiculo.LocFor,
-                    IdBaja = vehiculo.IdBaja,
-                    PesoMinimo = vehiculo.PesoMinimo,
-                    PesoMaximo = vehiculo.PesoMaximo,
-                    VolumenMinimo = vehiculo.VolumenMinimo,
-                    VolumenMaximo = vehiculo.VolumenMaximo,
-                    TipoLicenciaRequerida = vehiculo.TipoLicenciaRequerida,
-                    PermisoCargaAceite = vehiculo.PermisoCargaAceite,
-                    VigenciaPermisoAceite = vehiculo.VigenciaPermisoAceite,
-                    VigenciaTarjetaCirculacion = vehiculo.VigenciaTarjetaCirculacion,
-                    Asignado = vehiculo.Asignado,
-                    TotalVehiculo = vehiculo.TotalVehiculo,
-                    UsuarioCaptura = vehiculo.UsuarioCaptura
-                };
-            }
+                return new VehiculoDetalleViewModel();
 
-            return vRet;
+            return new VehiculoDetalleViewModel
+            {
+                IdMarca = vehiculo.IdMarca,
+                DescripcionMarca = vehiculo.IdMarcaNavigation.Descripcion,
+                IdTipoVehiculo = vehiculo.IdTipoVehiculo,
+                NombreTipoV = vehiculo.IdTipoVehiculoNavigation.Nombre,
+                IdModelo = vehiculo.IdModelo,
+                DescripcionModelo = vehiculo.IdModeloNavigation.Descripcion,
+                IdBaja = vehiculo.IdBaja,
+                DescripcionBaja = vehiculo.IdBajaNavigation.Descripcion,
+                IdCausaBaja = vehiculo.IdCausaBaja,
+                DescripcionCausaBaja = vehiculo.IdCausaBajaNavigation.Descripcion,
+                IdTipoEje = vehiculo.IdTipoEje,
+                DescripcionEje = vehiculo.IdTipoEjeNavigation.Descripcion,
+                IdZona = vehiculo.IdZona,
+                NombreZona = vehiculo.IdZonaNavigation.NombreZona,
+                IdDeposito = vehiculo.IdDeposito,
+                NombreDeposito = vehiculo.IdDepositoNavigation.DepositoNombre,
+
+                IdVehiculoDetalle = vehiculo.IdVehiculoDetalle,
+                IdVehiculo = vehiculo.IdVehiculo,
+                IdEspecificacion = vehiculo.IdEspecificacion,
+                IdCognos = vehiculo.IdCognos,
+                IdNegocio = vehiculo.IdNegocio,
+                Area = vehiculo.Area,
+                AnioVehiculo = vehiculo.AnioVehiculo,
+                ColorVehiculo = vehiculo.ColorVehiculo,
+                TieneRotulo = vehiculo.TieneRotulo,
+                PlacaPe = vehiculo.PlacaPe,
+                NumeroSerie = vehiculo.NumeroSerie,
+                NumeroMotor = vehiculo.NumeroMotor,
+                Carroceria = vehiculo.Carroceria,
+                TarjetaCirculacion = vehiculo.TarjetaCirculacion,
+                Gasolina = vehiculo.Gasolina,
+                Encierro = vehiculo.Encierro,
+                CopiaFactura = vehiculo.CopiaFactura,
+                CopiaTarjetaCir = vehiculo.CopiaTarjetaCir,
+                CopiaPlaca = vehiculo.CopiaPlaca,
+                CopiaVerificacion = vehiculo.CopiaVerificacion,
+                CopiaPolizaSeguro = vehiculo.CopiaPolizaSeguro,
+                NoCircula = vehiculo.NoCircula,
+                DnoCircula = vehiculo.DnoCircula,
+                Proveedor = vehiculo.Proveedor,
+                FechaCompra = vehiculo.FechaCompra,
+                NumeroFactura = vehiculo.NumeroFactura,
+                CostoVehiculo = vehiculo.CostoVehiculo,
+                TarifaVehicular = vehiculo.TarifaVehicular,
+                NombreTarifaVehicular = vehiculo.NombreTarifaVehicular,
+                KilometrajeAcumulado = vehiculo.KilometrajeAcumulado,
+                StVehiculo = vehiculo.StVehiculo,
+                FechaBaja = vehiculo.FechaBaja,
+                ColorInterior = vehiculo.ColorInterior,
+                RegFed = vehiculo.RegFed,
+                EdregPl = vehiculo.EdregPl,
+                ColEst = vehiculo.ColEst,
+                TieneCaja = vehiculo.TieneCaja,
+                NecesitaRemolque = vehiculo.NecesitaRemolque,
+                VehiculoRelevo = vehiculo.VehiculoRelevo,
+                Rentado = vehiculo.Rentado,
+                ColRuta = vehiculo.ColRuta,
+                ValorRecuperacion = vehiculo.ValorRecuperacion,
+                KilometrajeGarantia = vehiculo.KilometrajeGarantia,
+                MesesGarantia = vehiculo.MesesGarantia,
+                EconomicoAnterior = vehiculo.EconomicoAnterior,
+                LocFor = vehiculo.LocFor,
+                PesoMinimo = vehiculo.PesoMinimo,
+                PesoMaximo = vehiculo.PesoMaximo,
+                VolumenMinimo = vehiculo.VolumenMinimo,
+                VolumenMaximo = vehiculo.VolumenMaximo,
+                TipoLicenciaRequerida = vehiculo.TipoLicenciaRequerida,
+                PermisoCargaAceite = vehiculo.PermisoCargaAceite,
+                VigenciaPermisoAceite = vehiculo.VigenciaPermisoAceite,
+                VigenciaTarjetaCirculacion = vehiculo.VigenciaTarjetaCirculacion,
+                Asignado = vehiculo.Asignado,
+                TotalVehiculo = vehiculo.TotalVehiculo,
+                UsuarioCaptura = vehiculo.UsuarioCaptura
+            };
         }
 
         /// <summary>
@@ -120,7 +128,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="model">ViewModel con los datos de Vehiculo Detalle.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> AgregarVehiculoDetalle(VehiculoDetalleViewModel model, int IdEmpresa)
+        public async Task<bool> AgregarVehiculoDetalle(VehiculoDetalleViewModel model, int IdEmpresa, string Usuario)
         {
             VehiculoDetalle vehiculo;
 
@@ -269,12 +277,100 @@ namespace SUVAN.BackOffice.Service.Logistica
         }
 
         public async Task<List<MarcaViewModel>> ObtenerMarcas()
-        {
-            var resultado = await (from t in context.Marcas
-                                   select new MarcaViewModel
+        {   var marca = await (from m in context.Marcas
+                               select new MarcaViewModel()
+                               {
+                                   IdMarca = m.IdMarca,
+                                   Descripcion = m.Descripcion,
+                                   Modelos = context.Modelos
+                                   .Where(d => d.IdMarca == m.IdMarca)
+                                   .Select(d => new ModeloViewModel
                                    {
-                                       IdMarca = t.IdMarca,
+                                       IdModelo = d.IdModelo,
+                                       Descripcion = d.Descripcion
+                                   }).ToList()
+                               }).ToListAsync();
+
+           return marca;
+        }
+
+        public async Task<List<ModeloViewModel>> ObtenerModelo(int marcaId)
+        {
+            var resultado = await (from t in context.Modelos where 
+                                   ( t.IdMarca == marcaId)
+                                   select new ModeloViewModel
+                                   {
+                                       IdModelo = t.IdModelo,
+                                       Descripcion = t.Descripcion
+
+                                   }).ToListAsync();
+            return resultado;
+        }
+
+        public async Task<List<TipoEjeViewModel>> ObtenerTipoEje()
+        {
+            var resultado = await (from t in context.TipoEjes
+                                   select new TipoEjeViewModel
+                                   {
+                                       IdTipoEje = t.IdTipoEje,
                                        Descripcion = t.Descripcion,
+
+                                   }).ToListAsync();
+            return resultado;
+        }
+
+        public async Task<List<BajaVehiViewModel>> ObtenerBajaVehi()
+        {
+            var resultado = await (from t in context.BajaVehis
+                                   select new BajaVehiViewModel
+                                   {
+                                       IdBaja = t.IdBaja,
+                                       Descripcion = t.Descripcion,
+
+                                   }).ToListAsync();
+            return resultado;
+        }
+
+        public async Task<List<CausaBajaViewModel>> ObtenerCausaBaja()
+        {
+            var resultado = await (from t in context.CausaBajas
+                                   select new CausaBajaViewModel
+                                   {
+                                       IdCausaBaja = t.IdCausaBaja,
+                                       Descripcion = t.Descripcion,
+
+                                   }).ToListAsync();
+            return resultado;
+        }
+
+        public async Task<List<ZonaViewModel>> ObtenerZona(int IdEmpresa)
+        {
+            var zona = await (from m in context.Zonas where m.IdEmpresa == IdEmpresa
+                               select new ZonaViewModel()
+                               {
+                                   ZonaId = m.IdZona,
+                                   ZonaNombre = m.NombreZona,
+                                   Depositos = context.Depositosdisponibles
+                                   .Where(d => d.ZonaId == m.IdZona)
+                                   .Select(d => new ZonaViewModel.DepositosViewModel
+                                   {
+                                       DepositoId = d.IdDeposito,
+                                       NombreDeposito = d.DepositoNombre
+                                   }).ToList()
+                               }).ToListAsync();
+
+            return zona;
+        }
+
+        public async Task<List<ZonaViewModel.DepositosViewModel>> ObtenerDepositos(int IdZona)
+        {
+            var resultado = await (from t in context.Depositosdisponibles
+                                   where
+                                   (t.ZonaId == IdZona)
+                                   select new ZonaViewModel.DepositosViewModel
+                                   {
+                                       DepositoId = t.IdDeposito,
+                                       NombreDeposito = t.DepositoNombre
 
                                    }).ToListAsync();
             return resultado;

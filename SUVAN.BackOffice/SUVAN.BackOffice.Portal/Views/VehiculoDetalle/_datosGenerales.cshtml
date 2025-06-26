@@ -25,7 +25,7 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdVehiculo" class="col-form-label text-gray-600 required">Vehículo</label>
                     <div class="input-group input-group-sm">
-                        <input asp-for="IdVehiculo" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Vehículo" readonly disabled />
+                        <input asp-for="IdVehiculo" name="IdVehiculo" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Vehículo" />
                         <span class="input-group-text" id="iconoVehiculo" style="cursor:pointer;">
                             <i class="fas fa-search"></i>
                         </span>
@@ -37,11 +37,12 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdTipoVehiculo" class="col-form-label text-gray-600 required">Tipo de Vehículo</label>
                     <div class="input-group input-group-sm">
-                        <input id="IdTipoVehiculoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Tipo de Vehículo" readonly disabled />
+                        <input value="@Model.NombreTipoV" id="IdTipoVehiculoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Tipo de Vehículo" readonly />
                         <span class="input-group-text" id="iconoTipoVehiculo" style="cursor:pointer;">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
+                    <input id="IdTipoVehiculo" name="IdTipoVehiculo" type="hidden" />
                     <span asp-validation-for="IdTipoVehiculo" class="invalid-feedback d-block"></span>
                     <input asp-for="IdTipoVehiculo" type="hidden" />
                 </div>
@@ -50,11 +51,12 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Marca</label>
                     <div class="input-group input-group-sm">
-                        <input id="IdMarcaVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Marca" readonly disabled />
+                        <input value="@Model.DescripcionMarca" id="IdMarcaVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Marca" readonly disabled />
                         <span class="input-group-text" id="iconoMarca" style="cursor:pointer;">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
+                    <input id="IdMarca" name="IdMarca" type="hidden" />
                     <span asp-validation-for="IdMarca" class="invalid-feedback d-block"></span>
                     <input asp-for="IdMarca" type="hidden" />
                 </div>
@@ -63,12 +65,14 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdModelo" class="col-form-label text-gray-600 required">Modelo</label>
                     <div class="input-group input-group-sm">
-                        <input asp-for="IdModelo" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Modelo" readonly disabled />
+                        <input value="@Model.DescripcionModelo" id="IdModeloVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Modelo" readonly disabled />
                         <span class="input-group-text" id="iconoModelo" style="cursor:pointer;">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
+                    <input id="IdModelo" name="IdModelo" type="hidden" />
                     <span asp-validation-for="IdModelo" class="invalid-feedback d-block"></span>
+                    <input asp-for="IdModelo" type="hidden" />
                 </div>
             </div>
         </div>
@@ -76,8 +80,22 @@
         <div class="row">
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
+                    <label asp-for="IdTipoEje" class="col-form-label text-gray-600 required">Tipo Eje</label>
+                    <div class="input-group input-group-sm">
+                        <input value="@Model.DescripcionEje" id="IdTipoEjeVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Tipo Eje" readonly disabled />
+                        <span class="input-group-text" id="iconoEje" style="cursor:pointer;">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <input id="IdTipoEje" name="IdTipoEje" type="hidden" />
+                    <span asp-validation-for="IdTipoEje" class="invalid-feedback d-block"></span>
+                    <input asp-for="IdTipoEje" type="hidden" />
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
                     <label asp-for="AnioVehiculo" class="col-form-label text-gray-600 required">Año del Vehículo</label>
-                    <input asp-for="AnioVehiculo" class="form-control form-control-sm bg-transparent" placeholder="Año del Vehículo" />
+                    <input asp-for="AnioVehiculo" id="AnioVehiculo" type="text" class="form-control form-control-sm bg-transparent" placeholder="Año del Vehículo" maxlength="4" />
                     <span asp-validation-for="AnioVehiculo" class="invalid-feedback"></span>
                 </div>
             </div>
@@ -95,70 +113,79 @@
                     <span asp-validation-for="ColorInterior" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-3 mb-2">
-                <div class="fv-row mb-2">
-                    <label asp-for="TieneRotulo" class="col-form-label text-gray-600 required">¿Tiene Rótulo?</label>
-                    <select asp-for="TieneRotulo" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
-                    <span asp-validation-for="TieneRotulo" class="invalid-feedback"></span>
-                </div>
-            </div>
         </div>
 
         <div class="row">
-            <div class="col-sm-4 mb-2">
+            <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="NumeroSerie" class="col-form-label text-gray-600 required">Número de Serie</label>
                     <input asp-for="NumeroSerie" class="form-control form-control-sm bg-transparent" placeholder="Número de Serie" />
                     <span asp-validation-for="NumeroSerie" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-4 mb-2">
+            <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="NumeroMotor" class="col-form-label text-gray-600 required">Número de Motor</label>
                     <input asp-for="NumeroMotor" class="form-control form-control-sm bg-transparent" placeholder="Número de Motor" />
                     <span asp-validation-for="NumeroMotor" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-4 mb-2">
+            <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="Carroceria" class="col-form-label text-gray-600 required">Carrocería</label>
-                    <input asp-for="Carroceria" class="form-control form-control-sm bg-transparent" placeholder="Carrocería" />
+                    <label asp-for="Carroceria" class="col-form-label text-gray-600 required">VIN</label>
+                    <input asp-for="Carroceria" class="form-control form-control-sm bg-transparent" placeholder="VIN" style="text-transform: uppercase" />
                     <span asp-validation-for="Carroceria" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="Gasolina" class="col-form-label text-gray-600 required">Litros de Gasolina</label>
+                    <input asp-for="Gasolina" id="Gasolina" type="text" class="form-control form-control-sm bg-transparent" placeholder="Gasolina" />
+                    <span asp-validation-for="Gasolina" class="invalid-feedback"></span>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-sm-4 mb-2">
+            <div class="col-sm-2 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="Gasolina" class="col-form-label text-gray-600 required">Gasolina</label>
-                    <input asp-for="Gasolina" class="form-control form-control-sm bg-transparent" placeholder="Gasolina" />
-                    <span asp-validation-for="Gasolina" class="invalid-feedback"></span>
+                    <label asp-for="TieneRotulo" class="col-form-label text-gray-600 required d-block">¿Tiene Rótulo?</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="TieneRotulo" value="1" id="radioRotuloSi">
+                        <label class="form-check-label" for="radioRotuloSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="TieneRotulo" value="0" id="radioRotuloNo">
+                        <label class="form-check-label" for="radioRotuloNo">No</label>
+                    </div>
+                    <span asp-validation-for="TieneRotulo" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-4 mb-2">
+            <div class="col-sm-2 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="Rentado" class="col-form-label text-gray-600 required">¿Es Rentado?</label>
-                    <select asp-for="Rentado" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
+                    <label asp-for="Rentado" class="col-form-label text-gray-600 required d-block">¿Es Rentado?</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="Rentado" value="1" id="radioRentadoSi">
+                        <label class="form-check-label" for="radioRentadoSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="Rentado" value="0" id="radioRentadoNo">
+                        <label class="form-check-label" for="radioRentadoNo">No</label>
+                    </div>
                     <span asp-validation-for="Rentado" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-4 mb-2">
+            <div class="col-sm-2 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="VehiculoRelevo" class="col-form-label text-gray-600 required">¿Es de Relevo?</label>
-                    <select asp-for="VehiculoRelevo" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
+                    <label asp-for="VehiculoRelevo" class="col-form-label text-gray-600 required d-block">¿Es de Relevo?</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="VehiculoRelevo" value="1" id="radioVehiculoRelevoSi">
+                        <label class="form-check-label" for="radioVehiculoRelevoSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="VehiculoRelevo" value="0" id="radioVehiculoRelevoNo">
+                        <label class="form-check-label" for="radioVehiculoRelevoNo">No</label>
+                    </div>
                     <span asp-validation-for="VehiculoRelevo" class="invalid-feedback"></span>
                 </div>
             </div>
@@ -172,4 +199,5 @@
 @section scripts {
     <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
     <script src="~/js/logistica/vehiculodetalle/add.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/validaciones.js"></script>
 }

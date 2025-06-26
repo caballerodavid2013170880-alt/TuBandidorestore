@@ -25,24 +25,28 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdZona" class="col-form-label text-gray-600 required">Zona</label>
                     <div class="input-group input-group-sm">
-                        <input asp-for="IdZona" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Zona" readonly disabled />
+                        <input value="@Model.NombreZona" id="IdZonaVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Zona" readonly disabled />
                         <span class="input-group-text" id="iconoZona" style="cursor:pointer;">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
+                    <input id="IdZona" name="IdZona" type="hidden" />
                     <span asp-validation-for="IdZona" class="invalid-feedback d-block"></span>
+                    <input asp-for="IdZona" type="hidden" />
                 </div>
             </div>
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Depósito</label>
                     <div class="input-group input-group-sm">
-                        <input asp-for="IdDeposito" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Depósito" readonly disabled />
+                        <input  value="@Model.NombreDeposito" id="IdDepositoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Depósito" readonly disabled />
                         <span class="input-group-text" id="iconoDeposito" style="cursor:pointer;">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
+                    <input id="IdDeposito" name="IdDeposito" type="hidden" />
                     <span asp-validation-for="IdDeposito" class="invalid-feedback d-block"></span>
+                    <input asp-for="IdDeposito" type="hidden" />
                 </div>
             </div>
             <div class="col-sm-3 mb-2">
@@ -94,7 +98,7 @@
             </div>
             <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="CopiaPolizaSeguro" class="col-form-label text-gray-600 required">Copia de la Poliza Seguro</label>
+                    <label asp-for="CopiaPolizaSeguro" class="col-form-label text-gray-600 required">Copia de la Poliza de Seguro</label>
                     <select asp-for="CopiaPolizaSeguro" class="form-control form-control-sm">
                         <option value="">Selecciona una Opción</option>
                         <option value="1">Sí</option>
@@ -104,7 +108,8 @@
                 </div>
             </div>
         </div>
-        <div class="text-end mt-4">
+        <div class="d-flex justify-content-between mt-5">
+            <button type="button" class="btn btn-primary btn-sm" onclick="irATabAnterior()">Anterior</button>
             <button type="button" class="btn btn-primary btn-sm" onclick="irASiguienteTab('compracosto')">Siguiente</button>
         </div>
     </div>
@@ -113,4 +118,5 @@
 @section scripts {
     <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
     <script src="~/js/logistica/vehiculodetalle/add.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/validaciones.js"></script>
 }
