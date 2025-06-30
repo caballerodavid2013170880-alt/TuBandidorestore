@@ -65,7 +65,7 @@ public partial class VehiculoDetalle
 
     public string Proveedor { get; set; } = null!;
 
-    public DateTime FechaCompra { get; set; }
+    public DateTime? FechaCompra { get; set; }
 
     public string NumeroFactura { get; set; } = null!;
 
@@ -79,7 +79,7 @@ public partial class VehiculoDetalle
 
     public string? StVehiculo { get; set; }
 
-    public DateTime FechaBaja { get; set; }
+    public DateTime? FechaBaja { get; set; }
 
     public string ColorInterior { get; set; } = null!;
 

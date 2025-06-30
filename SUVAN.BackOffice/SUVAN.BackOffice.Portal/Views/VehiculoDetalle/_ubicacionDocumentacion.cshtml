@@ -14,7 +14,6 @@
         return;
     }
 }
-
 <div class="card card-bordered mb-5">
     <div class="card-header">
         <h3 class="card-title">Ubicación y Documentación</h3>
@@ -30,87 +29,100 @@
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
-                    <input id="IdZona" name="IdZona" type="hidden" />
+                    <input asp-for="IdZona" type="hidden" id="IdZona" name="IdZona" />
                     <span asp-validation-for="IdZona" class="invalid-feedback d-block"></span>
-                    <input asp-for="IdZona" type="hidden" />
                 </div>
             </div>
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Depósito</label>
                     <div class="input-group input-group-sm">
-                        <input  value="@Model.NombreDeposito" id="IdDepositoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Depósito" readonly disabled />
+                        <input value="@Model.NombreDeposito" id="IdDepositoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Depósito" readonly disabled />
                         <span class="input-group-text" id="iconoDeposito" style="cursor:pointer;">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
-                    <input id="IdDeposito" name="IdDeposito" type="hidden" />
+                    <input asp-for="IdDeposito" type="hidden" id="IdDeposito" name="IdDeposito" />
                     <span asp-validation-for="IdDeposito" class="invalid-feedback d-block"></span>
-                    <input asp-for="IdDeposito" type="hidden" />
                 </div>
             </div>
-            <div class="col-sm-3 mb-2">
+            <div class="col-sm-2 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="CopiaFactura" class="col-form-label text-gray-600 required">Copia de Factura</label>
-                    <select asp-for="CopiaFactura" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
+                    <label asp-for="CopiaFactura" class="col-form-label text-gray-600 required d-block">Copia de Factura</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaFactura" value="1" id="radioFacturaSi">
+                        <label class="form-check-label" for="radioFacturaSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaFactura" value="0" id="radioFacturaNo">
+                        <label class="form-check-label" for="radioFacturaNo">No</label>
+                    </div>
                     <span asp-validation-for="CopiaFactura" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-3 mb-2">
+            <div class="col-sm-2 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="CopiaPlaca" class="col-form-label text-gray-600 required">Copia de la Placa</label>
-                    <select asp-for="CopiaPlaca" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
+                    <label asp-for="CopiaPlaca" class="col-form-label text-gray-600 required d-block">Copia de la Placa</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaPlaca" value="1" id="radioPlacaSi">
+                        <label class="form-check-label" for="radioPlacaSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaPlaca" value="0" id="radioPlacaNo">
+                        <label class="form-check-label" for="radioPlacaNo">No</label>
+                    </div>
                     <span asp-validation-for="CopiaPlaca" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-2 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="CopiaVerificacion" class="col-form-label text-gray-600 required d-block">Copia de Verificación</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaVerificacion" value="1" id="radioVerificacionSi">
+                        <label class="form-check-label" for="radioVerificacionSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaVerificacion" value="0" id="radioVerificacionNo">
+                        <label class="form-check-label" for="radioVerificacionNo">No</label>
+                    </div>
+                    <span asp-validation-for="CopiaVerificacion" class="invalid-feedback"></span>
                 </div>
             </div>
         </div>
 
         <div class="row">
-            <div class="col-sm-4 mb-2">
+            <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="CopiaVerificacion" class="col-form-label text-gray-600 required">Copia de Verificación</label>
-                    <select asp-for="CopiaVerificacion" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
-                    <span asp-validation-for="CopiaVerificacion" class="invalid-feedback"></span>
-                </div>
-            </div>
-            <div class="col-sm-4 mb-2">
-                <div class="fv-row mb-2">
-                    <label asp-for="CopiaTarjetaCir" class="col-form-label text-gray-600 required">Copia de Tarjeta de Circulación</label>
-                    <select asp-for="CopiaTarjetaCir" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
+                    <label asp-for="CopiaTarjetaCir" class="col-form-label text-gray-600 required d-block">Copia de Tarjeta de Circulación</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaTarjetaCir" value="1" id="radioTarjetaCirSi">
+                        <label class="form-check-label" for="radioTarjetaCirSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaTarjetaCir" value="0" id="radioTarjetaCirNo">
+                        <label class="form-check-label" for="radioTarjetaCirNo">No</label>
+                    </div>
                     <span asp-validation-for="CopiaTarjetaCir" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-4 mb-2">
+            <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="CopiaPolizaSeguro" class="col-form-label text-gray-600 required">Copia de la Poliza de Seguro</label>
-                    <select asp-for="CopiaPolizaSeguro" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
+                    <label asp-for="CopiaPolizaSeguro" class="col-form-label text-gray-600 required d-block">Copia de la Poliza de Seguro</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaPolizaSeguro" value="1" id="radioPolizaSi">
+                        <label class="form-check-label" for="radioPolizaSi">Sí</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="CopiaPolizaSeguro" value="0" id="radioPolizaNo">
+                        <label class="form-check-label" for="radioPolizaNo">No</label>
+                    </div>
                     <span asp-validation-for="CopiaPolizaSeguro" class="invalid-feedback"></span>
                 </div>
             </div>
         </div>
         <div class="d-flex justify-content-between mt-5">
             <button type="button" class="btn btn-primary btn-sm" onclick="irATabAnterior()">Anterior</button>
-            <button type="button" class="btn btn-primary btn-sm" onclick="irASiguienteTab('compracosto')">Siguiente</button>
+            <button type="button" class="btn btn-primary btn-sm btn-next-tab" data-current="ubicaciondocumentacion" data-next="compracosto">Siguiente </button>
         </div>
     </div>
 </div>

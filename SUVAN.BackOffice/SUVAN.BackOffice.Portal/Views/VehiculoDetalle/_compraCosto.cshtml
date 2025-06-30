@@ -31,10 +31,12 @@
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="FechaCompra" class="col-form-label text-gray-600 required">Fecha de Compra</label>
-                    <input asp-for="FechaCompra" id="FechaCompra" class="form-control form-control-sm bg-transparent" placeholder="Fecha de Compra" />
+                    <input value="@Model.FechaCompra" type="text" id="FechaCompraVisible" class="form-control form-control-sm bg-transparent" placeholder="DD/MM/YYYY" readonly/>
+                    <input type="hidden" asp-for="FechaCompra" id="FechaCompra" />
                     <span asp-validation-for="FechaCompra" class="invalid-feedback"></span>
                 </div>
             </div>
+
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="NumeroFactura" class="col-form-label text-gray-600 required">Número de Factura</label>
@@ -44,8 +46,8 @@
             </div>
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="CostoVehiculo" class="col-form-label text-gray-600 required">Costo de Vehículo</label>
-                    <input asp-for="CostoVehiculo" id="CostoVehiculo" type="text" class="form-control form-control-sm bg-transparent" placeholder="Costo de Vehículo" />
+                    <label asp-for="CostoVehiculo" class="col-form-label text-gray-600 required">Costo del Vehículo</label>
+                    <input asp-for="CostoVehiculo" id="CostoVehiculo" type="text" class="form-control form-control-sm bg-transparent" placeholder="Costo del Vehículo" />
                     <span asp-validation-for="CostoVehiculo" class="invalid-feedback"></span>
                 </div>
             </div>
@@ -68,9 +70,8 @@
             </div>
             <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="NombreTarifaVehicular" class="col-form-label text-gray-600 required">Nombre Tarifa Vehícular</label>
+                    <label asp-for="NombreTarifaVehicular" class="col-form-label text-gray-600">Nombre Tarifa Vehícular</label>
                     <input asp-for="NombreTarifaVehicular" class="form-control form-control-sm bg-transparent" placeholder="Nombre Tarifa Vehícular" />
-                    <span asp-validation-for="NombreTarifaVehicular" class="invalid-feedback"></span>
                 </div>
             </div>
             <div class="col-sm-4 mb-2">
@@ -83,7 +84,7 @@
         </div>
         <div class="d-flex justify-content-between mt-5">
             <button type="button" class="btn btn-primary btn-sm" onclick="irATabAnterior()">Anterior</button>
-            <button type="button" class="btn btn-primary btn-sm" onclick="irASiguienteTab('garantiaestado')">Siguiente</button>
+            <button type="button" class="btn btn-primary btn-sm btn-next-tab" data-current="compracosto" data-next="garantiaestado">Siguiente</button>
         </div>
     </div>
 </div>

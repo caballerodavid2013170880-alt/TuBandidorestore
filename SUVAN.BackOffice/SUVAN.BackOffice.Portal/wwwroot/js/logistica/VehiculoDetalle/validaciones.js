@@ -11,6 +11,14 @@
         maximumValue: '9999',
     }
 
+    _PesosAutonumeric = {
+        decimalCharacter: '.',
+        decimalPlaces: 2,
+        digitGroupSeparator: '',
+        currencySymbol: '$',
+        currencySymbolPlacement: 'p'
+    }
+
     _FloatAutonumeric = {
         decimalCharacter: '.',
         decimalPlaces: 2,
@@ -25,7 +33,7 @@
             new AutoNumeric('#PesoMinimo', _InitAutonumeric);
             new AutoNumeric('#PesoMaximo', _InitAutonumeric);
 
-            new AutoNumeric('#CostoVehiculo', _FloatAutonumeric);
+            new AutoNumeric('#CostoVehiculo', _PesosAutonumeric);
             new AutoNumeric('#KilometrajeAcumulado', _FloatAutonumeric);
             new AutoNumeric('#KilometrajeGarantia', _FloatAutonumeric);
             new AutoNumeric('#VolumenMinimo', _FloatAutonumeric);
@@ -33,20 +41,47 @@
         }
     };
 
-    const flatpickrOptions = {
-        dateFormat: "d/m/Y",
-        defaultDate: "today"
-    };
-    $("#FechaCompra").flatpickr(flatpickrOptions);
-    $("#FechaBaja").flatpickr(flatpickrOptions);
-    $("#VigenciaTarjetaCirculacion").flatpickr(flatpickrOptions);
-    $("#VigenciaPermisoAceite").flatpickr(flatpickrOptions);
-
-
-
     var form;
     var submitButton;
     var validator;
+
+    const camposPorSeccion = {
+        datosgenerales: [
+            'IdTipoVehiculo', 'IdMarca', 'IdModelo', 'IdTipoEje', 'AnioVehiculo',
+            'ColorVehiculo', 'ColorInterior', 'NumeroSerie', 'NumeroMotor', 'Carroceria', 'Gasolina',
+            'TieneRotulo', 'Rentado', 'VehiculoRelevo', 'EconomicoAnterior'
+        ],
+        ubicaciondocumentacion: [
+            'IdZona', 'IdDeposito', 'CopiaFactura', 'CopiaPlaca', 'CopiaVerificacion',
+            'CopiaTarjetaCir', 'CopiaPolizaSeguro'
+        ],
+
+        compracosto: [
+            'Proveedor', 'FechaCompra', 'NumeroFactura', 'CostoVehiculo', 'TarifaVehicular', 'KilometrajeAcumulado'
+        ],
+
+        garantiaestado: [
+            'IdBaja', 'IdCausaBaja', 'KilometrajeGarantia', 'MesesGarantia', 'FechaBaja'
+        ],
+
+        especificaciones: [
+            'PesoMinimo', 'PesoMaximo', 'VolumenMinimo', 'VolumenMaximo', 'TieneCaja', 'NecesitaRemolque'
+        ],
+    };
+
+    const costoVehiculoAutoNumeric = ['CostoVehiculo'];
+
+    function limpiarCamposMoneda(campos) {
+        campos.forEach(campoId => {
+            const elemento = document.getElementById(campoId);
+            if (elemento) {
+                const autoNumericInstance = AutoNumeric.getAutoNumericElement(elemento);
+                if (autoNumericInstance) {
+                    elemento.value = autoNumericInstance.getNumber();
+                }
+            }
+        });
+    }
 
 
     // Handle form
@@ -58,29 +93,41 @@
                 fields: {
                     'IdTipoVehiculo': {
                         validators: {
-                            notEmpty: {
-                                message: 'Selecciona un Tipo de Vehículo'
+                            callback: {
+                                message: 'Selecciona un Tipo de Vehículo',
+                                callback: function (input) {
+                                    return input.value && input.value.trim() !== '' && input.value !== '0';
+                                }
                             }
                         }
                     },
                     'IdMarca': {
                         validators: {
-                            notEmpty: {
-                                message: 'Selecciona una Marca'
+                            callback: {
+                                message: 'Selecciona una Marca',
+                                callback: function (input) {
+                                    return input.value && input.value.trim() !== '' && input.value !== '0';
+                                }
                             }
                         }
                     },
                     'IdModelo': {
                         validators: {
-                            notEmpty: {
-                                message: 'Selecciona un Modelo'
+                            callback: {
+                                message: 'Selecciona un Modelo',
+                                callback: function (input) {
+                                    return input.value && input.value.trim() !== '' && input.value !== '0';
+                                }
                             }
                         }
                     },
                     'IdTipoEje': {
                         validators: {
-                            notEmpty: {
-                                message: 'Selecciona un Tipo de Eje'
+                            callback: {
+                                message: 'Selecciona un Tipo de Eje',
+                                callback: function (input) {
+                                    return input.value && input.value.trim() !== '' && input.value !== '0';
+                                }
                             }
                         }
                     },
@@ -168,7 +215,7 @@
                     'TieneRotulo': {
                         validators: {
                             callback: {
-                                message: 'Selecciona si tiene Rótulo',
+                                message: 'Selecciona una Opción',
                                 callback: function (input) {
                                     const value = input.value;
                                     return value === "0" || value === "1";
@@ -176,11 +223,10 @@
                             }
                         }
                     },
-
                     'Rentado': {
                         validators: {
                             callback: {
-                                message: 'Selecciona si es Rentado',
+                                message: 'Selecciona una Opción',
 
                                 callback: function (input) {
                                     const value = input.value;
@@ -192,7 +238,7 @@
                     'VehiculoRelevo': {
                         validators: {
                             callback: {
-                                message: 'Selecciona si es de Relevo',
+                                message: 'Selecciona una Opción',
 
                                 callback: function (input) {
                                     const value = input.value;
@@ -203,15 +249,22 @@
                     },
                     'IdZona': {
                         validators: {
-                            notEmpty: {
-                                message: 'Selecciona una Zona'
+                            callback: {
+                                message: 'Selecciona una Zona',
+                                callback: function (input) {
+                                    return input.value && input.value.trim() !== '' && input.value !== '0';
+                                }
                             }
                         }
                     },
+
                     'IdDeposito': {
                         validators: {
-                            notEmpty: {
-                                message: 'Selecciona un Depósito'
+                            callback: {
+                                message: 'Selecciona un Depósito',
+                                callback: function (input) {
+                                    return input.value && input.value.trim() !== '' && input.value !== '0';
+                                }
                             }
                         }
                     },
@@ -219,8 +272,9 @@
                         validators: {
                             notEmpty: {
                                 message: 'Seleccione una Opción',
-                                callback: function (value, validator, $field) {
-                                    return value !== "";
+                                callback: function (input) {
+                                    const value = input.value;
+                                    return value === "0" || value === "1";
                                 }
                             }
                         }
@@ -229,8 +283,9 @@
                         validators: {
                             notEmpty: {
                                 message: 'Seleccione una Opción',
-                                callback: function (value, validator, $field) {
-                                    return value !== "";
+                                callback: function (input) {
+                                    const value = input.value;
+                                    return value === "0" || value === "1";
                                 }
                             }
                         }
@@ -239,8 +294,9 @@
                         validators: {
                             notEmpty: {
                                 message: 'Seleccione una Opción',
-                                callback: function (value, validator, $field) {
-                                    return value !== "";
+                                callback: function (input) {
+                                    const value = input.value;
+                                    return value === "0" || value === "1";
                                 }
                             }
                         }
@@ -249,8 +305,9 @@
                         validators: {
                             notEmpty: {
                                 message: 'Seleccione una Opción',
-                                callback: function (value, validator, $field) {
-                                    return value !== "";
+                                callback: function (input) {
+                                    const value = input.value;
+                                    return value === "0" || value === "1";
                                 }
                             }
                         }
@@ -259,8 +316,235 @@
                         validators: {
                             notEmpty: {
                                 message: 'Seleccione una Opción',
-                                callback: function (value, validator, $field) {
-                                    return value !== "";
+                                callback: function (input) {
+                                    const value = input.value;
+                                    return value === "0" || value === "1";
+                                }
+                            }
+                        }
+                    },
+                    'Proveedor': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Proveedor requerido'
+                            },
+                            stringLength: {
+                                max: 5,
+
+                                message: 'deben tener entre 1 y 5 caracteres',
+                            },
+                        }
+                    },
+                    'FechaCompra': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Fecha de Compra requerida'
+                            }
+                        }
+                    },
+                    'NumeroFactura': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Número de Factura requerida'
+                            },
+                            regexp: {
+                                regexp: /^[A-Z0-9-_]{3,20}$/,
+                                message: 'Ingrese un formato de VIN v&aacute;lido'
+                            }
+                        }
+                    },
+                    'CostoVehiculo': {
+                        validators: {
+                            callback: {
+                                message: 'Costo de Vehículo requerido',
+                                callback: function (input) {
+                                    const rawValue = input.value.replace(/[^0-9]/g, '');
+                                    const value = parseInt(rawValue, 10);
+                                    return value > 0;
+                                }
+                            }
+                        }
+                    },
+                    'TarifaVehicular': {
+                        validators: {
+                            callback: {
+                                message: 'Selecciona una Opción',
+
+                                callback: function (input) {
+                                    const value = input.value;
+                                    return value === "0" || value === "1";
+                                }
+                            }
+                        }
+                    },
+                    'KilometrajeAcumulado': {
+                        validators: {
+                            callback: {
+                                message: 'Kilometraje Acumulado requerido',
+                                callback: function (input) {
+                                    const value = parseInt(input.value, 10);
+                                    return value > 0;
+                                }
+                            }
+                        }
+                    },
+                    'IdBaja': {
+                        validators: {
+                            callback: {
+                                message: 'Baja requerida',
+                                callback: function (input) {
+                                    return input.value && input.value.trim() !== '' && input.value !== '0';
+                                }
+                            }
+                        }
+                    },
+                    'IdCausaBaja': {
+                        validators: {
+                            callback: {
+                                message: 'Causa Baja requerida',
+                                callback: function (input) {
+                                    return input.value && input.value.trim() !== '' && input.value !== '0';
+                                }
+                            }
+                        }
+                    },
+                    'KilometrajeGarantia': {
+                        validators: {
+                            callback: {
+                                message: 'Kilometraje de Garantía requerida',
+                                callback: function (input) {
+                                    const value = parseInt(input.value, 10);
+                                    return value > 0;
+                                }
+                            }
+                        }
+                    },
+                    'MesesGarantia': {
+                        validators: {
+                            callback: {
+                                message: 'Meses de Garantía requerida',
+                                callback: function (input) {
+                                    const value = parseInt(input.value, 10);
+                                    return value > 0;
+                                }
+                            }
+                        }
+                    },
+                    'FechaBaja': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Fecha de Baja requerida'
+                            }
+                        }
+                    },
+                    'EconomicoAnterior': {
+                        validators: {
+                            notEmpty: {
+                                message: 'N&uacute;mero Econ&oacute;mico Anterior requerido'
+                            }
+                        }
+                    },
+                    'PesoMinimo': {
+                        validators: {
+                            callback: {
+                                message: 'Peso Mínimo requerido',
+                                callback: function (input) {
+                                    const value = parseInt(input.value, 10);
+                                    return value > 0;
+                                }
+                            }
+                        }
+                    },
+                    'PesoMaximo': {
+                        validators: {
+                            callback: {
+                                message: 'Peso Máximo requerido',
+                                callback: function (input) {
+                                    const value = parseInt(input.value, 10);
+                                    return value > 0;
+                                }
+                            }
+                        }
+                    },
+                    'VolumenMinimo': {
+                        validators: {
+                            callback: {
+                                message: 'Volumen Mínimo requerido',
+                                callback: function (input) {
+                                    const value = parseInt(input.value, 10);
+                                    return value > 0;
+                                }
+                            }
+                        }
+                    },
+                    'VolumenMaximo': {
+                        validators: {
+                            callback: {
+                                message: 'Volumen Máximo requerido',
+                                callback: function (input) {
+                                    const value = parseInt(input.value, 10);
+                                    return value > 0;
+                                }
+                            }
+                        }
+                    },
+                    'TieneCaja': {
+                        validators: {
+                            callback: {
+                                message: 'Selecciona una Opción',
+
+                                callback: function (input) {
+                                    const value = input.value;
+                                    return value === "0" || value === "1";
+                                }
+                            }
+                        }
+                    },
+                    'NecesitaRemolque': {
+                        validators: {
+                            callback: {
+                                message: 'Selecciona una Opción',
+
+                                callback: function (input) {
+                                    const value = input.value;
+                                    return value === "0" || value === "1";
+                                }
+                            }
+                        }
+                    },
+                    'TipoLicenciaRequerida': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Tipo de Licencia requerida'
+                            }
+                        }
+                    },
+                    'TarjetaCirculacion': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Tarjeta de Circulación requerida'
+                            },
+                            regexp: {
+                                regexp: /^[A-Z0-9\-]{6,15}$/i,
+                                message: 'Ingrese un formato de VIN v&aacute;lido'
+                            }
+                        }
+                    },
+                    'VigenciaTarjetaCirculacion': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Vigencia de Circulación requerida'
+                            }
+                        }
+                    },
+                    'PermisoCargaAceite': {
+                        validators: {
+                            callback: {
+                                message: 'Selecciona una Opción',
+
+                                callback: function (input) {
+                                    const value = input.value;
+                                    return value === "0" || value === "1";
                                 }
                             }
                         }
@@ -278,11 +562,69 @@
         );
     }
 
+    const handleNextTabValidation = () => {
+        document.querySelectorAll('.btn-next-tab').forEach(boton => {
+            boton.addEventListener('click', async function (e) {
+                e.preventDefault();
+
+                const seccionActual = this.dataset.current;
+                const seccionSiguiente = this.dataset.next;
+
+                const campos = camposPorSeccion[seccionActual];
+
+                const resultados = await Promise.all(
+                    campos.map(nombreCampo => window.validator.validateField(nombreCampo))
+                );
+
+                const esValido = resultados.every(r => r === 'Valid');
+
+                if (esValido) {
+                    const siguienteTab = document.querySelector(`a[data-bs-toggle="tab"][href="#${seccionSiguiente}"]`);
+                    if (siguienteTab) {
+                        siguienteTab.classList.remove('disabled');
+                        new bootstrap.Tab(siguienteTab).show();
+                    }
+                }
+            });
+        });
+    };
+
+    function flatpickrFecha(campo) {
+        const visible = document.getElementById(campo + 'Visible');
+        const hidden = document.getElementById(campo);
+        if (!visible || !hidden) return;
+
+        flatpickr(visible, {
+            dateFormat: 'd/m/Y',
+            allowInput: true,
+            defaultDate: null,
+            onChange: (dates) => {
+                if (dates.length) {
+                    const d = dates[0];
+                    hidden.value = d.toISOString().slice(0, 10) + 'T00:00:00';
+                } else {
+                    hidden.value = '';
+                }
+            },
+        });
+
+        if (hidden.value) {
+            const d = new Date(hidden.value);
+            if (!isNaN(d)) {
+                visible.value = d.toLocaleDateString('es-ES');
+            }
+        }
+    }
+
+    ['FechaCompra', 'FechaBaja', 'VigenciaTarjetaCirculacion', 'VigenciaPermisoAceite'].forEach(flatpickrFecha);
+
     var handleSubmitValidation = function (e) {
         // Handle form submit
         submitButton.addEventListener('click', function (e) {
             // Prevent button default action
             e.preventDefault();
+
+            limpiarCamposMoneda(costoVehiculoAutoNumeric);
 
             // Validate form
             window.validator.validate().then(function (status) {
@@ -303,6 +645,7 @@
 
             initAutoNumeric();
             handleValidation();
+            handleNextTabValidation();
             handleSubmitValidation();
         }
     };

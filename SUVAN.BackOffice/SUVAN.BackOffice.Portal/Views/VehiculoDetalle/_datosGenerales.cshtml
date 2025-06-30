@@ -14,7 +14,6 @@
         return;
     }
 }
-
 <div class="card card-bordered mb-5">
     <div class="card-header">
         <h3 class="card-title">Datos Generales del Vehículo</h3>
@@ -25,28 +24,42 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdVehiculo" class="col-form-label text-gray-600 required">Vehículo</label>
                     <div class="input-group input-group-sm">
-                        <input asp-for="IdVehiculo" name="IdVehiculo" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Vehículo" />
+                        <input value="@(Model.IdVehiculo > 0 ? Model.PlacasIdVehiculo : "")" id="IdVehiculoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Vehículo" readonly disabled />
                         <span class="input-group-text" id="iconoVehiculo" style="cursor:pointer;">
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
+                    <input asp-for="IdVehiculo" type="hidden" id="IdVehiculo" name="IdVehiculo" />
                     <span asp-validation-for="IdVehiculo" class="invalid-feedback d-block"></span>
                 </div>
             </div>
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="IdTipoVehiculo" class="col-form-label text-gray-600 required">Tipo de Vehículo</label>
-                    <div class="input-group input-group-sm">
-                        <input value="@Model.NombreTipoV" id="IdTipoVehiculoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Tipo de Vehículo" readonly />
-                        <span class="input-group-text" id="iconoTipoVehiculo" style="cursor:pointer;">
-                            <i class="fas fa-search"></i>
-                        </span>
-                    </div>
-                    <input id="IdTipoVehiculo" name="IdTipoVehiculo" type="hidden" />
-                    <span asp-validation-for="IdTipoVehiculo" class="invalid-feedback d-block"></span>
-                    <input asp-for="IdTipoVehiculo" type="hidden" />
+                    <label asp-for="Carroceria" class="col-form-label text-gray-600 required">VIN</label>
+                    <input value="@Model.Carroceria" id="CarroceriaVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="VIN" style="text-transform: uppercase" readonly disabled />
+                    <input asp-for="Carroceria" type="hidden" id="Carroceria" name="Carroceria" />
+                    <span asp-validation-for="Carroceria" class="invalid-feedback"></span>
                 </div>
             </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="NumeroMotor" class="col-form-label text-gray-600 required">Número de Motor</label>
+                    <input value="@Model.NumeroMotor" id="NumeroMotorVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Número de Motor" readonly disabled />
+                    <input asp-for="NumeroMotor" type="hidden" id="NumeroMotor" name="NumeroMotor" />
+                    <span asp-validation-for="NumeroMotor" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="EconomicoAnterior" class="col-form-label text-gray-600 required">Número Económico Anterior</label>
+                    <input value="@Model.EconomicoAnterior"  id="NumeroEconomicoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Número Económico Anterior" readonly disabled />
+                    <input asp-for="EconomicoAnterior" type="hidden" id="EconomicoAnterior" name="EconomicoAnterior" />
+                    <span asp-validation-for="EconomicoAnterior" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Marca</label>
@@ -56,9 +69,8 @@
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
-                    <input id="IdMarca" name="IdMarca" type="hidden" />
+                    <input asp-for="IdMarca" type="hidden" id="IdMarca" name="IdMarca" />
                     <span asp-validation-for="IdMarca" class="invalid-feedback d-block"></span>
-                    <input asp-for="IdMarca" type="hidden" />
                 </div>
             </div>
             <div class="col-sm-3 mb-2">
@@ -70,14 +82,23 @@
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
-                    <input id="IdModelo" name="IdModelo" type="hidden" />
+                    <input asp-for="IdModelo" type="hidden" id="IdModelo" name="IdModelo" />
                     <span asp-validation-for="IdModelo" class="invalid-feedback d-block"></span>
-                    <input asp-for="IdModelo" type="hidden" />
                 </div>
             </div>
-        </div>
-
-        <div class="row">
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="IdTipoVehiculo" class="col-form-label text-gray-600 required">Tipo de Vehículo</label>
+                    <div class="input-group input-group-sm">
+                        <input value="@Model.NombreTipoV" id="IdTipoVehiculoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Tipo de Vehículo" readonly disabled />
+                        <span class="input-group-text" id="iconoTipoVehiculo" style="cursor:pointer;">
+                            <i class="fas fa-search"></i>
+                        </span>
+                    </div>
+                    <input asp-for="IdTipoVehiculo" type="hidden" id="IdTipoVehiculo" name="IdTipoVehiculo" />
+                    <span asp-validation-for="IdTipoVehiculo" class="invalid-feedback d-block"></span>
+                </div>
+            </div>
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="IdTipoEje" class="col-form-label text-gray-600 required">Tipo Eje</label>
@@ -87,11 +108,13 @@
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
-                    <input id="IdTipoEje" name="IdTipoEje" type="hidden" />
+                    <input asp-for="IdTipoEje" type="hidden" id="IdTipoEje" name="IdTipoEje" />
                     <span asp-validation-for="IdTipoEje" class="invalid-feedback d-block"></span>
-                    <input asp-for="IdTipoEje" type="hidden" />
                 </div>
             </div>
+        </div>
+
+        <div class="row">
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="AnioVehiculo" class="col-form-label text-gray-600 required">Año del Vehículo</label>
@@ -113,9 +136,6 @@
                     <span asp-validation-for="ColorInterior" class="invalid-feedback"></span>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="NumeroSerie" class="col-form-label text-gray-600 required">Número de Serie</label>
@@ -123,20 +143,9 @@
                     <span asp-validation-for="NumeroSerie" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-3 mb-2">
-                <div class="fv-row mb-2">
-                    <label asp-for="NumeroMotor" class="col-form-label text-gray-600 required">Número de Motor</label>
-                    <input asp-for="NumeroMotor" class="form-control form-control-sm bg-transparent" placeholder="Número de Motor" />
-                    <span asp-validation-for="NumeroMotor" class="invalid-feedback"></span>
-                </div>
-            </div>
-            <div class="col-sm-3 mb-2">
-                <div class="fv-row mb-2">
-                    <label asp-for="Carroceria" class="col-form-label text-gray-600 required">VIN</label>
-                    <input asp-for="Carroceria" class="form-control form-control-sm bg-transparent" placeholder="VIN" style="text-transform: uppercase" />
-                    <span asp-validation-for="Carroceria" class="invalid-feedback"></span>
-                </div>
-            </div>
+        </div>
+
+        <div class="row">
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="Gasolina" class="col-form-label text-gray-600 required">Litros de Gasolina</label>
@@ -144,9 +153,6 @@
                     <span asp-validation-for="Gasolina" class="invalid-feedback"></span>
                 </div>
             </div>
-        </div>
-
-        <div class="row">
             <div class="col-sm-2 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="TieneRotulo" class="col-form-label text-gray-600 required d-block">¿Tiene Rótulo?</label>
@@ -191,7 +197,7 @@
             </div>
         </div>
         <div class="text-end mt-4">
-            <button type="button" class="btn btn-primary btn-sm" onclick="irASiguienteTab('ubicaciondocumentacion')">Siguiente</button>
+            <button type="button" class="btn btn-primary btn-sm btn-next-tab" data-current="datosgenerales" data-next="ubicaciondocumentacion">Siguiente </button>
         </div>
     </div>
 </div>

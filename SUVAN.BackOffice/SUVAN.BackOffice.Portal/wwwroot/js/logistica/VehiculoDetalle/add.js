@@ -42,6 +42,16 @@
         const inputCausa = document.getElementById('IdCausaBaja');
         const inputCausaVisible = document.getElementById('IdCausaBajaVisible');
 
+        const iconoVehiculo = document.getElementById('iconoVehiculo');
+        const inputVehiculo = document.getElementById('IdVehiculo');
+        const inputVIN = document.getElementById('Carroceria');
+        const inputVINVisile = document.getElementById('CarroceriaVisible');
+        const inputMotor = document.getElementById('NumeroMotor');
+        const inputMotorVisible = document.getElementById('NumeroMotorVisible');
+        const inputEconomico = document.getElementById('EconomicoAnterior');
+        const inputEconomicoVisible = document.getElementById('NumeroEconomicoVisible');
+        const inputVehiculoVisible = document.getElementById('IdVehiculoVisible');
+
         const tabla = $('#kt_tabla_detalle');
 
         const configurarTabla = (data, columnas, onRowClick) => {
@@ -72,6 +82,46 @@
                 showModalDetalle.hide();
             });
         };
+
+        if (iconoVehiculo) {
+            iconoVehiculo.addEventListener('click', function () {
+                document.getElementById('modalTitulo').textContent = 'Vehiculos';
+
+                $.ajax({
+                    url: "/VehiculoDetalle/ObtenerVehiculo",
+                    type: 'GET',
+                    success: function (data) {
+                        showModalDetalle.show();
+                        configurarTabla(data, [
+                            { title: "Número de Vehiculo", data: "idVehiculo", className: 'min-w-125px text-center' },
+                            { title: "Placas", data: "placas", className: 'min-w-125px text-center' },
+                            { title: "vin", data: "vin", className: 'min-w-125px text-center' },
+                            { title: "Número de Motor", data: "numeromotor", className: 'min-w-125px text-center' },
+                            { title: "Número Económico", data: "numeroeconomico", className: 'min-w-125px text-center' }
+                        ], function (rowData) {
+                            inputVehiculo.value = rowData.idVehiculo;
+                            inputVehiculoVisible.value = rowData.idVehiculo + ' - ' + rowData.placas;
+                            inputVIN.value = rowData.vin;
+                            inputVINVisile.value = rowData.vin;
+                            inputEconomico.value = rowData.numeroeconomico;
+                            inputMotor.value = rowData.numeromotor;
+                            inputMotorVisible.value = rowData.numeromotor;
+                            inputEconomicoVisible.value = rowData.numeroeconomico
+
+                            if (window.validator) {
+                                window.validator.revalidateField('idVehiculo');
+                                window.validator.revalidateField('Carroceria');
+                                window.validator.revalidateField('NumeroMotor');
+                                window.validator.revalidateField('EconomicoAnterior');
+                            }
+                        });
+                    },
+                    error: function () {
+                        alert('Error al obtener los Tipos de Vehículos.');
+                    }
+                });
+            });
+        }
 
         if (iconoTipoVehiculo) {
             iconoTipoVehiculo.addEventListener('click', function () {
@@ -208,6 +258,10 @@
                         ], function (rowData) {
                             inputBaja.value = rowData.idBaja;
                             inputBajaVisible.value = rowData.descripcion;
+
+                            if (window.validator) {
+                                window.validator.revalidateField('IdBaja');
+                            }
                         });
                     },
                     error: function () {
@@ -232,6 +286,10 @@
                         ], function (rowData) {
                             inputCausa.value = rowData.idCausaBaja;
                             inputCausaVisible.value = rowData.descripcion;
+
+                            if (window.validator) {
+                                window.validator.revalidateField('IdCausaBaja');
+                            }
                         });
                     },
                     error: function () {

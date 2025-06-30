@@ -28,11 +28,11 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <summary>
         /// Elimina un registro de Vehiculo Detalle en la base de datos.
         /// </summary>
-        /// <param name="IdVehiculo">Identificador del Vehiculo Detalle.</param>
+        /// <param name="IdVehiculoDetalle">Identificador del Vehiculo Detalle.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
 
-        Task<bool> EliminarVehiculoDetalle(int IdVehiculo);
+        Task<bool> EliminarVehiculoDetalle(int IdVehiculoDetalle);
 
         Task<List<TipoVehiculoViewModel>> ObtenerTipoVehiculo();
 
@@ -49,6 +49,12 @@ namespace SUVAN.BackOffice.Service.Logistica
         Task<List<ZonaViewModel>> ObtenerZona(int IdEmpresa);
 
         Task<List<ZonaViewModel.DepositosViewModel>> ObtenerDepositos(int IdZona);
+
+        Task<List<VehiViewModel>> ObtenerVehiculo(int IdEmpresa);
+
+        Task CompletarCamposError(VehiculoDetalleViewModel model);
+
+        Task<List<VehiculoDetalleViewModel>> ObtenerDetalleModal(int idVehiculoDetalle);
     }
 
 }

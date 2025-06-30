@@ -21,35 +21,25 @@
     </div>
     <div class="card-body py-2">
         <div class="row">
-            <div class="col-sm-3 mb-2">
+            <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="TipoLicenciaRequerida" class="col-form-label text-gray-600 required">Tipo de Licencia Requerida</label>
                     <input asp-for="TipoLicenciaRequerida" class="form-control form-control-sm bg-transparent" placeholder="Tipo de Licencia Requerida" />
                     <span asp-validation-for="TipoLicenciaRequerida" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-3 mb-2">
-                <div class="fv-row mb-2">
-                    <label asp-for="PermisoCargaAceite" class="col-form-label text-gray-600 required">¿Tiene Permiso para Carga de Aceite?</label>
-                    <select asp-for="PermisoCargaAceite" class="form-control form-control-sm">
-                        <option value="">Selecciona una Opción</option>
-                        <option value="1">Sí</option>
-                        <option value="0">No</option>
-                    </select>
-                    <span asp-validation-for="PermisoCargaAceite" class="invalid-feedback"></span>
-                </div>
-            </div>
-            <div class="col-sm-3 mb-2">
+            <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="TarjetaCirculacion" class="col-form-label text-gray-600 required">Tarjeta de Circulación</label>
                     <input asp-for="TarjetaCirculacion" class="form-control form-control-sm bg-transparent" placeholder="Tarjeta de Circulación" />
                     <span asp-validation-for="TarjetaCirculacion" class="invalid-feedback"></span>
                 </div>
             </div>
-            <div class="col-sm-3 mb-2">
+            <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="VigenciaTarjetaCirculacion" class="col-form-label text-gray-600 required">Vigencia de Tarjeta de Circulación</label>
-                    <input asp-for="VigenciaTarjetaCirculacion" id="VigenciaTarjetaCirculacion" class="form-control form-control-sm bg-transparent" placeholder="Vigencia de Tarjeta de Circulación" />
+                    <input value="@Model.VigenciaTarjetaCirculacion" type="text" id="VigenciaTarjetaCirculacionVisible" class="form-control form-control-sm bg-transparent" placeholder="DD/MM/YYYY" readonly/>
+                    <input type="hidden" asp-for="VigenciaTarjetaCirculacion" id="VigenciaTarjetaCirculacion" />
                     <span asp-validation-for="VigenciaTarjetaCirculacion" class="invalid-feedback"></span>
                 </div>
             </div>
@@ -71,9 +61,9 @@
             </div>
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
-                    <label asp-for="VigenciaPermisoAceite" class="col-form-label text-gray-600 required">Vigencia del Permiso de Aceite</label>
-                    <input asp-for="VigenciaPermisoAceite" id="VigenciaPermisoAceite" class="form-control form-control-sm bg-transparent" placeholder="DD/MM/YYYY" />
-                    <span asp-validation-for="VigenciaPermisoAceite" class="invalid-feedback"></span>
+                    <label asp-for="VigenciaPermisoAceite" class="col-form-label text-gray-600">Vigencia del Permiso de Aceite</label>
+                    <input value="@Model.VigenciaPermisoAceite" type="text" id="VigenciaPermisoAceiteVisible" class="form-control form-control-sm bg-transparent" placeholder="DD/MM/YYYY" readonly/>
+                    <input type="hidden" asp-for="VigenciaPermisoAceite" id="VigenciaPermisoAceite" />
                 </div>
             </div>
         </div>

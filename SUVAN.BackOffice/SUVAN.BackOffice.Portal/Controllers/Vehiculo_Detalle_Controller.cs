@@ -11,6 +11,8 @@ using SUVAN.BackOffice.Service.Configuracion;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Newtonsoft.Json;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
+using SUVAN.BackOffice.Models.ViewModel.Configuracion;
+using System.Security.Claims;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -32,13 +34,6 @@ namespace SUVAN.BackOffice.Portal.Controllers
             var vehiculo = await vehiculoService.GetVehiculoDetalle();
             return View(vehiculo);
         }
-
-        //public async Task<IActionResult> AgregarVehiculoDetalle(int id)
-        //{
-        //    var agregarModel = await vehiculoService.GetVehiculoDetalleViewModel(id);
-        //    return View(agregarModel);
-        //}
-
         public async Task<IActionResult> NavegacionVehiculoDetalle(int id)
         {
             var agregarModel = await vehiculoService.GetVehiculoDetalleViewModel(id);
@@ -80,12 +75,20 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> NavegacionVehiculoDetalle(VehiculoDetalleViewModel model)
+        public async Task<IActionResult> NavegacionVehiculoDetalle(VehiculoDetalleViewModel model, int IdEmpresa)
         {
             try
             {
-                int IdEmpresa = User.GetEmpresaId();
-                string Usuario = User.GetPerfilId();
+                IdEmpresa = User.GetEmpresaId();
+                var Usuario = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
+
+                if (!ModelState.IsValid)
+                {
+                    await vehiculoService.CompletarCamposError(model);
+
+                    return View(model);
+                }
+
                 var result = await vehiculoService.AgregarVehiculoDetalle(model, IdEmpresa, Usuario);
 
                 if (result)
@@ -100,8 +103,6 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
-
-
         }
 
         [HttpPost]
@@ -176,6 +177,20 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             var deposito = await vehiculoService.ObtenerDepositos(idZona);
             return Json(deposito);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerVehiculo()
+        {
+            var vehiculo = await vehiculoService.ObtenerVehiculo(User.GetEmpresaId());
+            return Json(vehiculo);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerDetalleVehiculo(int idVehiculoDetalle)
+        {
+            var detalle = await vehiculoService.ObtenerDetalleModal(idVehiculoDetalle);
+            return Json(detalle);
         }
     }
 }

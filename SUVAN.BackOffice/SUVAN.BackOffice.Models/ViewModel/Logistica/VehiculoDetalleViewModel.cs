@@ -14,20 +14,22 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         // Relaciones con otras entidades
         public int IdVehiculo { get; set; }
+        public string? PlacasVehiculo { get; set; } = null!;
+        public string PlacasIdVehiculo => $"{IdVehiculo} - {PlacasVehiculo}";
         public sbyte IdTipoVehiculo { get; set; }
         public string? NombreTipoV { get; set; } = null!;
         public short IdMarca { get; set; }
-        public string DescripcionMarca { get; set; } = null!;
+        public string? DescripcionMarca { get; set; }
         public int IdZona { get; set; }
-        public string NombreZona { get; set; } = null!;
+        public string? NombreZona { get; set; }
         public int IdDeposito { get; set; }
-        public string NombreDeposito { get; set; } = null!;
+        public string? NombreDeposito { get; set; }
         public int? IdEspecificacion { get; set; }
         public int IdModelo { get; set; }
-        public string DescripcionModelo { get; set; } = null!;
+        public string? DescripcionModelo { get; set; }
         public string? IdCognos { get; set; }
         public int IdTipoEje { get; set; }
-        public string DescripcionEje { get; set; } = null!;
+        public string? DescripcionEje { get; set; }
         public int? IdNegocio { get; set; }
 
         // Información general del vehículo
@@ -52,7 +54,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public string? NoCircula { get; set; }
         public string? DnoCircula { get; set; }
         public string Proveedor { get; set; } = null!;
-        public DateTime FechaCompra { get; set; }
+        public DateTime? FechaCompra { get; set; }
         public string NumeroFactura { get; set; } = null!;
         public float CostoVehiculo { get; set; }
         public ulong? TarifaVehicular { get; set; }
@@ -61,7 +63,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         // Estado del vehículo
         public string? StVehiculo { get; set; }
-        public DateTime FechaBaja { get; set; }
+        public DateTime? FechaBaja { get; set; }
         public string ColorInterior { get; set; } = null!;
         public float? RegFed { get; set; }
         public int? EdregPl { get; set; }
@@ -74,15 +76,14 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         // Registro y recuperación
         public int? ColRuta { get; set; }
         public int IdCausaBaja { get; set; }
-        public string DescripcionCausaBaja { get; set; } = null!;
+        public string? DescripcionCausaBaja { get; set; }
         public float? ValorRecuperacion { get; set; }
         public float KilometrajeGarantia { get; set; }
         public int MesesGarantia { get; set; }
         public string? EconomicoAnterior { get; set; }
-        //public ulong? LocFor { get; set; }
-        public ulong? LocFor = 1;
+        public ulong? LocFor { get; set; }
         public int IdBaja { get; set; }
-        public string DescripcionBaja { get; set; } = null!;
+        public string? DescripcionBaja { get; set; }
 
         // Especificaciones de carga
         public int PesoMinimo { get; set; }
@@ -97,9 +98,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public DateTime? VigenciaTarjetaCirculacion { get; set; }
         public ulong? Asignado { get; set; }
         public float? TotalVehiculo { get; set; }
-        //public string UsuarioCaptura { get; set; } = null!;
-
-        public string UsuarioCaptura = "Jordan";
+        public string? UsuarioCaptura { get; set; }
 
         public List<MarcaViewModel> Marcas { get; set; } = new();
 
@@ -110,7 +109,22 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public List<BajaVehiViewModel> BajaVehiculo { get; set; } = new();
 
         public List<CausaBajaViewModel> CausaBaja { get; set; } = new();
+
         public List<ZonaViewModel> Zonas { get; set; } = new();
+
+        public List<VehiViewModel> Vehiculos { get; set; } = new();
+
+        public class VehiViewModel {
+            public int IdVehiculo { get; set; }
+
+            public string? Placas { get; set; }
+
+            public string? Vin { get; set; }
+
+            public string? Numeroeconomico { get; set; }
+
+            public string? Numeromotor { get; set; }
+        }
 
         public class ModeloViewModel
         {

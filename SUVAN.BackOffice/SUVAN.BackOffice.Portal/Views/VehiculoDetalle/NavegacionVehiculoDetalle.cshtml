@@ -42,7 +42,7 @@
                 <a class="nav-link disabled" id="compracosto-tab" data-bs-toggle="tab" href="#compracosto">Compra y Costos</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" id="garantiaestado-tab" data-bs-toggle="tab" href="#garantiaestado">Garantía y Estado del Vehículo</a>
+                <a class="nav-link disabled" id="garantiaestado-tab" data-bs-toggle="tab" href="#garantiaestado">Garantía y Estado</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link disabled" id="especificaciones-tab" data-bs-toggle="tab" href="#especificaciones">Especificaciones Técnicas</a>
@@ -58,6 +58,13 @@
         <input asp-for="MarcasJson" type="hidden" id="MarcasJson" />
         <input asp-for="ZonaJson" type="hidden" id="ZonaJson" />
         <input asp-for="IdVehiculoDetalle" type="hidden" />
+        <div class="fv-row mb-8">
+            <div class="col-sm-12">
+                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    <div asp-validation-summary="All"></div>
+                </div>
+            </div>
+        </div>
         <div class="tab-content" id="contenidoPestanas">
             <div class="tab-pane fade show active" id="datosgenerales">
                 @await Html.PartialAsync("_datosGenerales", Model)

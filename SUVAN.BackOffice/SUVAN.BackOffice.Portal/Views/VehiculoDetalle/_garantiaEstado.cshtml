@@ -30,8 +30,8 @@
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
+                    <input asp-for="IdBaja" type="hidden" id="IdBaja" name="IdBaja" />
                     <span asp-validation-for="IdBaja" class="invalid-feedback d-block"></span>
-                    <input asp-for="IdBaja" type="hidden" />
                 </div>
             </div>
             <div class="col-sm-4 mb-2">
@@ -43,8 +43,8 @@
                             <i class="fas fa-search"></i>
                         </span>
                     </div>
+                    <input asp-for="IdCausaBaja" type="hidden" id="IdCausaBaja" name="IdCausaBaja" />
                     <span asp-validation-for="IdCausaBaja" class="invalid-feedback d-block"></span>
-                    <input asp-for="IdCausaBaja" type="hidden" />
                 </div>
             </div>
             <div class="col-sm-4 mb-2">
@@ -66,21 +66,15 @@
             <div class="col-sm-4 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="FechaBaja" class="col-form-label text-gray-600 required">Fecha de Baja</label>
-                    <input asp-for="FechaBaja" id="FechaBaja" class="form-control form-control-sm bg-transparent" placeholder="Fecha de Baja" />
+                    <input value="@Model.FechaBaja" type="text" id="FechaBajaVisible" class="form-control form-control-sm bg-transparent" placeholder="DD/MM/YYYY" readonly/>
+                    <input type="hidden" asp-for="FechaBaja" id="FechaBaja" />
                     <span asp-validation-for="FechaBaja" class="invalid-feedback"></span>
-                </div>
-            </div>
-            <div class="col-sm-4 mb-2">
-                <div class="fv-row mb-2">
-                    <label asp-for="EconomicoAnterior" class="col-form-label text-gray-600 required">Económico Anterior</label>
-                    <input asp-for="EconomicoAnterior" class="form-control form-control-sm bg-transparent" placeholder="Económico Anterior" />
-                    <span asp-validation-for="EconomicoAnterior" class="invalid-feedback"></span>
                 </div>
             </div>
         </div>
         <div class="d-flex justify-content-between mt-5">
             <button type="button" class="btn btn-primary btn-sm" onclick="irATabAnterior()">Anterior</button>
-            <button type="button" class="btn btn-primary btn-sm" onclick="irASiguienteTab('especificaciones')">Siguiente</button>
+            <button type="button" class="btn btn-primary btn-sm btn-next-tab" data-current="garantiaestado" data-next="especificaciones">Siguiente</button>
         </div>
     </div>
 </div>

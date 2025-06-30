@@ -8,6 +8,7 @@ using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleViewModel;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Security.Claims;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -23,7 +24,8 @@ namespace SUVAN.BackOffice.Service.Logistica
         public async Task<List<VehiculoDetalle>> GetVehiculoDetalle()
         {
 
-            var vehiculo = await context.VehiculoDetalles.ToListAsync();
+            var vehiculo = await context.VehiculoDetalles.Include(x => x.IdVehiculoNavigation).Include(x => x.IdMarcaNavigation)
+                .Include(x => x.IdZonaNavigation).Include(x => x.IdDepositoNavigation).ToListAsync();
 
             return vehiculo!;
         }
@@ -38,7 +40,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             var vehiculo = await context.VehiculoDetalles.Include(v => v.IdMarcaNavigation).Include(v => v.IdModeloNavigation).
                 Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdBajaNavigation).Include(v => v.IdTipoEjeNavigation).
                 Include(v => v.IdCausaBajaNavigation).Include(v => v.IdDepositoNavigation).Include(v => v.IdZonaNavigation).
-                FirstOrDefaultAsync(x => x.IdVehiculoDetalle == id);
+                Include(v => v.IdVehiculoNavigation).FirstOrDefaultAsync(x => x.IdVehiculoDetalle == id);
 
             if (vehiculo == null)
                 return new VehiculoDetalleViewModel();
@@ -61,9 +63,9 @@ namespace SUVAN.BackOffice.Service.Logistica
                 NombreZona = vehiculo.IdZonaNavigation.NombreZona,
                 IdDeposito = vehiculo.IdDeposito,
                 NombreDeposito = vehiculo.IdDepositoNavigation.DepositoNombre,
-
-                IdVehiculoDetalle = vehiculo.IdVehiculoDetalle,
                 IdVehiculo = vehiculo.IdVehiculo,
+                PlacasVehiculo = vehiculo.IdVehiculoNavigation.Placas,
+                IdVehiculoDetalle = vehiculo.IdVehiculoDetalle,
                 IdEspecificacion = vehiculo.IdEspecificacion,
                 IdCognos = vehiculo.IdCognos,
                 IdNegocio = vehiculo.IdNegocio,
@@ -145,13 +147,14 @@ namespace SUVAN.BackOffice.Service.Logistica
                 vehiculo = new VehiculoDetalle();
             }
 
-            // Valida si el Detalle Vehiculo es esta en la misma empresa
+            // Valida si el Detalle Vehiculo teien el mismo Carroceria/VIN en la misma empresa
             var vehiculoExistente = await context.VehiculoDetalles.FirstOrDefaultAsync(x =>
-                x.IdVehiculoDetalle! == model.IdVehiculoDetalle! &&
-                x.IdDepositoNavigation.IdEmpresa == IdEmpresa);
+                x.Carroceria!.Trim().ToLower() == model.Carroceria!.Trim().ToLower() &&
+                x.IdDepositoNavigation.IdEmpresa == IdEmpresa &&
+                x.IdVehiculoDetalle != model.IdVehiculoDetalle);
 
             if (vehiculoExistente is not null)
-                throw new Exception("Ya existe un Vehiculo con el mismo nombre");
+                throw new Exception("Ya existe un Vehiculo con el mismo VIN");
 
             vehiculo.IdVehiculo = model.IdVehiculo;
             vehiculo.IdTipoVehiculo = model.IdTipoVehiculo;
@@ -216,7 +219,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             vehiculo.VigenciaTarjetaCirculacion = model.VigenciaTarjetaCirculacion;
             vehiculo.Asignado = model.Asignado;
             vehiculo.TotalVehiculo = model.TotalVehiculo;
-            vehiculo.UsuarioCaptura = model.UsuarioCaptura;
+            vehiculo.UsuarioCaptura = Usuario;
 
             if (model.IdVehiculoDetalle > 0)
             {
@@ -236,13 +239,13 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <summary>
         /// Elimina un registro de Vehiculo Detalle en la base de datos.
         /// </summary>
-        /// <param name="IdVehiculo">Identificador del Vehiculo Detalle.</param>
+        /// <param name="IdVehiculoDetalle">Identificador del Vehiculo Detalle.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
 
-        public async Task<bool> EliminarVehiculoDetalle(int IdVehiculo)
+        public async Task<bool> EliminarVehiculoDetalle(int IdVehiculoDetalle)
         {
-            var vehiculo = await context.VehiculoDetalles.FirstOrDefaultAsync(x => x.IdVehiculoDetalle == IdVehiculo);
+            var vehiculo = await context.VehiculoDetalles.FirstOrDefaultAsync(x => x.IdVehiculoDetalle == IdVehiculoDetalle);
 
             if (vehiculo is null)
             {
@@ -254,7 +257,7 @@ namespace SUVAN.BackOffice.Service.Logistica
 
 
             var delete = await context.VehiculoDetalles
-              .Where(x => x.IdVehiculo == IdVehiculo)
+              .Where(x => x.IdVehiculoDetalle == IdVehiculoDetalle)
               .ExecuteDeleteAsync();
 
             await context.SaveChangesAsync();
@@ -277,7 +280,8 @@ namespace SUVAN.BackOffice.Service.Logistica
         }
 
         public async Task<List<MarcaViewModel>> ObtenerMarcas()
-        {   var marca = await (from m in context.Marcas
+        {
+            var marca = await (from m in context.Marcas
                                select new MarcaViewModel()
                                {
                                    IdMarca = m.IdMarca,
@@ -291,13 +295,14 @@ namespace SUVAN.BackOffice.Service.Logistica
                                    }).ToList()
                                }).ToListAsync();
 
-           return marca;
+            return marca;
         }
 
         public async Task<List<ModeloViewModel>> ObtenerModelo(int marcaId)
         {
-            var resultado = await (from t in context.Modelos where 
-                                   ( t.IdMarca == marcaId)
+            var resultado = await (from t in context.Modelos
+                                   where
+                                   (t.IdMarca == marcaId)
                                    select new ModeloViewModel
                                    {
                                        IdModelo = t.IdModelo,
@@ -345,19 +350,20 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public async Task<List<ZonaViewModel>> ObtenerZona(int IdEmpresa)
         {
-            var zona = await (from m in context.Zonas where m.IdEmpresa == IdEmpresa
-                               select new ZonaViewModel()
-                               {
-                                   ZonaId = m.IdZona,
-                                   ZonaNombre = m.NombreZona,
-                                   Depositos = context.Depositosdisponibles
-                                   .Where(d => d.ZonaId == m.IdZona)
-                                   .Select(d => new ZonaViewModel.DepositosViewModel
-                                   {
-                                       DepositoId = d.IdDeposito,
-                                       NombreDeposito = d.DepositoNombre
-                                   }).ToList()
-                               }).ToListAsync();
+            var zona = await (from m in context.Zonas
+                              where m.IdEmpresa == IdEmpresa
+                              select new ZonaViewModel()
+                              {
+                                  ZonaId = m.IdZona,
+                                  ZonaNombre = m.NombreZona,
+                                  Depositos = context.Depositosdisponibles
+                                  .Where(d => d.ZonaId == m.IdZona)
+                                  .Select(d => new ZonaViewModel.DepositosViewModel
+                                  {
+                                      DepositoId = d.IdDeposito,
+                                      NombreDeposito = d.DepositoNombre
+                                  }).ToList()
+                              }).ToListAsync();
 
             return zona;
         }
@@ -375,5 +381,87 @@ namespace SUVAN.BackOffice.Service.Logistica
                                    }).ToListAsync();
             return resultado;
         }
+
+        public async Task<List<VehiViewModel>> ObtenerVehiculo(int IdEmpresa)
+        {
+            var resultado = await (from t in context.Vehiculos
+                                   where t.EmpresaIdempresa == IdEmpresa
+                                   select new VehiViewModel
+                                   {
+                                       IdVehiculo = t.IdVehiculo,
+                                       Placas = t.Placas,
+                                       Vin = t.Vin,
+                                       Numeroeconomico = t.Numeroeconomico,
+                                       Numeromotor = t.Numeromotor
+
+                                   }).ToListAsync();
+            return resultado;
+        }
+
+        public async Task CompletarCamposError(VehiculoDetalleViewModel model)
+        {
+            if (model == null || model.IdVehiculoDetalle == 0)
+                return;
+
+            var datos = await GetVehiculoDetalleViewModel(model.IdVehiculoDetalle);
+
+            model.NombreTipoV = datos.NombreTipoV;
+            model.DescripcionMarca = datos.DescripcionMarca;
+            model.DescripcionModelo = datos.DescripcionModelo;
+            model.DescripcionBaja = datos.DescripcionBaja;
+            model.DescripcionCausaBaja = datos.DescripcionCausaBaja;
+            model.DescripcionEje = datos.DescripcionEje;
+            model.NombreZona = datos.NombreZona;
+            model.NombreDeposito = datos.NombreDeposito;
+            model.PlacasVehiculo = datos.PlacasVehiculo;
+        }
+
+        public async Task<List<VehiculoDetalleViewModel>> ObtenerDetalleModal(int idVehiculoDetalle)
+        {
+            var resultado = await context.VehiculoDetalles.Where(v => v.IdVehiculoDetalle == idVehiculoDetalle).Include(v => v.IdVehiculoNavigation).Include(v => v.IdMarcaNavigation)
+                .Include(v => v.IdModeloNavigation).Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdZonaNavigation)
+                .Include(v => v.IdDepositoNavigation).Include(v => v.IdBajaNavigation).Include(v => v.IdCausaBajaNavigation)
+                .Select(vehiculo => new VehiculoDetalleViewModel
+                {
+                    IdVehiculoDetalle = vehiculo.IdVehiculoDetalle,
+                    IdVehiculo = vehiculo.IdVehiculo,
+                    PlacasVehiculo = vehiculo.IdVehiculoNavigation.Placas,
+                    IdMarca = vehiculo.IdMarca,
+                    DescripcionMarca = vehiculo.IdMarcaNavigation.Descripcion,
+                    IdModelo = vehiculo.IdModelo,
+                    DescripcionModelo = vehiculo.IdModeloNavigation.Descripcion,
+                    IdTipoVehiculo = vehiculo.IdTipoVehiculo,
+                    NombreTipoV = vehiculo.IdTipoVehiculoNavigation.Nombre,
+                    Carroceria = vehiculo.Carroceria,
+                    IdZona = vehiculo.IdZona,
+                    NombreZona = vehiculo.IdZonaNavigation.NombreZona,
+                    IdDeposito = vehiculo.IdDeposito,
+                    NombreDeposito = vehiculo.IdDepositoNavigation.DepositoNombre,
+                    CopiaFactura = vehiculo.CopiaFactura,
+                    CopiaVerificacion = vehiculo.CopiaVerificacion,
+                    Proveedor = vehiculo.Proveedor,
+                    FechaCompra = vehiculo.FechaCompra,
+                    CostoVehiculo = vehiculo.CostoVehiculo,
+                    IdBaja = vehiculo.IdBaja,
+                    DescripcionBaja = vehiculo.IdBajaNavigation.Descripcion,
+                    IdCausaBaja = vehiculo.IdCausaBaja,
+                    DescripcionCausaBaja = vehiculo.IdCausaBajaNavigation.Descripcion,
+                    MesesGarantia = vehiculo.MesesGarantia,
+                    FechaBaja = vehiculo.FechaBaja,
+                    PesoMinimo = vehiculo.PesoMinimo,
+                    PesoMaximo = vehiculo.PesoMaximo,
+                    VolumenMinimo = vehiculo.VolumenMinimo,
+                    VolumenMaximo = vehiculo.VolumenMaximo,
+                    TipoLicenciaRequerida = vehiculo.TipoLicenciaRequerida,
+                    TarjetaCirculacion = vehiculo.TarjetaCirculacion,
+                    VigenciaTarjetaCirculacion = vehiculo.VigenciaTarjetaCirculacion
+
+                })
+                .ToListAsync();
+
+            return resultado;
+        }
+
+
     }
 }

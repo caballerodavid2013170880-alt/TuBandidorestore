@@ -97,7 +97,7 @@ function toggleNombreTarifaVehicular() {
 
 function togglePermisoCargaAceite() {
     const valor = $('input[name="PermisoCargaAceite"]:checked').val();
-    const $inputVigenciaPermisoAceite = $('#VigenciaPermisoAceite');
+    const $inputVigenciaPermisoAceite = $('#VigenciaPermisoAceiteVisible');
 
     if (valor === '1') {
         $inputVigenciaPermisoAceite.prop('disabled', false);

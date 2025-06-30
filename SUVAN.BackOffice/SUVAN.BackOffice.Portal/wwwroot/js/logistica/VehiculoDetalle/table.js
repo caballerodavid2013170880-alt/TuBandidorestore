@@ -1,96 +1,138 @@
 ﻿"use strict";
 
 var KTVehiculoDetalleList = function () {
-    var table = document.getElementById('kt_table_vehiculo_detalle');
+    // Define shared variables
+    var table = document.getElementById('kt_table_detalle');
     var datatable;
 
-    var initVehiculoTable = function () {
+    // Private functions
+    var initdetallesTable = function () {
+        // Set date data order
+        const tableRows = table.querySelectorAll('tbody tr');
+
+        tableRows.forEach(row => {
+            const dateRow = row.querySelectorAll('td');
+
+        });
+
+        // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
-            info: false,
-            order: [],
-            pageLength: 10,
-            lengthChange: false,
-            columnDefs: [
-                { orderable: false, targets: -1 } // Última columna (acciones)
+            "info": false,
+            'order': [],
+            "pageLength": 10,
+            "lengthChange": false,
+            'columnDefs': [
+                { orderable: false, targets: 1 }, // Disable ordering on column 6 (actions)                
             ]
         });
 
+        // Re-init functions on every table re-draw -- more info: https://datatables.net/reference/event/draw
         datatable.on('draw', function () {
             handleDeleteRows();
         });
-    };
+    }
 
+    // Search Datatable --- official docs reference: https://datatables.net/reference/api/search()
     var handleSearchDatatable = () => {
-        const filterSearch = document.querySelector('[data-kt-vehiculo-table-filter="search"]');
+        const filterSearch = document.querySelector('[data-kt-detalle-table-filter="search"]');
         filterSearch.addEventListener('keyup', function (e) {
             datatable.search(e.target.value).draw();
         });
-    };
+    }
 
+    // Delete subscirption
     var handleDeleteRows = () => {
-        const deleteButtons = table.querySelectorAll('[data-kt-vehiculo-table-filter="delete_row"]');
+        // Select all delete buttons
+        const deleteButtons = table.querySelectorAll('[data-kt-detalle-table-filter="delete_row"]');
 
-        deleteButtons.forEach(button => {
-            button.addEventListener('click', function (e) {
+        deleteButtons.forEach(d => {
+            // Delete button on click
+            d.addEventListener('click', function (e) {
                 e.preventDefault();
 
+                // Select parent row
                 const parent = e.target.closest('tr');
-                const IdVehicDetalle = button.getAttribute('data-kt-vehiculo-delete-item');
-                const nombreVehiculo = parent.querySelector('td').innerText;
 
+                // Get user name
+                const contenidoName = parent.querySelectorAll('td')[0].innerText;
+
+                // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
-                    text: `¿Deseas eliminar el vehículo "${nombreVehiculo}"?`,
+                    text: `¿Esta seguro que desea eliminar el detalle ${contenidoName}?`,
                     icon: "warning",
                     showCancelButton: true,
-                    confirmButtonText: "Sí, eliminar",
-                    cancelButtonText: "Cancelar",
                     buttonsStyling: false,
+                    confirmButtonText: "Si, eliminar",
+                    cancelButtonText: "No, cancelar",
                     customClass: {
                         confirmButton: "btn fw-bold btn-danger",
                         cancelButton: "btn fw-bold btn-active-light-primary"
                     },
                     preConfirm: async () => {
-                        try {
-                            const response = await fetch('/VehiculoDetalle/EliminarVehiculo', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ IdVehicDetalle: parseInt(IdVehicDetalle) })
-                            });
-                            if (!response.ok) throw new Error('No se pudo eliminar');
-                            return await response.json();
-                        } catch (error) {
-                            Swal.showValidationMessage(`Error: ${error.message}`);
-                        }
+
+                        const IdVehiculoDetalle = parseInt(d.getAttribute('data-kt-detalle-delete-item'));
+                        const response = await fetch('/VehiculoDetalle/EliminarVehiculoDetalle', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ IdVehiculoDetalle: IdVehiculoDetalle })
+                        });
+                        const data = await response.json();
+                        console.log(data);
+
+
                     }
-                }).then(result => {
-                    if (result.isConfirmed) {
+                }).then(function (result) {
+                    if (result.value) {
                         Swal.fire({
-                            text: "Vehículo eliminado correctamente",
+                            text: `Usted eliminó el detalle ${contenidoName}`,
                             icon: "success",
                             buttonsStyling: false,
                             confirmButtonText: "Aceptar",
                             customClass: {
                                 confirmButton: "btn fw-bold btn-primary",
                             }
-                        }).then(() => {
+                        }).then(function () {
+                            // Remove current row
                             datatable.row($(parent)).remove().draw();
+                            //location.reload();
+                        }).then(function () {
+                            // Detect checked checkboxes
+                            toggleToolbars();
+                        });
+                    } else if (result.dismiss === 'cancel') {
+                        Swal.fire({
+                            text: result.value.message,
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Ok, got it!",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary",
+                            }
                         });
                     }
                 });
-            });
+            })
         });
-    };
+    }
 
     return {
+        // Public functions  
         init: function () {
-            if (!table) return;
-            initVehiculoTable();
+            if (!table) {
+                return;
+            }
+
+            initdetallesTable();
             handleSearchDatatable();
             handleDeleteRows();
+
         }
-    };
+    }
 }();
 
+// On document ready
 KTUtil.onDOMContentLoaded(function () {
     KTVehiculoDetalleList.init();
 });
