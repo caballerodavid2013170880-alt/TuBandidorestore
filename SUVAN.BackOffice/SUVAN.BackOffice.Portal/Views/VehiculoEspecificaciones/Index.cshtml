@@ -1,0 +1,193 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Models.ViewModel.Logistica
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+
+@{
+    ViewData["Title"] = "Vihículo Especificaciones";
+}
+@model VehiculoEspecificacionesViewModel
+
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.VehiculoEspecificaciones);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+    <!--begin::Toolbar container-->
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <!--begin::Toolbar wrapper-->
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <!--begin::Page title-->
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <!--begin::Title-->
+                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Vehículo Especificaciones</h1>
+                <!--end::Title-->
+
+            </div>
+            <!--end::Page title-->
+
+        </div>
+        <!--end::Toolbar wrapper-->
+    </div>
+    <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <!--begin::Content container-->
+    <div id="kt_app_content_container" class="app-container container-fluid">
+        <!--begin::Card-->
+        <div class="card mb-5">
+
+            <!--begin::Card body-->
+            <div class="card-body py-4">
+                <form class="form w-100" novalidate="novalidate" id="kt_especificaciones_in_form" data-kt-redirect-url="/" asp-controller="VehiculoEspecificaciones" asp-action="Index" method="post">
+                    @Html.AntiForgeryToken()
+                    <input asp-for="MarcaJson" type="hidden" id="MarcaJson" />
+                    <div class="fv-row mb-8">
+                        <div class="col-sm-12">
+                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                <div asp-validation-summary="All"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Marca</label>
+                                <select asp-for="IdMarca" asp-items="new SelectList(Model.Marcas,nameof(VehiculoEspecificacionesViewModel.MarcaEspecifiViewModel.IdMarca), nameof(VehiculoEspecificacionesViewModel.MarcaEspecifiViewModel.DescripcionMarcaId), Model.IdMarca)" class="form-control">
+                                    <option value="">Selecciona una Marca</option>
+                                </select>
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="IdMarca"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-3">
+                                <label asp-for="IdModelo" class="col-form-label text-gray-600 required">Modelo</label>
+                                <select asp-for="IdModelo" asp-items="new SelectList(Model.Modelos,nameof(VehiculoEspecificacionesViewModel.ModeloEspecifiViewModel.IdModelo), nameof(VehiculoEspecificacionesViewModel.ModeloEspecifiViewModel.DescripcionModeloId), Model.IdModelo)" class="form-control">
+                                    <option value="">Selecciona un Modelo</option>
+                                </select>
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="IdModelo"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-10 text-end">
+                        <button type="submit" id="kt_especificaciones_in_submit" class="btn btn-primary">
+                            <!--begin::Indicator label-->
+                            <span class="indicator-label">Buscar</span>
+                            <!--end::Indicator label-->
+                            <!--begin::Indicator progress-->
+                            <span class="indicator-progress">
+                                Por favor espere...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                            <!--end::Indicator progress-->
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card-->
+        <!--begin::Card-->
+        <div class="card">
+            <!--begin::Card header-->
+            <div class="card-header align-items-center py-5 gap-2 gap-md-5">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <!--begin::Search-->
+                    <div class="d-flex align-items-center position-relative my-1">
+                        <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                        <input type="text" data-kt-especificaciones-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+                    </div>
+                    <!--end::Search-->
+                </div>
+
+                <div class="card-toolbar d-flex justify-content-end align-items-center gap-3 flex-wrap">
+                    <div class="fv-row">
+                        @if (permisosPagina!.Agregar)
+                        {
+                            <a @* href="~/Zona/AgregarZona" *@ class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Especificaciones</a>
+                        }
+                    </div>
+                </div>
+                <!--begin::Card title-->
+            </div>
+            <!--end::Card header-->
+            <!--begin::Card body-->
+            <div class="card-body py-4">
+                <div class="table-responsive">
+                    <!--begin::Table-->
+                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_especificaciones_table">
+                        <thead>
+                            <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                <th class="min-w-125px">Marca</th>
+                                <th class="min-w-125px">Modelo</th>
+                                <th class="min-w-125px">Capacidad de Combustible</th>
+                                <th class="min-w-125px">Tipo de Motor</th>
+                                <th class="min-w-125px">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-600 fw-semibold">
+
+                            @foreach (var item in Model.Descripcion)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.IdMarca
+                                    </td>
+                                    <td>
+                                        @item.IdModelo
+                                    </td>
+                                    <td>
+                                        @item.CapacidadCombu
+                                    </td>
+                                    <td>
+                                        @item.TipoMotor
+                                    </td>
+                                    <td class="text-end">
+                                        @if (permisosPagina!.Editar)
+                                        {
+                                            <a @* href="~/Zona/AgregarZona/@contenido.IdZona" *@ class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                                <i class="ki-outline ki-pencil fs-3"></i>
+                                            </a>
+                                        }
+                                        @if (permisosPagina!.Eliminar)
+                                        {
+                                            <a class="btn btn-icon btn-active-light-primary w-30px h-30px" @* data-kt-zona-delete-item="@contenido.IdZona" *@ data-kt-zona-table-filter="delete_row">
+                                                <i class="ki-outline ki-trash fs-3"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <!--end::Table-->
+                </div>
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card-->
+    </div>
+    <!--end::Content container-->
+</div>
+<!--end::Content-->
+@section scripts {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    @*     <script src="~/js/ingresos/especificacionesingresos/table.js" asp-append-version="true"></script> *@
+    <script src="~/js/logistica/vehiculoespecifi/add.js"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>
+
+}

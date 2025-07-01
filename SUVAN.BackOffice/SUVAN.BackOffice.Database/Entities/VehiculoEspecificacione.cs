@@ -5,29 +5,29 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class VehiculoEspecificacione
 {
-    public short IdEspeci { get; set; }
+    public short IdEspecificaciones { get; set; }
 
-    public int IdVehiculo { get; set; }
+    public int IdMarca { get; set; }
 
-    public short IdMarca { get; set; }
+    public int IdModelo { get; set; }
 
-    public short? TipoCom { get; set; }
+    public short? TipoCombustible { get; set; }
 
     public short? Pallets { get; set; }
 
     public double? RenEsp { get; set; }
 
-    public double? CapCom { get; set; }
+    public double? CapacidadCombu { get; set; }
 
-    public double? CapAce { get; set; }
+    public double? CapacidadAceite { get; set; }
 
-    public string? TipoMot { get; set; }
+    public string? TipoMotor { get; set; }
 
-    public string? PotMot { get; set; }
+    public string? PotenciaMotor { get; set; }
 
     public string? PulCub { get; set; }
 
-    public short? NoCilin { get; set; }
+    public short? NoCilindros { get; set; }
 
     public double? Ancho { get; set; }
 
@@ -35,19 +35,19 @@ public partial class VehiculoEspecificacione
 
     public double? Altura { get; set; }
 
-    public float? PesoBru { get; set; }
+    public float? PesoBruto { get; set; }
 
-    public float? CarEje { get; set; }
+    public float? CargaPorEje { get; set; }
 
-    public float? CarMax { get; set; }
+    public float? CargaMax { get; set; }
 
-    public short? LlanRep { get; set; }
+    public short? LlantasRepuesto { get; set; }
 
-    public short? TotLlan { get; set; }
+    public short? TotalLlantas { get; set; }
 
-    public short? DimLlan { get; set; }
+    public short? DimensionLlantas { get; set; }
 
-    public string? Transm { get; set; }
+    public string? Transmision { get; set; }
 
     public string? Traccion { get; set; }
 
@@ -55,9 +55,9 @@ public partial class VehiculoEspecificacione
 
     public short? TipoEje { get; set; }
 
-    public double? McubCar { get; set; }
+    public double? MetrosCubCarga { get; set; }
 
-    public double? TonCar { get; set; }
+    public double? ToneladasCarga { get; set; }
 
-    public string? Obs { get; set; }
+    public string? Observaciones { get; set; }
 }

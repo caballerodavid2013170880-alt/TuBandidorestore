@@ -68,6 +68,7 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<IBajaVehiculoService, BajaVehiculoService>();
             services.AddTransient<ICausaBajaService, CausaBajaService>();
             services.AddTransient<ITipoEjeService, TipoEjeService>();
+            services.AddTransient<IVehiculoEspecificacionesService, VehiculoEspecificacionesService>();
         }
 
         /// <summary>

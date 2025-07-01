@@ -3941,63 +3941,63 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<VehiculoEspecificacione>(entity =>
         {
-            entity.HasKey(e => new { e.IdEspeci, e.IdMarca, e.IdVehiculo })
+            entity.HasKey(e => new { e.IdEspecificaciones, e.IdModelo, e.IdMarca })
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
             entity.ToTable("vehiculo_especificaciones");
 
-            entity.Property(e => e.IdEspeci)
+            entity.Property(e => e.IdEspecificaciones)
                 .ValueGeneratedOnAdd()
-                .HasColumnName("Id_especi");
-            entity.Property(e => e.IdMarca).HasColumnName("Id_marca");
-            entity.Property(e => e.IdVehiculo).HasColumnName(" id_vehiculo");
+                .HasColumnName("id_especificaciones");
+            entity.Property(e => e.IdModelo).HasColumnName("id_modelo");
+            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
             entity.Property(e => e.Altura).HasColumnName("altura");
             entity.Property(e => e.Ancho).HasColumnName("ancho");
-            entity.Property(e => e.CapAce).HasColumnName("cap_ace");
-            entity.Property(e => e.CapCom).HasColumnName("cap_com");
-            entity.Property(e => e.CarEje).HasColumnName("car_eje");
-            entity.Property(e => e.CarMax).HasColumnName("car_max");
-            entity.Property(e => e.DimLlan).HasColumnName("dim_llan");
+            entity.Property(e => e.CapacidadAceite).HasColumnName("capacidad_aceite");
+            entity.Property(e => e.CapacidadCombu).HasColumnName("capacidad_combu");
+            entity.Property(e => e.CargaMax).HasColumnName("carga_max");
+            entity.Property(e => e.CargaPorEje).HasColumnName("carga_por_eje");
+            entity.Property(e => e.DimensionLlantas).HasColumnName("dimension_llantas");
             entity.Property(e => e.Largo).HasColumnName("largo");
-            entity.Property(e => e.LlanRep).HasColumnName("llan_rep");
-            entity.Property(e => e.McubCar).HasColumnName("mcub_car");
-            entity.Property(e => e.NoCilin).HasColumnName("no_cilin");
-            entity.Property(e => e.Obs)
+            entity.Property(e => e.LlantasRepuesto).HasColumnName("llantas_repuesto");
+            entity.Property(e => e.MetrosCubCarga).HasColumnName("metros_cub_carga");
+            entity.Property(e => e.NoCilindros).HasColumnName("no_cilindros");
+            entity.Property(e => e.Observaciones)
                 .HasMaxLength(250)
                 .IsFixedLength()
-                .HasColumnName("obs");
+                .HasColumnName("observaciones");
             entity.Property(e => e.Origen)
                 .HasMaxLength(1)
                 .IsFixedLength()
                 .HasColumnName("origen");
             entity.Property(e => e.Pallets).HasColumnName("pallets");
-            entity.Property(e => e.PesoBru).HasColumnName("peso_bru");
-            entity.Property(e => e.PotMot)
+            entity.Property(e => e.PesoBruto).HasColumnName("peso_bruto");
+            entity.Property(e => e.PotenciaMotor)
                 .HasMaxLength(8)
                 .IsFixedLength()
-                .HasColumnName("pot_mot");
+                .HasColumnName("potencia_motor");
             entity.Property(e => e.PulCub)
                 .HasMaxLength(6)
                 .IsFixedLength()
                 .HasColumnName("pul_cub");
             entity.Property(e => e.RenEsp).HasColumnName("ren_esp");
-            entity.Property(e => e.TipoCom).HasColumnName("tipo_com");
+            entity.Property(e => e.TipoCombustible).HasColumnName("tipo_combustible");
             entity.Property(e => e.TipoEje).HasColumnName("tipo_eje");
-            entity.Property(e => e.TipoMot)
+            entity.Property(e => e.TipoMotor)
                 .HasMaxLength(20)
                 .IsFixedLength()
-                .HasColumnName("tipo_mot");
-            entity.Property(e => e.TonCar).HasColumnName("ton_car");
-            entity.Property(e => e.TotLlan).HasColumnName("tot_llan");
+                .HasColumnName("tipo_motor");
+            entity.Property(e => e.ToneladasCarga).HasColumnName("toneladas_carga");
+            entity.Property(e => e.TotalLlantas).HasColumnName("total_llantas");
             entity.Property(e => e.Traccion)
                 .HasMaxLength(5)
                 .IsFixedLength()
                 .HasColumnName("traccion");
-            entity.Property(e => e.Transm)
+            entity.Property(e => e.Transmision)
                 .HasMaxLength(1)
                 .IsFixedLength()
-                .HasColumnName("transm");
+                .HasColumnName("transmision");
         });
 
         modelBuilder.Entity<Vehiculoservicio>(entity =>
