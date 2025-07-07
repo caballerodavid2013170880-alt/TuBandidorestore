@@ -5,6 +5,7 @@ using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Ingresos;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Portal.Helper;
+using SUVAN.BackOffice.Service.Configuracion;
 using SUVAN.BackOffice.Service.Ingresos;
 using SUVAN.BackOffice.Service.Logistica;
 
@@ -23,11 +24,46 @@ namespace SUVAN.BackOffice.Portal.Controllers
             this.especificacionesService = especificacionesService;
 
         }
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var model = await especificacionesService.GetVehiculoEspecifi();
+            var model = new VehiculoEspecificacionesViewModel();
+            model = await especificacionesService.ObtenerEspecificaciones(model); 
             model.MarcaJson = JsonConvert.SerializeObject(model.Marcas);
             return View(model);
+        }
+
+        public async Task<IActionResult> NavegacionVehiculoEspecifi(int id)
+        {
+            var agregarModel = await especificacionesService.GetVehiculoEspecifiViewModel(id);
+            return View(agregarModel);
+        }
+
+        [HttpGet]
+        public IActionResult DimensionCapacidad()
+        {
+            return PartialView("_dimensionCapacidad");
+        }
+
+        [HttpGet]
+        public IActionResult MotorDesempeno()
+        {
+
+            return PartialView("_motorDesempeno");
+        }
+
+        [HttpGet]
+        public IActionResult TransmisionTraccion()
+        {
+
+            return PartialView("_transmisionTraccion");
+        }
+
+        [HttpGet]
+        public IActionResult DatosAdicionales()
+        {
+
+            return PartialView("_datosAdicionales");
         }
 
         [HttpPost]
@@ -40,7 +76,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     return View(model);
                 }
 
-                var result = await especificacionesService.ObtenerEspecificaciones(model, model.IdModelo);
+                var result = await especificacionesService.ObtenerEspecificaciones(model);
                 return View(result);
 
             }

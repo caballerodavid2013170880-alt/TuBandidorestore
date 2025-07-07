@@ -111,15 +111,6 @@
                     </div>
                     <!--end::Search-->
                 </div>
-
-                <div class="card-toolbar d-flex justify-content-end align-items-center gap-3 flex-wrap">
-                    <div class="fv-row">
-                        @if (permisosPagina!.Agregar)
-                        {
-                            <a @* href="~/Zona/AgregarZona" *@ class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Especificaciones</a>
-                        }
-                    </div>
-                </div>
                 <!--begin::Card title-->
             </div>
             <!--end::Card header-->
@@ -134,7 +125,7 @@
                                 <th class="min-w-125px">Modelo</th>
                                 <th class="min-w-125px">Capacidad de Combustible</th>
                                 <th class="min-w-125px">Tipo de Motor</th>
-                                <th class="min-w-125px">Acciones</th>
+                                <th class="text-end min-w-100px">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-600 fw-semibold">
@@ -157,14 +148,8 @@
                                     <td class="text-end">
                                         @if (permisosPagina!.Editar)
                                         {
-                                            <a @* href="~/Zona/AgregarZona/@contenido.IdZona" *@ class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                            <a href="~/VehiculoEspecificaciones/NavegacionVehiculoEspecifi/@item.IdEspecificaciones" class="btn btn-icon btn-active-light-primary w-30px h-30px">
                                                 <i class="ki-outline ki-pencil fs-3"></i>
-                                            </a>
-                                        }
-                                        @if (permisosPagina!.Eliminar)
-                                        {
-                                            <a class="btn btn-icon btn-active-light-primary w-30px h-30px" @* data-kt-zona-delete-item="@contenido.IdZona" *@ data-kt-zona-table-filter="delete_row">
-                                                <i class="ki-outline ki-trash fs-3"></i>
                                             </a>
                                         }
                                     </td>

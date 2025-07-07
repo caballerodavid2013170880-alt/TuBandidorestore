@@ -1,0 +1,85 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Models.ViewModel.Logistica
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "Vihículo Especificaciones";
+}
+@model VehiculoEspecificacionesViewModel
+
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.VehiculoEspecificaciones);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+<div class="card card-bordered mb-5">
+    <div class="card-header">
+        <h3 class="card-title">Dimensión y Capacidad</h3>
+    </div>
+    <div class="card-body py-2">
+        <div class="row">
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="Ancho" class="col-form-label text-gray-600 required">Ancho</label>
+                    <input asp-for="Ancho" type="text" class="form-control form-control-sm bg-transparent" placeholder="Ancho" />
+                    <span asp-validation-for="Ancho" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="Largo" class="col-form-label text-gray-600 required">Largo</label>
+                    <input asp-for="Largo" type="text" class="form-control form-control-sm bg-transparent" placeholder="Largo" />
+                    <span asp-validation-for="Largo" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="Altura" class="col-form-label text-gray-600 required">Altura</label>
+                    <input asp-for="Altura" type="text" class="form-control form-control-sm bg-transparent" placeholder="Altura" />
+                    <span asp-validation-for="Altura" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="PesoBruto" class="col-form-label text-gray-600 required">Peso Bruto</label>
+                    <input asp-for="PesoBruto" type="text" class="form-control form-control-sm bg-transparent" placeholder="Peso Bruto" />
+                    <span asp-validation-for="PesoBruto" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="ToneladasCarga" class="col-form-label text-gray-600 required">Capacidad de Carga (Toneladas)</label>
+                    <input asp-for="ToneladasCarga" type="text" class="form-control form-control-sm bg-transparent" placeholder="Capacidad de Carga" />
+                    <span asp-validation-for="ToneladasCarga" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="MetrosCubCarga" class="col-form-label text-gray-600 required">Volumen máximo de Carga</label>
+                    <input asp-for="MetrosCubCarga" type="text" class="form-control form-control-sm bg-transparent" placeholder="Volumen máximo de Carga" />
+                    <span asp-validation-for="MetrosCubCarga" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-4 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="Pallets" class="col-form-label text-gray-600 required">Pallets</label>
+                    <input asp-for="Pallets" type="text" class="form-control form-control-sm bg-transparent" placeholder="Pallets" />
+                    <span asp-validation-for="Pallets" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="text-end mt-4">
+            <button type="button" class="btn btn-primary btn-sm btn-next-tab" data-current="dimensioncapacidad" data-next="motordesempeno">Siguiente </button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/logistica/vehiculoespecifi/validaciones.js"></script>
+    <script src="~/js/logistica/vehiculoespecifi/navvehiculoespecifi.js"></script>
+}

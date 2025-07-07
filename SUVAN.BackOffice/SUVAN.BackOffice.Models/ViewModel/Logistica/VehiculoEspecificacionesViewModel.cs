@@ -11,9 +11,9 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
     {
         public short IdEspecificaciones { get; set; }
 
-        public int IdMarca { get; set; }
+        public int? IdMarca { get; set; }
 
-        public int IdModelo { get; set; }
+        public int? IdModelo { get; set; }
 
         public short? TipoCombustible { get; set; }
 
@@ -77,7 +77,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         {
             public short IdMarca { get; set; }
 
-            public int IdModelo { get; set; }
+            public int? IdModelo { get; set; }
 
             public string Descripcion { get; set; } = null!;
 
@@ -88,7 +88,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public class MarcaEspecifiViewModel
         {
-            public int IdMarca { get; set; }
+            public int? IdMarca { get; set; }
 
             public string Descripcion { get; set; } = null!;
 
@@ -99,13 +99,15 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public class VehiculoEspecifiDescripcionViewModel
         {
-            public int IdMarca { get; set; }
+            public int? IdMarca { get; set; }
 
-            public int IdModelo { get; set; }
+            public int? IdModelo { get; set; }
 
             public double? CapacidadCombu { get; set; }
 
             public string? TipoMotor { get; set; }
+
+            public short IdEspecificaciones { get; set; }
         }
     }
 }

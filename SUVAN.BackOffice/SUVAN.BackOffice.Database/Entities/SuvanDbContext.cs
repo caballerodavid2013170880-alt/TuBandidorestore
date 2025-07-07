@@ -3941,17 +3941,11 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<VehiculoEspecificacione>(entity =>
         {
-            entity.HasKey(e => new { e.IdEspecificaciones, e.IdModelo, e.IdMarca })
-                .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
+            entity.HasKey(e => e.IdEspecificaciones).HasName("PRIMARY");
 
             entity.ToTable("vehiculo_especificaciones");
 
-            entity.Property(e => e.IdEspecificaciones)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("id_especificaciones");
-            entity.Property(e => e.IdModelo).HasColumnName("id_modelo");
-            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
+            entity.Property(e => e.IdEspecificaciones).HasColumnName("id_especificaciones");
             entity.Property(e => e.Altura).HasColumnName("altura");
             entity.Property(e => e.Ancho).HasColumnName("ancho");
             entity.Property(e => e.CapacidadAceite).HasColumnName("capacidad_aceite");
@@ -3959,6 +3953,8 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.CargaMax).HasColumnName("carga_max");
             entity.Property(e => e.CargaPorEje).HasColumnName("carga_por_eje");
             entity.Property(e => e.DimensionLlantas).HasColumnName("dimension_llantas");
+            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
+            entity.Property(e => e.IdModelo).HasColumnName("id_modelo");
             entity.Property(e => e.Largo).HasColumnName("largo");
             entity.Property(e => e.LlantasRepuesto).HasColumnName("llantas_repuesto");
             entity.Property(e => e.MetrosCubCarga).HasColumnName("metros_cub_carga");

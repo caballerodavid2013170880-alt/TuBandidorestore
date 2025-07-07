@@ -59,7 +59,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             var model = new VehiculoEspecificacionesViewModel();
 
             List<MarcaEspecifiViewModel> marcas = await ObtenerMarcas();
-            List<ModeloEspecifiViewModel> modelos = await ObtenerModelo(model.IdMarca);
+            List<ModeloEspecifiViewModel> modelos = await ObtenerModelo(model.IdMarca ?? 0);
 
             model.Marcas = marcas;
             model.Modelos = modelos;
@@ -68,25 +68,81 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         }
 
-        public async Task<VehiculoEspecificacionesViewModel> ObtenerEspecificaciones(VehiculoEspecificacionesViewModel model, int idModelo)
+        public async Task<VehiculoEspecificacionesViewModel> ObtenerEspecificaciones(VehiculoEspecificacionesViewModel model)
         {
             model.Marcas = await ObtenerMarcas();
-            model.Modelos = await ObtenerModelo(model.IdMarca);
 
-            var search = await (from e in context.VehiculoEspecificaciones
-                                join m in context.Marcas on e.IdMarca equals m.IdMarca
-                                join n in context.Modelos on e.IdModelo equals n.IdModelo
-                                where e.IdModelo == idModelo select new VehiculoEspecifiDescripcionViewModel
-                                { 
-                                    IdMarca = m.IdMarca,
-                                    IdModelo = n.IdModelo,
-                                    CapacidadCombu = e.CapacidadCombu,
-                                    TipoMotor = e.TipoMotor,
-                                }).ToListAsync();
+            if (model.IdMarca.HasValue && model.IdMarca > 0)
+                model.Modelos = await ObtenerModelo(model.IdMarca.Value);
+            else
+                model.Modelos = new List<ModeloEspecifiViewModel>();
 
-            model.Descripcion = search;
+            var query = from e in context.VehiculoEspecificaciones
+                        join m in context.Marcas on e.IdMarca equals m.IdMarca
+                        join n in context.Modelos on e.IdModelo equals n.IdModelo
+                        select new VehiculoEspecifiDescripcionViewModel
+                        {
+                            IdEspecificaciones = e.IdEspecificaciones, 
+                            IdMarca = m.IdMarca,
+                            IdModelo = n.IdModelo,
+                            CapacidadCombu = e.CapacidadCombu,
+                            TipoMotor = e.TipoMotor,
+                        };
+
+            if (model.IdMarca.HasValue && model.IdMarca > 0)
+                query = query.Where(x => x.IdMarca == model.IdMarca.Value);
+
+            if (model.IdModelo.HasValue && model.IdModelo > 0)
+                query = query.Where(x => x.IdModelo == model.IdModelo.Value);
+
+            model.Descripcion = await query.ToListAsync();
 
             return model;
         }
+
+
+        /// <summary>
+        /// Obtiene el ViewModel del VehiculoEspecificaciones específico.
+        /// </summary>
+        /// <param name="id">Identificador del VehiculoEspecificaciones.</param>
+        /// <returns>ViewModel para el VehiculoEspecificaciones especifico.</returns>
+        public async Task<VehiculoEspecificacionesViewModel> GetVehiculoEspecifiViewModel(int id)
+        {
+            var especifi = await context.VehiculoEspecificaciones.FirstOrDefaultAsync(x => x.IdEspecificaciones == id);
+
+            if (especifi == null)
+                return new VehiculoEspecificacionesViewModel();
+
+            return new VehiculoEspecificacionesViewModel
+            {
+                IdEspecificaciones = especifi.IdEspecificaciones,
+                Ancho = especifi.Ancho,
+                Largo = especifi.Largo,
+                Altura = especifi.Altura,
+                PesoBruto = especifi.PesoBruto,
+                ToneladasCarga = especifi.ToneladasCarga,
+                MetrosCubCarga = especifi.MetrosCubCarga,
+                Pallets = especifi.Pallets,
+                TipoMotor = especifi.TipoMotor,
+                PotenciaMotor = especifi.PotenciaMotor,
+                NoCilindros = especifi.NoCilindros,
+                CapacidadAceite = especifi.CapacidadAceite,
+                CapacidadCombu = especifi.CapacidadCombu,
+                RenEsp = especifi.RenEsp,
+                TipoCombustible = especifi.TipoCombustible,
+                Transmision = especifi.Transmision,
+                Traccion = especifi.Traccion,
+                TipoEje = especifi.TipoEje,
+                CargaPorEje = especifi.CargaPorEje,
+                CargaMax = especifi.CargaMax,
+                TotalLlantas = especifi.TotalLlantas,
+                LlantasRepuesto = especifi.LlantasRepuesto,
+                DimensionLlantas = especifi.DimensionLlantas,
+                PulCub = especifi.PulCub,
+                Origen = especifi.Origen,
+                Observaciones = especifi.Observaciones
+            };
+        }
+
     }
 }

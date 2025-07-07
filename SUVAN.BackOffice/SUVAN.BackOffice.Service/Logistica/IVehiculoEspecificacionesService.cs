@@ -18,6 +18,14 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         Task<VehiculoEspecificacionesViewModel> GetVehiculoEspecifi();
 
-        Task<VehiculoEspecificacionesViewModel> ObtenerEspecificaciones(VehiculoEspecificacionesViewModel model, int idModelo);
+        Task<VehiculoEspecificacionesViewModel> ObtenerEspecificaciones(VehiculoEspecificacionesViewModel model);
+
+
+        /// <summary>
+        /// Obtiene el ViewModel del VehiculoEspecificaciones específico.
+        /// </summary>
+        /// <param name="id">Identificador del VehiculoEspecificaciones.</param>
+        /// <returns>ViewModel para el VehiculoEspecificaciones especifico.</returns>
+        Task<VehiculoEspecificacionesViewModel> GetVehiculoEspecifiViewModel(int id);
     }
 }

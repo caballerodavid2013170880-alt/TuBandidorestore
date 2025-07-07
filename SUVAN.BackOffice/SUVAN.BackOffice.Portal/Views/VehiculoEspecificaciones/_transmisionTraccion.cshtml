@@ -1,0 +1,103 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Models.ViewModel.Logistica
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "Transmisión y Tracción";
+}
+@model VehiculoEspecificacionesViewModel
+
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.VehiculoEspecificaciones);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+<div class="card card-bordered mb-5">
+    <div class="card-header">
+        <h3 class="card-title">Transmisión y Tracción</h3>
+    </div>
+    <div class="card-body py-2">
+        <div class="row">
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="Transmision" class="col-form-label text-gray-600 required">Transmisión</label>
+                    <input asp-for="Transmision" class="form-control form-control-sm bg-transparent" placeholder="Transmisión" />
+                    <span asp-validation-for="Transmision" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="Traccion" class="col-form-label text-gray-600 required">Tracción</label>
+                    <input asp-for="Traccion" class="form-control form-control-sm bg-transparent" placeholder="Tracción" />
+                    <span asp-validation-for="Traccion" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="TipoEje" class="col-form-label text-gray-600 required">Tipo de Eje</label>
+                    <input asp-for="TipoEje" type="text" class="form-control form-control-sm bg-transparent" placeholder="Tipo de Eje" />
+                    <span asp-validation-for="TipoEje" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="CargaPorEje" class="col-form-label text-gray-600 required">Carga por Eje</label>
+                    <input asp-for="CargaPorEje" type="text" class="form-control form-control-sm bg-transparent" placeholder="Carga por Eje" />
+                    <span asp-validation-for="CargaPorEje" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="CargaMax" class="col-form-label text-gray-600 required">Carga Máxima</label>
+                    <input asp-for="CargaMax" type="text" class="form-control form-control-sm bg-transparent" placeholder="Carga Máxima" />
+                    <span asp-validation-for="CargaMax" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="TotalLlantas" class="col-form-label text-gray-600 required">Número Total de LLantas</label>
+                    <input asp-for="TotalLlantas" type="text" class="form-control form-control-sm bg-transparent" placeholder="Número Total de LLantas" />
+                    <span asp-validation-for="TotalLlantas" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="LlantasRepuesto" class="col-form-label text-gray-600 required">Llantas de Repuesto</label>
+                    <input asp-for="LlantasRepuesto" type="text" class="form-control form-control-sm bg-transparent" placeholder="Llantas de Repuesto" />
+                    <span asp-validation-for="LlantasRepuesto" class="invalid-feedback"></span>
+                </div>
+            </div>
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="DimensionLlantas" class="col-form-label text-gray-600 required">Tamaño de Llantas</label>
+                    <input asp-for="DimensionLlantas" type="text" class="form-control form-control-sm bg-transparent" placeholder="Tamaño de Llantas" />
+                    <span asp-validation-for="DimensionLlantas" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-3 mb-2">
+                <div class="fv-row mb-2">
+                    <label asp-for="PulCub" class="col-form-label text-gray-600 required">Pulido de Cubiertas</label>
+                    <input asp-for="PulCub" class="form-control form-control-sm bg-transparent" placeholder="Pulido de Cubiertas" />
+                    <span asp-validation-for="PulCub" class="invalid-feedback"></span>
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-between mt-5">
+            <button type="button" class="btn btn-primary btn-sm" onclick="irATabAnterior()">Anterior</button>
+            <button type="button" class="btn btn-primary btn-sm btn-next-tab" data-current="transmisiontraccion" data-next="datosadicionales">Siguiente </button>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/logistica/vehiculoespecifi/validaciones.js"></script>
+    <script src="~/js/logistica/vehiculoespecifi/add.js"></script>
+    <script src="~/js/logistica/vehiculoespecifi/navvehiculoespecifi.js"></script>
+}
