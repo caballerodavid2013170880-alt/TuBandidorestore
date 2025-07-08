@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Ingresos;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
@@ -68,6 +69,38 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         }
 
+        //public async Task<VehiculoEspecificacionesViewModel> ObtenerEspecificaciones(VehiculoEspecificacionesViewModel model)
+        //{
+        //    model.Marcas = await ObtenerMarcas();
+
+        //    if (model.IdMarca.HasValue && model.IdMarca > 0)
+        //        model.Modelos = await ObtenerModelo(model.IdMarca.Value);
+        //    else
+        //        model.Modelos = new List<ModeloEspecifiViewModel>();
+
+        //    var query = from e in context.VehiculoEspecificaciones
+        //                join m in context.Marcas on e.IdMarca equals m.IdMarca
+        //                join n in context.Modelos on e.IdModelo equals n.IdModelo
+        //                select new VehiculoEspecifiDescripcionViewModel
+        //                {
+        //                    IdEspecificaciones = e.IdEspecificaciones, 
+        //                    IdMarca = m.IdMarca,
+        //                    IdModelo = n.IdModelo,
+        //                    CapacidadCombu = e.CapacidadCombu,
+        //                    TipoMotor = e.TipoMotor,
+        //                };
+
+        //    if (model.IdMarca.HasValue && model.IdMarca > 0)
+        //        query = query.Where(x => x.IdMarca == model.IdMarca.Value);
+
+        //    if (model.IdModelo.HasValue && model.IdModelo > 0)
+        //        query = query.Where(x => x.IdModelo == model.IdModelo.Value);
+
+        //    model.Descripcion = await query.ToListAsync();
+
+        //    return model;
+        //}
+
         public async Task<VehiculoEspecificacionesViewModel> ObtenerEspecificaciones(VehiculoEspecificacionesViewModel model)
         {
             model.Marcas = await ObtenerMarcas();
@@ -77,16 +110,21 @@ namespace SUVAN.BackOffice.Service.Logistica
             else
                 model.Modelos = new List<ModeloEspecifiViewModel>();
 
-            var query = from e in context.VehiculoEspecificaciones
-                        join m in context.Marcas on e.IdMarca equals m.IdMarca
-                        join n in context.Modelos on e.IdModelo equals n.IdModelo
+            var query = from modelo in context.Modelos
+                        join marca in context.Marcas on modelo.IdMarca equals marca.IdMarca
+                        join espec in context.VehiculoEspecificaciones
+                            on modelo.IdModelo equals espec.IdModelo into especGroup
+                        from espec in especGroup.DefaultIfEmpty()
+                        where espec == null || espec.IdMarca == marca.IdMarca
                         select new VehiculoEspecifiDescripcionViewModel
                         {
-                            IdEspecificaciones = e.IdEspecificaciones, 
-                            IdMarca = m.IdMarca,
-                            IdModelo = n.IdModelo,
-                            CapacidadCombu = e.CapacidadCombu,
-                            TipoMotor = e.TipoMotor,
+                            IdEspecificaciones = espec.IdEspecificaciones,
+                            IdMarca = marca.IdMarca,
+                            DescripcionMarca = marca.Descripcion,
+                            IdModelo = modelo.IdModelo,
+                            DescripcionModelo = modelo.Descripcion,
+                            CapacidadCombu = espec.CapacidadCombu,
+                            TipoMotor = espec.TipoMotor,
                         };
 
             if (model.IdMarca.HasValue && model.IdMarca > 0)
@@ -99,7 +137,6 @@ namespace SUVAN.BackOffice.Service.Logistica
 
             return model;
         }
-
 
         /// <summary>
         /// Obtiene el ViewModel del VehiculoEspecificaciones específico.
@@ -116,6 +153,8 @@ namespace SUVAN.BackOffice.Service.Logistica
             return new VehiculoEspecificacionesViewModel
             {
                 IdEspecificaciones = especifi.IdEspecificaciones,
+                IdMarca = especifi.IdMarca,
+                IdModelo = especifi.IdModelo,
                 Ancho = especifi.Ancho,
                 Largo = especifi.Largo,
                 Altura = especifi.Altura,
@@ -142,6 +181,73 @@ namespace SUVAN.BackOffice.Service.Logistica
                 Origen = especifi.Origen,
                 Observaciones = especifi.Observaciones
             };
+        }
+
+        /// <summary>
+        /// Agrega o actualiza un registro Vehiculo Especificaciones en la base de datos.
+        /// </summary>
+        /// <param name="model">ViewModel con los datos de Vehiculo Especificaciones.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<bool> AgregarVehiculoEspecificaciones(VehiculoEspecificacionesViewModel model)
+        {
+            VehiculoEspecificacione vehiculo;
+
+            if (model.IdEspecificaciones > 0)
+            {
+                vehiculo = await context.VehiculoEspecificaciones.FirstOrDefaultAsync(x => x.IdEspecificaciones == model.IdEspecificaciones);
+
+                if (vehiculo == null)
+                    throw new Exception("No se encontraron registros");
+
+            }
+            else
+            {
+                vehiculo = new VehiculoEspecificacione();
+            }
+
+            vehiculo.IdEspecificaciones = model.IdEspecificaciones;
+            vehiculo.IdMarca = model.IdMarca;
+            vehiculo.IdModelo = model.IdModelo;
+            vehiculo.Ancho = model.Ancho;
+            vehiculo.Largo = model.Largo;
+            vehiculo.Altura = model.Altura;
+            vehiculo.PesoBruto = model.PesoBruto;
+            vehiculo.ToneladasCarga = model.ToneladasCarga;
+            vehiculo.MetrosCubCarga = model.MetrosCubCarga;
+            vehiculo.Pallets = model.Pallets;
+            vehiculo.TipoMotor = model.TipoMotor;
+            vehiculo.PotenciaMotor = model.PotenciaMotor;
+            vehiculo.NoCilindros = model.NoCilindros;
+            vehiculo.CapacidadAceite = model.CapacidadAceite;
+            vehiculo.CapacidadCombu = model.CapacidadCombu;
+            vehiculo.RenEsp = model.RenEsp;
+            vehiculo.TipoCombustible = model.TipoCombustible;
+            vehiculo.Transmision = model.Transmision;
+            vehiculo.Traccion = model.Traccion;
+            vehiculo.TipoEje = model.TipoEje;
+            vehiculo.CargaPorEje = model.CargaPorEje;
+            vehiculo.CargaMax = model.CargaMax;
+            vehiculo.TotalLlantas = model.TotalLlantas;
+            vehiculo.LlantasRepuesto = model.LlantasRepuesto;
+            vehiculo.DimensionLlantas = model.DimensionLlantas;
+            vehiculo.PulCub = model.PulCub;
+            vehiculo.Origen = model.Origen;
+            vehiculo.Observaciones = model.Observaciones;
+
+            if (model.IdEspecificaciones > 0)
+            {
+                context.VehiculoEspecificaciones.Entry(vehiculo);
+
+                await context.SaveChangesAsync();
+            }
+            else
+            {
+                context.VehiculoEspecificaciones.Add(vehiculo);
+                await context.SaveChangesAsync();
+
+            }
+            return true;
         }
 
     }

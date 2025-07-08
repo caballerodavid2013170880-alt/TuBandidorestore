@@ -47,9 +47,11 @@
         </ul>
     </div>
 
-    <form class="form w-100" id="kt_especificaciones_in_form" data-kt-redirect-url="/" asp-controller="VehiculoEspecificaciones" asp-action="NavegacionVehiculoDetalle" method="post">
+    <form class="form w-100" id="kt_especificaciones_in_form" data-kt-redirect-url="/" asp-controller="VehiculoEspecificaciones" asp-action="NavegacionVehiculoEspecificaciones" method="post">
         @Html.AntiForgeryToken()
         <input asp-for="IdEspecificaciones" type="hidden" />
+        <input asp-for="IdMarca" type="hidden" />
+        <input asp-for="IdModelo" type="hidden" />
         <div class="fv-row mb-8">
             <div class="col-sm-12">
                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">

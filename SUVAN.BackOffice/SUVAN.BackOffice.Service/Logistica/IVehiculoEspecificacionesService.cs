@@ -27,5 +27,13 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="id">Identificador del VehiculoEspecificaciones.</param>
         /// <returns>ViewModel para el VehiculoEspecificaciones especifico.</returns>
         Task<VehiculoEspecificacionesViewModel> GetVehiculoEspecifiViewModel(int id);
+
+        /// <summary>
+        /// Agrega o actualiza un registro Vehiculo Especificaciones en la base de datos.
+        /// </summary>
+        /// <param name="model">ViewModel con los datos de Vehiculo Especificaciones.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <exception cref="Exception"></exception>
+        Task<bool> AgregarVehiculoEspecificaciones(VehiculoEspecificacionesViewModel model);
     }
 }

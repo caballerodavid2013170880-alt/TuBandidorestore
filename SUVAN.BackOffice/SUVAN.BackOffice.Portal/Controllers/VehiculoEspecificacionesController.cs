@@ -8,6 +8,7 @@ using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Configuracion;
 using SUVAN.BackOffice.Service.Ingresos;
 using SUVAN.BackOffice.Service.Logistica;
+using System.Security.Claims;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -79,6 +80,28 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 var result = await especificacionesService.ObtenerEspecificaciones(model);
                 return View(result);
 
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> NavegacionVehiculoEspecificaciones(VehiculoEspecificacionesViewModel model)
+        {
+            try
+            {
+
+                var result = await especificacionesService.AgregarVehiculoEspecificaciones(model);
+
+                if (result)
+                {
+                    return RedirectToAction("Index", "VehiculoEspecificaciones");
+                }
+
+                return View(model);
             }
             catch (Exception ex)
             {

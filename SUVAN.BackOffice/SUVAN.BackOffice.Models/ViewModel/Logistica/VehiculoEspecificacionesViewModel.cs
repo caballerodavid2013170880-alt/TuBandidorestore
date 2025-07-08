@@ -101,13 +101,17 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         {
             public int? IdMarca { get; set; }
 
+            public string DescripcionMarca { get; set; } = null!;
+
             public int? IdModelo { get; set; }
+
+            public string DescripcionModelo { get; set; } = null!;
 
             public double? CapacidadCombu { get; set; }
 
             public string? TipoMotor { get; set; }
 
-            public short IdEspecificaciones { get; set; }
+            public short? IdEspecificaciones { get; set; }
         }
     }
 }
