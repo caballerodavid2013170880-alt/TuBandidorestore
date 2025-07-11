@@ -34,24 +34,6 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         Task<bool> EliminarVehiculoDetalle(int IdVehiculoDetalle);
 
-        Task<List<TipoVehiculoViewModel>> ObtenerTipoVehiculo();
-
-        Task<List<MarcaViewModel>> ObtenerMarcas();
-
-        Task<List<TipoEjeViewModel>> ObtenerTipoEje();
-
-        Task<List<BajaVehiViewModel>> ObtenerBajaVehi();
-
-        Task<List<CausaBajaViewModel>> ObtenerCausaBaja();
-
-        Task<List<ModeloViewModel>> ObtenerModelo(int marcaId);
-
-        Task<List<ZonaViewModel>> ObtenerZona(int IdEmpresa);
-
-        Task<List<ZonaViewModel.DepositosViewModel>> ObtenerDepositos(int IdZona);
-
-        Task<List<VehiViewModel>> ObtenerVehiculo(int IdEmpresa);
-
         Task CompletarCamposError(VehiculoDetalleViewModel model);
 
         Task<List<VehiculoDetalleViewModel>> ObtenerDetalleModal(int idVehiculoDetalle);

@@ -24,9 +24,9 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdZona" class="col-form-label text-gray-600 required">Zona</label>
                     <div class="input-group input-group-sm">
-                        <input value="@Model.NombreZona" id="IdZonaVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Zona" readonly disabled />
-                        <span class="input-group-text" id="iconoZona" style="cursor:pointer;">
-                            <i class="fas fa-search"></i>
+                        <input type="text" value="@Model.NombreZona" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Zona" data-catalog-for="IdZona" readonly disabled />
+                        <span class="input-group-text" style="cursor:pointer;">
+                            <i class="fas fa-search show-modal-catalog" data-suvan-catalog="zona" data-suvan-catalog-description="descripcion"></i>
                         </span>
                     </div>
                     <input asp-for="IdZona" type="hidden" id="IdZona" name="IdZona" />
@@ -37,9 +37,9 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Depósito</label>
                     <div class="input-group input-group-sm">
-                        <input value="@Model.NombreDeposito" id="IdDepositoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Depósito" readonly disabled />
-                        <span class="input-group-text" id="iconoDeposito" style="cursor:pointer;">
-                            <i class="fas fa-search"></i>
+                        <input value="@Model.NombreDeposito" type="text" class="form-control form-control-sm bg-transparent bg-light text-muted catalog-des" placeholder="Depósito" data-catalog-for="IdDeposito" readonly disabled />
+                        <span class="input-group-text" style="cursor:pointer;">
+                            <i class="fas fa-search show-modal-catalog" data-suvan-catalog="deposito" data-suvan-catalog-description="descripcion" data-suvan-catalog-filtro="IdZona"></i>
                         </span>
                     </div>
                     <input asp-for="IdDeposito" type="hidden" id="IdDeposito" name="IdDeposito" />

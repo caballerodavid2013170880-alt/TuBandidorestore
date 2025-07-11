@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SUVAN.BackOffice.Models.ViewModel.Logistica
@@ -115,6 +116,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public List<VehiViewModel> Vehiculos { get; set; } = new();
 
         public class VehiViewModel {
+
             public int IdVehiculo { get; set; }
 
             public string? Placas { get; set; }

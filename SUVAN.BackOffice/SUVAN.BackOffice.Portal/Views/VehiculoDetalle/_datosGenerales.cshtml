@@ -25,8 +25,8 @@
                     <label asp-for="IdVehiculo" class="col-form-label text-gray-600 required">Vehículo</label>
                     <div class="input-group input-group-sm">
                         <input value="@(Model.IdVehiculo > 0 ? Model.PlacasIdVehiculo : "")" id="IdVehiculoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Vehículo" readonly disabled />
-                        <span class="input-group-text" id="iconoVehiculo" style="cursor:pointer;">
-                            <i class="fas fa-search"></i>
+                        <span class="input-group-text" style="cursor:pointer;">
+                            <i class="fas fa-search show-modal-catalog" data-suvan-catalog="vehiculo"></i>
                         </span>
                     </div>
                     <input asp-for="IdVehiculo" type="hidden" id="IdVehiculo" name="IdVehiculo" />
@@ -36,37 +36,33 @@
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="Carroceria" class="col-form-label text-gray-600 required">VIN</label>
-                    <input value="@Model.Carroceria" id="CarroceriaVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="VIN" style="text-transform: uppercase" readonly disabled />
-                    <input asp-for="Carroceria" type="hidden" id="Carroceria" name="Carroceria" />
-                    <span asp-validation-for="Carroceria" class="invalid-feedback"></span>
+                    <input asp-for="Carroceria" type="text" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="VIN" readonly/>
+                    <span asp-validation-for="Carroceria" class="invalid-feedback d-block"></span>
                 </div>
             </div>
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="NumeroMotor" class="col-form-label text-gray-600 required">Número de Motor</label>
-                    <input value="@Model.NumeroMotor" id="NumeroMotorVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Número de Motor" readonly disabled />
-                    <input asp-for="NumeroMotor" type="hidden" id="NumeroMotor" name="NumeroMotor" />
-                    <span asp-validation-for="NumeroMotor" class="invalid-feedback"></span>
+                    <input asp-for="NumeroMotor" id="NumeroMotor" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Número de Motor" readonly/>
+                    <span asp-validation-for="NumeroMotor" class="invalid-feedback d-block"></span>
                 </div>
             </div>
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="EconomicoAnterior" class="col-form-label text-gray-600 required">Número Económico Anterior</label>
-                    <input value="@Model.EconomicoAnterior"  id="NumeroEconomicoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Número Económico Anterior" readonly disabled />
-                    <input asp-for="EconomicoAnterior" type="hidden" id="EconomicoAnterior" name="EconomicoAnterior" />
-                    <span asp-validation-for="EconomicoAnterior" class="invalid-feedback"></span>
+                    <input asp-for="EconomicoAnterior" id="EconomicoAnterior" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Número Económico Anterior" readonly/>
+                    <span asp-validation-for="EconomicoAnterior" class="invalid-feedback d-block"></span>
                 </div>
             </div>
         </div>
-
         <div class="row">
             <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Marca</label>
                     <div class="input-group input-group-sm">
-                        <input value="@Model.DescripcionMarca" id="IdMarcaVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Marca" readonly disabled />
-                        <span class="input-group-text" id="iconoMarca" style="cursor:pointer;">
-                            <i class="fas fa-search"></i>
+                        <input type="text" value="@Model.DescripcionMarca" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Marca" data-catalog-for="IdMarca" readonly disabled />
+                        <span class="input-group-text" style="cursor:pointer;">
+                            <i class="fas fa-search show-modal-catalog" data-suvan-catalog="marca" data-suvan-catalog-description="descripcion"></i>
                         </span>
                     </div>
                     <input asp-for="IdMarca" type="hidden" id="IdMarca" name="IdMarca" />
@@ -77,9 +73,9 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdModelo" class="col-form-label text-gray-600 required">Modelo</label>
                     <div class="input-group input-group-sm">
-                        <input value="@Model.DescripcionModelo" id="IdModeloVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Modelo" readonly disabled />
-                        <span class="input-group-text" id="iconoModelo" style="cursor:pointer;">
-                            <i class="fas fa-search"></i>
+                        <input type="text" value="@Model.DescripcionModelo" class="form-control form-control-sm bg-transparent bg-light text-muted catalog-des" placeholder="Modelo" data-catalog-for="IdModelo" readonly disabled />
+                        <span class="input-group-text" style="cursor:pointer;">
+                            <i class="fas fa-search show-modal-catalog" data-suvan-catalog="modelo" data-suvan-catalog-description="descripcion" data-suvan-catalog-filtro="IdMarca"></i>
                         </span>
                     </div>
                     <input asp-for="IdModelo" type="hidden" id="IdModelo" name="IdModelo" />
@@ -90,9 +86,9 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdTipoVehiculo" class="col-form-label text-gray-600 required">Tipo de Vehículo</label>
                     <div class="input-group input-group-sm">
-                        <input value="@Model.NombreTipoV" id="IdTipoVehiculoVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Tipo de Vehículo" readonly disabled />
-                        <span class="input-group-text" id="iconoTipoVehiculo" style="cursor:pointer;">
-                            <i class="fas fa-search"></i>
+                        <input type="text" value="@Model.NombreTipoV" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Tipo de Vehículo" data-catalog-for="IdTipoVehiculo" readonly disabled />
+                        <span class="input-group-text" style="cursor:pointer;">
+                            <i class="fas fa-search show-modal-catalog" data-suvan-catalog="tipovehiculo" data-suvan-catalog-description="descripcion"></i>
                         </span>
                     </div>
                     <input asp-for="IdTipoVehiculo" type="hidden" id="IdTipoVehiculo" name="IdTipoVehiculo" />
@@ -103,9 +99,9 @@
                 <div class="fv-row mb-2">
                     <label asp-for="IdTipoEje" class="col-form-label text-gray-600 required">Tipo Eje</label>
                     <div class="input-group input-group-sm">
-                        <input value="@Model.DescripcionEje" id="IdTipoEjeVisible" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Tipo Eje" readonly disabled />
-                        <span class="input-group-text" id="iconoEje" style="cursor:pointer;">
-                            <i class="fas fa-search"></i>
+                        <input type="text" value="@Model.DescripcionEje" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Tipo Eje" data-catalog-for="IdTipoEje" readonly disabled />
+                        <span class="input-group-text" style="cursor:pointer;">
+                            <i class="fas fa-search show-modal-catalog" data-suvan-catalog="tipoeje" data-suvan-catalog-description="descripcion"></i>
                         </span>
                     </div>
                     <input asp-for="IdTipoEje" type="hidden" id="IdTipoEje" name="IdTipoEje" />
@@ -204,6 +200,5 @@
 
 @section scripts {
     <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
-    <script src="~/js/logistica/vehiculodetalle/add.js"></script>
     <script src="~/js/logistica/vehiculodetalle/validaciones.js"></script>
 }

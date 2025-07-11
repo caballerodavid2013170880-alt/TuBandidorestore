@@ -37,8 +37,6 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> NavegacionVehiculoDetalle(int id)
         {
             var agregarModel = await vehiculoService.GetVehiculoDetalleViewModel(id);
-            agregarModel.MarcasJson = JsonConvert.SerializeObject(agregarModel.Marcas);
-            agregarModel.ZonaJson = JsonConvert.SerializeObject(agregarModel.Zonas);
             return View(agregarModel);
         }
 
@@ -121,69 +119,6 @@ namespace SUVAN.BackOffice.Portal.Controllers
             {
                 return Ok(new { success = false, message = ex.Message });
             }
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerTipoVehiculo()
-        {
-            var tipo = await vehiculoService.ObtenerTipoVehiculo();
-            return Json(tipo);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerMarca()
-        {
-            var tipo = await vehiculoService.ObtenerMarcas();
-            return Json(tipo);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerTipoEje()
-        {
-            var eje = await vehiculoService.ObtenerTipoEje();
-            return Json(eje);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerBajaVehi()
-        {
-            var baja = await vehiculoService.ObtenerBajaVehi();
-            return Json(baja);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerCausaBaja()
-        {
-            var causa = await vehiculoService.ObtenerCausaBaja();
-            return Json(causa);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerModelo(int idMarca)
-        {
-            var modelo =  await vehiculoService.ObtenerModelo(idMarca);
-            return Json(modelo);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerZona()
-        {
-            var zona = await vehiculoService.ObtenerZona(User.GetEmpresaId());
-            return Json(zona);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerDeposito(int idZona)
-        {
-            var deposito = await vehiculoService.ObtenerDepositos(idZona);
-            return Json(deposito);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> ObtenerVehiculo()
-        {
-            var vehiculo = await vehiculoService.ObtenerVehiculo(User.GetEmpresaId());
-            return Json(vehiculo);
         }
 
         [HttpGet]
