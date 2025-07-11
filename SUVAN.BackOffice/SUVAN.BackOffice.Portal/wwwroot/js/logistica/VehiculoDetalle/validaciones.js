@@ -61,7 +61,7 @@
         ],
 
         garantiaestado: [
-            'IdBaja', 'IdCausaBaja', 'KilometrajeGarantia', 'MesesGarantia', 'FechaBaja'
+            'KilometrajeGarantia', 'MesesGarantia', 'FechaBaja'
         ],
 
         especificaciones: [
@@ -384,26 +384,6 @@
                                 callback: function (input) {
                                     const value = parseInt(input.value, 10);
                                     return value > 0;
-                                }
-                            }
-                        }
-                    },
-                    'IdBaja': {
-                        validators: {
-                            callback: {
-                                message: 'Baja requerida',
-                                callback: function (input) {
-                                    return input.value && input.value.trim() !== '' && input.value !== '0';
-                                }
-                            }
-                        }
-                    },
-                    'IdCausaBaja': {
-                        validators: {
-                            callback: {
-                                message: 'Causa Baja requerida',
-                                callback: function (input) {
-                                    return input.value && input.value.trim() !== '' && input.value !== '0';
                                 }
                             }
                         }

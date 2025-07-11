@@ -21,21 +21,15 @@ public partial class VehiculoDetalle
 
     public int IdModelo { get; set; }
 
-    public string? IdCognos { get; set; }
-
     public int IdTipoEje { get; set; }
 
     public int? IdNegocio { get; set; }
-
-    public int? Area { get; set; }
 
     public int AnioVehiculo { get; set; }
 
     public string ColorVehiculo { get; set; } = null!;
 
     public ulong? TieneRotulo { get; set; }
-
-    public string? PlacaPe { get; set; }
 
     public string NumeroSerie { get; set; } = null!;
 
@@ -47,8 +41,6 @@ public partial class VehiculoDetalle
 
     public int Gasolina { get; set; }
 
-    public int? Encierro { get; set; }
-
     public ulong? CopiaFactura { get; set; }
 
     public ulong? CopiaTarjetaCir { get; set; }
@@ -58,10 +50,6 @@ public partial class VehiculoDetalle
     public ulong? CopiaVerificacion { get; set; }
 
     public ulong? CopiaPolizaSeguro { get; set; }
-
-    public string? NoCircula { get; set; }
-
-    public string? DnoCircula { get; set; }
 
     public string Proveedor { get; set; } = null!;
 
@@ -77,17 +65,9 @@ public partial class VehiculoDetalle
 
     public float KilometrajeAcumulado { get; set; }
 
-    public string? StVehiculo { get; set; }
-
     public DateTime? FechaBaja { get; set; }
 
     public string ColorInterior { get; set; } = null!;
-
-    public float? RegFed { get; set; }
-
-    public int? EdregPl { get; set; }
-
-    public int? ColEst { get; set; }
 
     public ulong? TieneCaja { get; set; }
 
@@ -97,21 +77,11 @@ public partial class VehiculoDetalle
 
     public ulong? Rentado { get; set; }
 
-    public int? ColRuta { get; set; }
-
-    public int IdCausaBaja { get; set; }
-
-    public float? ValorRecuperacion { get; set; }
-
     public float KilometrajeGarantia { get; set; }
 
     public int MesesGarantia { get; set; }
 
     public string? EconomicoAnterior { get; set; }
-
-    public ulong? LocFor { get; set; }
-
-    public int IdBaja { get; set; }
 
     public int PesoMinimo { get; set; }
 
@@ -129,15 +99,7 @@ public partial class VehiculoDetalle
 
     public DateTime? VigenciaTarjetaCirculacion { get; set; }
 
-    public ulong? Asignado { get; set; }
-
-    public float? TotalVehiculo { get; set; }
-
     public string UsuarioCaptura { get; set; } = null!;
-
-    public virtual BajaVehi IdBajaNavigation { get; set; } = null!;
-
-    public virtual CausaBaja IdCausaBajaNavigation { get; set; } = null!;
 
     public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
 

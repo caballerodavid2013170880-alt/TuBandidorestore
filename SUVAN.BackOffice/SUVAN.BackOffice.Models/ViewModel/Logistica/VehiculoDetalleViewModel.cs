@@ -28,17 +28,14 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public int? IdEspecificacion { get; set; }
         public int IdModelo { get; set; }
         public string? DescripcionModelo { get; set; }
-        public string? IdCognos { get; set; }
         public int IdTipoEje { get; set; }
         public string? DescripcionEje { get; set; }
         public int? IdNegocio { get; set; }
 
         // Información general del vehículo
-        public int? Area { get; set; }
         public int AnioVehiculo { get; set; }
         public string ColorVehiculo { get; set; } = null!;
         public ulong? TieneRotulo { get; set; }
-        public string? PlacaPe { get; set; }
         public string NumeroSerie { get; set; } = null!;
         public string NumeroMotor { get; set; } = null!;
         public string Carroceria { get; set; } = null!;
@@ -46,14 +43,11 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         // Documentación y permisos
         public int Gasolina { get; set; }
-        public int? Encierro { get; set; }
         public ulong? CopiaFactura { get; set; }
         public ulong? CopiaTarjetaCir { get; set; }
         public ulong? CopiaPlaca { get; set; }
         public ulong? CopiaVerificacion { get; set; }
         public ulong? CopiaPolizaSeguro { get; set; }
-        public string? NoCircula { get; set; }
-        public string? DnoCircula { get; set; }
         public string Proveedor { get; set; } = null!;
         public DateTime? FechaCompra { get; set; }
         public string NumeroFactura { get; set; } = null!;
@@ -63,28 +57,17 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public float KilometrajeAcumulado { get; set; }
 
         // Estado del vehículo
-        public string? StVehiculo { get; set; }
         public DateTime? FechaBaja { get; set; }
         public string ColorInterior { get; set; } = null!;
-        public float? RegFed { get; set; }
-        public int? EdregPl { get; set; }
-        public int? ColEst { get; set; }
         public ulong? TieneCaja { get; set; }
         public ulong? NecesitaRemolque { get; set; }
         public ulong? VehiculoRelevo { get; set; }
         public ulong? Rentado { get; set; }
 
         // Registro y recuperación
-        public int? ColRuta { get; set; }
-        public int IdCausaBaja { get; set; }
-        public string? DescripcionCausaBaja { get; set; }
-        public float? ValorRecuperacion { get; set; }
         public float KilometrajeGarantia { get; set; }
         public int MesesGarantia { get; set; }
         public string? EconomicoAnterior { get; set; }
-        public ulong? LocFor { get; set; }
-        public int IdBaja { get; set; }
-        public string? DescripcionBaja { get; set; }
 
         // Especificaciones de carga
         public int PesoMinimo { get; set; }
@@ -97,8 +80,6 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public ulong? PermisoCargaAceite { get; set; }
         public DateTime VigenciaPermisoAceite { get; set; }
         public DateTime? VigenciaTarjetaCirculacion { get; set; }
-        public ulong? Asignado { get; set; }
-        public float? TotalVehiculo { get; set; }
         public string? UsuarioCaptura { get; set; }
 
         public List<MarcaViewModel> Marcas { get; set; } = new();

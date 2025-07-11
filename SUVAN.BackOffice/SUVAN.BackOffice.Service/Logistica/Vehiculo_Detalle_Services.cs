@@ -38,8 +38,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         public async Task<VehiculoDetalleViewModel> GetVehiculoDetalleViewModel(int id)
         {
             var vehiculo = await context.VehiculoDetalles.Include(v => v.IdMarcaNavigation).Include(v => v.IdModeloNavigation).
-                Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdBajaNavigation).Include(v => v.IdTipoEjeNavigation).
-                Include(v => v.IdCausaBajaNavigation).Include(v => v.IdDepositoNavigation).Include(v => v.IdZonaNavigation).
+                Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdTipoEjeNavigation).Include(v => v.IdDepositoNavigation).Include(v => v.IdZonaNavigation).
                 Include(v => v.IdVehiculoNavigation).FirstOrDefaultAsync(x => x.IdVehiculoDetalle == id);
 
             if (vehiculo == null)
@@ -53,10 +52,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                 NombreTipoV = vehiculo.IdTipoVehiculoNavigation.Nombre,
                 IdModelo = vehiculo.IdModelo,
                 DescripcionModelo = vehiculo.IdModeloNavigation.Descripcion,
-                IdBaja = vehiculo.IdBaja,
-                DescripcionBaja = vehiculo.IdBajaNavigation.Descripcion,
-                IdCausaBaja = vehiculo.IdCausaBaja,
-                DescripcionCausaBaja = vehiculo.IdCausaBajaNavigation.Descripcion,
                 IdTipoEje = vehiculo.IdTipoEje,
                 DescripcionEje = vehiculo.IdTipoEjeNavigation.Descripcion,
                 IdZona = vehiculo.IdZona,
@@ -67,26 +62,20 @@ namespace SUVAN.BackOffice.Service.Logistica
                 PlacasVehiculo = vehiculo.IdVehiculoNavigation.Placas,
                 IdVehiculoDetalle = vehiculo.IdVehiculoDetalle,
                 IdEspecificacion = vehiculo.IdEspecificacion,
-                IdCognos = vehiculo.IdCognos,
                 IdNegocio = vehiculo.IdNegocio,
-                Area = vehiculo.Area,
                 AnioVehiculo = vehiculo.AnioVehiculo,
                 ColorVehiculo = vehiculo.ColorVehiculo,
                 TieneRotulo = vehiculo.TieneRotulo,
-                PlacaPe = vehiculo.PlacaPe,
                 NumeroSerie = vehiculo.NumeroSerie,
                 NumeroMotor = vehiculo.NumeroMotor,
                 Carroceria = vehiculo.Carroceria,
                 TarjetaCirculacion = vehiculo.TarjetaCirculacion,
                 Gasolina = vehiculo.Gasolina,
-                Encierro = vehiculo.Encierro,
                 CopiaFactura = vehiculo.CopiaFactura,
                 CopiaTarjetaCir = vehiculo.CopiaTarjetaCir,
                 CopiaPlaca = vehiculo.CopiaPlaca,
                 CopiaVerificacion = vehiculo.CopiaVerificacion,
                 CopiaPolizaSeguro = vehiculo.CopiaPolizaSeguro,
-                NoCircula = vehiculo.NoCircula,
-                DnoCircula = vehiculo.DnoCircula,
                 Proveedor = vehiculo.Proveedor,
                 FechaCompra = vehiculo.FechaCompra,
                 NumeroFactura = vehiculo.NumeroFactura,
@@ -94,22 +83,15 @@ namespace SUVAN.BackOffice.Service.Logistica
                 TarifaVehicular = vehiculo.TarifaVehicular,
                 NombreTarifaVehicular = vehiculo.NombreTarifaVehicular,
                 KilometrajeAcumulado = vehiculo.KilometrajeAcumulado,
-                StVehiculo = vehiculo.StVehiculo,
                 FechaBaja = vehiculo.FechaBaja,
                 ColorInterior = vehiculo.ColorInterior,
-                RegFed = vehiculo.RegFed,
-                EdregPl = vehiculo.EdregPl,
-                ColEst = vehiculo.ColEst,
                 TieneCaja = vehiculo.TieneCaja,
                 NecesitaRemolque = vehiculo.NecesitaRemolque,
                 VehiculoRelevo = vehiculo.VehiculoRelevo,
                 Rentado = vehiculo.Rentado,
-                ColRuta = vehiculo.ColRuta,
-                ValorRecuperacion = vehiculo.ValorRecuperacion,
                 KilometrajeGarantia = vehiculo.KilometrajeGarantia,
                 MesesGarantia = vehiculo.MesesGarantia,
                 EconomicoAnterior = vehiculo.EconomicoAnterior,
-                LocFor = vehiculo.LocFor,
                 PesoMinimo = vehiculo.PesoMinimo,
                 PesoMaximo = vehiculo.PesoMaximo,
                 VolumenMinimo = vehiculo.VolumenMinimo,
@@ -118,8 +100,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                 PermisoCargaAceite = vehiculo.PermisoCargaAceite,
                 VigenciaPermisoAceite = vehiculo.VigenciaPermisoAceite,
                 VigenciaTarjetaCirculacion = vehiculo.VigenciaTarjetaCirculacion,
-                Asignado = vehiculo.Asignado,
-                TotalVehiculo = vehiculo.TotalVehiculo,
                 UsuarioCaptura = vehiculo.UsuarioCaptura
             };
         }
@@ -163,27 +143,21 @@ namespace SUVAN.BackOffice.Service.Logistica
             vehiculo.IdDeposito = model.IdDeposito;
             vehiculo.IdEspecificacion = model.IdEspecificacion;
             vehiculo.IdModelo = model.IdModelo;
-            vehiculo.IdCognos = model.IdCognos;
             vehiculo.IdTipoEje = model.IdTipoEje;
             vehiculo.IdNegocio = model.IdNegocio;
-            vehiculo.Area = model.Area;
             vehiculo.AnioVehiculo = model.AnioVehiculo;
             vehiculo.ColorVehiculo = model.ColorVehiculo;
             vehiculo.TieneRotulo = model.TieneRotulo;
-            vehiculo.PlacaPe = model.PlacaPe;
             vehiculo.NumeroSerie = model.NumeroSerie;
             vehiculo.NumeroMotor = model.NumeroMotor;
             vehiculo.Carroceria = model.Carroceria;
             vehiculo.TarjetaCirculacion = model.TarjetaCirculacion;
             vehiculo.Gasolina = model.Gasolina;
-            vehiculo.Encierro = model.Encierro;
             vehiculo.CopiaFactura = model.CopiaFactura;
             vehiculo.CopiaTarjetaCir = model.CopiaTarjetaCir;
             vehiculo.CopiaPlaca = model.CopiaPlaca;
             vehiculo.CopiaVerificacion = model.CopiaVerificacion;
             vehiculo.CopiaPolizaSeguro = model.CopiaPolizaSeguro;
-            vehiculo.NoCircula = model.NoCircula;
-            vehiculo.DnoCircula = model.DnoCircula;
             vehiculo.Proveedor = model.Proveedor;
             vehiculo.FechaCompra = model.FechaCompra;
             vehiculo.NumeroFactura = model.NumeroFactura;
@@ -191,24 +165,15 @@ namespace SUVAN.BackOffice.Service.Logistica
             vehiculo.TarifaVehicular = model.TarifaVehicular;
             vehiculo.NombreTarifaVehicular = model.NombreTarifaVehicular;
             vehiculo.KilometrajeAcumulado = model.KilometrajeAcumulado;
-            vehiculo.StVehiculo = model.StVehiculo;
             vehiculo.FechaBaja = model.FechaBaja;
             vehiculo.ColorInterior = model.ColorInterior;
-            vehiculo.RegFed = model.RegFed;
-            vehiculo.EdregPl = model.EdregPl;
-            vehiculo.ColEst = model.ColEst;
             vehiculo.TieneCaja = model.TieneCaja;
             vehiculo.NecesitaRemolque = model.NecesitaRemolque;
             vehiculo.VehiculoRelevo = model.VehiculoRelevo;
             vehiculo.Rentado = model.Rentado;
-            vehiculo.ColRuta = model.ColRuta;
-            vehiculo.IdCausaBaja = model.IdCausaBaja;
-            vehiculo.ValorRecuperacion = model.ValorRecuperacion;
             vehiculo.KilometrajeGarantia = model.KilometrajeGarantia;
             vehiculo.MesesGarantia = model.MesesGarantia;
             vehiculo.EconomicoAnterior = model.EconomicoAnterior;
-            vehiculo.LocFor = model.LocFor;
-            vehiculo.IdBaja = model.IdBaja;
             vehiculo.PesoMinimo = model.PesoMinimo;
             vehiculo.PesoMaximo = model.PesoMaximo;
             vehiculo.VolumenMinimo = model.VolumenMinimo;
@@ -217,8 +182,6 @@ namespace SUVAN.BackOffice.Service.Logistica
             vehiculo.PermisoCargaAceite = model.PermisoCargaAceite;
             vehiculo.VigenciaPermisoAceite = model.VigenciaPermisoAceite;
             vehiculo.VigenciaTarjetaCirculacion = model.VigenciaTarjetaCirculacion;
-            vehiculo.Asignado = model.Asignado;
-            vehiculo.TotalVehiculo = model.TotalVehiculo;
             vehiculo.UsuarioCaptura = Usuario;
 
             if (model.IdVehiculoDetalle > 0)
@@ -277,8 +240,6 @@ namespace SUVAN.BackOffice.Service.Logistica
             model.NombreTipoV = datos.NombreTipoV;
             model.DescripcionMarca = datos.DescripcionMarca;
             model.DescripcionModelo = datos.DescripcionModelo;
-            model.DescripcionBaja = datos.DescripcionBaja;
-            model.DescripcionCausaBaja = datos.DescripcionCausaBaja;
             model.DescripcionEje = datos.DescripcionEje;
             model.NombreZona = datos.NombreZona;
             model.NombreDeposito = datos.NombreDeposito;
@@ -289,7 +250,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         {
             var resultado = await context.VehiculoDetalles.Where(v => v.IdVehiculoDetalle == idVehiculoDetalle).Include(v => v.IdVehiculoNavigation).Include(v => v.IdMarcaNavigation)
                 .Include(v => v.IdModeloNavigation).Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdZonaNavigation)
-                .Include(v => v.IdDepositoNavigation).Include(v => v.IdBajaNavigation).Include(v => v.IdCausaBajaNavigation)
+                .Include(v => v.IdDepositoNavigation)
                 .Select(vehiculo => new VehiculoDetalleViewModel
                 {
                     IdVehiculoDetalle = vehiculo.IdVehiculoDetalle,
@@ -311,10 +272,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                     Proveedor = vehiculo.Proveedor,
                     FechaCompra = vehiculo.FechaCompra,
                     CostoVehiculo = vehiculo.CostoVehiculo,
-                    IdBaja = vehiculo.IdBaja,
-                    DescripcionBaja = vehiculo.IdBajaNavigation.Descripcion,
-                    IdCausaBaja = vehiculo.IdCausaBaja,
-                    DescripcionCausaBaja = vehiculo.IdCausaBajaNavigation.Descripcion,
                     MesesGarantia = vehiculo.MesesGarantia,
                     FechaBaja = vehiculo.FechaBaja,
                     PesoMinimo = vehiculo.PesoMinimo,
