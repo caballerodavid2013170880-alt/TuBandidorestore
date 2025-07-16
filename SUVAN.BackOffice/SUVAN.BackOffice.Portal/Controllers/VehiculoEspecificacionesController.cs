@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Ingresos;
@@ -16,14 +17,15 @@ namespace SUVAN.BackOffice.Portal.Controllers
     {
         private readonly ILogger<VehiculoEspecificacionesController> _logger;
         private readonly IVehiculoEspecificacionesService especificacionesService;
+        private readonly IWebHostEnvironment _env;
 
         public VehiculoEspecificacionesController(ILogger<VehiculoEspecificacionesController> logger,
-        IVehiculoEspecificacionesService especificacionesService)
+        IVehiculoEspecificacionesService especificacionesService, IWebHostEnvironment env)
 
         {
             _logger = logger;
             this.especificacionesService = especificacionesService;
-
+             _env = env;
         }
         [HttpGet]
         public async Task<IActionResult> Index()
@@ -67,6 +69,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
             return PartialView("_datosAdicionales");
         }
 
+        [HttpGet]
+        public IActionResult Imagen()
+        {
+
+            return PartialView("_imagen");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Index(VehiculoEspecificacionesViewModel model)
         {
@@ -89,10 +98,14 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> NavegacionVehiculoEspecificaciones(VehiculoEspecificacionesViewModel model)
+        public async Task<IActionResult> NavegacionVehiculoEspecificaciones(VehiculoEspecificacionesViewModel model, List<IFormFile> archivosImagen)
         {
             try
             {
+                if (archivosImagen != null && archivosImagen.Any())
+                {
+                    await especificacionesService.GuardarImagenesAsync(model, archivosImagen, _env.WebRootPath);
+                }
 
                 var result = await especificacionesService.AgregarVehiculoEspecificaciones(model);
 
@@ -101,13 +114,16 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     return RedirectToAction("Index", "VehiculoEspecificaciones");
                 }
 
-                return View(model);
+                var resultModel = await especificacionesService.ObtenerEspecificaciones(model);
+                return View("Index", resultModel);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
+                var resultModel = await especificacionesService.ObtenerEspecificaciones(model);
+                return View("Index", resultModel);
             }
         }
+
     }
 }

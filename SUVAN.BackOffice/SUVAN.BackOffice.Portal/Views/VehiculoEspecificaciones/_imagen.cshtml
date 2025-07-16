@@ -1,0 +1,100 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Models.ViewModel.Logistica
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "Vihículo Especificaciones";
+}
+@model VehiculoEspecificacionesViewModel
+
+@{
+    string rutaOriginal = Model.Ruta ?? "";
+    string imgUrl = Url.Content(rutaOriginal);
+    bool tieneImagen = !string.IsNullOrWhiteSpace(rutaOriginal);
+
+    string imageInputClass = "image-input image-input-outline mb-3";
+    if (!tieneImagen)
+    {
+        imageInputClass += " image-input-empty image-input-placeholder";
+    }
+}
+
+<div class="card card-bordered mb-5">
+    <div class="card-header">
+        <h3 class="card-title">Imagen</h3>
+    </div>
+
+    <style>
+        .image-input-placeholder {
+            background-image: url('/assets/media/svg/files/blank-image.svg');
+        }
+
+        [data-bs-theme="dark"] .image-input-placeholder {
+            background-image: url('/assets/media/svg/files/blank-image-dark.svg');
+        }
+
+        #imagenesContainer > .componente-imagen {
+            flex: 0 0 auto;
+            width: 160px;
+        }
+    </style>
+    <div class="card-body py-2">
+        <label class="col-form-label text-gray-600">Imágenes</label>
+        <div class="text-muted fs-7 mb-3">Tipos de archivos permitidos: *.png, *.jpg y *.jpeg</div>
+
+        <div id="imagenesContainer" class="d-flex flex-wrap gap-3 align-items-start">
+            @if (Model.Imagenes != null && Model.Imagenes.Any())
+            {
+                foreach (var img in Model.Imagenes)
+                {
+                    <div class="componente-imagen" data-id="inicial" style="flex:0 0 auto;width:160px;">
+                        <div class="image-input image-input-outline" data-kt-image-input="true">
+                            <div class="image-input-wrapper w-150px h-150px" style="background-image: url('@Url.Content(img.Ruta)');"></div>
+
+                            <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Cargar Imagen">
+                                <i class="ki-outline ki-pencil fs-7"></i>
+                                <input type="file" name="archivosImagen" accept=".png,.jpg,.jpeg" />
+                            </label>
+                            <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow btn-cancelar-componente"
+                                  title="Eliminar Componente">
+                                <i class="ki-outline ki-cross fs-2"></i>
+                            </span>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <template id="imagenTemplate">
+            <div class="componente-imagen" style="flex:0 0 auto;width:160px;">
+                <div class="image-input image-input-outline image-input-empty image-input-placeholder"
+                     data-kt-image-input="true">
+                    <div class="image-input-wrapper w-150px h-150px"></div>
+                    <label class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow" data-kt-image-input-action="change" data-bs-toggle="tooltip" title="Cargar Imagen">
+                        <i class="ki-outline ki-pencil fs-7"></i>
+                        <input type="file" name="archivosImagen" accept=".png,.jpg,.jpeg" />
+                    </label>
+                    <span class="btn btn-icon btn-circle btn-active-color-primary w-25px h-25px bg-body shadow btn-cancelar-componente d-none"
+                          title="Eliminar Componente">
+                        <i class="ki-outline ki-cross fs-2"></i>
+                    </span>
+                </div>
+            </div>
+        </template>
+        <div class="d-flex justify-content-between mt-5">
+            <button type="button" class="btn btn-primary btn-sm" onclick="irATabAnterior()">Anterior</button>
+            <button type="submit" id="kt_especificaciones_in_submit" class="btn btn-primary btn-sm">
+                <span class="indicator-label">Guardar</span>
+                <span class="indicator-progress">
+                    Por favor espere...
+                    <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script src="~/js/logistica/vehiculoespecifi/navvehiculoespecifi.js"></script>
+    <script src="~/js/logistica/vehiculoespecifi/imagen.js"></script>
+}

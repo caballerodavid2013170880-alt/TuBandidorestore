@@ -73,6 +73,13 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public List<VehiculoEspecifiDescripcionViewModel> Descripcion { get; set; } = new();
 
+        public List<EspecificacionesImgView> Imagenes { get; set; } = new();
+
+
+        public int? Consecutivo { get; set; }
+
+        public string? Ruta { get; set; }
+
         public class ModeloEspecifiViewModel
         {
             public short IdMarca { get; set; }
@@ -112,6 +119,15 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public string? TipoMotor { get; set; }
 
             public short? IdEspecificaciones { get; set; }
+        }
+
+        public partial class EspecificacionesImgView
+        {
+            public int IdEspecificaciones { get; set; }
+
+            public int Consecutivo { get; set; }
+
+            public string? Ruta { get; set; }
         }
     }
 }

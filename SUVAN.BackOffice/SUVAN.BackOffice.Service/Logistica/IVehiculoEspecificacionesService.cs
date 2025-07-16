@@ -1,4 +1,5 @@
-﻿using SUVAN.BackOffice.Database.Entities;
+﻿using Microsoft.AspNetCore.Http;
+using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
 using System.Collections.Generic;
@@ -35,5 +36,8 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
         Task<bool> AgregarVehiculoEspecificaciones(VehiculoEspecificacionesViewModel model);
+
+        Task GuardarImagenesAsync(VehiculoEspecificacionesViewModel model, List<IFormFile> archivosImagen, string webRootPath);
+
     }
 }

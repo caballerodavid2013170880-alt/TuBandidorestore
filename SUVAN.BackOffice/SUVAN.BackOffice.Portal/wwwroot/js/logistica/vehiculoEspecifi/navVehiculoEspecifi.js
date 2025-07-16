@@ -15,6 +15,9 @@
             case "#datosadicionales":
                 actionUrl = '/VehiculoEspecificaciones/DatosAdicionales'
                 break;
+            case "#imagen":
+                actionUrl = '/VehiculoEspecificaciones/Imagen'
+                break;
         }
         if (actionUrl) {
             loadPartialView(target, actionUrl);

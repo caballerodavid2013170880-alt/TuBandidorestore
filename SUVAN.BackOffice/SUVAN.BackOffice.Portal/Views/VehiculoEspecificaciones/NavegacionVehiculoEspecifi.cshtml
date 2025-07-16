@@ -44,10 +44,13 @@
             <li class="nav-item">
                 <a class="nav-link disabled" id="datosadicionales-tab" data-bs-toggle="tab" href="#datosadicionales">Datos Adicionales</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="imagen-tab" data-bs-toggle="tab" href="#imagen">Imagen</a>
+            </li>
         </ul>
     </div>
 
-    <form class="form w-100" id="kt_especificaciones_in_form" data-kt-redirect-url="/" asp-controller="VehiculoEspecificaciones" asp-action="NavegacionVehiculoEspecificaciones" method="post">
+    <form class="form w-100" id="kt_especificaciones_in_form" data-kt-redirect-url="/" asp-controller="VehiculoEspecificaciones" asp-action="NavegacionVehiculoEspecificaciones" method="post" enctype="multipart/form-data">
         @Html.AntiForgeryToken()
         <input asp-for="IdEspecificaciones" type="hidden" />
         <input asp-for="IdMarca" type="hidden" />
@@ -71,9 +74,13 @@
             <div class="tab-pane fade" id="transmisiontraccion">
                 @await Html.PartialAsync("_transmisionTraccion", Model)
             </div>
-            
+
             <div class="tab-pane fade" id="datosadicionales">
                 @await Html.PartialAsync("_datosAdicionales", Model)
+            </div>
+
+            <div class="tab-pane fade" id="imagen">
+                @await Html.PartialAsync("_imagen", Model)
             </div>
         </div>
     </form>
@@ -109,6 +116,7 @@
 @section scripts {
     <script src="~/js/logistica/vehiculoespecifi/validaciones.js"></script>
     <script src="~/js/logistica/vehiculoespecifi/navvehiculoespecifi.js"></script>
+    <script src="~/js/logistica/vehiculoespecifi/imagen.js"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }

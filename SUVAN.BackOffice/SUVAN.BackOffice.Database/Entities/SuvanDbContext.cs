@@ -254,6 +254,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<VehiculoEspecificacione> VehiculoEspecificaciones { get; set; }
 
+    public virtual DbSet<VehiculoEspecificacionesImg> VehiculoEspecificacionesImgs { get; set; }
+
     public virtual DbSet<Vehiculoservicio> Vehiculoservicios { get; set; }
 
     public virtual DbSet<Viaje> Viajes { get; set; }
@@ -3944,6 +3946,22 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(1)
                 .IsFixedLength()
                 .HasColumnName("transmision");
+        });
+
+        modelBuilder.Entity<VehiculoEspecificacionesImg>(entity =>
+        {
+            entity.HasKey(e => new { e.IdEspecificaciones, e.Consecutivo })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("vehiculo_especificaciones_img");
+
+            entity.Property(e => e.IdEspecificaciones).HasColumnName("id_especificaciones");
+            entity.Property(e => e.Consecutivo).HasColumnName("consecutivo");
+            entity.Property(e => e.Ruta)
+                .HasMaxLength(200)
+                .IsFixedLength()
+                .HasColumnName("ruta");
         });
 
         modelBuilder.Entity<Vehiculoservicio>(entity =>

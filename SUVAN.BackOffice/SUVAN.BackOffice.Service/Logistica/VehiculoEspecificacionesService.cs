@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Ingresos;
@@ -69,38 +70,6 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         }
 
-        //public async Task<VehiculoEspecificacionesViewModel> ObtenerEspecificaciones(VehiculoEspecificacionesViewModel model)
-        //{
-        //    model.Marcas = await ObtenerMarcas();
-
-        //    if (model.IdMarca.HasValue && model.IdMarca > 0)
-        //        model.Modelos = await ObtenerModelo(model.IdMarca.Value);
-        //    else
-        //        model.Modelos = new List<ModeloEspecifiViewModel>();
-
-        //    var query = from e in context.VehiculoEspecificaciones
-        //                join m in context.Marcas on e.IdMarca equals m.IdMarca
-        //                join n in context.Modelos on e.IdModelo equals n.IdModelo
-        //                select new VehiculoEspecifiDescripcionViewModel
-        //                {
-        //                    IdEspecificaciones = e.IdEspecificaciones, 
-        //                    IdMarca = m.IdMarca,
-        //                    IdModelo = n.IdModelo,
-        //                    CapacidadCombu = e.CapacidadCombu,
-        //                    TipoMotor = e.TipoMotor,
-        //                };
-
-        //    if (model.IdMarca.HasValue && model.IdMarca > 0)
-        //        query = query.Where(x => x.IdMarca == model.IdMarca.Value);
-
-        //    if (model.IdModelo.HasValue && model.IdModelo > 0)
-        //        query = query.Where(x => x.IdModelo == model.IdModelo.Value);
-
-        //    model.Descripcion = await query.ToListAsync();
-
-        //    return model;
-        //}
-
         public async Task<VehiculoEspecificacionesViewModel> ObtenerEspecificaciones(VehiculoEspecificacionesViewModel model)
         {
             model.Marcas = await ObtenerMarcas();
@@ -150,6 +119,14 @@ namespace SUVAN.BackOffice.Service.Logistica
             if (especifi == null)
                 return new VehiculoEspecificacionesViewModel();
 
+            var imagenes = await context.VehiculoEspecificacionesImgs.Where(x => x.IdEspecificaciones == id).OrderBy(x => x.Consecutivo)
+                .Select(x => new EspecificacionesImgView
+                {
+                    Ruta = x.Ruta,
+                    Consecutivo = x.Consecutivo
+                })
+                .ToListAsync();
+
             return new VehiculoEspecificacionesViewModel
             {
                 IdEspecificaciones = especifi.IdEspecificaciones,
@@ -179,9 +156,12 @@ namespace SUVAN.BackOffice.Service.Logistica
                 DimensionLlantas = especifi.DimensionLlantas,
                 PulCub = especifi.PulCub,
                 Origen = especifi.Origen,
-                Observaciones = especifi.Observaciones
+                Observaciones = especifi.Observaciones,
+                Imagenes = imagenes
             };
         }
+
+
 
         /// <summary>
         /// Agrega o actualiza un registro Vehiculo Especificaciones en la base de datos.
@@ -249,6 +229,54 @@ namespace SUVAN.BackOffice.Service.Logistica
             }
             return true;
         }
+
+        public async Task GuardarImagenesAsync(VehiculoEspecificacionesViewModel model, List<IFormFile> archivosImagen, string webRootPath)
+        {
+            if (archivosImagen == null || archivosImagen.Count == 0)
+                return;
+
+            string carpetaMarca = Path.Combine(webRootPath, "assets", "img", model.IdMarca.ToString());
+            string carpetaModelo = Path.Combine(carpetaMarca, model.IdModelo.ToString());
+
+            if (!Directory.Exists(carpetaModelo))
+                Directory.CreateDirectory(carpetaModelo);
+
+            var consecutivos = await context.VehiculoEspecificacionesImgs.Where(x => x.IdEspecificaciones == model.IdEspecificaciones).Select(x => x.Consecutivo)
+                .ToListAsync();
+
+            int maxConsecutivo = (consecutivos.Any() ? consecutivos.Max() : 0);
+
+            foreach (var archivo in archivosImagen)
+            {
+                if (archivo == null || archivo.Length == 0)
+                    continue;
+
+                string extension = Path.GetExtension(archivo.FileName);
+                string archivoNuevo = $"{Guid.NewGuid():N}{extension}";
+                string rutaFisica = Path.Combine(carpetaModelo, archivoNuevo);
+                string rutaRelativa = $"/assets/img/{model.IdMarca}/{model.IdModelo}/{archivoNuevo}";
+
+                await using (var stream = new FileStream(rutaFisica, FileMode.Create))
+                {
+                    await archivo.CopyToAsync(stream);
+                }
+
+                maxConsecutivo++;
+
+                var nuevaImg = new VehiculoEspecificacionesImg
+                {
+                    IdEspecificaciones = model.IdEspecificaciones,
+                    Consecutivo = maxConsecutivo,
+                    Ruta = rutaRelativa
+                };
+
+                context.VehiculoEspecificacionesImgs.Add(nuevaImg);
+            }
+
+            await context.SaveChangesAsync();
+        }
+
+
 
     }
 }
