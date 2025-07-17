@@ -402,3 +402,4 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /.vs/VSWorkspaceState.json
+/SUVAN.BackOffice/SUVAN.BackOffice.Portal/wwwroot/assets/img/6/1
