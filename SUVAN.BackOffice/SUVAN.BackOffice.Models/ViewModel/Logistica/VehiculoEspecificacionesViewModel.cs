@@ -80,6 +80,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public string? Ruta { get; set; }
 
+        public string? IdsImagenesEliminar { get; set; }
+
         public class ModeloEspecifiViewModel
         {
             public short IdMarca { get; set; }

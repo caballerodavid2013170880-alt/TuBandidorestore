@@ -39,5 +39,9 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         Task GuardarImagenesAsync(VehiculoEspecificacionesViewModel model, List<IFormFile> archivosImagen, string webRootPath);
 
+        Task<List<VehiculoEspecificacionesViewModel>> ObtenerDetalleModal(int IdEspecificaciones);
+
+        Task EliminarImagenesAsync(List<(int idEspecificacion, int consecutivo)> idsParaEliminar, string webRootPath);
+
     }
 }

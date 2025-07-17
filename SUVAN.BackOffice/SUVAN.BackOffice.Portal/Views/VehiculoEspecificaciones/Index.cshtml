@@ -152,6 +152,10 @@
                                                 <i class="ki-outline ki-pencil fs-3"></i>
                                             </a>
                                         }
+
+                                        <a href="javascript:void(0)" class="btn btn-icon btn-active-light-primary w-30px h-30px eyeModal" data-idespecificaciones="@item.IdEspecificaciones" title="Ver especificaciones">
+                                            <i class="ki-outline ki-eye fs-3"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             }
@@ -161,6 +165,46 @@
                 </div>
             </div>
             <!--end::Card body-->
+            <div class="modal fade" id="kt_modal_eye" tabindex="-1">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 id="modalTitulo">Detalle del Vehículo</h2>
+                            <button class="btn btn-icon" data-bs-dismiss="modal">×</button>
+                        </div>
+
+                        <div class="modal-body">
+                            <ul class="nav nav-pills mb-3 justify-content-center" id="vehiculoTabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" data-bs-toggle="pill" data-tab="dimensioncapacidad" href="#">Dimensión y Capacidad</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="pill" data-tab="motordesempeno" href="#">Motor y Desempeño</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="pill" data-tab="transmisiontraccion" href="#">Transmisión y Tracción</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="pill" data-tab="datosadicionales" href="#">Datos Adicionales</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" data-bs-toggle="pill" data-tab="imagen" href="#">Imágenes</a>
+                                </li>
+                            </ul>
+                            <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_eye"></table>
+
+                            <div class="tab-content mt-4">
+                                <div class="tab-pane fade" id="tab-imagen">
+                                    <div id="imagenesContainer" class="d-flex flex-wrap gap-3 align-items-start"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!--end::Card-->
     </div>
@@ -173,5 +217,5 @@
     <script src="~/js/logistica/vehiculoespecifi/add.js"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
-
+    <script src="~/js/logistica/vehiculoespecifi/addmodal.js"></script>
 }

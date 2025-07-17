@@ -6,6 +6,7 @@ using SUVAN.BackOffice.Models.ViewModel.Ingresos;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -122,6 +123,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             var imagenes = await context.VehiculoEspecificacionesImgs.Where(x => x.IdEspecificaciones == id).OrderBy(x => x.Consecutivo)
                 .Select(x => new EspecificacionesImgView
                 {
+                    IdEspecificaciones = x.IdEspecificaciones,
                     Ruta = x.Ruta,
                     Consecutivo = x.Consecutivo
                 })
@@ -232,51 +234,116 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public async Task GuardarImagenesAsync(VehiculoEspecificacionesViewModel model, List<IFormFile> archivosImagen, string webRootPath)
         {
-            if (archivosImagen == null || archivosImagen.Count == 0)
+            if (archivosImagen?.Count == 0)
                 return;
 
-            string carpetaMarca = Path.Combine(webRootPath, "assets", "img", model.IdMarca.ToString());
-            string carpetaModelo = Path.Combine(carpetaMarca, model.IdModelo.ToString());
+            string carpetaModelo = Path.Combine(webRootPath, "assets", "img", model.IdMarca.ToString(), model.IdModelo.ToString());
+            Directory.CreateDirectory(carpetaModelo); 
 
-            if (!Directory.Exists(carpetaModelo))
-                Directory.CreateDirectory(carpetaModelo);
+            int maxConsecutivo = await context.VehiculoEspecificacionesImgs
+                .Where(x => x.IdEspecificaciones == model.IdEspecificaciones)
+                .MaxAsync(x => (int?)x.Consecutivo) ?? 0;
 
-            var consecutivos = await context.VehiculoEspecificacionesImgs.Where(x => x.IdEspecificaciones == model.IdEspecificaciones).Select(x => x.Consecutivo)
-                .ToListAsync();
-
-            int maxConsecutivo = (consecutivos.Any() ? consecutivos.Max() : 0);
-
-            foreach (var archivo in archivosImagen)
+            foreach (var archivo in archivosImagen.Where(f => f?.Length > 0))
             {
-                if (archivo == null || archivo.Length == 0)
-                    continue;
-
                 string extension = Path.GetExtension(archivo.FileName);
-                string archivoNuevo = $"{Guid.NewGuid():N}{extension}";
-                string rutaFisica = Path.Combine(carpetaModelo, archivoNuevo);
-                string rutaRelativa = $"/assets/img/{model.IdMarca}/{model.IdModelo}/{archivoNuevo}";
+                string nombreArchivo = $"{Guid.NewGuid():N}{extension}";
+                string rutaFisica = Path.Combine(carpetaModelo, nombreArchivo);
+                string rutaRelativa = $"/assets/img/{model.IdMarca}/{model.IdModelo}/{nombreArchivo}";
 
-                await using (var stream = new FileStream(rutaFisica, FileMode.Create))
-                {
-                    await archivo.CopyToAsync(stream);
-                }
+                await using var stream = new FileStream(rutaFisica, FileMode.Create);
+                await archivo.CopyToAsync(stream);
 
-                maxConsecutivo++;
-
-                var nuevaImg = new VehiculoEspecificacionesImg
+                context.VehiculoEspecificacionesImgs.Add(new VehiculoEspecificacionesImg
                 {
                     IdEspecificaciones = model.IdEspecificaciones,
-                    Consecutivo = maxConsecutivo,
+                    Consecutivo = ++maxConsecutivo,
                     Ruta = rutaRelativa
-                };
-
-                context.VehiculoEspecificacionesImgs.Add(nuevaImg);
+                });
             }
 
             await context.SaveChangesAsync();
         }
 
 
+        public async Task<List<VehiculoEspecificacionesViewModel>> ObtenerDetalleModal(int IdEspecificaciones)
+        {
+            var resultado = await context.VehiculoEspecificaciones
+                .Where(v => v.IdEspecificaciones == IdEspecificaciones)
+                .Select(v => new VehiculoEspecificacionesViewModel
+                {
+                    IdEspecificaciones = v.IdEspecificaciones,
+                    IdMarca = v.IdMarca,
+                    IdModelo = v.IdModelo,
+                    Ancho = v.Ancho,
+                    Largo = v.Largo,
+                    Altura = v.Altura,
+                    PesoBruto = v.PesoBruto,
+                    ToneladasCarga = v.ToneladasCarga,
+                    MetrosCubCarga = v.MetrosCubCarga,
+                    Pallets = v.Pallets,
+                    TipoMotor = v.TipoMotor,
+                    PotenciaMotor = v.PotenciaMotor,
+                    NoCilindros = v.NoCilindros,
+                    CapacidadAceite = v.CapacidadAceite,
+                    CapacidadCombu = v.CapacidadCombu,
+                    RenEsp = v.RenEsp,
+                    TipoCombustible = v.TipoCombustible,
+                    Transmision = v.Transmision,
+                    Traccion = v.Traccion,
+                    TipoEje = v.TipoEje,
+                    CargaPorEje = v.CargaPorEje,
+                    CargaMax = v.CargaMax,
+                    TotalLlantas = v.TotalLlantas,
+                    LlantasRepuesto = v.LlantasRepuesto,
+                    DimensionLlantas = v.DimensionLlantas,
+                    PulCub = v.PulCub,
+                    Origen = v.Origen,
+                    Observaciones = v.Observaciones,
+
+                    Imagenes = context.VehiculoEspecificacionesImgs
+                        .Where(img => img.IdEspecificaciones == v.IdEspecificaciones)
+                        .OrderBy(img => img.Consecutivo)
+                        .Select(img => new EspecificacionesImgView
+                        {
+                            IdEspecificaciones = img.IdEspecificaciones,
+                            Ruta = img.Ruta,
+                            Consecutivo = img.Consecutivo
+                        }).ToList()
+                })
+                .ToListAsync();
+            return resultado;
+        }
+
+        public async Task EliminarImagenesAsync(List<(int idEspecificacion, int consecutivo)> idsParaEliminar, string webRootPath)
+        {
+            if (idsParaEliminar == null || !idsParaEliminar.Any())
+                return;
+
+            foreach (var (idEspecificacion, consecutivo) in idsParaEliminar)
+            {
+                var imagen = await context.VehiculoEspecificacionesImgs
+                    .FirstOrDefaultAsync(x => x.IdEspecificaciones == idEspecificacion && x.Consecutivo == consecutivo);
+
+                if (imagen != null)
+                {
+                    var rutaFisica = Path.Combine(webRootPath, imagen.Ruta.TrimStart('/').Replace('/', Path.DirectorySeparatorChar));
+                    if (File.Exists(rutaFisica))
+                    {
+                        try
+                        {
+                            File.Delete(rutaFisica);
+                        }
+                        catch (Exception ex)
+                        {
+                        }
+                    }
+                    context.VehiculoEspecificacionesImgs.Remove(imagen);
+                }
+            }
+
+            await context.SaveChangesAsync();
+        }
 
     }
 }

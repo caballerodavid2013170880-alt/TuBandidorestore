@@ -21,7 +21,7 @@
 
 <div class="card card-bordered mb-5">
     <div class="card-header">
-        <h3 class="card-title">Imagen</h3>
+        <h3 class="card-title">Imágenes</h3>
     </div>
 
     <style>
@@ -47,7 +47,7 @@
             {
                 foreach (var img in Model.Imagenes)
                 {
-                    <div class="componente-imagen" data-id="inicial" style="flex:0 0 auto;width:160px;">
+                    <div class="componente-imagen" data-id-especificacion="@img.IdEspecificaciones" data-consecutivo="@img.Consecutivo" style="flex:0 0 auto;width:160px;">
                         <div class="image-input image-input-outline" data-kt-image-input="true">
                             <div class="image-input-wrapper w-150px h-150px" style="background-image: url('@Url.Content(img.Ruta)');"></div>
 
@@ -64,6 +64,7 @@
                 }
             }
         </div>
+        <input type="hidden" name="IdsImagenesEliminar" id="IdsImagenesEliminar" />
         <template id="imagenTemplate">
             <div class="componente-imagen" style="flex:0 0 auto;width:160px;">
                 <div class="image-input image-input-outline image-input-empty image-input-placeholder"

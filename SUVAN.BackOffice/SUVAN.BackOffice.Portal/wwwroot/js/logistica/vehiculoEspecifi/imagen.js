@@ -52,6 +52,39 @@ var KTImagenes = (function () {
         });
     };
 
+    let imagenesAEliminar = [];
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const contenedor = document.getElementById('imagenesContainer');
+
+        contenedor.addEventListener('click', function (e) {
+            if (e.target.closest('.btn-cancelar-componente')) {
+                const boton = e.target.closest('.btn-cancelar-componente');
+                const tarjeta = boton.closest('.componente-imagen');
+                if (!tarjeta) return;
+
+                const idEspecificacion = tarjeta.dataset.idEspecificacion;
+                const consecutivo = tarjeta.dataset.consecutivo;
+
+                if (idEspecificacion && consecutivo) {
+                    const idCompuesto = `${idEspecificacion}-${consecutivo}`;
+                    if (!imagenesAEliminar.includes(idCompuesto)) {
+                        imagenesAEliminar.push(idCompuesto);
+                    }
+
+                    const inputEliminar = document.getElementById('IdsImagenesEliminar');
+                    if (inputEliminar) {
+                        inputEliminar.value = imagenesAEliminar.join(',');
+                    }
+
+                    tarjeta.style.display = 'none';
+                }
+            }
+        });
+    });
+
+
+
     const _addCard = (container) => {
         if (_contar(container) >= MAX_IMAGENES) return;
 
