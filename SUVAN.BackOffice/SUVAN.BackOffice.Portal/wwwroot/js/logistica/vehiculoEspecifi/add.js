@@ -54,6 +54,20 @@ var KTEspecificaciones = function () {
         });
     };
 
+    document.addEventListener("DOMContentLoaded", function () {
+        const mensaje = document.getElementById("mensajeTempData")?.value;
+        if (mensaje) {
+            Swal.fire({
+                text: mensaje,
+                icon: "success",
+                confirmButtonText: "Aceptar",
+                customClass: {
+                    confirmButton: "btn fw-bold btn-primary"
+                }
+            });
+        }
+    });
+
     const initControls = () => {
         initMarcaAndModelo();
     };

@@ -48,6 +48,7 @@
             <div class="card-body py-4">
                 <form class="form w-100" novalidate="novalidate" id="kt_especificaciones_in_form" data-kt-redirect-url="/" asp-controller="VehiculoEspecificaciones" asp-action="Index" method="post">
                     @Html.AntiForgeryToken()
+                    <input type="hidden" id="mensajeTempData" value="@TempData["Mensaje"]" />
                     <input asp-for="MarcaJson" type="hidden" id="MarcaJson" />
                     <div class="fv-row mb-8">
                         <div class="col-sm-12">

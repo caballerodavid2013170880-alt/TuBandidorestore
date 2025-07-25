@@ -41,6 +41,10 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
                 if (result)
                 {
+                    TempData["Mensaje"] = model.ZonaId == 0
+                        ? "Registro insertado correctamente."
+                        : "Registro actualizado correctamente.";
+
                     return RedirectToAction("Index", "Zona");
                 }
 

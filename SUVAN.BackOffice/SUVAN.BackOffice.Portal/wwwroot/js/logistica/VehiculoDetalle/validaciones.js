@@ -346,10 +346,6 @@
                         validators: {
                             notEmpty: {
                                 message: 'Número de Factura requerida'
-                            },
-                            regexp: {
-                                regexp: /^[A-Z0-9-_]{3,20}$/,
-                                message: 'Ingrese un formato de VIN v&aacute;lido'
                             }
                         }
                     },

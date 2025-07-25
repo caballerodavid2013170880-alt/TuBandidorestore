@@ -8,7 +8,7 @@ namespace SUVAN.BackOffice.Service.Logistica
 {
     public interface IVehiculoDetalleService
     {
-        Task<List<VehiculoDetalle>> GetVehiculoDetalle();
+        Task<VehiculoDetalleViewModel> GetVehiculoDetalle(VehiculoDetalleViewModel model, int idEmpresa);
 
         /// <summary>
         /// Obtiene el ViewModel del VehiculoDetalle específico.
@@ -37,6 +37,8 @@ namespace SUVAN.BackOffice.Service.Logistica
         Task CompletarCamposError(VehiculoDetalleViewModel model);
 
         Task<List<VehiculoDetalleViewModel>> ObtenerDetalleModal(int idVehiculoDetalle);
+
+        Task<List<VehiculoEspecificacionesViewModel>> ObtenerEspecifiPorMarcaModelo(int IdMarca, int IdModelo);
     }
 
 }

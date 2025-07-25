@@ -33,22 +33,22 @@
     <div class="mx-auto d-flex flex-column align-items-center">
         <ul class="nav nav-pills d-flex justify-content-center mb-2" id="listaHorizontalFila1">
             <li class="nav-item">
-                <a class="nav-link active" id="datosgenerales-tab" data-bs-toggle="tab" href="#datosgenerales">Datos Generales del Vehículo</a>
+                <a class="nav-link pestana active" id="datosgenerales-tab" data-bs-toggle="tab" href="#datosgenerales">Datos Generales del Vehículo</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" id="ubicaciondocumentacion-tab" data-bs-toggle="tab" href="#ubicaciondocumentacion">Ubicación y Documentación</a>
+                <a class="nav-link pestana disabled" id="ubicaciondocumentacion-tab" data-bs-toggle="tab" href="#ubicaciondocumentacion">Ubicación y Documentación</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" id="compracosto-tab" data-bs-toggle="tab" href="#compracosto">Compra y Costos</a>
+                <a class="nav-link pestana disabled" id="compracosto-tab" data-bs-toggle="tab" href="#compracosto">Compra y Costos</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" id="garantiaestado-tab" data-bs-toggle="tab" href="#garantiaestado">Garantía y Estado</a>
+                <a class="nav-link pestana disabled" id="garantiaestado-tab" data-bs-toggle="tab" href="#garantiaestado">Garantía y Estado</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" id="especificaciones-tab" data-bs-toggle="tab" href="#especificaciones">Especificaciones Técnicas</a>
+                <a class="nav-link pestana disabled" id="especificaciones-tab" data-bs-toggle="tab" href="#especificaciones">Especificaciones Técnicas</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link disabled" id="permisoslicencias-tab" data-bs-toggle="tab" href="#permisoslicencias">Permisos y Licencias</a>
+                <a class="nav-link pestana disabled" id="permisoslicencias-tab" data-bs-toggle="tab" href="#permisoslicencias">Permisos y Licencias</a>
             </li>
         </ul>
     </div>
@@ -90,31 +90,6 @@
         </div>
     </form>
 </div>
-
-<div class="modal modal-lg fade" tabindex="-1" id="kt_modal_detalle" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="modalTitulo">Título</h5>
-
-                <!--begin::Close-->
-                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
-                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
-                </div>
-                <!--end::Close-->
-            </div>
-
-            <div class="modal-body" id="modal-body">
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_tabla_detalle">
-                </table>
-            </div>
-
-            <div class="modal-footer">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
-            </div>
-        </div>
-    </div>
-</div>
 <!--end::Toolbar-->
 <!--begin::Content-->
 <!--end::Content-->
@@ -124,6 +99,7 @@
 @section scripts {
     <script src="~/js/logistica/vehiculodetalle/navvehiculodetalle.js"></script>
     <script src="~/js/logistica/vehiculodetalle/validaciones.js"></script>
+    <script src="~/js/logistica/vehiculodetalle/addmodalespecifi.js"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }

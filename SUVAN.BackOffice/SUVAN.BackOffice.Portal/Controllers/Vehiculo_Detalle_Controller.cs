@@ -31,8 +31,10 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var vehiculo = await vehiculoService.GetVehiculoDetalle();
-            return View(vehiculo);
+            int idEmpresa = User.GetEmpresaId();
+            var model = new VehiculoDetalleViewModel();
+            model = await vehiculoService.GetVehiculoDetalle(model, idEmpresa);
+            return View(model);
         }
         public async Task<IActionResult> NavegacionVehiculoDetalle(int id)
         {
@@ -40,32 +42,41 @@ namespace SUVAN.BackOffice.Portal.Controllers
             return View(agregarModel);
         }
 
+        [HttpGet]
         public IActionResult DatosGenerales()
         {
             return PartialView("_datosGenerales");
         }
+
+        [HttpGet]
         public IActionResult UbicacionDocumentacion()
         {
 
             return PartialView("_ubicacionDocumentacion");
         }
+
+        [HttpGet]
         public IActionResult CompraCosto()
         {
 
             return PartialView("_compraCosto");
         }
+
+        [HttpGet]
         public IActionResult GarantiaEstado()
         {
 
             return PartialView("_garantiaEstado");
         }
 
+        [HttpGet]
         public IActionResult EspecificacionesTecnicas()
         {
 
             return PartialView("_especificacionesTecnicas");
         }
 
+        [HttpGet]
         public IActionResult PermisosLicencias()
         {
 
@@ -125,6 +136,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> ObtenerDetalleVehiculo(int idVehiculoDetalle)
         {
             var detalle = await vehiculoService.ObtenerDetalleModal(idVehiculoDetalle);
+            return Json(detalle);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ObtenerEspecifi(int IdMarca, int IdModelo)
+        {
+            var detalle = await vehiculoService.ObtenerEspecifiPorMarcaModelo(IdMarca, IdModelo);
             return Json(detalle);
         }
     }

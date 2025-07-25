@@ -133,7 +133,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 var result = await especificacionesService.AgregarVehiculoEspecificaciones(model);
 
                 if (result)
+                {
+                    TempData["Mensaje"] = model.IdEspecificaciones == 0
+                        ? "Registro insertado correctamente."
+                        : "Registro actualizado correctamente.";
+
                     return RedirectToAction("Index");
+                }
 
                 var resultModel = await especificacionesService.ObtenerEspecificaciones(model);
                 return View("Index", resultModel);

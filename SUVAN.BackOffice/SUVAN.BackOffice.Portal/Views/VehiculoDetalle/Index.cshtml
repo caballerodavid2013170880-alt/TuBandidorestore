@@ -1,11 +1,12 @@
 ﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Models.ViewModel.Logistica
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
 
 @{
     ViewData["Title"] = "Vehiculo Detalles";
 }
-@model List<SUVAN.BackOffice.Database.Entities.VehiculoDetalle>
+@model VehiculoDetalleViewModel
 
 @{
     var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.VehiculoDetalle);
@@ -69,7 +70,6 @@
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_detalle">
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                            <th class="min-w-100px">Número de Detalle</th>
                             <th class="min-w-100px">Vehiculo</th>
                             <th class="min-w-100px">Marca</th>
                             <th class="min-w-100px">Zona</th>
@@ -82,23 +82,20 @@
                     </thead>
                     <tbody class="text-gray-600 fw-semibold">
 
-                        @foreach (var contenido in Model)
+                        @foreach (var contenido in Model.Detalle)
                         {
                             <tr>
                                 <td>
-                                    @contenido.IdVehiculoDetalle
+                                    @contenido.Placas
                                 </td>
                                 <td>
-                                    @contenido.IdVehiculoNavigation.Placas
+                                    @contenido.Descripcion
                                 </td>
                                 <td>
-                                    @contenido.IdMarcaNavigation.Descripcion
+                                    @contenido.NombreZona
                                 </td>
                                 <td>
-                                    @contenido.IdZonaNavigation.NombreZona
-                                </td>
-                                <td>
-                                    @contenido.IdDepositoNavigation.DepositoNombre
+                                    @contenido.NombreDeposito
                                 </td>
                                 <td>
                                     @contenido.NumeroSerie

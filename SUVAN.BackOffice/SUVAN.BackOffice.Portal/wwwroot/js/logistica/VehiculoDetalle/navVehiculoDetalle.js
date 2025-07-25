@@ -30,10 +30,10 @@
     var firstTabTarget = $('a[data-bs-toggle="tab"]').first().attr("href");
     loadPartialView(firstTabTarget, '/VehiculoDetalle/DatosGenerales');
 
-    $('.nav-link').click(function (e) {
+    $('.pestana').click(function (e) {
         e.preventDefault();
 
-        $('.nav-link').removeClass('active');
+        $('.pestana').removeClass('active');
 
         $(this).addClass('active');
 

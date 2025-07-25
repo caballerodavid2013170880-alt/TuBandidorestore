@@ -22,8 +22,6 @@
             }, className: "col-compracosto text-center"
         },
         { title: "Costo del Vehículo", data: "costoVehiculo", className: "col-compracosto text-center" },
-        { title: "Baja", data: "descripcionBaja", className: "col-garantia text-center" },
-        { title: "Causa Baja", data: "descripcionCausaBaja", className: "col-garantia text-center" },
         { title: "Meses de Garantía", data: "mesesGarantia", className: "col-garantia text-center" },
         { title: "Fecha de Baja", data: function (row) {
                 if (!row.fechaBaja) return "";

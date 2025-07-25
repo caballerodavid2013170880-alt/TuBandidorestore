@@ -1,1 +1,1 @@
-﻿Scaffold-DbContext "server=54.175.149.151;database=survan_db;uid=survanusr;pwd=Qwerty!23." Pomelo.EntityFrameworkCore.MySql -OutputDir Entities -Context SuvanDbContext -f
+﻿Scaffold-DbContext "server=52.87.224.76;database=survan_db;uid=survanusr;pwd=Qwerty!23." Pomelo.EntityFrameworkCore.MySql -OutputDir Entities -Context SuvanDbContext -f

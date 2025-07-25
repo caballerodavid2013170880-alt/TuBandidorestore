@@ -9,6 +9,10 @@ using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleVie
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Security.Claims;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoEspecificacionesViewModel;
+using Microsoft.EntityFrameworkCore.Metadata;
+using System.ComponentModel.DataAnnotations;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace SUVAN.BackOffice.Service.Logistica
 {
@@ -21,13 +25,45 @@ namespace SUVAN.BackOffice.Service.Logistica
             this.context = context;
         }
 
-        public async Task<List<VehiculoDetalle>> GetVehiculoDetalle()
+        public async Task<VehiculoDetalleViewModel> GetVehiculoDetalle(VehiculoDetalleViewModel model, int idEmpresa)
         {
+            var query = from vehiculo in context.Vehiculos
+                        join detalle in context.VehiculoDetalles
+                            on vehiculo.IdVehiculo equals detalle.IdVehiculo into detalleGroup
+                        from detalle in detalleGroup.DefaultIfEmpty()
 
-            var vehiculo = await context.VehiculoDetalles.Include(x => x.IdVehiculoNavigation).Include(x => x.IdMarcaNavigation)
-                .Include(x => x.IdZonaNavigation).Include(x => x.IdDepositoNavigation).ToListAsync();
+                        join marca in context.Marcas
+                            on detalle.IdMarca equals marca.IdMarca into marcaGroup
+                        from marca in marcaGroup.DefaultIfEmpty()
 
-            return vehiculo!;
+                        join zona in context.Zonas
+                            on detalle.IdZona equals zona.IdZona into zonaGroup
+                        from zona in zonaGroup.DefaultIfEmpty()
+
+                        join deposito in context.Depositosdisponibles
+                            on detalle.IdDeposito equals deposito.IdDeposito into depositoGroup
+                        from deposito in depositoGroup.DefaultIfEmpty()
+
+                        where vehiculo.EmpresaIdempresa == idEmpresa
+
+                        select new ModeloDetalleViewModel
+                        {
+                            IdVehiculoDetalle = detalle.IdVehiculoDetalle,
+                            Placas = vehiculo.Placas,
+                            IdMarca = marca.IdMarca,
+                            Descripcion = marca.Descripcion,
+                            IdZona = zona.IdZona,
+                            NombreZona = zona.NombreZona,
+                            IdDeposito = deposito.IdDeposito,
+                            NombreDeposito = deposito.DepositoNombre,
+                            NumeroSerie = detalle.NumeroSerie,
+                            NumeroMotor = detalle.NumeroMotor,
+                            FechaCompra = detalle.FechaCompra
+                        };
+            model.Detalle = await query.ToListAsync();
+
+            return model!;
+
         }
 
         /// <summary>
@@ -288,6 +324,55 @@ namespace SUVAN.BackOffice.Service.Logistica
             return resultado;
         }
 
+        public async Task<List<VehiculoEspecificacionesViewModel>> ObtenerEspecifiPorMarcaModelo(int IdMarca, int IdModelo)
+        {
+            var resultado = await context.VehiculoEspecificaciones
+                .Where(ve => ve.IdMarca == IdMarca && ve.IdModelo == IdModelo)
+                .Select(ve => new VehiculoEspecificacionesViewModel
+                {
+                    IdEspecificaciones = ve.IdEspecificaciones,
+                    IdMarca = ve.IdMarca,
+                    IdModelo = ve.IdModelo,
+                    Ancho = ve.Ancho,
+                    Largo = ve.Largo,
+                    Altura = ve.Altura,
+                    PesoBruto = ve.PesoBruto,
+                    ToneladasCarga = ve.ToneladasCarga,
+                    MetrosCubCarga = ve.MetrosCubCarga,
+                    Pallets = ve.Pallets,
+                    TipoMotor = ve.TipoMotor,
+                    PotenciaMotor = ve.PotenciaMotor,
+                    NoCilindros = ve.NoCilindros,
+                    CapacidadAceite = ve.CapacidadAceite,
+                    CapacidadCombu = ve.CapacidadCombu,
+                    RenEsp = ve.RenEsp,
+                    TipoCombustible = ve.TipoCombustible,
+                    Transmision = ve.Transmision,
+                    Traccion = ve.Traccion,
+                    TipoEje = ve.TipoEje,
+                    CargaPorEje = ve.CargaPorEje,
+                    CargaMax = ve.CargaMax,
+                    TotalLlantas = ve.TotalLlantas,
+                    LlantasRepuesto = ve.LlantasRepuesto,
+                    DimensionLlantas = ve.DimensionLlantas,
+                    PulCub = ve.PulCub,
+                    Origen = ve.Origen,
+                    Observaciones = ve.Observaciones,
+
+                    Imagenes = context.VehiculoEspecificacionesImgs
+                        .Where(img => img.IdEspecificaciones == ve.IdEspecificaciones)
+                        .OrderBy(img => img.Consecutivo)
+                        .Select(img => new EspecificacionesImgView
+                        {
+                            IdEspecificaciones = img.IdEspecificaciones,
+                            Ruta = img.Ruta,
+                            Consecutivo = img.Consecutivo
+                        }).ToList()
+                })
+                .ToListAsync();
+
+            return resultado;
+        }
 
     }
 }
