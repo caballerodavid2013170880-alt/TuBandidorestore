@@ -30,12 +30,6 @@
             </div>
             <!--end::Page title-->
             <!--begin::Actions-->
-            <div class="d-flex align-items-center gap-2 gap-lg-3">
-                @if (permisosPagina!.Agregar)
-                {
-                    <a href="~/VehiculoDetalle/NavegacionVehiculoDetalle" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Detalle</a>
-                }
-            </div>
             <!--end::Actions-->
         </div>
         <!--end::Toolbar wrapper-->
@@ -112,12 +106,6 @@
                                     {
                                         <a href="~/VehiculoDetalle/NavegacionVehiculoDetalle/@contenido.IdVehiculoDetalle" class="btn btn-icon btn-active-light-primary w-30px h-30px">
                                             <i class="ki-outline ki-pencil fs-3"></i>
-                                        </a>
-                                    }
-                                    @if (permisosPagina!.Eliminar)
-                                    {
-                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-detalle-delete-item="@contenido.IdVehiculoDetalle" data-kt-detalle-table-filter="delete_row">
-                                            <i class="ki-outline ki-trash fs-3"></i>
                                         </a>
                                     }
                                     <a href="javascript:void(0)" class="btn btn-icon btn-active-light-primary w-30px h-30px eyeModal" data-idvehiculodetalle="@contenido.IdVehiculoDetalle" title="Ver detalle">

@@ -23,5 +23,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
     /// <param name="id">Identificador del vehículo.</param>
     /// <returns>ViewModel para agregar/editar un vehículo.</returns>
     Task<AgregarUnidadViewModel> GetVehiculoViewModel(int id, int empresaId);
+
+    Task<int> AgregarDetalle(AgregarUnidadViewModel model, int idvehiculo);
   }
 }

@@ -9,37 +9,37 @@ public partial class VehiculoDetalle
 
     public int IdVehiculo { get; set; }
 
-    public sbyte IdTipoVehiculo { get; set; }
+    public sbyte? IdTipoVehiculo { get; set; }
 
-    public short IdMarca { get; set; }
+    public short? IdMarca { get; set; }
 
-    public int IdZona { get; set; }
+    public int? IdZona { get; set; }
 
-    public int IdDeposito { get; set; }
+    public int? IdDeposito { get; set; }
 
     public int? IdEspecificacion { get; set; }
 
-    public int IdModelo { get; set; }
+    public int? IdModelo { get; set; }
 
-    public int IdTipoEje { get; set; }
+    public int? IdTipoEje { get; set; }
 
     public int? IdNegocio { get; set; }
 
-    public int AnioVehiculo { get; set; }
+    public int? AnioVehiculo { get; set; }
 
-    public string ColorVehiculo { get; set; } = null!;
+    public string? ColorVehiculo { get; set; }
 
     public ulong? TieneRotulo { get; set; }
 
-    public string NumeroSerie { get; set; } = null!;
+    public string? NumeroSerie { get; set; }
 
-    public string NumeroMotor { get; set; } = null!;
+    public string? NumeroMotor { get; set; }
 
-    public string Carroceria { get; set; } = null!;
+    public string? Carroceria { get; set; }
 
-    public string TarjetaCirculacion { get; set; } = null!;
+    public string? TarjetaCirculacion { get; set; }
 
-    public int Gasolina { get; set; }
+    public int? Gasolina { get; set; }
 
     public ulong? CopiaFactura { get; set; }
 
@@ -51,23 +51,23 @@ public partial class VehiculoDetalle
 
     public ulong? CopiaPolizaSeguro { get; set; }
 
-    public string Proveedor { get; set; } = null!;
+    public string? Proveedor { get; set; }
 
     public DateTime? FechaCompra { get; set; }
 
-    public string NumeroFactura { get; set; } = null!;
+    public string? NumeroFactura { get; set; }
 
-    public float CostoVehiculo { get; set; }
+    public float? CostoVehiculo { get; set; }
 
     public ulong? TarifaVehicular { get; set; }
 
     public string? NombreTarifaVehicular { get; set; }
 
-    public float KilometrajeAcumulado { get; set; }
+    public float? KilometrajeAcumulado { get; set; }
 
     public DateTime? FechaBaja { get; set; }
 
-    public string ColorInterior { get; set; } = null!;
+    public string? ColorInterior { get; set; }
 
     public ulong? TieneCaja { get; set; }
 
@@ -77,41 +77,41 @@ public partial class VehiculoDetalle
 
     public ulong? Rentado { get; set; }
 
-    public float KilometrajeGarantia { get; set; }
+    public float? KilometrajeGarantia { get; set; }
 
-    public int MesesGarantia { get; set; }
+    public int? MesesGarantia { get; set; }
 
     public string? EconomicoAnterior { get; set; }
 
-    public int PesoMinimo { get; set; }
+    public int? PesoMinimo { get; set; }
 
-    public int PesoMaximo { get; set; }
+    public int? PesoMaximo { get; set; }
 
-    public float VolumenMinimo { get; set; }
+    public float? VolumenMinimo { get; set; }
 
-    public float VolumenMaximo { get; set; }
+    public float? VolumenMaximo { get; set; }
 
-    public string TipoLicenciaRequerida { get; set; } = null!;
+    public string? TipoLicenciaRequerida { get; set; }
 
     public ulong? PermisoCargaAceite { get; set; }
 
-    public DateTime VigenciaPermisoAceite { get; set; }
+    public DateTime? VigenciaPermisoAceite { get; set; }
 
     public DateTime? VigenciaTarjetaCirculacion { get; set; }
 
-    public string UsuarioCaptura { get; set; } = null!;
+    public string? UsuarioCaptura { get; set; }
 
-    public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
+    public virtual Depositosdisponible? IdDepositoNavigation { get; set; }
 
-    public virtual Marca IdMarcaNavigation { get; set; } = null!;
+    public virtual Marca? IdMarcaNavigation { get; set; }
 
-    public virtual Modelo IdModeloNavigation { get; set; } = null!;
+    public virtual Modelo? IdModeloNavigation { get; set; }
 
-    public virtual TipoEje IdTipoEjeNavigation { get; set; } = null!;
+    public virtual TipoEje? IdTipoEjeNavigation { get; set; }
 
-    public virtual Tipovehiculo IdTipoVehiculoNavigation { get; set; } = null!;
+    public virtual Tipovehiculo? IdTipoVehiculoNavigation { get; set; }
 
     public virtual Vehiculo IdVehiculoNavigation { get; set; } = null!;
 
-    public virtual Zona IdZonaNavigation { get; set; } = null!;
+    public virtual Zona? IdZonaNavigation { get; set; }
 }

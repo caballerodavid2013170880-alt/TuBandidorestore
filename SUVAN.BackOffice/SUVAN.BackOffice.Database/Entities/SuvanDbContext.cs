@@ -3857,27 +3857,22 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdDeposito)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_vehiculo_detalle_deposito");
 
             entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdMarca)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_vehiculo_detalle_marca");
 
             entity.HasOne(d => d.IdModeloNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdModelo)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_vehiculo_detalle_modelo");
 
             entity.HasOne(d => d.IdTipoEjeNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdTipoEje)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_vehiculo_detalle_eje");
 
             entity.HasOne(d => d.IdTipoVehiculoNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdTipoVehiculo)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_vehiculo_detalle_tipovehiculo");
 
             entity.HasOne(d => d.IdVehiculoNavigation).WithMany(p => p.VehiculoDetalles)
@@ -3887,7 +3882,6 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasOne(d => d.IdZonaNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdZona)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_vehiculo_detalle_zona");
         });
 

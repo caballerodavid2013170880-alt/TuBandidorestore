@@ -216,3 +216,28 @@ var KTUnidad = function () {
 KTUtil.onDOMContentLoaded(function () {
   KTUnidad.init();
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    const mostrar = document.getElementById("mostrarConfirmacionDetalle").value === 'True';
+    const idDetalle = document.getElementById("idVehiculoDetalle")?.value;
+    if (mostrar && idDetalle && idDetalle !== "0") {
+        Swal.fire({
+            title: "\u00bfDesea a\u00f1adir los detalles del veh\u00edculo?",
+            icon: "question",
+            showCancelButton: true,
+            buttonsStyling: false,
+            confirmButtonText: "S\u00ed",
+            cancelButtonText: "No",
+            customClass: {
+                confirmButton: "btn fw-bold btn-primary",
+                cancelButton: "btn fw-bold btn-secondary"
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = `/VehiculoDetalle/NavegacionVehiculoDetalle/${idDetalle}`;
+            } else {
+                window.location.href = '/Configuracion/Unidades';
+            }
+        });
+    }
+});
