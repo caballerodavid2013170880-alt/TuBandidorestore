@@ -1,5 +1,6 @@
 ﻿using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoEspecificacionesViewModel;
 
 namespace SUVAN.BackOffice.Service.Configuracion
 {
@@ -25,5 +26,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
     Task<AgregarUnidadViewModel> GetVehiculoViewModel(int id, int empresaId);
 
     Task<int> AgregarDetalle(AgregarUnidadViewModel model, int idvehiculo);
+
+    Task<List<ModeloUnidadViewModel>> ObtenerModelo(int? marcaId);
   }
 }

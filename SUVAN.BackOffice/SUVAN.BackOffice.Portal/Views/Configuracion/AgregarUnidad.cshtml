@@ -56,6 +56,7 @@
                     @Html.AntiForgeryToken()
                     <input asp-for="UnidadId" type="hidden" />
                     <input asp-for="ServiciosJson" type="hidden" />
+                    <input asp-for="MarcaJson" type="hidden" />
 
                     <div class="fv-row mb-8">
                         <div class="col-sm-12">
@@ -147,6 +148,33 @@
                             </div>
                         </div>
 
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-8">
+                                <div class="fv-row mb-3">
+                                    <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Marca</label>
+                                    <select asp-for="IdMarca" asp-items="new SelectList(Model.Marcas, nameof(MarcaUnidadViewModel.IdMarca), nameof(MarcaUnidadViewModel.DescripcionMarca), Model.IdMarca)" class="form-control">
+                                        <option value="">Selecciona una Zona</option>
+                                    </select>
+                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                        <span asp-validation-for="IdMarca"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-8">
+                                <div class="fv-row mb-3">
+                                    <label asp-for="IdModelo" class="col-form-label text-gray-600 required">Marca</label>
+                                    <select asp-for="IdModelo" asp-items="new SelectList(Model.Modelos, nameof(ModeloUnidadViewModel.IdModelo), nameof(ModeloUnidadViewModel.DescripcionModelo), Model.IdModelo)" class="form-control">
+                                        <option value="">Selecciona un Modelo</option>
+                                    </select>
+                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                        <span asp-validation-for="IdModelo"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-sm-6">

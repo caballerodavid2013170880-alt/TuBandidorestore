@@ -12,6 +12,8 @@ using SUVAN.BackOffice.Models.Mensajeria;
 using SUVAN.BackOffice.Service.MensajeriaService;
 using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Service.Logistica;
+using Newtonsoft.Json;
+using SUVAN.BackOffice.Database.Entities;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -183,6 +185,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> AgregarUnidad(int id)
         {
             var agregarModel = await vehiculoService.GetVehiculoViewModel(id, User.GetEmpresaId());
+            agregarModel.Modelos = await vehiculoService.ObtenerModelo(agregarModel.IdMarca);
+            agregarModel.MarcaJson = JsonConvert.SerializeObject(agregarModel.Marcas);
             return View(agregarModel);
         }
 
@@ -197,6 +201,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 returnModel.TipoUnidadId = model.TipoUnidadId;
                 returnModel.UnidadId = model.UnidadId;
                 returnModel.Activo = model.Activo;
+                returnModel.IdMarca = model.IdMarca;
+                returnModel.IdModelo = model.IdModelo;
 
                 if (!ModelState.IsValid)
                 {

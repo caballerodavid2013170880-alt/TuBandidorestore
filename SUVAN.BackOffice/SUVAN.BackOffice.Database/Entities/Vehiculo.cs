@@ -31,6 +31,10 @@ public partial class Vehiculo
 
     public string? Numeromotor { get; set; }
 
+    public int? IdMarca { get; set; }
+
+    public int? IdModelo { get; set; }
+
     public virtual ICollection<CorridaAsignacion> CorridaAsignacions { get; set; } = new List<CorridaAsignacion>();
 
     public virtual Empresa? EmpresaIdempresaNavigation { get; set; }

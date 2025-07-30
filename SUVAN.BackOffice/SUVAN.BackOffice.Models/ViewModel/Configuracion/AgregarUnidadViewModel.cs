@@ -32,7 +32,13 @@ namespace SUVAN.BackOffice.Models.ViewModel.Configuracion
 
     public List<ServicioUnidadViewModel> Servicios { get; set; } = new List<ServicioUnidadViewModel>();
     public string ServiciosJson { get; set; } = string.Empty;
-  }
+        
+    public int? IdMarca { get; set; }
+    public int? IdModelo { get; set; }
+    public List<MarcaUnidadViewModel> Marcas { get; set; } = new List<MarcaUnidadViewModel>();
+    public List<ModeloUnidadViewModel> Modelos { get; set; } = new List<ModeloUnidadViewModel>();
+    public string MarcaJson { get; set; } = string.Empty;
+    }
 
   public class TipoUnidadViewModel
   {
@@ -48,4 +54,18 @@ namespace SUVAN.BackOffice.Models.ViewModel.Configuracion
     public string detalle { get; set; } = null!;
     public DateTime fechaServicio { get; set; }
   }
+
+    public class MarcaUnidadViewModel
+    {
+        public int? IdMarca { get; set; }
+        public string DescripcionMarca { get; set; } = null!;
+        public List<ModeloUnidadViewModel> Modelos { get; set; } = new();
+    }
+
+    public class ModeloUnidadViewModel
+    {
+        public int? IdModelo { get; set; }
+        public string DescripcionModelo { get; set; } = null!;
+    }
+
 }

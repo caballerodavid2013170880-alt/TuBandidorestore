@@ -3,12 +3,14 @@ using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Service.Logistica;
 using SUVAN.BackOffice.Service.Seguridad;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoEspecificacionesViewModel;
 
 namespace SUVAN.BackOffice.Service.Configuracion
 {
@@ -16,11 +18,15 @@ namespace SUVAN.BackOffice.Service.Configuracion
     {
         private readonly SuvanDbContext context;
         private readonly ITipoVehiculoService tipoVehiculoService;
+        private readonly IMarcaService marcaService;
+        private readonly IModeloService modeloService;
 
-        public VehiculoService(SuvanDbContext context, ITipoVehiculoService tipoVehiculoService)
+        public VehiculoService(SuvanDbContext context, ITipoVehiculoService tipoVehiculoService, IMarcaService marcaService, IModeloService modeloService)
         {
             this.context = context;
             this.tipoVehiculoService = tipoVehiculoService;
+            this.marcaService = marcaService;
+            this.modeloService = modeloService;
         }
 
 
@@ -48,6 +54,8 @@ namespace SUVAN.BackOffice.Service.Configuracion
         {
             Vehiculo? vehiculo = new();
             List<Tipovehiculo> tipoVehiculo = await tipoVehiculoService.GetTipovehiculosActivo();
+            List<Marca> marcas = await marcaService.GetMarca();
+            List<Modelo> modelo = await modeloService.GetModelo();
 
             if (id > 0)
             {
@@ -63,6 +71,25 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 Nombre = x.Nombre!
             }).ToList();
 
+            viewModel.Marcas = marcas.Select(x => new MarcaUnidadViewModel
+            {
+                IdMarca = x.IdMarca,
+                DescripcionMarca = x.Descripcion!,
+                Modelos = context.Modelos
+                .Where(m => m.IdMarca == x.IdMarca)
+                .Select(m => new ModeloUnidadViewModel
+                {
+                    IdModelo = m.IdModelo,
+                    DescripcionModelo = m.Descripcion!
+                }).ToList()
+            }).ToList();
+
+            viewModel.Modelos = modelo.Select(x => new ModeloUnidadViewModel
+            {
+                IdModelo = x.IdModelo,
+                DescripcionModelo = x.Descripcion!
+            }).ToList();
+
             if (vehiculo != null)
             {
                 viewModel.UnidadId = id;
@@ -76,6 +103,8 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 viewModel.NumeroEconomico = vehiculo?.Numeroeconomico ?? string.Empty;
                 viewModel.NumeroMotor = vehiculo?.Numeromotor ?? string.Empty;
                 viewModel.FechaFinSeguro = vehiculo?.Fechafinseguro;
+                viewModel.IdMarca = vehiculo?.IdMarca;
+                viewModel.IdModelo = vehiculo?.IdModelo;
 
                 var servicios = await context.Vehiculoservicios
                   .Where(x => x.Idvehiculo == id)
@@ -96,6 +125,20 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
             return viewModel!;
 
+        }
+
+        public async Task<List<ModeloUnidadViewModel>> ObtenerModelo(int? marcaId)
+        {
+            var resultado = await (from t in context.Modelos
+                                   where
+                                   (t.IdMarca == marcaId)
+                                   select new ModeloUnidadViewModel
+                                   {
+                                       IdModelo = t.IdModelo,
+                                       DescripcionModelo = t.Descripcion
+
+                                   }).ToListAsync();
+            return resultado;
         }
 
         /// <summary>
@@ -151,6 +194,8 @@ namespace SUVAN.BackOffice.Service.Configuracion
             vehiculo.Modelo = model.Modelo;
             vehiculo.Numeroeconomico = model.NumeroEconomico;
             vehiculo.Numeromotor = model.NumeroMotor;
+            vehiculo.IdMarca = model.IdMarca;
+            vehiculo.IdModelo = model.IdModelo;
 
 
             if (model.UnidadId > 0)

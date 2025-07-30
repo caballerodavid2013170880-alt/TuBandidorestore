@@ -3685,6 +3685,8 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.Fecharegistro)
                 .HasColumnType("datetime")
                 .HasColumnName("fecharegistro");
+            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
+            entity.Property(e => e.IdModelo).HasColumnName("id_modelo");
             entity.Property(e => e.Marca)
                 .HasMaxLength(100)
                 .HasColumnName("marca");
