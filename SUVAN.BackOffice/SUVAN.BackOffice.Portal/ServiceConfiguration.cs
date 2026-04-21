@@ -70,6 +70,8 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<ITipoEjeService, TipoEjeService>();
             services.AddTransient<IVehiculoEspecificacionesService, VehiculoEspecificacionesService>();
             services.AddTransient<ICatalogsService, CatalogsService>();
+            //Regiones
+            services.AddTransient<IRegionService, RegionesService>();
         }
 
         /// <summary>

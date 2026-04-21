@@ -297,7 +297,8 @@ namespace SUVAN.BackOffice.Service.Configuracion
     /// <returns></returns>
     public async Task<List<ModelRutaConfiguracion>> GetRutasSinConfigurarSoloRed(int empresaId)
     {
-      List<ModelRutaConfiguracion> rutas = new();
+      
+            List<ModelRutaConfiguracion> rutas = new();
       string query = String.Format("CALL sp_s_ConfiguracionRuta({0});", empresaId);
       rutas = await context.Set<ModelRutaConfiguracion>().FromSqlRaw(query).ToListAsync();
       // devuelve solo las rutas que tienen al menos un false en las columnas de ModelRutaConfiguracion

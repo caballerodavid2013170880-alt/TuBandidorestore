@@ -5,21 +5,21 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class Especifi
 {
-    public short IdEspeci { get; set; }
+    public short IdMarca { get; set; }
 
     public short IdModVe { get; set; }
 
-    public short IdMarca { get; set; }
+    public short IdEspeci { get; set; }
 
     public short? TipoCom { get; set; }
 
     public short? Pallets { get; set; }
 
-    public double? RenEsp { get; set; }
+    public float? RenEsp { get; set; }
 
-    public double? CapCom { get; set; }
+    public float? CapCom { get; set; }
 
-    public double? CapAce { get; set; }
+    public float? CapAce { get; set; }
 
     public string? TipoMot { get; set; }
 
@@ -29,11 +29,11 @@ public partial class Especifi
 
     public short? NoCilin { get; set; }
 
-    public double? Ancho { get; set; }
+    public float? Ancho { get; set; }
 
-    public double? Largo { get; set; }
+    public float? Largo { get; set; }
 
-    public double? Altura { get; set; }
+    public float? Altura { get; set; }
 
     public float? PesoBru { get; set; }
 
@@ -55,9 +55,9 @@ public partial class Especifi
 
     public short? TipoEje { get; set; }
 
-    public double? McubCar { get; set; }
+    public float? McubCar { get; set; }
 
-    public double? TonCar { get; set; }
+    public float? TonCar { get; set; }
 
     public string? Obs { get; set; }
 }

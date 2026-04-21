@@ -28,6 +28,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
         private readonly IVehiculoService vehiculoService;
         private readonly ITarifaService tarifaService;
         private readonly IConversacionesService conversacionesService;
+        // Regiones
+        private readonly IRegionService regionesService;
 
         public ConfiguracionController(ILogger<ConfiguracionController> logger,
           IEmpresasService empresasService,
@@ -35,7 +37,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
           ITipoVehiculoService tipoVehiculoService,
           IVehiculoService vehiculoService,
           ITarifaService tarifaService,
-          IConversacionesService conversacionesService)
+          IConversacionesService conversacionesService,
+          IRegionService regionService)
         {
             _logger = logger;
             this.empresasService = empresasService;
@@ -44,6 +47,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             this.vehiculoService = vehiculoService;
             this.tarifaService = tarifaService;
             this.conversacionesService = conversacionesService;
+            this.regionesService = regionService;
         }
 
         public IActionResult Index()
@@ -284,5 +288,48 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
             return View(reporte);
         }
+
+
+        // Region
+        public async Task<IActionResult> Regiones()
+        {
+            var regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+            return View(regiones);
+        }
+
+        public async Task<IActionResult> AgregarRegion(int id)
+        {
+            var agregarModel = await regionesService.GetRegionViewModel(User.GetEmpresaId(), id);
+            return View(agregarModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AgregarRegion(RegionViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                var result = await regionesService.AgregarRegion(model);
+
+                if (result)
+                {
+                    return RedirectToAction("regiones", "Configuracion");
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                return View(model);
+            }
+
+
+        }
+
     }
 }

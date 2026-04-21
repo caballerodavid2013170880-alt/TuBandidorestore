@@ -25,6 +25,10 @@ public partial class Zona
 
     public ulong Activo { get; set; }
 
+    public short IdRegion { get; set; }
+
+    public short IdPlanta { get; set; }
+
     public virtual ICollection<Depositosdisponible> Depositosdisponibles { get; set; } = new List<Depositosdisponible>();
 
     public virtual Empresa IdEmpresaNavigation { get; set; } = null!;

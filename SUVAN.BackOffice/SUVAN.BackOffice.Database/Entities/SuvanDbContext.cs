@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System;
+using System.Collections.Generic;
 using static SUVAN.BackOffice.Models.StoredsProcedures.ModelsStoredsProcedures;
 
 namespace SUVAN.BackOffice.Database.Entities;
@@ -10,13 +9,12 @@ namespace SUVAN.BackOffice.Database.Entities;
 public partial class SuvanDbContext : DbContext
 {
     private readonly IConfiguration configuration;
-
     public SuvanDbContext()
     {
     }
 
     public SuvanDbContext(DbContextOptions<SuvanDbContext> options, IConfiguration configuration)
-     : base(options)
+        : base(options)
     {
         this.configuration = configuration;
     }
@@ -47,6 +45,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Codigopai> Codigopais { get; set; }
 
+    public virtual DbSet<CombCarga> CombCargas { get; set; }
+
     public virtual DbSet<Conductor> Conductors { get; set; }
 
     public virtual DbSet<Contenido> Contenidos { get; set; }
@@ -71,19 +71,29 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Corridum> Corrida { get; set; }
 
+    public virtual DbSet<CosPrev> CosPrevs { get; set; }
+
     public virtual DbSet<Datosfacturacionemisor> Datosfacturacionemisors { get; set; }
 
     public virtual DbSet<Datosfacturacionproducto> Datosfacturacionproductos { get; set; }
 
     public virtual DbSet<Datosfacturacionreceptor> Datosfacturacionreceptors { get; set; }
 
+    public virtual DbSet<Deposito> Depositos { get; set; }
+
     public virtual DbSet<Depositosdisponible> Depositosdisponibles { get; set; }
+
+    public virtual DbSet<Depto> Deptos { get; set; }
+
+    public virtual DbSet<DetPrev> DetPrevs { get; set; }
 
     public virtual DbSet<Dia> Dias { get; set; }
 
     public virtual DbSet<Empresa> Empresas { get; set; }
 
     public virtual DbSet<EmpresaRutum> EmpresaRuta { get; set; }
+
+    public virtual DbSet<Especifi> Especifis { get; set; }
 
     public virtual DbSet<Estatusestacion> Estatusestacions { get; set; }
 
@@ -105,6 +115,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Fotografium> Fotografia { get; set; }
 
+    public virtual DbSet<GasIave> GasIaves { get; set; }
+
     public virtual DbSet<GrupoReparacion> GrupoReparacions { get; set; }
 
     public virtual DbSet<Infracc> Infraccs { get; set; }
@@ -120,6 +132,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Logtransaccion> Logtransaccions { get; set; }
 
     public virtual DbSet<Logtransaccionesentidade> Logtransaccionesentidades { get; set; }
+
+    public virtual DbSet<ManoObra> ManoObras { get; set; }
 
     public virtual DbSet<Mantenimiento> Mantenimientos { get; set; }
 
@@ -157,6 +171,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Personalidadjuridica> Personalidadjuridicas { get; set; }
 
+    public virtual DbSet<Plantum> Planta { get; set; }
+
     public virtual DbSet<PolSeg> PolSegs { get; set; }
 
     public virtual DbSet<Politicascompensacion> Politicascompensacions { get; set; }
@@ -179,6 +195,10 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Regimenfiscalreceptor> Regimenfiscalreceptors { get; set; }
 
+    public virtual DbSet<Region> Regions { get; set; }
+
+    public virtual DbSet<RendMe> RendMes { get; set; }
+
     public virtual DbSet<RutaParadum> RutaParada { get; set; }
 
     public virtual DbSet<Rutum> Ruta { get; set; }
@@ -186,6 +206,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Siniestro> Siniestros { get; set; }
 
     public virtual DbSet<Taller> Tallers { get; set; }
+
+    public virtual DbSet<TarCom> TarComs { get; set; }
 
     public virtual DbSet<TarifaEscalonadum> TarifaEscalonada { get; set; }
 
@@ -198,6 +220,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<TipoAutorizacion> TipoAutorizacions { get; set; }
 
     public virtual DbSet<TipoAux> TipoAuxes { get; set; }
+
+    public virtual DbSet<TipoCom> TipoComs { get; set; }
 
     public virtual DbSet<TipoEje> TipoEjes { get; set; }
 
@@ -268,14 +292,14 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Zona> Zonas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
-            .UseCollation("utf8mb3_general_ci")
-            .HasCharSet("utf8mb3");
+            .UseCollation("utf8mb4_0900_ai_ci")
+            .HasCharSet("utf8mb4");
 
         //NOTA: Se agrega este modelo para ejecutar sp
         modelBuilder.Entity<ModelstpBuscaServicio>().HasNoKey();
@@ -286,7 +310,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idadmin).HasName("PRIMARY");
 
-            entity.ToTable("admin");
+            entity
+                .ToTable("admin")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.PerfilIdperfil, "fk_admin_perfil1_idx");
 
@@ -325,7 +352,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("admin_empresa");
+            entity
+                .ToTable("admin_empresa")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.AdminIdadmin, "fk_admin_empresa_admin1_idx");
 
@@ -360,7 +390,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdBaja).HasName("PRIMARY");
 
-            entity.ToTable("baja_vehi");
+            entity
+                .ToTable("baja_vehi")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdBaja).HasColumnName("id_baja");
             entity.Property(e => e.Descripcion)
@@ -373,7 +406,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("bitacoraloginweb");
+            entity
+                .ToTable("bitacoraloginweb")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Codigo)
@@ -399,7 +435,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.ViajeIdviaje).HasName("PRIMARY");
 
-            entity.ToTable("calificacion_conductor");
+            entity
+                .ToTable("calificacion_conductor")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ConductorIdconductor, "fk_conductor_calificacion_idx");
 
@@ -435,7 +474,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.CorridaasignacionIdcorridaasignacion).HasName("PRIMARY");
 
-            entity.ToTable("calificacion_corridaasignacion");
+            entity
+                .ToTable("calificacion_corridaasignacion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CorridaasignacionIdcorridaasignacion)
                 .ValueGeneratedNever()
@@ -447,7 +489,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.ViajeIdviaje).HasName("PRIMARY");
 
-            entity.ToTable("calificacion_usuario");
+            entity
+                .ToTable("calificacion_usuario")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ConductorIdconductor, "fk_conductor_calificacion_idx2");
 
@@ -480,7 +525,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdCausaBaja).HasName("PRIMARY");
 
-            entity.ToTable("causa_baja");
+            entity
+                .ToTable("causa_baja")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdBaja, "fk_cuasaBaja_baja");
 
@@ -501,7 +549,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdCausamantenimiento).HasName("PRIMARY");
 
-            entity.ToTable("causa_mantenimiento");
+            entity
+                .ToTable("causa_mantenimiento")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdCausamantenimiento).HasColumnName("id_causamantenimiento");
             entity.Property(e => e.Descripcion)
@@ -514,7 +565,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdCausaSiniestro).HasName("PRIMARY");
 
-            entity.ToTable("causa_siniestro");
+            entity
+                .ToTable("causa_siniestro")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdCausaSiniestro).HasColumnName("Id_causa_siniestro");
             entity.Property(e => e.Descripcion)
@@ -527,7 +581,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idcodigocorreo).HasName("PRIMARY");
 
-            entity.ToTable("codigocorreo");
+            entity
+                .ToTable("codigocorreo")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.CodigodescuentoIdcodigodescuento, "codigocorreo_FK");
 
@@ -546,7 +603,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idcodigodescuento).HasName("PRIMARY");
 
-            entity.ToTable("codigodescuento");
+            entity
+                .ToTable("codigodescuento")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.TipocodigodescuentoIdtipocodigodescuento, "fk_codigodescuento_tipocodigodescuento1_idx");
 
@@ -589,7 +649,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idcodigopais).HasName("PRIMARY");
 
-            entity.ToTable("codigopais");
+            entity
+                .ToTable("codigopais")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idcodigopais)
                 .ValueGeneratedNever()
@@ -605,11 +668,58 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("pais");
         });
 
+        modelBuilder.Entity<CombCarga>(entity =>
+        {
+            entity.HasKey(e => e.IdCarga).HasName("PRIMARY");
+
+            entity.ToTable("comb_cargas");
+
+            entity.Property(e => e.IdCarga).HasColumnName("id_carga");
+            entity.Property(e => e.CostoXLt).HasColumnName("costo_x_lt");
+            entity.Property(e => e.Espec)
+                .HasMaxLength(10)
+                .HasColumnName("espec");
+            entity.Property(e => e.FRegistro)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("f_registro");
+            entity.Property(e => e.Factura)
+                .HasMaxLength(20)
+                .HasColumnName("factura");
+            entity.Property(e => e.Fecha).HasColumnName("fecha");
+            entity.Property(e => e.FolioNota)
+                .HasMaxLength(20)
+                .HasColumnName("folio_nota");
+            entity.Property(e => e.Hora)
+                .HasColumnType("time")
+                .HasColumnName("hora");
+            entity.Property(e => e.IdComb).HasColumnName("id_comb");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.IdVehic)
+                .HasMaxLength(15)
+                .HasColumnName("id_vehic");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Importe).HasColumnName("importe");
+            entity.Property(e => e.KmActual).HasColumnName("km_actual");
+            entity.Property(e => e.KmAnterior).HasColumnName("km_anterior");
+            entity.Property(e => e.KmRecorridos).HasColumnName("km_recorridos");
+            entity.Property(e => e.Litros).HasColumnName("litros");
+            entity.Property(e => e.Rendimiento).HasColumnName("rendimiento");
+            entity.Property(e => e.Traspasar)
+                .HasDefaultValueSql("'0'")
+                .HasColumnName("traspasar");
+        });
+
         modelBuilder.Entity<Conductor>(entity =>
         {
             entity.HasKey(e => e.Idconductor).HasName("PRIMARY");
 
-            entity.ToTable("conductor");
+            entity
+                .ToTable("conductor")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Idregimenfiscal, "conductor_regimenfiscalreceptor_FK");
 
@@ -724,7 +834,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idcontenido).HasName("PRIMARY");
 
-            entity.ToTable("contenido");
+            entity
+                .ToTable("contenido")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.TipocontenidoIdtipocontenido, "fk_contenido_tipocontenido1_idx");
 
@@ -755,7 +868,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("conversacionconexion");
+            entity
+                .ToTable("conversacionconexion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ConversacionConexionId, "ConversacionConexionId_UNIQUE").IsUnique();
 
@@ -778,7 +894,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("conversacionmensaje");
+            entity
+                .ToTable("conversacionmensaje")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ConversacionMensajeId, "ConversacionMensajeId_UNIQUE").IsUnique();
 
@@ -809,7 +928,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.ConversacionId).HasName("PRIMARY");
 
-            entity.ToTable("conversacionportal");
+            entity
+                .ToTable("conversacionportal")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ConversacionId, "ConversacionId_UNIQUE").IsUnique();
 
@@ -830,7 +952,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("conversacionusuario");
+            entity
+                .ToTable("conversacionusuario")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ConversacionUsuarioId, "ConversacionUsuarioId_UNIQUE").IsUnique();
 
@@ -849,7 +974,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdcorridaAsignacion).HasName("PRIMARY");
 
-            entity.ToTable("corrida_asignacion");
+            entity
+                .ToTable("corrida_asignacion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ConductorIdconductor, "fk_corrida_ejecucion_conductor1_idx");
 
@@ -907,7 +1035,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("corrida_asignacion_parada");
+            entity
+                .ToTable("corrida_asignacion_parada")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EstatusestacionIdestatusestacion, "FKEstatusEstacion_idx");
 
@@ -931,7 +1062,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("corrida_dias");
+            entity
+                .ToTable("corrida_dias")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.CorridaIdcorrida, "fk_table1_corrida2_idx");
 
@@ -961,7 +1095,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdCorridaAsignacion).HasName("PRIMARY");
 
-            entity.ToTable("corrida_liquidacion");
+            entity
+                .ToTable("corrida_liquidacion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdCorridaAsignacion, "fk_corrida_asignacion_idx");
 
@@ -988,7 +1125,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("corrida_parada");
+            entity
+                .ToTable("corrida_parada")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.CorridaIdcorrida, "fk_table1_corrida1_idx");
 
@@ -1021,7 +1161,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idcorrida).HasName("PRIMARY");
 
-            entity.ToTable("corrida");
+            entity
+                .ToTable("corrida")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EmpresaIdempresa, "corrida_FK");
 
@@ -1047,11 +1190,32 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_corrida_ruta1");
         });
 
+        modelBuilder.Entity<CosPrev>(entity =>
+        {
+            entity.HasKey(e => e.IdPrev).HasName("PRIMARY");
+
+            entity.ToTable("cos_prev");
+
+            entity.Property(e => e.IdPrev)
+                .ValueGeneratedNever()
+                .HasColumnName("id_prev");
+            entity.Property(e => e.CosMo).HasColumnName("cos_mo");
+            entity.Property(e => e.CosRef).HasColumnName("cos_ref");
+            entity.Property(e => e.CosTot).HasColumnName("cos_tot");
+            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
+            entity.Property(e => e.IdModelo).HasColumnName("id_modelo");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+        });
+
         modelBuilder.Entity<Datosfacturacionemisor>(entity =>
         {
             entity.HasKey(e => e.Iddatosfacturacionemisor).HasName("PRIMARY");
 
-            entity.ToTable("datosfacturacionemisor");
+            entity
+                .ToTable("datosfacturacionemisor")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EmpresaIdempresa, "fk_datosfacturacionemisor_usuario_idx");
 
@@ -1086,7 +1250,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Iddatosfacturacionproducto).HasName("PRIMARY");
 
-            entity.ToTable("datosfacturacionproducto");
+            entity
+                .ToTable("datosfacturacionproducto")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Iddatosfacturacionproducto, "fk_iddatosfacturacionproducto_idx");
 
@@ -1125,7 +1292,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Iddatosfacturacionreceptor).HasName("PRIMARY");
 
-            entity.ToTable("datosfacturacionreceptor");
+            entity
+                .ToTable("datosfacturacionreceptor")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.RegimenfiscalreceptorIdregimenfiscalreceptor, "fk_datosfacturacionreceptor_regimenfiscalcfdireceptor_idx");
 
@@ -1168,11 +1338,69 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_datosfacturacionreceptor_usuario");
         });
 
+        modelBuilder.Entity<Deposito>(entity =>
+        {
+            entity.HasKey(e => e.IdDeposi).HasName("PRIMARY");
+
+            entity.ToTable("deposito");
+
+            entity.Property(e => e.IdDeposi)
+                .ValueGeneratedNever()
+                .HasColumnName("id_deposi");
+            entity.Property(e => e.Ciudad)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("ciudad");
+            entity.Property(e => e.Cp)
+                .HasMaxLength(5)
+                .IsFixedLength()
+                .HasColumnName("cp");
+            entity.Property(e => e.DescCorta)
+                .HasMaxLength(4)
+                .IsFixedLength()
+                .HasColumnName("desc_corta");
+            entity.Property(e => e.Descrip)
+                .HasMaxLength(80)
+                .IsFixedLength()
+                .HasColumnName("descrip");
+            entity.Property(e => e.Direc)
+                .HasMaxLength(70)
+                .IsFixedLength()
+                .HasColumnName("direc");
+            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.LocFor)
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasColumnName("loc_for");
+            entity.Property(e => e.RPerson)
+                .HasMaxLength(100)
+                .IsFixedLength()
+                .HasColumnName("r_person");
+            entity.Property(e => e.Respon)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("respon");
+            entity.Property(e => e.Rfc)
+                .HasMaxLength(15)
+                .IsFixedLength()
+                .HasColumnName("rfc");
+            entity.Property(e => e.Tel)
+                .HasMaxLength(30)
+                .IsFixedLength()
+                .HasColumnName("tel");
+        });
+
         modelBuilder.Entity<Depositosdisponible>(entity =>
         {
             entity.HasKey(e => e.IdDeposito).HasName("PRIMARY");
 
-            entity.ToTable("depositosdisponibles");
+            entity
+                .ToTable("depositosdisponibles")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ZonaId, "fk_deposito_zona");
 
@@ -1229,14 +1457,54 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasOne(d => d.Zona).WithMany(p => p.Depositosdisponibles)
                 .HasForeignKey(d => d.ZonaId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_deposito_zona");
+        });
+
+        modelBuilder.Entity<Depto>(entity =>
+        {
+            entity.HasKey(e => e.IdDepto).HasName("PRIMARY");
+
+            entity.ToTable("deptos");
+
+            entity.Property(e => e.IdDepto)
+                .ValueGeneratedNever()
+                .HasColumnName("id_depto");
+            entity.Property(e => e.Descrip)
+                .HasMaxLength(70)
+                .IsFixedLength()
+                .HasColumnName("descrip");
+            entity.Property(e => e.IdDeposi).HasColumnName("id_deposi");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Responsable)
+                .HasMaxLength(70)
+                .IsFixedLength()
+                .HasColumnName("responsable");
+        });
+
+        modelBuilder.Entity<DetPrev>(entity =>
+        {
+            entity.HasKey(e => new { e.IdPrev, e.IdPrevDet })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("det_prev");
+
+            entity.Property(e => e.IdPrev).HasColumnName("id_prev");
+            entity.Property(e => e.IdPrevDet).HasColumnName("id_prev_det");
+            entity.Property(e => e.IdMano).HasColumnName("id_mano");
         });
 
         modelBuilder.Entity<Dia>(entity =>
         {
             entity.HasKey(e => e.Iddias).HasName("PRIMARY");
 
-            entity.ToTable("dias");
+            entity
+                .ToTable("dias")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Iddias)
                 .HasMaxLength(2)
@@ -1252,7 +1520,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idempresa).HasName("PRIMARY");
 
-            entity.ToTable("empresa");
+            entity
+                .ToTable("empresa")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Idregimenfiscal, "empresa_regimenfiscalreceptor_fk");
 
@@ -1285,7 +1556,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("empresa_ruta");
+            entity
+                .ToTable("empresa_ruta")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EmpresaIdempresa, "fk_table1_empresa1_idx");
 
@@ -1302,11 +1576,73 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("tipotarifa_idtipotarifa");
         });
 
+        modelBuilder.Entity<Especifi>(entity =>
+        {
+            entity.HasKey(e => e.IdEspeci).HasName("PRIMARY");
+
+            entity.ToTable("especifi");
+
+            entity.Property(e => e.IdEspeci)
+                .ValueGeneratedNever()
+                .HasColumnName("id_especi");
+            entity.Property(e => e.Altura).HasColumnName("altura");
+            entity.Property(e => e.Ancho).HasColumnName("ancho");
+            entity.Property(e => e.CapAce).HasColumnName("cap_ace");
+            entity.Property(e => e.CapCom).HasColumnName("cap_com");
+            entity.Property(e => e.CarEje).HasColumnName("car_eje");
+            entity.Property(e => e.CarMax).HasColumnName("car_max");
+            entity.Property(e => e.DimLlan).HasColumnName("dim_llan");
+            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
+            entity.Property(e => e.IdModVe).HasColumnName("id_mod_ve");
+            entity.Property(e => e.Largo).HasColumnName("largo");
+            entity.Property(e => e.LlanRep).HasColumnName("llan_rep");
+            entity.Property(e => e.McubCar).HasColumnName("mcub_car");
+            entity.Property(e => e.NoCilin).HasColumnName("no_cilin");
+            entity.Property(e => e.Obs)
+                .HasMaxLength(250)
+                .IsFixedLength()
+                .HasColumnName("obs");
+            entity.Property(e => e.Origen)
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasColumnName("origen");
+            entity.Property(e => e.Pallets).HasColumnName("pallets");
+            entity.Property(e => e.PesoBru).HasColumnName("peso_bru");
+            entity.Property(e => e.PotMot)
+                .HasMaxLength(8)
+                .IsFixedLength()
+                .HasColumnName("pot_mot");
+            entity.Property(e => e.PulCub)
+                .HasMaxLength(6)
+                .IsFixedLength()
+                .HasColumnName("pul_cub");
+            entity.Property(e => e.RenEsp).HasColumnName("ren_esp");
+            entity.Property(e => e.TipoCom).HasColumnName("tipo_com");
+            entity.Property(e => e.TipoEje).HasColumnName("tipo_eje");
+            entity.Property(e => e.TipoMot)
+                .HasMaxLength(20)
+                .IsFixedLength()
+                .HasColumnName("tipo_mot");
+            entity.Property(e => e.TonCar).HasColumnName("ton_car");
+            entity.Property(e => e.TotLlan).HasColumnName("tot_llan");
+            entity.Property(e => e.Traccion)
+                .HasMaxLength(5)
+                .IsFixedLength()
+                .HasColumnName("traccion");
+            entity.Property(e => e.Transm)
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasColumnName("transm");
+        });
+
         modelBuilder.Entity<Estatusestacion>(entity =>
         {
             entity.HasKey(e => e.Idestatusestacion).HasName("PRIMARY");
 
-            entity.ToTable("estatusestacion");
+            entity
+                .ToTable("estatusestacion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idestatusestacion)
                 .ValueGeneratedNever()
@@ -1323,7 +1659,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idestatustransaccion).HasName("PRIMARY");
 
-            entity.ToTable("estatustransaccion");
+            entity
+                .ToTable("estatustransaccion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idestatustransaccion).HasColumnName("idestatustransaccion");
             entity.Property(e => e.Nombre)
@@ -1335,7 +1674,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idestatusviaje).HasName("PRIMARY");
 
-            entity.ToTable("estatusviaje");
+            entity
+                .ToTable("estatusviaje")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idestatusviaje)
                 .ValueGeneratedNever()
@@ -1349,7 +1691,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idfactura).HasName("PRIMARY");
 
-            entity.ToTable("factura");
+            entity
+                .ToTable("factura")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.TransaccionIdtransaccion, "fk_factura_transaccion_idx");
 
@@ -1419,7 +1764,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idfalla).HasName("PRIMARY");
 
-            entity.ToTable("falla_auxilio_vial");
+            entity
+                .ToTable("falla_auxilio_vial")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idfalla).HasColumnName("idfalla");
             entity.Property(e => e.Nombre)
@@ -1433,7 +1781,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("favorito");
+            entity
+                .ToTable("favorito")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.TipofavoritoIdtipofavorito, "fk_favorito_tipofavorito1_idx");
 
@@ -1470,7 +1821,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idfavoritopersonal).HasName("PRIMARY");
 
-            entity.ToTable("favoritopersonal");
+            entity
+                .ToTable("favoritopersonal")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.UsuarioIdusuario, "fk_favoritopersonal_usuario1_idx");
 
@@ -1507,7 +1861,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
-            entity.ToTable("fgaleria");
+            entity
+                .ToTable("fgaleria")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CMarca).HasColumnName("c_marca");
             entity.Property(e => e.CModVe).HasColumnName("c_mod_ve");
@@ -1519,7 +1876,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.ConductorIdconductor).HasName("PRIMARY");
 
-            entity.ToTable("foto_conductor");
+            entity
+                .ToTable("foto_conductor")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ConductorIdconductor, "fk_table1_conductor1_idx");
 
@@ -1544,7 +1904,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.UsuarioIdusuario).HasName("PRIMARY");
 
-            entity.ToTable("fotografia");
+            entity
+                .ToTable("fotografia")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.UsuarioIdusuario, "fk_table1_usuario1_idx");
 
@@ -1565,11 +1928,59 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_table1_usuario1");
         });
 
+        modelBuilder.Entity<GasIave>(entity =>
+        {
+            entity.HasKey(e => e.IdIave).HasName("PRIMARY");
+
+            entity.ToTable("gas_iave");
+
+            entity.Property(e => e.IdIave).HasColumnName("id_iave");
+            entity.Property(e => e.Caseta)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("caseta");
+            entity.Property(e => e.Clase).HasColumnName("clase");
+            entity.Property(e => e.Consecar)
+                .HasMaxLength(20)
+                .IsFixedLength()
+                .HasColumnName("consecar");
+            entity.Property(e => e.FCruce)
+                .HasColumnType("datetime")
+                .HasColumnName("f_cruce");
+            entity.Property(e => e.FechaApli)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_apli");
+            entity.Property(e => e.FechaRegistro)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_registro");
+            entity.Property(e => e.HCruce)
+                .HasMaxLength(8)
+                .IsFixedLength()
+                .HasColumnName("h_cruce");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Importe).HasColumnName("importe");
+            entity.Property(e => e.NumEco)
+                .HasMaxLength(20)
+                .IsFixedLength()
+                .HasColumnName("num_eco");
+            entity.Property(e => e.Tarjeta)
+                .HasMaxLength(30)
+                .IsFixedLength()
+                .HasColumnName("tarjeta");
+        });
+
         modelBuilder.Entity<GrupoReparacion>(entity =>
         {
             entity.HasKey(e => e.IdGrupo).HasName("PRIMARY");
 
-            entity.ToTable("grupo_reparacion");
+            entity
+                .ToTable("grupo_reparacion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdGrupo).HasColumnName("id_grupo");
             entity.Property(e => e.Descripcion)
@@ -1592,7 +2003,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0, 0 });
 
-            entity.ToTable("infracc");
+            entity
+                .ToTable("infracc")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CRegion).HasColumnName("c_region");
             entity.Property(e => e.CPlanta).HasColumnName("c_planta");
@@ -1647,7 +2061,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdLiquidacion).HasName("PRIMARY");
 
-            entity.ToTable("liquidacion_cabecera");
+            entity
+                .ToTable("liquidacion_cabecera")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Idconductor, "fk_liquidacion_cabecera_conductor_idx");
 
@@ -1681,7 +2098,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("liquidacion_detalle");
+            entity
+                .ToTable("liquidacion_detalle")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdCorridaAsignacion, "fk_liquidacion_corrida_asignacion_idx");
 
@@ -1708,7 +2128,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idlogcancelacionviajes).HasName("PRIMARY");
 
-            entity.ToTable("logcancelacionviajes");
+            entity
+                .ToTable("logcancelacionviajes")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Idlogcancelacionviajes, "fk_idlogcancelacionviajes_idx");
 
@@ -1733,7 +2156,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idlogerrorfactura).HasName("PRIMARY");
 
-            entity.ToTable("logerrorfactura");
+            entity
+                .ToTable("logerrorfactura")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Idlogerrorfactura, "fk_idlogerrorfactura_idx");
 
@@ -1757,7 +2183,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idlogtransaccion).HasName("PRIMARY");
 
-            entity.ToTable("logtransaccion");
+            entity
+                .ToTable("logtransaccion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idlogtransaccion).HasColumnName("idlogtransaccion");
             entity.Property(e => e.Fecharegistro)
@@ -1775,7 +2204,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Id).HasName("PRIMARY");
 
-            entity.ToTable("logtransaccionesentidades");
+            entity
+                .ToTable("logtransaccionesentidades")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Accion)
@@ -1801,11 +2233,26 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("valornuevo");
         });
 
+        modelBuilder.Entity<ManoObra>(entity =>
+        {
+            entity.HasKey(e => e.IdManoObra).HasName("PRIMARY");
+
+            entity.ToTable("mano_obra");
+
+            entity.Property(e => e.IdManoObra).HasColumnName("id_mano_obra");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(70)
+                .HasColumnName("descripcion");
+        });
+
         modelBuilder.Entity<Mantenimiento>(entity =>
         {
             entity.HasKey(e => e.IdMantenimiento).HasName("PRIMARY");
 
-            entity.ToTable("mantenimiento");
+            entity
+                .ToTable("mantenimiento")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdDeposito, "fk_mantenimiento_deposito");
 
@@ -1937,7 +2384,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdMantenimientoDet).HasName("PRIMARY");
 
-            entity.ToTable("mantenimiento_det");
+            entity
+                .ToTable("mantenimiento_det")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdTipoReparacion, "fk_detalleMantenimiento_tipoRepacacion");
 
@@ -1972,7 +2422,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
-            entity.ToTable("manuales");
+            entity
+                .ToTable("manuales")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CMarca).HasColumnName("c_marca");
             entity.Property(e => e.CModelo).HasColumnName("c_modelo");
@@ -1988,7 +2441,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdMarca).HasName("PRIMARY");
 
-            entity.ToTable("marca");
+            entity
+                .ToTable("marca")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdMarca).HasColumnName("id_marca");
             entity.Property(e => e.Descripcion)
@@ -2001,7 +2457,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdMecanico).HasName("PRIMARY");
 
-            entity.ToTable("mecanico");
+            entity
+                .ToTable("mecanico")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdDeposito, "fk_mecanico_deposito");
 
@@ -2034,7 +2493,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idmembreria).HasName("PRIMARY");
 
-            entity.ToTable("membresia");
+            entity
+                .ToTable("membresia")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.TransaccionIdtransaccion, "fk_membresia_transaccion_idx");
 
@@ -2063,7 +2525,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.MensajeId).HasName("PRIMARY");
 
-            entity.ToTable("mensaje");
+            entity
+                .ToTable("mensaje")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.MensajeId, "MensajeId_UNIQUE").IsUnique();
 
@@ -2077,7 +2542,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idmenu).HasName("PRIMARY");
 
-            entity.ToTable("menu");
+            entity
+                .ToTable("menu")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.MenuIdpadre, "fk_menu_menu1_idx");
 
@@ -2108,7 +2576,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idmetodopago).HasName("PRIMARY");
 
-            entity.ToTable("metodopago");
+            entity
+                .ToTable("metodopago")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idmetodopago)
                 .ValueGeneratedNever()
@@ -2122,7 +2593,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.AdminIdadmin).HasName("PRIMARY");
 
-            entity.ToTable("mfaportal");
+            entity
+                .ToTable("mfaportal")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.AdminIdadmin, "fk_MFAPortal_admin1_idx");
 
@@ -2146,7 +2620,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdModelo).HasName("PRIMARY");
 
-            entity.ToTable("modelo");
+            entity
+                .ToTable("modelo")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdMarca, "fk_modelo_marca");
 
@@ -2180,7 +2657,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.UsuarioIdusuario).HasName("PRIMARY");
 
-            entity.ToTable("monedero");
+            entity
+                .ToTable("monedero")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.UsuarioIdusuario, "fk_monedero_usuario1_idx");
 
@@ -2201,7 +2681,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idmotivo).HasName("PRIMARY");
 
-            entity.ToTable("motivo_auxilio_vial");
+            entity
+                .ToTable("motivo_auxilio_vial")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idmotivo).HasColumnName("idmotivo");
             entity.Property(e => e.Nombre)
@@ -2213,7 +2696,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdNotifsini).HasName("PRIMARY");
 
-            entity.ToTable("notificaciones_siniestro");
+            entity
+                .ToTable("notificaciones_siniestro")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.SiniestroIdsiniestro, "fk_NotificacionesSiniestros_Siniestros");
 
@@ -2252,7 +2738,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idparada).HasName("PRIMARY");
 
-            entity.ToTable("parada");
+            entity
+                .ToTable("parada")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idparada).HasColumnName("idparada");
             entity.Property(e => e.Activo)
@@ -2295,7 +2784,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idperfil).HasName("PRIMARY");
 
-            entity.ToTable("perfil");
+            entity
+                .ToTable("perfil")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idperfil).HasColumnName("idperfil");
             entity.Property(e => e.Activo)
@@ -2315,7 +2807,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("permiso");
+            entity
+                .ToTable("permiso")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.MenuIdmenu, "fk_permiso_menu1_idx");
 
@@ -2355,7 +2850,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idpersonalidadjuridica).HasName("PRIMARY");
 
-            entity.ToTable("personalidadjuridica");
+            entity
+                .ToTable("personalidadjuridica")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idpersonalidadjuridica).HasColumnName("idpersonalidadjuridica");
             entity.Property(e => e.Activo)
@@ -2369,13 +2867,37 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("nombre");
         });
 
+        modelBuilder.Entity<Plantum>(entity =>
+        {
+            entity.HasKey(e => e.IdPlanta).HasName("PRIMARY");
+
+            entity.ToTable("planta");
+
+            entity.Property(e => e.IdPlanta)
+                .ValueGeneratedNever()
+                .HasColumnName("id_planta");
+            entity.Property(e => e.IdEmp).HasColumnName("id_emp");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.Libreria)
+                .HasMaxLength(50)
+                .IsFixedLength()
+                .HasColumnName("libreria");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(45)
+                .IsFixedLength()
+                .HasColumnName("nombre");
+        });
+
         modelBuilder.Entity<PolSeg>(entity =>
         {
             entity.HasKey(e => new { e.CRegion, e.CPlanta, e.CZona, e.CDeposi, e.CAseg, e.CPoliza })
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0, 0, 0 });
 
-            entity.ToTable("pol_seg");
+            entity
+                .ToTable("pol_seg")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CRegion).HasColumnName("c_region");
             entity.Property(e => e.CPlanta).HasColumnName("c_planta");
@@ -2411,7 +2933,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idpoliticacompensacion).HasName("PRIMARY");
 
-            entity.ToTable("politicascompensacion");
+            entity
+                .ToTable("politicascompensacion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EmpresaIdempresa, "politicascompensacion_empresa_FK");
 
@@ -2445,14 +2970,33 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idpreventivo).HasName("PRIMARY");
 
-            entity.ToTable("preventivo");
+            entity
+                .ToTable("preventivo")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.TiposervicioIdtiposervicio, "fk_preventivo_tiposervicio");
 
             entity.Property(e => e.Idpreventivo).HasColumnName("idpreventivo");
+            entity.Property(e => e.FechaPrev)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_prev");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdDeptos).HasColumnName("id_deptos");
+            entity.Property(e => e.IdMarca).HasColumnName("id_marca");
+            entity.Property(e => e.IdModelo).HasColumnName("id_modelo");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Meses)
+                .HasMaxLength(30)
+                .HasColumnName("meses");
             entity.Property(e => e.Nombre)
-                .HasMaxLength(50)
+                .HasMaxLength(70)
                 .HasColumnName("nombre");
+            entity.Property(e => e.ObservacionesPreventivo)
+                .HasColumnType("text")
+                .HasColumnName("observaciones_preventivo");
             entity.Property(e => e.Proyecta)
                 .HasMaxLength(10)
                 .HasColumnName("proyecta");
@@ -2468,7 +3012,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idpromocion).HasName("PRIMARY");
 
-            entity.ToTable("promocion");
+            entity
+                .ToTable("promocion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EmpresaIdempresa, "fk_promocion_empresa1_idx");
 
@@ -2512,7 +3059,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.PromocionCorridaid).HasName("PRIMARY");
 
-            entity.ToTable("promocion_corrida");
+            entity
+                .ToTable("promocion_corrida")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.CorridaIdcorrida, "fk_promocion_corrida_corrida1_idx");
 
@@ -2539,7 +3089,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("promocion_empresa");
+            entity
+                .ToTable("promocion_empresa")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EmpresaIdempresa, "fk_promocionempresa_empresa1_idx");
 
@@ -2569,7 +3122,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdpromocionHorario).HasName("PRIMARY");
 
-            entity.ToTable("promocion_horario");
+            entity
+                .ToTable("promocion_horario")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.PromocionIdpromocion, "fk_promocion_horario_promocion1_idx");
 
@@ -2594,7 +3150,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("promocion_ruta");
+            entity
+                .ToTable("promocion_ruta")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.PromocionIdpromocion, "fk_promocion_ruta_promocion1_idx");
 
@@ -2624,7 +3183,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idpuntovirtual).HasName("PRIMARY");
 
-            entity.ToTable("puntovirtual");
+            entity
+                .ToTable("puntovirtual")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => new { e.RutaParadaRutaIdruta, e.RutaParadaParadaIdparada }, "fk_puntovirtual_ruta_estacion1_idx");
 
@@ -2655,7 +3217,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idrecarga).HasName("PRIMARY");
 
-            entity.ToTable("recarga");
+            entity
+                .ToTable("recarga")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.MetodopagoIdmetodopago, "fk_recarga_metodopago1_idx");
 
@@ -2683,7 +3248,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idregimenfiscalreceptor).HasName("PRIMARY");
 
-            entity.ToTable("regimenfiscalreceptor");
+            entity
+                .ToTable("regimenfiscalreceptor")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Clave, "clave_UNIQUE").IsUnique();
 
@@ -2708,13 +3276,49 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("moral");
         });
 
+        modelBuilder.Entity<Region>(entity =>
+        {
+            entity.HasKey(e => new { e.IdEmpresa, e.IdRegion })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+
+            entity.ToTable("region");
+
+            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(40)
+                .IsFixedLength()
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<RendMe>(entity =>
+        {
+            entity.HasKey(e => e.IdVehic).HasName("PRIMARY");
+
+            entity.ToTable("rend_mes");
+
+            entity.Property(e => e.IdVehic)
+                .HasMaxLength(15)
+                .HasColumnName("id_vehic");
+            entity.Property(e => e.Anio).HasColumnName("anio");
+            entity.Property(e => e.Mes).HasColumnName("mes");
+            entity.Property(e => e.RendPromedio).HasColumnName("rend_promedio");
+            entity.Property(e => e.TotalImporte).HasColumnName("total_importe");
+            entity.Property(e => e.TotalKms).HasColumnName("total_kms");
+            entity.Property(e => e.TotalLitros).HasColumnName("total_litros");
+        });
+
         modelBuilder.Entity<RutaParadum>(entity =>
         {
             entity.HasKey(e => new { e.RutaIdruta, e.ParadaIdparada })
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("ruta_parada");
+            entity
+                .ToTable("ruta_parada")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.TipoestacionIdtipoestacion, "fk_rutaparada_tipoestacion_idx");
 
@@ -2753,7 +3357,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idruta).HasName("PRIMARY");
 
-            entity.ToTable("ruta");
+            entity
+                .ToTable("ruta")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EmpresaIdempresa, "ruta_FK");
 
@@ -2789,7 +3396,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idsiniestro).HasName("PRIMARY");
 
-            entity.ToTable("siniestros");
+            entity
+                .ToTable("siniestros")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ConductorIdconductor, "fk_siniestro_conductor");
 
@@ -2877,7 +3487,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdTaller).HasName("PRIMARY");
 
-            entity.ToTable("taller");
+            entity
+                .ToTable("taller")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdDeposito, "fk_taller_deposito");
 
@@ -2929,13 +3542,35 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_taller_zona");
         });
 
+        modelBuilder.Entity<TarCom>(entity =>
+        {
+            entity.HasKey(e => e.IdTarjet).HasName("PRIMARY");
+
+            entity.ToTable("tar_com");
+
+            entity.Property(e => e.IdTarjet)
+                .HasMaxLength(30)
+                .HasColumnName("id_tarjet");
+            entity.Property(e => e.IdComb).HasColumnName("id_comb");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.IdVehic)
+                .HasMaxLength(15)
+                .HasColumnName("id_vehic");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+        });
+
         modelBuilder.Entity<TarifaEscalonadum>(entity =>
         {
             entity.HasKey(e => new { e.ParadaIdparada, e.ParadaIdparada1, e.EmpresaIdempresa, e.RutaIdruta })
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0, 0 });
 
-            entity.ToTable("tarifa_escalonada");
+            entity
+                .ToTable("tarifa_escalonada")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.ParadaIdparada, "fk_tarifa_parada1_idx");
 
@@ -2964,7 +3599,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.RutaIdruta).HasName("PRIMARY");
 
-            entity.ToTable("tarifa_general");
+            entity
+                .ToTable("tarifa_general")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => new { e.EmpresaIdempresa, e.RutaIdruta }, "fk_tarifa_general_empresa_ruta1_idx");
 
@@ -2988,7 +3626,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("terceros");
+            entity
+                .ToTable("terceros")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CSinies).HasColumnName("c_sinies");
             entity.Property(e => e.CTercero).HasColumnName("c_tercero");
@@ -3047,7 +3688,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.CDano).HasName("PRIMARY");
 
-            entity.ToTable("tip_dano");
+            entity
+                .ToTable("tip_dano")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CDano)
                 .ValueGeneratedNever()
@@ -3064,7 +3708,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("tipo_autorizacion");
+            entity
+                .ToTable("tipo_autorizacion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CDeposito).HasColumnName("c_deposito");
             entity.Property(e => e.IdTipo).HasColumnName("id_tipo");
@@ -3081,7 +3728,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.CTipo).HasName("PRIMARY");
 
-            entity.ToTable("tipo_aux");
+            entity
+                .ToTable("tipo_aux")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CTipo)
                 .ValueGeneratedNever()
@@ -3096,11 +3746,35 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("status");
         });
 
+        modelBuilder.Entity<TipoCom>(entity =>
+        {
+            entity.HasKey(e => e.IdComb).HasName("PRIMARY");
+
+            entity.ToTable("tipo_com");
+
+            entity.Property(e => e.IdComb)
+                .ValueGeneratedNever()
+                .HasColumnName("id_comb");
+            entity.Property(e => e.Descrip)
+                .HasMaxLength(50)
+                .HasColumnName("descrip");
+            entity.Property(e => e.PrecLit).HasColumnName("prec_lit");
+            entity.Property(e => e.Rubro)
+                .HasMaxLength(2)
+                .HasColumnName("rubro");
+            entity.Property(e => e.Subrubro)
+                .HasMaxLength(2)
+                .HasColumnName("subrubro");
+        });
+
         modelBuilder.Entity<TipoEje>(entity =>
         {
             entity.HasKey(e => e.IdTipoEje).HasName("PRIMARY");
 
-            entity.ToTable("tipo_eje");
+            entity
+                .ToTable("tipo_eje")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdTipoEje)
                 .ValueGeneratedNever()
@@ -3115,7 +3789,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdTipoMantenimiento).HasName("PRIMARY");
 
-            entity.ToTable("tipo_mantenimiento");
+            entity
+                .ToTable("tipo_mantenimiento")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdTipoMantenimiento).HasColumnName("ID_Tipo_Mantenimiento");
             entity.Property(e => e.Descripcion).HasMaxLength(100);
@@ -3126,7 +3803,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.CTiPol).HasName("PRIMARY");
 
-            entity.ToTable("tipo_pol");
+            entity
+                .ToTable("tipo_pol")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.CTiPol)
                 .ValueGeneratedNever()
@@ -3145,7 +3825,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdTipoReparacion).HasName("PRIMARY");
 
-            entity.ToTable("tipo_reparacion");
+            entity
+                .ToTable("tipo_reparacion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdGrupo, "fk_tipoReparacion_grupo");
 
@@ -3166,7 +3849,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdTiposervicio).HasName("PRIMARY");
 
-            entity.ToTable("tipo_servicio");
+            entity
+                .ToTable("tipo_servicio")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdTiposervicio).HasColumnName("id_tiposervicio");
             entity.Property(e => e.Nombre)
@@ -3178,7 +3864,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdTipoSiniestro).HasName("PRIMARY");
 
-            entity.ToTable("tipo_siniestro");
+            entity
+                .ToTable("tipo_siniestro")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdTipoSiniestro).HasColumnName("Id_tipo_siniestro");
             entity.Property(e => e.Descripcion)
@@ -3192,7 +3881,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipocodigodescuento).HasName("PRIMARY");
 
-            entity.ToTable("tipocodigodescuento");
+            entity
+                .ToTable("tipocodigodescuento")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipocodigodescuento).HasColumnName("idtipocodigodescuento");
             entity.Property(e => e.Nombre)
@@ -3204,7 +3896,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipocontenido).HasName("PRIMARY");
 
-            entity.ToTable("tipocontenido");
+            entity
+                .ToTable("tipocontenido")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipocontenido)
                 .ValueGeneratedNever()
@@ -3224,7 +3919,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipodescuento).HasName("PRIMARY");
 
-            entity.ToTable("tipodescuento");
+            entity
+                .ToTable("tipodescuento")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipodescuento)
                 .ValueGeneratedNever()
@@ -3238,7 +3936,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipoestacion).HasName("PRIMARY");
 
-            entity.ToTable("tipoestacion");
+            entity
+                .ToTable("tipoestacion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipoestacion)
                 .ValueGeneratedNever()
@@ -3255,7 +3956,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipofavorito).HasName("PRIMARY");
 
-            entity.ToTable("tipofavorito");
+            entity
+                .ToTable("tipofavorito")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipofavorito)
                 .ValueGeneratedNever()
@@ -3269,7 +3973,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipopromocion).HasName("PRIMARY");
 
-            entity.ToTable("tipopromocion");
+            entity
+                .ToTable("tipopromocion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipopromocion)
                 .ValueGeneratedNever()
@@ -3283,7 +3990,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipotarifa).HasName("PRIMARY");
 
-            entity.ToTable("tipotarifa");
+            entity
+                .ToTable("tipotarifa")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipotarifa)
                 .ValueGeneratedNever()
@@ -3304,7 +4014,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipotransaccion).HasName("PRIMARY");
 
-            entity.ToTable("tipotransaccion");
+            entity
+                .ToTable("tipotransaccion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipotransaccion)
                 .ValueGeneratedNever()
@@ -3318,7 +4031,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipovariable).HasName("PRIMARY");
 
-            entity.ToTable("tipovariable");
+            entity
+                .ToTable("tipovariable")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipovariable)
                 .ValueGeneratedNever()
@@ -3332,7 +4048,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtipovehiculo).HasName("PRIMARY");
 
-            entity.ToTable("tipovehiculo");
+            entity
+                .ToTable("tipovehiculo")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.Idtipovehiculo).HasColumnName("idtipovehiculo");
             entity.Property(e => e.Activo)
@@ -3353,7 +4072,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("token");
+            entity
+                .ToTable("token")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.UsuarioIdusuario, "fk_token_usuario1_idx");
 
@@ -3383,7 +4105,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("tokenpago");
+            entity
+                .ToTable("tokenpago")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.UsuarioIdusuario, "fk_token_usuariopago_idx");
 
@@ -3411,7 +4136,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idtransaccion).HasName("PRIMARY");
 
-            entity.ToTable("transaccion");
+            entity
+                .ToTable("transaccion")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EstatustransaccionIdestatustransaccion, "fk_transaccion_estatustransaccion1_idx");
 
@@ -3475,7 +4203,6 @@ public partial class SuvanDbContext : DbContext
 
             entity
                 .ToTable("transaccionordenstripe")
-                .HasCharSet("utf8mb4")
                 .UseCollation("utf8mb4_unicode_ci");
 
             entity.Property(e => e.FechaRegistro)
@@ -3490,7 +4217,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idusoscfdireceptor).HasName("PRIMARY");
 
-            entity.ToTable("usoscfdireceptor");
+            entity
+                .ToTable("usoscfdireceptor")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Clave, "clave_UNIQUE").IsUnique();
 
@@ -3519,7 +4249,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdusoscfdireceptorRegimenfiscalreceptor).HasName("PRIMARY");
 
-            entity.ToTable("usoscfdireceptor_regimenfiscalreceptor");
+            entity
+                .ToTable("usoscfdireceptor_regimenfiscalreceptor")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Idregimenfiscalreceptor, "fk_usoscfdireceptor_regimenfiscalreceptor_regimenfiscalrece_idx");
 
@@ -3556,7 +4289,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idusuario).HasName("PRIMARY");
 
-            entity.ToTable("usuario");
+            entity
+                .ToTable("usuario")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.CodigopaisIdcodigopais, "fk_usuario_codigopais1_idx");
 
@@ -3602,7 +4338,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idvariable).HasName("PRIMARY");
 
-            entity.ToTable("variable");
+            entity
+                .ToTable("variable")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.TipovariableIdtipovariable, "fk_idtipovariable_idx");
 
@@ -3627,7 +4366,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("variableempresa");
+            entity
+                .ToTable("variableempresa")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EmpresaIdempresa, "fk_empresa_idx");
 
@@ -3652,7 +4394,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.VariableIdvariable).HasName("PRIMARY");
 
-            entity.ToTable("variableglobal");
+            entity
+                .ToTable("variableglobal")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.VariableIdvariable)
                 .ValueGeneratedNever()
@@ -3671,7 +4416,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdVehiculo).HasName("PRIMARY");
 
-            entity.ToTable("vehiculo");
+            entity
+                .ToTable("vehiculo")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.EmpresaIdempresa, "fk_vehiculo_empresa1_idx");
 
@@ -3727,7 +4475,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdVehiculoDetalle).HasName("PRIMARY");
 
-            entity.ToTable("vehiculo_detalle");
+            entity
+                .ToTable("vehiculo_detalle")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdDeposito, "fk_vehiculo_detalle_deposito");
 
@@ -3894,7 +4645,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdEspecificaciones).HasName("PRIMARY");
 
-            entity.ToTable("vehiculo_especificaciones");
+            entity
+                .ToTable("vehiculo_especificaciones")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdEspecificaciones).HasColumnName("id_especificaciones");
             entity.Property(e => e.Altura).HasColumnName("altura");
@@ -3953,7 +4707,10 @@ public partial class SuvanDbContext : DbContext
                 .HasName("PRIMARY")
                 .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
 
-            entity.ToTable("vehiculo_especificaciones_img");
+            entity
+                .ToTable("vehiculo_especificaciones_img")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.Property(e => e.IdEspecificaciones).HasColumnName("id_especificaciones");
             entity.Property(e => e.Consecutivo).HasColumnName("consecutivo");
@@ -3967,7 +4724,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idvehiculoservicio).HasName("PRIMARY");
 
-            entity.ToTable("vehiculoservicio");
+            entity
+                .ToTable("vehiculoservicio")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Idvehiculo, "vehiculoservicio_vehiculo_FK");
 
@@ -3993,7 +4753,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idviaje).HasName("PRIMARY");
 
-            entity.ToTable("viaje");
+            entity
+                .ToTable("viaje")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.CorridaAsignacionIdcorridaAsignacion, "fk_viaje_corridaasigancion_idx");
 
@@ -4102,7 +4865,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.Idviajeredondo).HasName("PRIMARY");
 
-            entity.ToTable("viajeredondo");
+            entity
+                .ToTable("viajeredondo")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.Idviajeredondo, "fk_idviajeredondo_idx");
 
@@ -4140,7 +4906,10 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdZona).HasName("PRIMARY");
 
-            entity.ToTable("zona");
+            entity
+                .ToTable("zona")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
 
             entity.HasIndex(e => e.IdEmpresa, "fk_zona_empresa");
 
@@ -4155,6 +4924,8 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_apertura");
             entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
             entity.Property(e => e.NombreZona)
                 .HasMaxLength(255)
                 .HasColumnName("nombre_zona");
