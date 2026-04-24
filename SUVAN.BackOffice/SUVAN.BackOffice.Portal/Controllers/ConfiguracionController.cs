@@ -30,6 +30,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
         private readonly IConversacionesService conversacionesService;
         // Regiones
         private readonly IRegionService regionesService;
+        // Plantas
+        private readonly IPlantaService plantasService;
 
         public ConfiguracionController(ILogger<ConfiguracionController> logger,
           IEmpresasService empresasService,
@@ -38,7 +40,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
           IVehiculoService vehiculoService,
           ITarifaService tarifaService,
           IConversacionesService conversacionesService,
-          IRegionService regionService)
+          IRegionService regionService,
+          IPlantaService plantaService)
         {
             _logger = logger;
             this.empresasService = empresasService;
@@ -48,6 +51,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             this.tarifaService = tarifaService;
             this.conversacionesService = conversacionesService;
             this.regionesService = regionService;
+            this.plantasService = plantaService;
         }
 
         public IActionResult Index()
@@ -330,6 +334,53 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
 
         }
+
+        // Plantas
+        public async Task<IActionResult> Plantas()
+        {
+            var plantas = await plantasService.GetPlantas(User.GetEmpresaId());
+            return View(plantas);
+        }
+
+        public async Task<IActionResult> AgregarPlanta(int idRegion = 0, int idPlanta = 0)
+        {
+            var agregarModel = await plantasService.GetPlantaViewModel(User.GetEmpresaId(), idRegion, idPlanta);
+            ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+            return View(agregarModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AgregarPlanta(PlantaViewModel model)
+        {
+            try
+            {
+                model.id_emp = (short)User.GetEmpresaId();
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                    return View(model);
+                }
+
+                var result = await plantasService.AgregarPlanta(model);
+
+                if (result)
+                {
+                    return RedirectToAction("Plantas", "Configuracion");
+                }
+
+                ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                return View(model);
+            }
+        }
+
+
+
 
     }
 }
