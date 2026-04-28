@@ -71,10 +71,15 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
             if (model.id_planta > 0)
             {
-                planta = await context.Planta.FirstOrDefaultAsync(x => x.IdEmp == model.id_emp && x.IdRegion == model.id_region && x.IdPlanta == model.id_planta);
+                // Búsqueda simplificada: Ignora el id_region del modelo en un nurevo registro, 
+                // previene cualquier inyección desde el frontend al intentar cambiar la región.
+                planta = await context.Planta.FirstOrDefaultAsync(x => x.IdEmp == model.id_emp && x.IdPlanta == model.id_planta);
 
                 if (planta == null)
                     throw new Exception("No se encontró la planta");
+
+                // Mantiene la región original en BD para no sobreescribir.
+                model.id_region = planta.IdRegion;
             }
             else
             {
