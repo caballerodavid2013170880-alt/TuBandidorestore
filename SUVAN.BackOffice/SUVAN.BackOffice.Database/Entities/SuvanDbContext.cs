@@ -2886,6 +2886,14 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(45)
                 .IsFixedLength()
                 .HasColumnName("nombre");
+
+            // 1. Vinculo con entidad Region
+            entity.HasOne(d => d.IdRegionNavigation)
+                .WithMany(p => p.Planta)
+                .HasForeignKey(d => new { d.IdEmp, d.IdRegion })
+                .HasPrincipalKey(p => new { p.IdEmpresa, p.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Planta_Region");
         });
 
         modelBuilder.Entity<PolSeg>(entity =>

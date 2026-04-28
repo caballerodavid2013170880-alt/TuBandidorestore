@@ -54,6 +54,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                     libreria = planta.Libreria?.Trim(),
                     nombre_region = region?.Nombre
                 };
+
             }
 
             return vRet;

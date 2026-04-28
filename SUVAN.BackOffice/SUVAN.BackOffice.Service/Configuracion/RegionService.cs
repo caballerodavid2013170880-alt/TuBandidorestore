@@ -76,14 +76,17 @@ namespace SUVAN.BackOffice.Service.Configuracion
             {
                 region = new Region();
                 region.IdEmpresa = model.id_empresa;
-                var vLastRow = await context.Regions.OrderBy(x => x.IdEmpresa).LastOrDefaultAsync(x => x.IdEmpresa == model.id_empresa);
+                //var vLastRow = await context.Regions.OrderBy(x => x.IdEmpresa).LastOrDefaultAsync(x => x.IdEmpresa == model.id_empresa);
+                //IdRegion desc para valor más alto
+                var vLastRow = await context.Regions.Where(x => x.IdEmpresa == model.id_empresa).OrderByDescending(x => x.IdRegion).FirstOrDefaultAsync();
                 region.IdRegion = (short)((vLastRow != null ? vLastRow.IdRegion : 0) + 1);
             }
 
 
             // validate if exist one region with the same name in the same empresa
             var regionExistente = await context.Regions.FirstOrDefaultAsync(x => x.Nombre!.ToLower() == model.nombre!.ToLower()
-            && x.IdEmpresa != model.id_empresa);
+            && x.IdEmpresa == model.id_empresa //Valida si empresa evitando duplicados
+            && x.IdRegion != model.id_region); //Valida region diferente
 
             if (regionExistente is not null)
                 throw new Exception("Ya existe una región con el mismo nombre en la empresa.");

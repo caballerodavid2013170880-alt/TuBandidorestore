@@ -10,4 +10,7 @@ public partial class Region
     public short IdRegion { get; set; }
 
     public string? Nombre { get; set; }
+
+    // Relación con PLanta
+    public virtual ICollection<Plantum> Planta { get; set; } = new List<Plantum>();
 }

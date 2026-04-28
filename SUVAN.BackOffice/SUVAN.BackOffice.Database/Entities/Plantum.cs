@@ -14,4 +14,7 @@ public partial class Plantum
     public string? Libreria { get; set; }
 
     public short? IdEmp { get; set; }
+
+    // Relaciones que simulan las FK
+    public virtual Region IdRegionNavigation { get; set; } = null!;
 }
