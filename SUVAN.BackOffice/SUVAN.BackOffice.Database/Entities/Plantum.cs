@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SUVAN.BackOffice.Database.Entities;
 
@@ -15,6 +16,5 @@ public partial class Plantum
 
     public short? IdEmp { get; set; }
 
-    // Relaciones que simulan las FK
-    public virtual Region IdRegionNavigation { get; set; } = null!;
+ 
 }

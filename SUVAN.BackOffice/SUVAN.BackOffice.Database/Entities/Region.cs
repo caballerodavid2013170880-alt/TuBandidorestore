@@ -12,5 +12,5 @@ public partial class Region
     public string? Nombre { get; set; }
 
     // Relación con PLanta
-    public virtual ICollection<Plantum> Planta { get; set; } = new List<Plantum>();
+    //public virtual ICollection<Plantum> Plantum { get; set; } = new List<Plantum>();
 }

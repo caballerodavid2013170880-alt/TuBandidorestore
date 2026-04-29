@@ -48,7 +48,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 vRet = new PlantaViewModel
                 {
                     id_emp = (short)planta.IdEmp,
-                    id_region = planta.IdRegion,
+                    id_region = (short)planta.IdRegion,
                     id_planta = planta.IdPlanta,
                     nombre = planta.Nombre?.Trim(),
                     libreria = planta.Libreria?.Trim(),
@@ -68,24 +68,41 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// <exception cref="Exception"></exception>
         public async Task<bool> AgregarPlanta(PlantaViewModel model)
         {
+            // Validación de integridad referencial simulada 
+            // Validar existencia de Empresa (solo si el modelo trae un IdEmp asignado)
+            if (model.id_emp != null)
+            {
+                bool existeEmpresa = await context.Empresas.AnyAsync(e => e.Idempresa == model.id_emp);
+                if (!existeEmpresa)
+                    throw new Exception($"Restricción referencial: La empresa con Id {model.id_emp} no existe.");
+            }
+            // Validar existencia de Región
+            bool existeRegion = await context.Regions.AnyAsync(r => r.IdRegion == model.id_region);
+            if (!existeRegion)
+                throw new Exception($"Restricción referencial: La región con Id {model.id_region} no existe.");
+
             Plantum planta;
 
             if (model.id_planta > 0)
             {
-                // Búsqueda simplificada: Ignora el id_region del modelo en un nurevo registro, 
+                // Búsqueda simplificada: Ignora el id_region del modelo en un nurevo registro, 280426
                 // previene cualquier inyección desde el frontend al intentar cambiar la región.
-                planta = await context.Planta.FirstOrDefaultAsync(x => x.IdEmp == model.id_emp && x.IdPlanta == model.id_planta);
+                //planta = await context.Planta.FirstOrDefaultAsync(x => x.IdEmp == model.id_emp && x.IdPlanta == model.id_planta); 280426
+                planta = await context.Planta.FirstOrDefaultAsync(x => x.IdEmp == (short?)model.id_emp && x.IdPlanta == model.id_planta);
 
                 if (planta == null)
                     throw new Exception("No se encontró la planta");
 
                 // Mantiene la región original en BD para no sobreescribir.
-                model.id_region = planta.IdRegion;
+                model.id_region = (short)planta.IdRegion;
             }
             else
             {
                 planta = new Plantum();
-                planta.IdEmp = model.id_emp;
+
+                // Conversión explícita a short? 280426
+                planta.IdEmp = (short?)model.id_emp;
+
                 planta.IdRegion = model.id_region;
 
                 //var vLastRow = await context.Planta.OrderBy(x => x.IdPlanta).LastOrDefaultAsync(x => x.IdEmp == model.id_emp && x.IdRegion == model.id_region);
@@ -95,8 +112,10 @@ namespace SUVAN.BackOffice.Service.Configuracion
             }
             // validate if exist one planta with the same name in the same empresa
 
+            // var plantaExistente = await context.Planta.FirstOrDefaultAsync(x => x.Nombre!.ToLower() == model.nombre!.ToLower() 280426
+            // && x.IdEmp == model.id_emp && x.IdPlanta != model.id_planta && x.IdRegion == model.id_region);   280426
             var plantaExistente = await context.Planta.FirstOrDefaultAsync(x => x.Nombre!.ToLower() == model.nombre!.ToLower()
-            && x.IdEmp == model.id_emp && x.IdPlanta != model.id_planta && x.IdRegion == model.id_region);
+            && x.IdEmp == (short?)model.id_emp && x.IdPlanta != model.id_planta && x.IdRegion == model.id_region);
 
             if (plantaExistente is not null)
                 throw new Exception("Ya existe una planta con el mismo nombre en esta región.");

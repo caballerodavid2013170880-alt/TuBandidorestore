@@ -9,7 +9,7 @@ namespace SUVAN.BackOffice.Models.ViewModel
 {
     public class PlantaViewModel
     {
-        public short id_emp { get; set; }
+        public int id_emp { get; set; }
 
         [Required(ErrorMessage = "La Región es requerida")]
         public short id_region { get; set; }
