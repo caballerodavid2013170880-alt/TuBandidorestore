@@ -47,6 +47,4 @@ public partial class Empresa
 
     public virtual ICollection<Zona> Zonas { get; set; } = new List<Zona>();
 
-   // public virtual ICollection<Plantum> Plantum { get; set; } = new List<Plantum>();
-
 }

@@ -1,6 +1,6 @@
 "use strict";
 
-var KTRegionList = function () {
+var KTPlantaList = function () {
     // Define shared variables
     var table = document.getElementById('kt_table_planta');
     var datatable;
@@ -9,7 +9,7 @@ var KTRegionList = function () {
     var selectedCount;
 
     // Private functions
-    var initRegionTable = function () {
+    var initPlantaTable = function () {
         // Set date data order
         const tableRows = table.querySelectorAll('tbody tr');
 
@@ -283,7 +283,7 @@ var KTRegionList = function () {
                 return;
             }
 
-            initRegionTable();
+            initPlantaTable();
             handleSearchDatatable();
             handleDeleteRows();
 
@@ -293,5 +293,5 @@ var KTRegionList = function () {
 
 // On document ready
 KTUtil.onDOMContentLoaded(function () {
-    KTRegionList.init();
+    KTPlantaList.init();
 });
