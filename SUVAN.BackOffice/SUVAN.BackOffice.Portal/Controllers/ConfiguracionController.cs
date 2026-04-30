@@ -1,19 +1,20 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SUVAN.BackOffice.Models.ViewModel.Enums;
-using SUVAN.BackOffice.Models.ViewModel;
-using SUVAN.BackOffice.Service.Configuracion;
-using SUVAN.BackOffice.Service.Contenidos;
-using SUVAN.BackOffice.Models.ViewModel.Configuracion;
-using SUVAN.BackOffice.Service.Seguridad;
-using SUVAN.BackOffice.Models.Configuracion.Tarifas;
-using SUVAN.BackOffice.Portal.Helper;
-using Microsoft.AspNetCore.Authorization;
-using SUVAN.BackOffice.Models.Mensajeria;
-using SUVAN.BackOffice.Service.MensajeriaService;
-using SUVAN.BackOffice.Models.Facturacion;
-using SUVAN.BackOffice.Service.Logistica;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Models.Configuracion.Tarifas;
+using SUVAN.BackOffice.Models.Facturacion;
+using SUVAN.BackOffice.Models.Mensajeria;
+using SUVAN.BackOffice.Models.ViewModel;
+using SUVAN.BackOffice.Models.ViewModel.Configuracion;
+using SUVAN.BackOffice.Models.ViewModel.Enums;
+using SUVAN.BackOffice.Portal.Helper;
+using SUVAN.BackOffice.Service.Configuracion;
+using SUVAN.BackOffice.Service.Contenidos;
+using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.MensajeriaService;
+using SUVAN.BackOffice.Service.Seguridad;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
@@ -32,6 +33,9 @@ namespace SUVAN.BackOffice.Portal.Controllers
         private readonly IRegionService regionesService;
         // Plantas
         private readonly IPlantaService plantasService;
+        // Departamentos
+        private readonly IDeptoService deptoService;
+
 
         public ConfiguracionController(ILogger<ConfiguracionController> logger,
           IEmpresasService empresasService,
@@ -41,7 +45,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
           ITarifaService tarifaService,
           IConversacionesService conversacionesService,
           IRegionService regionService,
-          IPlantaService plantaService)
+          IPlantaService plantaService,
+          IDeptoService deptoService)
         {
             _logger = logger;
             this.empresasService = empresasService;
@@ -52,6 +57,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
             this.conversacionesService = conversacionesService;
             this.regionesService = regionService;
             this.plantasService = plantaService;
+            this.deptoService = deptoService;
+
         }
 
         public IActionResult Index()
@@ -379,7 +386,55 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
         }
 
+        // Departamentos
+        public async Task<IActionResult> Deptos()
+        {
+            var deptos = await deptoService.GetDeptos();
+            return View(deptos);
+        }
 
+        [HttpGet]
+        public async Task<IActionResult> GetDeptos(short idRegion, short idPlanta, short idZona, short idDeposi)
+        {
+            var deptos = await deptoService.GetDeptos(idRegion, idPlanta, idZona, idDeposi);
+            return Json(new { data = deptos });
+        }
+
+        public async Task<IActionResult> AgregarDeptos(short idRegion = 0, short idPlanta = 0, short idZona = 0, short idDeposi = 0, short idDepto = 0)
+        {
+            var agregarModel = await deptoService.GetDeptoViewModel(idRegion, idPlanta, idZona, idDeposi, idDepto);
+            ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+            return View(agregarModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AgregarDeptos(DeptoViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                    return View(model);
+                }
+
+                var result = await deptoService.AgregarDepto(model);
+
+                if (result)
+                {
+                    return RedirectToAction("Deptos", "Configuracion");
+                }
+
+                ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                return View(model);
+            }
+        }
 
 
     }

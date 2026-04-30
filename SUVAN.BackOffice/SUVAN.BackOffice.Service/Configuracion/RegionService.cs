@@ -24,9 +24,9 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// <returns>Lista de empresas.</returns>
         public async Task<List<Region>> GetRegiones(int id_empresa)
         {
-            var regiones = await context.Regions.Where(x => x.IdEmpresa == id_empresa).ToListAsync();
+            var deptos = await context.Regions.Where(x => x.IdEmpresa == id_empresa).ToListAsync();
 
-            return regiones!;
+            return deptos!;
         }
 
         /// <summary>

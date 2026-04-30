@@ -10,4 +10,6 @@ public partial class Region
     public short IdRegion { get; set; }
 
     public string? Nombre { get; set; }
+
+    public virtual ICollection<Depto> Depto { get; set; } = new List<Depto>();
 }
