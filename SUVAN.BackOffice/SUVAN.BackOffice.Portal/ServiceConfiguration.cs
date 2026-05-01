@@ -1,4 +1,4 @@
-﻿using SUVAN.BackOffice.Portal.Helper;
+using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Comercial;
 using SUVAN.BackOffice.Service.Configuracion;
 using SUVAN.BackOffice.Service.Contenidos;
@@ -74,6 +74,8 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<IRegionService, RegionesService>();
             //Plantas
             services.AddTransient<IPlantaService, PlantaService>();
+            //Depositos
+            services.AddTransient<IDepositoService, DepositoService>();
         }
 
         /// <summary>

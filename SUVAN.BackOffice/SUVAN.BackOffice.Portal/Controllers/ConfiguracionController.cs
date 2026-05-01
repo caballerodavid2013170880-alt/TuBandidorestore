@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using SUVAN.BackOffice.Models.ViewModel.Enums;
 using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Service.Configuracion;
@@ -32,6 +32,10 @@ namespace SUVAN.BackOffice.Portal.Controllers
         private readonly IRegionService regionesService;
         // Plantas
         private readonly IPlantaService plantasService;
+        // Depositos
+        private readonly IDepositoService depositosService;
+        // Zonas
+        private readonly IZonaService zonasService;
 
         public ConfiguracionController(ILogger<ConfiguracionController> logger,
           IEmpresasService empresasService,
@@ -41,7 +45,9 @@ namespace SUVAN.BackOffice.Portal.Controllers
           ITarifaService tarifaService,
           IConversacionesService conversacionesService,
           IRegionService regionService,
-          IPlantaService plantaService)
+          IPlantaService plantaService,
+          IDepositoService depositoService,
+          IZonaService zonaService)
         {
             _logger = logger;
             this.empresasService = empresasService;
@@ -52,6 +58,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
             this.conversacionesService = conversacionesService;
             this.regionesService = regionService;
             this.plantasService = plantaService;
+            this.depositosService = depositoService;
+            this.zonasService = zonaService;
         }
 
         public IActionResult Index()
@@ -382,5 +390,56 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
 
 
+        // Depositos
+        public async Task<IActionResult> Depositos()
+        {
+            var depositos = await depositosService.GetDepositos((short)User.GetEmpresaId(), 0, 0, 0);
+            return View(depositos);
+        }
+
+        public async Task<IActionResult> AgregarDeposito(short idRegion = 0, short idPlanta = 0, short idZona = 0, short idDeposito = 0)
+        {
+            var agregarModel = await depositosService.GetDepositoViewModel((short)User.GetEmpresaId(), idRegion, idPlanta, idZona, idDeposito);
+            ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+            ViewBag.Plantas = await plantasService.GetPlantas(User.GetEmpresaId());
+            ViewBag.Zonas = await zonasService.GetZona(User.GetEmpresaId());
+            return View(agregarModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AgregarDeposito(DepositoViewModel model)
+        {
+            try
+            {
+                model.id_empresa = (short)User.GetEmpresaId();
+                if (!ModelState.IsValid)
+                {
+                    ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                    ViewBag.Plantas = await plantasService.GetPlantas(User.GetEmpresaId());
+                    ViewBag.Zonas = await zonasService.GetZona(User.GetEmpresaId());
+                    return View(model);
+                }
+
+                var result = await depositosService.AgregarDeposito(model);
+
+                if (result)
+                {
+                    return RedirectToAction("Depositos", "Configuracion");
+                }
+
+                ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                ViewBag.Plantas = await plantasService.GetPlantas(User.GetEmpresaId());
+                ViewBag.Zonas = await zonasService.GetZona(User.GetEmpresaId());
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                ViewBag.Plantas = await plantasService.GetPlantas(User.GetEmpresaId());
+                ViewBag.Zonas = await zonasService.GetZona(User.GetEmpresaId());
+                return View(model);
+            }
+        }
     }
 }
