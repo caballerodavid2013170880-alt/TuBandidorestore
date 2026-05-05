@@ -1,5 +1,4 @@
-﻿@using SUVAN.BackOffice.Models.Facturacion
-@using SUVAN.BackOffice.Models.ViewModel;
+﻿@using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 @using SUVAN.BackOffice.Models.ViewModel.Enums;
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
@@ -14,29 +13,48 @@
     {
         return;
     }
-    var isAgregarText = Model.id_depto == 0 ? "Agregar" : "Editar";
+    var isAgaregarText = Model.id_depto == 0 ? "Agregar" : "Editar";
     var regiones = ViewBag.Regiones as List<SUVAN.BackOffice.Database.Entities.Region> ?? new List<SUVAN.BackOffice.Database.Entities.Region>();
+    var plantas = ViewBag.Plantas as List<SUVAN.BackOffice.Database.Entities.Plantum> ?? new List<SUVAN.BackOffice.Database.Entities.Plantum>();
+    var zonas = ViewBag.Zonas as List<SUVAN.BackOffice.Database.Entities.Zona> ?? new List<SUVAN.BackOffice.Database.Entities.Zona>();
+    var depositos = ViewBag.Depositos as List<SUVAN.BackOffice.Database.Entities.Deposito> ?? new List<SUVAN.BackOffice.Database.Entities.Deposito>();
 }
 <!--begin::Toolbar-->
 <div id="kt_app_toolbar" class="app-toolbar ">
+    <!--begin::Toolbar container-->
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <!--begin::Toolbar wrapper-->
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                <a href="~/configuracion/departamentos" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
-                    <i class="ki-duotone ki-left fs-1 pe-5"></i>
-                    <span>@isAgregarText @ViewData["Title"]</span>
+                <!--begin::Title-->
+                <a href="~/configuracion/depto" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+                    <i class="ki-duotone ki-left fs-1 pe-5">
+                    </i>
+                    <span>@isAgaregarText @ViewData["Title"]</span>
                 </a>
+                <!--end::Title-->
+
             </div>
+            <!--end::Page title-->
+
         </div>
+        <!--end::Toolbar wrapper-->
     </div>
+    <!--end::Toolbar container-->
 </div>
 <!--end::Toolbar-->
 <!--begin::Content-->
 <div id="kt_app_content" class="app-content flex-column-fluid">
+    <!--begin::Content container-->
     <div id="kt_app_content_container" class="app-container container-fluid">
+        <!--begin::Card-->
         <div class="card">
+
+            <!--begin::Card body-->
             <div class="card-body py-4">
-                <form class="form w-100" novalidate="novalidate" id="kt_depto_form" data-kt-redirect-url="/" asp-controller="Configuracion" asp-action="AgregarDepartamento" method="post">
+
+                <form class="form w-100" novalidate="novalidate" id="kt_departamento_in_form" data-kt-redirect-url="/" asp-controller="Configuracion" asp-action="AgregarDepto" method="post">
                     @Html.AntiForgeryToken()
                     <input asp-for="id_depto" type="hidden" />
 
@@ -49,7 +67,6 @@
                     </div>
 
                     <div class="row">
-                        <!-- Región -->
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="id_region" class="col-sm-12 col-form-label text-gray-600 required">Región</label>
@@ -72,16 +89,21 @@
                             </div>
                         </div>
 
-                        <!-- Planta -->
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
-                                <label asp-for="id_planta" class="col-sm-12 col-form-label text-gray-600 required">ID Planta</label>
+                                <label asp-for="id_planta" class="col-sm-12 col-form-label text-gray-600 required">Planta</label>
                                 <div class="col-sm-12">
                                     @if (Model.id_depto > 0)
                                     {
                                         <input type="hidden" asp-for="id_planta" />
                                     }
-                                    <input asp-for="id_planta" class="form-control bg-transparent" placeholder="ID de la planta" readonly="@(Model.id_depto > 0 ? "readonly" : null)" />
+                                    <select asp-for="id_planta" class="form-select" data-control="select2" data-placeholder="Seleccione una planta" disabled="@(Model.id_depto > 0 ? "disabled" : null)">
+                                        <option value=""></option>
+                                        @foreach (var p in plantas)
+                                        {
+                                            <option value="@p.IdPlanta">@p.Nombre</option>
+                                        }
+                                    </select>
                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                         <span asp-validation-for="id_planta"></span>
                                     </div>
@@ -91,16 +113,21 @@
                     </div>
 
                     <div class="row">
-                        <!-- Zona -->
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
-                                <label asp-for="id_zona" class="col-sm-12 col-form-label text-gray-600 required">ID Zona</label>
+                                <label asp-for="id_zona" class="col-sm-12 col-form-label text-gray-600 required">Zona</label>
                                 <div class="col-sm-12">
                                     @if (Model.id_depto > 0)
                                     {
                                         <input type="hidden" asp-for="id_zona" />
                                     }
-                                    <input asp-for="id_zona" class="form-control bg-transparent" placeholder="ID de la zona" readonly="@(Model.id_depto > 0 ? "readonly" : null)" />
+                                    <select asp-for="id_zona" class="form-select" data-control="select2" data-placeholder="Seleccione una zona" disabled="@(Model.id_depto > 0 ? "disabled" : null)">
+                                        <option value=""></option>
+                                        @foreach (var z in zonas)
+                                        {
+                                            <option value="@z.IdZona">@z.NombreZona</option>
+                                        }
+                                    </select>
                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                         <span asp-validation-for="id_zona"></span>
                                     </div>
@@ -108,16 +135,21 @@
                             </div>
                         </div>
 
-                        <!-- Deposito -->
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
-                                <label asp-for="id_deposi" class="col-sm-12 col-form-label text-gray-600 required">ID Depósito</label>
+                                <label asp-for="id_deposi" class="col-sm-12 col-form-label text-gray-600 required">Depósito</label>
                                 <div class="col-sm-12">
                                     @if (Model.id_depto > 0)
                                     {
                                         <input type="hidden" asp-for="id_deposi" />
                                     }
-                                    <input asp-for="id_deposi" class="form-control bg-transparent" placeholder="ID del depósito" readonly="@(Model.id_depto > 0 ? "readonly" : null)" />
+                                    <select asp-for="id_deposi" class="form-select" data-control="select2" data-placeholder="Seleccione un depósito" disabled="@(Model.id_depto > 0 ? "disabled" : null)">
+                                        <option value=""></option>
+                                        @foreach (var d in depositos)
+                                        {
+                                            <option value="@d.IdDeposi">@d.Descrip</option>
+                                        }
+                                    </select>
                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                         <span asp-validation-for="id_deposi"></span>
                                     </div>
@@ -129,11 +161,11 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
-                                <label asp-for="descrip" class="col-sm-12 col-form-label text-gray-600 required">Descripción</label>
+                                <label asp-for="descripcion" class="col-sm-12 col-form-label text-gray-600 required">Descripción</label>
                                 <div class="col-sm-12">
-                                    <input asp-for="descrip" class="form-control bg-transparent" placeholder="Descripción del departamento" maxlength="40" />
+                                    <input asp-for="descripcion" class="form-control bg-transparent" placeholder="Descripción del departamento" maxlength="255" />
                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                        <span asp-validation-for="descrip"></span>
+                                        <span asp-validation-for="descripcion"></span>
                                     </div>
                                 </div>
                             </div>
@@ -142,7 +174,7 @@
                             <div class="fv-row mb-8">
                                 <label asp-for="responsable" class="col-sm-12 col-form-label text-gray-600 required">Responsable</label>
                                 <div class="col-sm-12">
-                                    <input asp-for="responsable" class="form-control bg-transparent" placeholder="Nombre del Responsable" maxlength="50" />
+                                    <input asp-for="responsable" class="form-control bg-transparent" placeholder="Nombre del responsable" maxlength="255" />
                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                         <span asp-validation-for="responsable"></span>
                                     </div>
@@ -152,22 +184,30 @@
                     </div>
 
                     <div class="mb-10 text-end">
-                        <button type="submit" id="kt_depto_submit" class="btn btn-primary">
+                        <button type="submit" id="kt_departamento_in_submit" class="btn btn-primary">
+                            <!--begin::Indicator label-->
                             <span class="indicator-label">Guardar</span>
+                            <!--end::Indicator label-->
+                            <!--begin::Indicator progress-->
                             <span class="indicator-progress">
                                 Por favor espere...
                                 <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
                             </span>
+                            <!--end::Indicator progress-->
                         </button>
                     </div>
                 </form>
+
             </div>
+            <!--end::Card body-->
         </div>
+        <!--end::Card-->
     </div>
+    <!--end::Content container-->
 </div>
 <!--end::Content-->
 @section scripts {
-    <script src="~/js/configuracion/depto/add.js" asp-append-version="true"></script>
+    <script src="~/js/configuracion/departamentos/add.js" asp-append-version="true"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }

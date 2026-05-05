@@ -1,8 +1,8 @@
 "use strict";
 
-var KTDeptoAdd = function () {
-    var submitButton;
+var KTDepartamentoAdd = function () {
     var form;
+    var submitButton;
     var validator;
 
     var initValidation = function () {
@@ -13,42 +13,42 @@ var KTDeptoAdd = function () {
                     'id_region': {
                         validators: {
                             notEmpty: {
-                                message: 'La región es requerida'
+                                message: 'La Región es requerida'
                             }
                         }
                     },
                     'id_planta': {
                         validators: {
                             notEmpty: {
-                                message: 'La planta es requerida'
+                                message: 'La Planta es requerida'
                             }
                         }
                     },
                     'id_zona': {
                         validators: {
                             notEmpty: {
-                                message: 'La zona es requerida'
+                                message: 'La Zona es requerida'
                             }
                         }
                     },
                     'id_deposi': {
                         validators: {
                             notEmpty: {
-                                message: 'El depósito es requerido'
+                                message: 'El Depósito es requerido'
                             }
                         }
                     },
-                    'descrip': {
+                    'descripcion': {
                         validators: {
                             notEmpty: {
-                                message: 'La descripción es requerida'
+                                message: 'La Descripción es requerida'
                             }
                         }
                     },
                     'responsable': {
                         validators: {
                             notEmpty: {
-                                message: 'El responsable es requerido'
+                                message: 'El Responsable es requerido'
                             }
                         }
                     }
@@ -65,21 +65,26 @@ var KTDeptoAdd = function () {
         );
     }
 
-    var handleForm = function () {
+    var handleFormSubmit = function () {
         submitButton.addEventListener('click', function (e) {
             e.preventDefault();
+
             if (validator) {
                 validator.validate().then(function (status) {
                     if (status == 'Valid') {
                         submitButton.setAttribute('data-kt-indicator', 'on');
                         submitButton.disabled = true;
+
+                        // Re-enable Disabled selects before submit so they get posted
+                        $(form).find('select:disabled').prop('disabled', false);
+
                         form.submit();
                     } else {
                         Swal.fire({
-                            text: "Lo sentimos, parece que se han detectado algunos errores, inténtelo de nuevo.",
+                            text: "Por favor corrija los errores del formulario.",
                             icon: "error",
                             buttonsStyling: false,
-                            confirmButtonText: "¡Ok, entiendo!",
+                            confirmButtonText: "Ok, entendido!",
                             customClass: {
                                 confirmButton: "btn btn-primary"
                             }
@@ -92,19 +97,19 @@ var KTDeptoAdd = function () {
 
     return {
         init: function () {
-            form = document.querySelector('#kt_depto_form');
-            submitButton = document.getElementById('kt_depto_submit');
+            form = document.querySelector('#kt_departamento_in_form');
+            submitButton = document.querySelector('#kt_departamento_in_submit');
 
             if (!form || !submitButton) {
                 return;
             }
 
             initValidation();
-            handleForm();
+            handleFormSubmit();
         }
-    }
+    };
 }();
 
 KTUtil.onDOMContentLoaded(function () {
-    KTDeptoAdd.init();
+    KTDepartamentoAdd.init();
 });

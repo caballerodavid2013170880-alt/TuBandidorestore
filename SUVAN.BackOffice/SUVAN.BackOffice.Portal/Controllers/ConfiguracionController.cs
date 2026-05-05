@@ -385,53 +385,57 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 return View(model);
             }
         }
-
-        // Departamentos
-        public async Task<IActionResult> Deptos()
+        // Deptos
+        public async Task<IActionResult> Depto()
         {
-            var deptos = await deptoService.GetDeptos();
+            var deptos = await deptoService.GetDeptos(User.GetEmpresaId());
             return View(deptos);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetDeptos(short idRegion, short idPlanta, short idZona, short idDeposi)
+        public async Task<IActionResult> AgregarDepto(short idRegion = 0, short idPlanta = 0, short idZona = 0, short idDeposi = 0, short idDepto = 0)
         {
-            var deptos = await deptoService.GetDeptos(idRegion, idPlanta, idZona, idDeposi);
-            return Json(new { data = deptos });
-        }
-
-        public async Task<IActionResult> AgregarDeptos(short idRegion = 0, short idPlanta = 0, short idZona = 0, short idDeposi = 0, short idDepto = 0)
-        {
-            var agregarModel = await deptoService.GetDeptoViewModel(idRegion, idPlanta, idZona, idDeposi, idDepto);
+            var agregarModel = await deptoService.GetDeptoViewModel(User.GetEmpresaId(), idRegion, idPlanta, idZona, idDeposi, idDepto);
             ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+            ViewBag.Plantas = await plantasService.GetPlantas(User.GetEmpresaId());
+            ViewBag.Zonas = await deptoService.GetZonas(User.GetEmpresaId());
+            ViewBag.Depositos = await deptoService.GetDepositos(User.GetEmpresaId());
             return View(agregarModel);
         }
 
         [HttpPost]
-        public async Task<IActionResult> AgregarDeptos(DeptoViewModel model)
+        public async Task<IActionResult> AgregarDepto(DeptoViewModel model)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
                     ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                    ViewBag.Plantas = await plantasService.GetPlantas(User.GetEmpresaId());
+                    ViewBag.Zonas = await deptoService.GetZonas(User.GetEmpresaId());
+                    ViewBag.Depositos = await deptoService.GetDepositos(User.GetEmpresaId());
                     return View(model);
                 }
 
-                var result = await deptoService.AgregarDepto(model);
+                var result = await deptoService.AgregarDepto(model, User.GetEmpresaId());
 
                 if (result)
                 {
-                    return RedirectToAction("Deptos", "Configuracion");
+                    return RedirectToAction("Depto", "Configuracion");
                 }
 
                 ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                ViewBag.Plantas = await plantasService.GetPlantas(User.GetEmpresaId());
+                ViewBag.Zonas = await deptoService.GetZonas(User.GetEmpresaId());
+                ViewBag.Depositos = await deptoService.GetDepositos(User.GetEmpresaId());
                 return View(model);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
                 ViewBag.Regiones = await regionesService.GetRegiones(User.GetEmpresaId());
+                ViewBag.Plantas = await plantasService.GetPlantas(User.GetEmpresaId());
+                ViewBag.Zonas = await deptoService.GetZonas(User.GetEmpresaId());
+                ViewBag.Depositos = await deptoService.GetDepositos(User.GetEmpresaId());
                 return View(model);
             }
         }

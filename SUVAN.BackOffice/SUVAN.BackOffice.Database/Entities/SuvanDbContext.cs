@@ -1482,27 +1482,6 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(70)
                 .IsFixedLength()
                 .HasColumnName("responsable");
-
-            // Relaciones Lógicas
-            entity.HasOne(d => d.Region)
-                   //.WithMany() 
-                   .WithMany(r => r.Depto) //si la colección en Region.cs
-                   .HasForeignKey(d => d.IdRegion)
-                   .HasPrincipalKey(r => r.IdRegion);
-
-            entity.HasOne(d => d.Plantum)
-                   .WithMany()
-                   .HasForeignKey(d => d.IdPlanta)
-                   .HasPrincipalKey(p => p.IdPlanta);
-
-            entity.Property(e => e.IdZona)
-                   .HasColumnName("id_zona")
-                   .HasConversion<short>();
-
-             entity.HasOne(d => d.Deposito)
-                   .WithMany()
-                   .HasForeignKey(d => d.IdDeposi)
-                   .HasPrincipalKey(dp => dp.IdDeposi);
         });
 
         modelBuilder.Entity<DetPrev>(entity =>

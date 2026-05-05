@@ -1,6 +1,7 @@
 ﻿using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel;
+using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,24 +11,38 @@ using System.Threading.Tasks;
 namespace SUVAN.BackOffice.Service.Configuracion
 {
     /// <summary>
-    /// Interfaz para el servicio de Departamentos (Depto).
-    /// Proporciona los métodos para consultar y gestionar el catálogo de departamentos.
+    /// Interfaz del servicio para la gestión de Departamentos.
     /// </summary>
     public interface IDeptoService
     {
         /// <summary>
-        /// Obtiene la lista de departamentos filtrada por la jerarquía geografica.
+        /// Agrega o actualiza un departamento en la base de datos simulando relaciones por código.
         /// </summary>
-        Task<List<Depto>> GetDeptos(short id_region, short id_planta, short id_zona, short id_deposi);
+        /// <param name="model">ViewModel con los datos del departamento.</param>
+        /// <param name="id_empresa">Identificador de la empresa actual.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario lanza excepción.</returns>
+        Task<bool> AgregarDepto(DeptoViewModel model, int id_empresa);
 
         /// <summary>
-        /// Obtiene un ViewModel específico de un departamento.
+        /// Obtiene el listado de Departamentos disponibles para la empresa del usuario.
         /// </summary>
-        Task<DeptoViewModel> GetDeptoViewModel(short id_region, short id_planta, short id_zona, short id_deposi, short id_depto);
+        /// <param name="id_empresa">Identificador de la empresa.</param>
+        /// <returns>Lista de Departamentos vinculados indirectamente a la empresa.</returns>
+        Task<List<Depto>> GetDeptos(int id_empresa);
 
         /// <summary>
-        /// Agrega o actualiza un departamento validando sus referencias.
+        /// Obtiene el ViewModel para un departamento específico a fin de editarlo.
         /// </summary>
-        Task<bool> AgregarDepto(DeptoViewModel model);
+        /// <param name="id_empresa">Identificador de la empresa.</param>
+        /// <param name="id_region">Identificador de la región.</param>
+        /// <param name="id_planta">Identificador de la planta.</param>
+        /// <param name="id_zona">Identificador de la zona.</param>
+        /// <param name="id_deposi">Identificador del depósito.</param>
+        /// <param name="id_depto">Identificador del departamento.</param>
+        /// <returns>Instancia de DeptoViewModel con los datos o inicializada si es nuevo.</returns>
+        Task<DeptoViewModel> GetDeptoViewModel(int id_empresa, short id_region, short id_planta, short id_zona, short id_deposi, short id_depto);
+
+        Task<List<Zona>> GetZonas(int id_empresa);
+        Task<List<Deposito>> GetDepositos(int id_empresa);
     }
 }

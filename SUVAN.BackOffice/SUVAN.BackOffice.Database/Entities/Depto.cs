@@ -9,7 +9,7 @@ public partial class Depto
 
     public short IdPlanta { get; set; }
 
-    public int IdZona { get; set; }
+    public short IdZona { get; set; }
 
     public short IdDeposi { get; set; }
 
@@ -18,10 +18,4 @@ public partial class Depto
     public string Descrip { get; set; } = null!;
 
     public string Responsable { get; set; } = null!;
-
-    public virtual Region Region { get; set; }
-    public virtual Plantum Plantum { get; set; }
-    public virtual Zona Zona { get; set; }
-    public virtual Deposito Deposito { get; set; }
-
 }

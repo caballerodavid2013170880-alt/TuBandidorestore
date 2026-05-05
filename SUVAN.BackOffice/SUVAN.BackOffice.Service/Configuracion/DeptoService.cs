@@ -4,14 +4,8 @@ using SUVAN.BackOffice.Models.Configuracion.Tarifas;
 using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
-
 namespace SUVAN.BackOffice.Service.Configuracion
 {
-    /// <summary>
-    /// Servicio para la gestión de Departamentos.
-    /// Implementa la lógica de negocio y mantiene la integridad referencial manual 
-    /// para la jerarquía Región -> Planta -> Zona -> Depósito -> Depto.
-    /// </summary>
     public class DeptoService : IDeptoService
     {
         private readonly SuvanDbContext context;
@@ -22,33 +16,32 @@ namespace SUVAN.BackOffice.Service.Configuracion
         }
 
         /// <summary>
-        /// Obtiene el listado de departamentos filtrado por la jerarquía geografica.
+        /// Obtiene el listado de Departamentos filtrando por los que pertenecen a las regiones de la empresa actual.
         /// </summary>
-        /// <param name="id_region">ID de la Región</param>
-        /// <param name="id_planta">ID de la Planta</param>
-        /// <param name="id_zona">ID de la Zona</param>
-        /// <param name="id_deposi">ID del Depósito</param>
-        /// <returns>Lista de Departamentos</returns>
-        public async Task<List<Depto>> GetDeptos(short id_region, short id_planta, short id_zona, short id_deposi)
+        public async Task<List<Depto>> GetDeptos(int id_empresa)
         {
-            var deptos = await context.Deptos
-                .Where(x => x.IdRegion == id_region && x.IdPlanta == id_planta && x.IdZona == id_zona && x.IdDeposi == id_deposi)
-                .ToListAsync();
-            return deptos!;
+            var deptos = await (from d in context.Deptos
+                                join r in context.Regions on d.IdRegion equals r.IdRegion
+                                where r.IdEmpresa == id_empresa
+                                select d).ToListAsync();
+
+            return deptos;
         }
 
         /// <summary>
-        /// Obtiene la información de un departamento y su jerarquia.
+        /// Obtiene el ViewModel para editar un departamento específico.
         /// </summary>
-        /// <param name="id_region">ID de la Región</param>
-        /// <param name="id_planta">ID de la Planta</param>
-        /// <param name="id_zona">ID de la Zona</param>
-        /// <param name="id_deposi">ID del Depósito</param>
-        /// <param name="id_depto">ID del Departamento a buscar</param>
-        /// <returns>ViewModel con los detalles</returns>
-        public async Task<DeptoViewModel> GetDeptoViewModel(short id_region, short id_planta, short id_zona, short id_deposi, short id_depto)
+        public async Task<DeptoViewModel> GetDeptoViewModel(int id_empresa, short id_region, short id_planta, short id_zona, short id_deposi, short id_depto)
         {
             DeptoViewModel vRet = new DeptoViewModel();
+
+            // Si el id_depto es 0, es un registro nuevo
+            if (id_depto == 0) return vRet;
+
+            // Validar que el depto pertenezca a la empresa mediante su región
+            var region = await context.Regions.FirstOrDefaultAsync(r => r.IdRegion == id_region && r.IdEmpresa == id_empresa);
+            if (region == null) return vRet;
+
             var depto = await context.Deptos.FirstOrDefaultAsync(x =>
                 x.IdRegion == id_region &&
                 x.IdPlanta == id_planta &&
@@ -56,51 +49,44 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 x.IdDeposi == id_deposi &&
                 x.IdDepto == id_depto);
 
-            if (depto == null)
-                return vRet;
-
-            var region = await context.Regions.FirstOrDefaultAsync(r => r.IdRegion == id_region);
-            var planta = await context.Planta.FirstOrDefaultAsync(p => p.IdRegion == id_region && p.IdPlanta == id_planta);
-            var zona = await context.Zonas.FirstOrDefaultAsync(z => z.IdRegion == id_region && z.IdPlanta == id_planta && z.IdZona == id_zona);
-            var deposito = await context.Depositos.FirstOrDefaultAsync(d => d.IdRegion == id_region && d.IdPlanta == id_planta && d.IdZona == id_zona && d.IdDeposi == id_deposi);
-
-            vRet = new DeptoViewModel
+            if (depto != null)
             {
-                id_region = depto.IdRegion,
-                id_planta = depto.IdPlanta,
-                id_zona = (short)depto.IdZona,
-                id_deposi = depto.IdDeposi,
-                id_depto = depto.IdDepto,
-                descrip = depto.Descrip?.Trim(),
-                responsable = depto.Responsable?.Trim(),
-                nombre_region = region?.Nombre,
-                nombre_planta = planta?.Nombre,
-                nombre_zona = zona?.NombreZona,
-                nombre_deposi = deposito?.Descrip
-            };
+                vRet = new DeptoViewModel
+                {
+                    id_region = depto.IdRegion,
+                    id_planta = depto.IdPlanta,
+                    id_zona = depto.IdZona,
+                    id_deposi = depto.IdDeposi,
+                    id_depto = depto.IdDepto,
+                    descripcion = depto.Descrip,
+                    responsable = depto.Responsable
+                };
+            }
 
             return vRet;
         }
 
         /// <summary>
-        /// Agrega o actualiza un departamento. Simula las FK validando validando la jerarquía.
+        /// Agrega o actualiza un departamento, simulando validaciones de llaves foráneas.
         /// </summary>
-        /// <param name="model">Modelo de datos del Departamento</param>
-        /// <returns>Verdadero si la operación es exitosa</returns>
-        public async Task<bool> AgregarDepto(DeptoViewModel model)
+        public async Task<bool> AgregarDepto(DeptoViewModel model, int id_empresa)
         {
-            // Validar existencia de dependencias
-            bool existeRegion = await context.Regions.AnyAsync(r => r.IdRegion == model.id_region);
-            if (!existeRegion) throw new Exception($"Restricción referencial: La región con Id {model.id_region} no existe.");
+            // Validaciones simulando FKs
+            var region = await context.Regions.FirstOrDefaultAsync(x => x.IdRegion == model.id_region && x.IdEmpresa == id_empresa);
+            if (region == null)
+                throw new Exception("La Región seleccionada no existe o no pertenece a su empresa.");
 
-            bool existePlanta = await context.Planta.AnyAsync(p => p.IdRegion == model.id_region && p.IdPlanta == model.id_planta);
-            if (!existePlanta) throw new Exception($"Restricción referencial: La planta con Id {model.id_planta} no existe en la región {model.id_region}.");
+            var planta = await context.Planta.FirstOrDefaultAsync(x => x.IdPlanta == model.id_planta && x.IdRegion == model.id_region);
+            if (planta == null)
+                throw new Exception("La Planta seleccionada no existe o no pertenece a la región indicada.");
 
-            bool existeZona = await context.Zonas.AnyAsync(z => z.IdRegion == model.id_region && z.IdPlanta == model.id_planta && z.IdZona == model.id_zona);
-            if (!existeZona) throw new Exception($"Restricción referencial: La zona con Id {model.id_zona} no existe.");
+            var zona = await context.Zonas.FirstOrDefaultAsync(x => x.IdZona == (int)model.id_zona && x.IdPlanta == model.id_planta && x.IdRegion == model.id_region);
+            if (zona == null)
+                throw new Exception("La Zona seleccionada no existe o no pertenece a la planta indicada.");
 
-            bool existeDeposi = await context.Depositos.AnyAsync(d => d.IdRegion == model.id_region && d.IdPlanta == model.id_planta && d.IdZona == model.id_zona && d.IdDeposi == model.id_deposi);
-            if (!existeDeposi) throw new Exception($"Restricción referencial: El depósito con Id {model.id_deposi} no existe.");
+            var deposito = await context.Depositos.FirstOrDefaultAsync(x => x.IdDeposi == model.id_deposi && x.IdZona == model.id_zona && x.IdPlanta == model.id_planta && x.IdRegion == model.id_region);
+            if (deposito == null)
+                throw new Exception("El Depósito seleccionado no existe o no pertenece a la zona indicada.");
 
             Depto depto;
 
@@ -114,7 +100,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                     x.IdDepto == model.id_depto);
 
                 if (depto == null)
-                    throw new Exception("No se encontró el departamento");
+                    throw new Exception("No se encontró el departamento para actualizar.");
             }
             else
             {
@@ -126,6 +112,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                     IdDeposi = model.id_deposi
                 };
 
+                // Autoincremental basado en los padres
                 var vLastRow = await context.Deptos
                     .Where(x => x.IdRegion == model.id_region && x.IdPlanta == model.id_planta && x.IdZona == model.id_zona && x.IdDeposi == model.id_deposi)
                     .OrderByDescending(x => x.IdDepto)
@@ -134,8 +121,9 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 depto.IdDepto = (short)((vLastRow != null ? vLastRow.IdDepto : 0) + 1);
             }
 
+            // Validar duplicidad de descripción en la misma jerarquía
             var deptoExistente = await context.Deptos.FirstOrDefaultAsync(x =>
-                x.Descrip.ToLower() == model.descrip.ToLower() &&
+                x.Descrip.ToLower() == model.descripcion.ToLower() &&
                 x.IdRegion == model.id_region &&
                 x.IdPlanta == model.id_planta &&
                 x.IdZona == model.id_zona &&
@@ -143,23 +131,35 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 x.IdDepto != model.id_depto);
 
             if (deptoExistente != null)
-                throw new Exception("Ya existe un departamento con la misma descripción en este depósito.");
+                throw new Exception("Ya existe un departamento con el mismo nombre en este depósito.");
 
-            depto.Descrip = model.descrip;
+            depto.Descrip = model.descripcion;
             depto.Responsable = model.responsable;
 
             if (model.id_depto > 0)
             {
                 context.Deptos.Entry(depto);
-                await context.SaveChangesAsync();
             }
             else
             {
                 context.Deptos.Add(depto);
-                await context.SaveChangesAsync();
             }
 
+            await context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<List<Zona>> GetZonas(int id_empresa)
+        {
+            return await context.Zonas.Where(x => x.IdEmpresa == id_empresa).ToListAsync();
+        }
+
+        public async Task<List<Deposito>> GetDepositos(int id_empresa)
+        {
+            return await (from d in context.Depositos
+                          join r in context.Regions on d.IdRegion equals r.IdRegion
+                          where r.IdEmpresa == id_empresa
+                          select d).ToListAsync();
         }
     }
 }
