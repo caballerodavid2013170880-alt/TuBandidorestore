@@ -81,10 +81,10 @@ var KTDepartamentoAdd = function () {
                         form.submit();
                     } else {
                         Swal.fire({
-                            text: "Por favor corrija los errores del formulario.",
+                            text: "Por favor llene o corrija los campos indicados del formulario.",
                             icon: "error",
                             buttonsStyling: false,
-                            confirmButtonText: "Ok, entendido!",
+                            confirmButtonText: "De acuerdo",
                             customClass: {
                                 confirmButton: "btn btn-primary"
                             }

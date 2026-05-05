@@ -389,7 +389,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> Depto()
         {
             var deptos = await deptoService.GetDeptos(User.GetEmpresaId());
-            return View(deptos);
+            return View("Depto", deptos);
         }
 
         public async Task<IActionResult> AgregarDepto(short idRegion = 0, short idPlanta = 0, short idZona = 0, short idDeposi = 0, short idDepto = 0)

@@ -11,5 +11,5 @@ public partial class Region
 
     public string? Nombre { get; set; }
 
-    public virtual ICollection<Depto> Depto { get; set; } = new List<Depto>();
+   // public virtual ICollection<Depto> Depto { get; set; } = new List<Depto>();
 }

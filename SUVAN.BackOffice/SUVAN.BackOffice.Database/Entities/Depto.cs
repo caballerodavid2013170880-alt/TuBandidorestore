@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SUVAN.BackOffice.Database.Entities;
 
@@ -18,4 +19,5 @@ public partial class Depto
     public string Descrip { get; set; } = null!;
 
     public string Responsable { get; set; } = null!;
+
 }

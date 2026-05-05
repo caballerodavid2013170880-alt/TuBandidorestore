@@ -20,10 +20,32 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// </summary>
         public async Task<List<Depto>> GetDeptos(int id_empresa)
         {
+            // JOIN estricto simulando la integridad referencial.
+            // Al unir Depto.IdRegion con Region.IdRegion Y forzar Region.IdEmpresa == id_empresa,
+            // aislamos correctamente los departamentos de esta empresa (Tenant).
             var deptos = await (from d in context.Deptos
-                                join r in context.Regions on d.IdRegion equals r.IdRegion
+                                join r in context.Regions
+                                    on d.IdRegion equals r.IdRegion
                                 where r.IdEmpresa == id_empresa
                                 select d).ToListAsync();
+
+            return deptos;
+        }
+
+        public async Task<List<DeptoViewModel>> GetDeptosView(int id_empresa)
+        {
+            // Forma segura de hacer un LEFT JOIN en EF Core sin usar tipos anónimos que lo confundan
+            var deptos = await (from d in context.Deptos
+                                from r in context.Regions
+                                    .Where(reg => reg.IdRegion == d.IdRegion && reg.IdEmpresa == id_empresa)
+                                    .DefaultIfEmpty()
+                                select new DeptoViewModel
+                                {
+                                    id_depto = d.IdDepto,
+                                    descripcion = d.Descrip,
+                                    id_region = d.IdRegion,
+                                    // Si requirieras más campos de la jerarquía, ya los tienes disponibles en 'd'
+                                }).ToListAsync();
 
             return deptos;
         }
@@ -35,13 +57,13 @@ namespace SUVAN.BackOffice.Service.Configuracion
         {
             DeptoViewModel vRet = new DeptoViewModel();
 
-            // Si el id_depto es 0, es un registro nuevo
             if (id_depto == 0) return vRet;
 
-            // Validar que el depto pertenezca a la empresa mediante su región
+            // 1. Validar jerarquía padre (Region)
             var region = await context.Regions.FirstOrDefaultAsync(r => r.IdRegion == id_region && r.IdEmpresa == id_empresa);
             if (region == null) return vRet;
 
+            // 2. Traer el departamento con la jerarquía estricta
             var depto = await context.Deptos.FirstOrDefaultAsync(x =>
                 x.IdRegion == id_region &&
                 x.IdPlanta == id_planta &&
@@ -71,7 +93,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// </summary>
         public async Task<bool> AgregarDepto(DeptoViewModel model, int id_empresa)
         {
-            // Validaciones simulando FKs
+            // Validaciones secuenciales de la jerarquía (Simulación de Constraints)
             var region = await context.Regions.FirstOrDefaultAsync(x => x.IdRegion == model.id_region && x.IdEmpresa == id_empresa);
             if (region == null)
                 throw new Exception("La Región seleccionada no existe o no pertenece a su empresa.");
@@ -92,6 +114,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
             if (model.id_depto > 0)
             {
+                // UPDATE
                 depto = await context.Deptos.FirstOrDefaultAsync(x =>
                     x.IdRegion == model.id_region &&
                     x.IdPlanta == model.id_planta &&
@@ -104,6 +127,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
             }
             else
             {
+                // INSERT
                 depto = new Depto
                 {
                     IdRegion = model.id_region,
@@ -112,16 +136,19 @@ namespace SUVAN.BackOffice.Service.Configuracion
                     IdDeposi = model.id_deposi
                 };
 
-                // Autoincremental basado en los padres
+                // Lógica de Autonumérico basado en la jerarquía completa
                 var vLastRow = await context.Deptos
-                    .Where(x => x.IdRegion == model.id_region && x.IdPlanta == model.id_planta && x.IdZona == model.id_zona && x.IdDeposi == model.id_deposi)
+                    .Where(x => x.IdRegion == model.id_region &&
+                                x.IdPlanta == model.id_planta &&
+                                x.IdZona == model.id_zona &&
+                                x.IdDeposi == model.id_deposi)
                     .OrderByDescending(x => x.IdDepto)
                     .FirstOrDefaultAsync();
 
                 depto.IdDepto = (short)((vLastRow != null ? vLastRow.IdDepto : 0) + 1);
             }
 
-            // Validar duplicidad de descripción en la misma jerarquía
+            // Validar unicidad de descripción dentro de la misma jerarquía exacta
             var deptoExistente = await context.Deptos.FirstOrDefaultAsync(x =>
                 x.Descrip.ToLower() == model.descripcion.ToLower() &&
                 x.IdRegion == model.id_region &&

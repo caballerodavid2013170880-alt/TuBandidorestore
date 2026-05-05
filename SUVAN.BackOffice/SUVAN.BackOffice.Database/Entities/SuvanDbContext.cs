@@ -1482,6 +1482,11 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(70)
                 .IsFixedLength()
                 .HasColumnName("responsable");
+
+            //   entity.HasOne(d => d.Region)
+            //     .WithMany()
+            //     .HasForeignKey(d => d.IdRegion)
+            //     .HasPrincipalKey(r => r.IdRegion); // <--- Obliga a EF a relacionar 1 a 1 solo por IdRegion
         });
 
         modelBuilder.Entity<DetPrev>(entity =>
