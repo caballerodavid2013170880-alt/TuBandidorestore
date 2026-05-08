@@ -16,13 +16,15 @@ namespace SUVAN.BackOffice.Service.Configuracion
         }
 
         /// <summary>
-        /// Obtiene el listado de Departamentos filtrando por los que pertenecen a las regiones de la empresa actual.
+        /// Obtiene el listado de Departamentos que pertenecen a las regiones de la empresa asignada.
         /// </summary>
+        /// /// <param name="id_empresa">Identificador de la empresa.</param>
+        /// <returns>Lista de departamentos por empresa.</returns>
         public async Task<List<Depto>> GetDeptos(int id_empresa)
         {
-            // JOIN estricto simulando la integridad referencial.
+            // JOIN simulando la integridad referencial.
             // Al unir Depto.IdRegion con Region.IdRegion Y forzar Region.IdEmpresa == id_empresa,
-            // aislamos correctamente los departamentos de esta empresa (Tenant).
+            // aislamos correctamente los departamentos por empresa.
             var deptos = await (from d in context.Deptos
                                 join r in context.Regions
                                     on d.IdRegion equals r.IdRegion
@@ -32,9 +34,16 @@ namespace SUVAN.BackOffice.Service.Configuracion
             return deptos;
         }
 
+        /// <summary>
+        /// Obtiene el ViewModel para el departamento filtrado.
+        /// </summary>
+        /// <param name="id_empresa">Identificador de la empresa.</param>
+        /// <param name="id_depto">Identificador del departamento.</param>
+        /// <param name="id_region">Identificador de la región.</param>
+        /// <returns>ViewModel para departamentos por ejerarquia.</returns>
         public async Task<List<DeptoViewModel>> GetDeptosView(int id_empresa)
         {
-            // Forma segura de hacer un LEFT JOIN en EF Core sin usar tipos anónimos que lo confundan
+            // Forma segura de hacer un LEFT JOIN en EF Core sin usar anónimos
             var deptos = await (from d in context.Deptos
                                 from r in context.Regions
                                     .Where(reg => reg.IdRegion == d.IdRegion && reg.IdEmpresa == id_empresa)
@@ -44,26 +53,29 @@ namespace SUVAN.BackOffice.Service.Configuracion
                                     id_depto = d.IdDepto,
                                     descripcion = d.Descrip,
                                     id_region = d.IdRegion,
-                                    // Si requirieras más campos de la jerarquía, ya los tienes disponibles en 'd'
                                 }).ToListAsync();
 
             return deptos;
         }
 
         /// <summary>
-        /// Obtiene el ViewModel para editar un departamento específico.
+        /// Obtiene el ViewModel para departamentos segun jerarquia heredada.
         /// </summary>
+        /// <param name="id_empresa">Identificador de la empresa.</param>
+        /// <param name="id_depto">Identificador del departamento.</param>
+        /// <param name="id_region">Identificador de la región.</param>
+        /// <returns>ViewModel para  departamento con filtros de jerarquia.</returns>
         public async Task<DeptoViewModel> GetDeptoViewModel(int id_empresa, short id_region, short id_planta, short id_zona, short id_deposi, short id_depto)
         {
             DeptoViewModel vRet = new DeptoViewModel();
 
             if (id_depto == 0) return vRet;
 
-            // 1. Validar jerarquía padre (Region)
+            // Valida la jerarquía padre (Region)
             var region = await context.Regions.FirstOrDefaultAsync(r => r.IdRegion == id_region && r.IdEmpresa == id_empresa);
             if (region == null) return vRet;
 
-            // 2. Traer el departamento con la jerarquía estricta
+            // Obtiene el departamento respecto a la jerarquía
             var depto = await context.Deptos.FirstOrDefaultAsync(x =>
                 x.IdRegion == id_region &&
                 x.IdPlanta == id_planta &&
@@ -89,11 +101,15 @@ namespace SUVAN.BackOffice.Service.Configuracion
         }
 
         /// <summary>
-        /// Agrega o actualiza un departamento, simulando validaciones de llaves foráneas.
+        /// Agrega o actualiza un departamento, simulando validaciones de llaves foráneas en sus propiedades.
         /// </summary>
+        /// <param name="model">ViewModel con los datos de departamento.</param>
+        /// <param name="id_empresa">ViewModel con los datos de la empresa.</param>
+        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción especifica.</returns>
+        /// <exception cref="Exception"></exception>
         public async Task<bool> AgregarDepto(DeptoViewModel model, int id_empresa)
         {
-            // Validaciones secuenciales de la jerarquía (Simulación de Constraints)
+            // Validaciones por campos de la jerarquía (Con simulación de uniones)
             var region = await context.Regions.FirstOrDefaultAsync(x => x.IdRegion == model.id_region && x.IdEmpresa == id_empresa);
             if (region == null)
                 throw new Exception("La Región seleccionada no existe o no pertenece a su empresa.");
@@ -136,7 +152,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                     IdDeposi = model.id_deposi
                 };
 
-                // Lógica de Autonumérico basado en la jerarquía completa
+                // Generador del id incremental basado en la jerarquía completa
                 var vLastRow = await context.Deptos
                     .Where(x => x.IdRegion == model.id_region &&
                                 x.IdPlanta == model.id_planta &&
@@ -148,7 +164,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 depto.IdDepto = (short)((vLastRow != null ? vLastRow.IdDepto : 0) + 1);
             }
 
-            // Validar unicidad de descripción dentro de la misma jerarquía exacta
+            // Valida la descripción unica del registro dentro de la misma jerarquía
             var deptoExistente = await context.Deptos.FirstOrDefaultAsync(x =>
                 x.Descrip.ToLower() == model.descripcion.ToLower() &&
                 x.IdRegion == model.id_region &&
@@ -158,7 +174,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 x.IdDepto != model.id_depto);
 
             if (deptoExistente != null)
-                throw new Exception("Ya existe un departamento con el mismo nombre en este depósito.");
+                throw new Exception("Ya existe un departamento con el mismo nombre o responsable en este depósito.");
 
             depto.Descrip = model.descripcion;
             depto.Responsable = model.responsable;
@@ -176,11 +192,21 @@ namespace SUVAN.BackOffice.Service.Configuracion
             return true;
         }
 
+        /// <summary>
+        /// Obtiene el listado de las zonas que pertenecen a las empresas vinculadas.
+        /// </summary>
+        /// /// <param name="id_empresa">Identificador de la empresa.</param>
+        /// <returns>Lista de zonas por empresa.</returns>
         public async Task<List<Zona>> GetZonas(int id_empresa)
         {
             return await context.Zonas.Where(x => x.IdEmpresa == id_empresa).ToListAsync();
         }
 
+        /// <summary>
+        /// Obtiene el listado de las depositos que pertenecen a las empresas vinculadas.
+        /// </summary>
+        /// /// <param name="id_empresa">Identificador de la empresa.</param>
+        /// <returns>Lista de depositos por empresa y región.</returns>
         public async Task<List<Deposito>> GetDepositos(int id_empresa)
         {
             return await (from d in context.Depositos

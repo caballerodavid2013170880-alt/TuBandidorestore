@@ -10,7 +10,7 @@ var KTDepartamentoList = function () {
         if (!table) {
             return;
         }
-
+        // Init datatable --- more info on datatables: https://datatables.net/manual/
         datatable = $(table).DataTable({
             "info": false,
             'order': [],
@@ -20,7 +20,9 @@ var KTDepartamentoList = function () {
         });
 
         datatable.on('draw', function () {
-            // Re-init any custom functions here if needed
+            initToggleToolbar();
+            handleDeleteRows();
+            toggleToolbars(); datatable.on('draw', function () {
         });
     }
 
