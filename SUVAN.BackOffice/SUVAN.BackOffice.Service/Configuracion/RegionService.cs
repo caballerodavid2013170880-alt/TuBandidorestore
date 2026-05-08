@@ -4,6 +4,7 @@ using SUVAN.BackOffice.Models.Configuracion.Tarifas;
 using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
+using System.Linq;
 
 namespace SUVAN.BackOffice.Service.Configuracion
 {
