@@ -1,6 +1,7 @@
 "use strict";
-
+// Class definition
 var KTDepartamentoAdd = function () {
+    // Elements
     var form;
     var submitButton;
     var validator;
@@ -95,6 +96,7 @@ var KTDepartamentoAdd = function () {
         });
     }
 
+    // Public functions
     return {
         init: function () {
             form = document.querySelector('#kt_departamento_in_form');

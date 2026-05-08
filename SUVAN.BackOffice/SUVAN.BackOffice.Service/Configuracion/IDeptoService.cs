@@ -43,7 +43,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         Task<DeptoViewModel> GetDeptoViewModel(int id_empresa, short id_region, short id_planta, short id_zona, short id_deposi, short id_depto);
 
         /// <summary>
-        /// Obtiene el listado de las zonas que pertenecen a las empresas asignadas al usuario.
+        /// Obtiene el listado de las zonas que pertenecen a las empresas vinculadas al usuario.
         /// </summary>
         /// /// <param name="id_empresa">Identificador de la empresa.</param>
         /// <returns>Lista de zonas por empresa.</returns>
@@ -51,7 +51,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         Task<List<Zona>> GetZonas(int id_empresa);
 
         /// <summary>
-        /// Obtiene el listado de las depositos que pertenecen a las empresas asignadas al usuario.
+        /// Obtiene el listado de las depositos que pertenecen a las empresas vinculadas al usuario.
         /// </summary>
         /// /// <param name="id_empresa">Identificador de la empresa.</param>
         /// <returns>Lista de depositos por empresa y región.</returns>
