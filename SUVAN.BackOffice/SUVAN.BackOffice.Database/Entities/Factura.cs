@@ -41,6 +41,8 @@ public partial class Factura
 
     public DateTime? Fecharegistro { get; set; }
 
+    public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
+
     public virtual Transaccion TransaccionIdtransaccionNavigation { get; set; } = null!;
 
     public virtual Usuario UsuarioIdusuarioNavigation { get; set; } = null!;

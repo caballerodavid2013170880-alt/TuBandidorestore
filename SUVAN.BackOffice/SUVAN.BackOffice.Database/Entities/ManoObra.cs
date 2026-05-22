@@ -7,5 +7,7 @@ public partial class ManoObra
 {
     public int IdManoObra { get; set; }
 
-    public string Descripcion { get; set; } = null!;
+    public string? DescripcionManoobra { get; set; }
+
+    public virtual ICollection<DetPrev> DetPrevs { get; set; } = new List<DetPrev>();
 }

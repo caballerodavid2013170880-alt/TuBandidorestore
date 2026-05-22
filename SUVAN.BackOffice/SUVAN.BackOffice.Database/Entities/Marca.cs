@@ -11,5 +11,7 @@ public partial class Marca
 
     public virtual ICollection<Modelo> Modelos { get; set; } = new List<Modelo>();
 
+    public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
+
     public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
 }

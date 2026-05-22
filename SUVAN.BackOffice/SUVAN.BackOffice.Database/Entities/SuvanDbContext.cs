@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
-using static SUVAN.BackOffice.Models.StoredsProcedures.ModelsStoredsProcedures;
 
 namespace SUVAN.BackOffice.Database.Entities;
 
@@ -115,8 +114,6 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Fotografium> Fotografia { get; set; }
 
-    public virtual DbSet<GasIave> GasIaves { get; set; }
-
     public virtual DbSet<GrupoReparacion> GrupoReparacions { get; set; }
 
     public virtual DbSet<Infracc> Infraccs { get; set; }
@@ -209,6 +206,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<TarCom> TarComs { get; set; }
 
+    public virtual DbSet<TarIave> TarIaves { get; set; }
+
     public virtual DbSet<TarifaEscalonadum> TarifaEscalonada { get; set; }
 
     public virtual DbSet<TarifaGeneral> TarifaGenerals { get; set; }
@@ -292,7 +291,7 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Zona> Zonas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
         => optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -300,11 +299,6 @@ public partial class SuvanDbContext : DbContext
         modelBuilder
             .UseCollation("utf8mb4_0900_ai_ci")
             .HasCharSet("utf8mb4");
-
-        //NOTA: Se agrega este modelo para ejecutar sp
-        modelBuilder.Entity<ModelstpBuscaServicio>().HasNoKey();
-        modelBuilder.Entity<ModelstpRevisaEstacionalaRedonda>().HasNoKey();
-        modelBuilder.Entity<ModelRutaConfiguracion>().HasNoKey();
 
         modelBuilder.Entity<Admin>(entity =>
         {
@@ -674,6 +668,22 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("comb_cargas");
 
+            entity.HasIndex(e => e.IdComb, "fk_cargas_combustible");
+
+            entity.HasIndex(e => e.IdDeposito, "fk_cargas_deposito");
+
+            entity.HasIndex(e => e.IdDepto, "fk_cargas_depto");
+
+            entity.HasIndex(e => e.Idfactura, "fk_cargas_factura");
+
+            entity.HasIndex(e => e.IdPlanta, "fk_cargas_planta");
+
+            entity.HasIndex(e => new { e.Idempresa, e.IdRegion }, "fk_cargas_region");
+
+            entity.HasIndex(e => e.IdVehiculo, "fk_cargas_vehiculo");
+
+            entity.HasIndex(e => e.IdZona, "fk_cargas_zona");
+
             entity.Property(e => e.IdCarga).HasColumnName("id_carga");
             entity.Property(e => e.CostoXLt).HasColumnName("costo_x_lt");
             entity.Property(e => e.Espec)
@@ -683,9 +693,6 @@ public partial class SuvanDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")
                 .HasColumnName("f_registro");
-            entity.Property(e => e.Factura)
-                .HasMaxLength(20)
-                .HasColumnName("factura");
             entity.Property(e => e.Fecha).HasColumnName("fecha");
             entity.Property(e => e.FolioNota)
                 .HasMaxLength(20)
@@ -695,21 +702,65 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("hora");
             entity.Property(e => e.IdComb).HasColumnName("id_comb");
             entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdDepto).HasColumnName("id_depto");
             entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
             entity.Property(e => e.IdRegion).HasColumnName("id_region");
-            entity.Property(e => e.IdVehic)
-                .HasMaxLength(15)
-                .HasColumnName("id_vehic");
+            entity.Property(e => e.IdVehiculo).HasColumnName("Id_vehiculo");
             entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Idempresa).HasColumnName("idempresa");
+            entity.Property(e => e.Idfactura).HasColumnName("idfactura");
             entity.Property(e => e.Importe).HasColumnName("importe");
             entity.Property(e => e.KmActual).HasColumnName("km_actual");
             entity.Property(e => e.KmAnterior).HasColumnName("km_anterior");
             entity.Property(e => e.KmRecorridos).HasColumnName("km_recorridos");
             entity.Property(e => e.Litros).HasColumnName("litros");
             entity.Property(e => e.Rendimiento).HasColumnName("rendimiento");
-            entity.Property(e => e.Traspasar)
-                .HasDefaultValueSql("'0'")
-                .HasColumnName("traspasar");
+            entity.Property(e => e.Traspasar).HasColumnName("traspasar");
+
+            entity.HasOne(d => d.IdCombNavigation).WithMany(p => p.CombCargas)
+                .HasForeignKey(d => d.IdComb)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cargas_combustible");
+
+            entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.CombCargas)
+                .HasForeignKey(d => d.IdDeposito)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cargas_deposito");
+
+            entity.HasOne(d => d.IdDeptoNavigation).WithMany(p => p.CombCargas)
+                .HasForeignKey(d => d.IdDepto)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cargas_depto");
+
+            entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.CombCargas)
+                .HasForeignKey(d => d.IdPlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cargas_planta");
+
+            entity.HasOne(d => d.IdVehiculoNavigation).WithMany(p => p.CombCargas)
+                .HasForeignKey(d => d.IdVehiculo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cargas_vehiculo");
+
+            entity.HasOne(d => d.IdZonaNavigation).WithMany(p => p.CombCargas)
+                .HasForeignKey(d => d.IdZona)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cargas_zona");
+
+            entity.HasOne(d => d.IdempresaNavigation).WithMany(p => p.CombCargas)
+                .HasForeignKey(d => d.Idempresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cargas_empresa");
+
+            entity.HasOne(d => d.IdfacturaNavigation).WithMany(p => p.CombCargas)
+                .HasForeignKey(d => d.Idfactura)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cargas_factura");
+
+            entity.HasOne(d => d.Id).WithMany(p => p.CombCargas)
+                .HasForeignKey(d => new { d.Idempresa, d.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_cargas_region");
         });
 
         modelBuilder.Entity<Conductor>(entity =>
@@ -1340,13 +1391,17 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<Deposito>(entity =>
         {
-            entity.HasKey(e => e.IdDeposi).HasName("PRIMARY");
+            entity.HasKey(e => e.IdDeposito).HasName("PRIMARY");
 
             entity.ToTable("deposito");
 
-            entity.Property(e => e.IdDeposi)
-                .ValueGeneratedNever()
-                .HasColumnName("id_deposi");
+            entity.HasIndex(e => e.IdPlanta, "fk_deposito_planta");
+
+            entity.HasIndex(e => new { e.IdEmpresa, e.IdRegion }, "fk_deposito_region");
+
+            entity.HasIndex(e => e.IdDeposito, "id_deposito");
+
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
             entity.Property(e => e.Ciudad)
                 .HasMaxLength(50)
                 .IsFixedLength()
@@ -1359,10 +1414,6 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(4)
                 .IsFixedLength()
                 .HasColumnName("desc_corta");
-            entity.Property(e => e.Descrip)
-                .HasMaxLength(80)
-                .IsFixedLength()
-                .HasColumnName("descrip");
             entity.Property(e => e.Direc)
                 .HasMaxLength(70)
                 .IsFixedLength()
@@ -1375,6 +1426,10 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(1)
                 .IsFixedLength()
                 .HasColumnName("loc_for");
+            entity.Property(e => e.NombreDeposito)
+                .HasMaxLength(80)
+                .IsFixedLength()
+                .HasColumnName("nombre_deposito");
             entity.Property(e => e.RPerson)
                 .HasMaxLength(100)
                 .IsFixedLength()
@@ -1391,6 +1446,21 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(30)
                 .IsFixedLength()
                 .HasColumnName("tel");
+
+            entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Depositos)
+                .HasForeignKey(d => d.IdEmpresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_deposito_empresa");
+
+            entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.Depositos)
+                .HasForeignKey(d => d.IdPlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_deposito_planta");
+
+            entity.HasOne(d => d.Id).WithMany(p => p.Depositos)
+                .HasForeignKey(d => new { d.IdEmpresa, d.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_deposito_region");
         });
 
         modelBuilder.Entity<Depositosdisponible>(entity =>
@@ -1467,34 +1537,83 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("deptos");
 
-            entity.Property(e => e.IdDepto)
-                .ValueGeneratedNever()
-                .HasColumnName("id_depto");
-            entity.Property(e => e.Descrip)
-                .HasMaxLength(70)
-                .IsFixedLength()
-                .HasColumnName("descrip");
-            entity.Property(e => e.IdDeposi).HasColumnName("id_deposi");
+            entity.HasIndex(e => e.IdDeposito, "fk_deptos_deposito");
+
+            entity.HasIndex(e => e.IdPlanta, "fk_deptos_planta");
+
+            entity.HasIndex(e => new { e.IdEmpresa, e.IdRegion }, "fk_deptos_region");
+
+            entity.HasIndex(e => e.IdZona, "fk_deptos_zona");
+
+            entity.HasIndex(e => e.IdDepto, "id_depto");
+
+            entity.Property(e => e.IdDepto).HasColumnName("id_depto");
+            entity.Property(e => e.Activo)
+                .HasDefaultValueSql("b'1'")
+                .HasColumnType("bit(1)")
+                .HasColumnName("activo");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
             entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
             entity.Property(e => e.IdRegion).HasColumnName("id_region");
             entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.NombreDepto)
+                .HasMaxLength(70)
+                .IsFixedLength()
+                .HasColumnName("nombre_depto");
             entity.Property(e => e.Responsable)
                 .HasMaxLength(70)
                 .IsFixedLength()
                 .HasColumnName("responsable");
+
+            entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.Deptos)
+                .HasForeignKey(d => d.IdDeposito)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_deptos_deposito");
+
+            entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Deptos)
+                .HasForeignKey(d => d.IdEmpresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_deptos_empresa");
+
+            entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.Deptos)
+                .HasForeignKey(d => d.IdPlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_deptos_planta");
+
+            entity.HasOne(d => d.IdZonaNavigation).WithMany(p => p.Deptos)
+                .HasForeignKey(d => d.IdZona)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_deptos_zona");
+
+            entity.HasOne(d => d.Id).WithMany(p => p.Deptos)
+                .HasForeignKey(d => new { d.IdEmpresa, d.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_deptos_region");
         });
 
         modelBuilder.Entity<DetPrev>(entity =>
         {
-            entity.HasKey(e => new { e.IdPrev, e.IdPrevDet })
-                .HasName("PRIMARY")
-                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0 });
+            entity.HasKey(e => e.IdPrevDet).HasName("PRIMARY");
 
             entity.ToTable("det_prev");
 
-            entity.Property(e => e.IdPrev).HasColumnName("id_prev");
+            entity.HasIndex(e => e.IdManoObra, "fk_detprev_manoobra");
+
+            entity.HasIndex(e => e.Idpreventivo, "fk_detprev_preventivo");
+
             entity.Property(e => e.IdPrevDet).HasColumnName("id_prev_det");
-            entity.Property(e => e.IdMano).HasColumnName("id_mano");
+            entity.Property(e => e.IdManoObra).HasColumnName("id_mano_obra");
+            entity.Property(e => e.Idpreventivo).HasColumnName("idpreventivo");
+
+            entity.HasOne(d => d.IdManoObraNavigation).WithMany(p => p.DetPrevs)
+                .HasForeignKey(d => d.IdManoObra)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_detprev_manoobra");
+
+            entity.HasOne(d => d.IdpreventivoNavigation).WithMany(p => p.DetPrevs)
+                .HasForeignKey(d => d.Idpreventivo)
+                .HasConstraintName("fk_detprev_preventivo");
         });
 
         modelBuilder.Entity<Dia>(entity =>
@@ -1928,51 +2047,6 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_table1_usuario1");
         });
 
-        modelBuilder.Entity<GasIave>(entity =>
-        {
-            entity.HasKey(e => e.IdIave).HasName("PRIMARY");
-
-            entity.ToTable("gas_iave");
-
-            entity.Property(e => e.IdIave).HasColumnName("id_iave");
-            entity.Property(e => e.Caseta)
-                .HasMaxLength(50)
-                .IsFixedLength()
-                .HasColumnName("caseta");
-            entity.Property(e => e.Clase).HasColumnName("clase");
-            entity.Property(e => e.Consecar)
-                .HasMaxLength(20)
-                .IsFixedLength()
-                .HasColumnName("consecar");
-            entity.Property(e => e.FCruce)
-                .HasColumnType("datetime")
-                .HasColumnName("f_cruce");
-            entity.Property(e => e.FechaApli)
-                .HasColumnType("datetime")
-                .HasColumnName("fecha_apli");
-            entity.Property(e => e.FechaRegistro)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("datetime")
-                .HasColumnName("fecha_registro");
-            entity.Property(e => e.HCruce)
-                .HasMaxLength(8)
-                .IsFixedLength()
-                .HasColumnName("h_cruce");
-            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
-            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
-            entity.Property(e => e.IdRegion).HasColumnName("id_region");
-            entity.Property(e => e.IdZona).HasColumnName("id_zona");
-            entity.Property(e => e.Importe).HasColumnName("importe");
-            entity.Property(e => e.NumEco)
-                .HasMaxLength(20)
-                .IsFixedLength()
-                .HasColumnName("num_eco");
-            entity.Property(e => e.Tarjeta)
-                .HasMaxLength(30)
-                .IsFixedLength()
-                .HasColumnName("tarjeta");
-        });
-
         modelBuilder.Entity<GrupoReparacion>(entity =>
         {
             entity.HasKey(e => e.IdGrupo).HasName("PRIMARY");
@@ -2240,9 +2314,9 @@ public partial class SuvanDbContext : DbContext
             entity.ToTable("mano_obra");
 
             entity.Property(e => e.IdManoObra).HasColumnName("id_mano_obra");
-            entity.Property(e => e.Descripcion)
+            entity.Property(e => e.DescripcionManoobra)
                 .HasMaxLength(70)
-                .HasColumnName("descripcion");
+                .HasColumnName("descripcion_manoobra");
         });
 
         modelBuilder.Entity<Mantenimiento>(entity =>
@@ -2873,19 +2947,37 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("planta");
 
-            entity.Property(e => e.IdPlanta)
-                .ValueGeneratedNever()
-                .HasColumnName("id_planta");
-            entity.Property(e => e.IdEmp).HasColumnName("id_emp");
+            entity.HasIndex(e => new { e.IdEmpresa, e.IdRegion }, "fk_planta_region");
+
+            entity.HasIndex(e => e.IdPlanta, "id_planta");
+
+            entity.HasIndex(e => e.IdRegion, "id_region");
+
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.Activo)
+                .HasDefaultValueSql("b'1'")
+                .HasColumnType("bit(1)")
+                .HasColumnName("activo");
+            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
             entity.Property(e => e.IdRegion).HasColumnName("id_region");
             entity.Property(e => e.Libreria)
                 .HasMaxLength(50)
                 .IsFixedLength()
                 .HasColumnName("libreria");
-            entity.Property(e => e.Nombre)
+            entity.Property(e => e.NombrePlanta)
                 .HasMaxLength(45)
                 .IsFixedLength()
-                .HasColumnName("nombre");
+                .HasColumnName("nombre_planta");
+
+            entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Planta)
+                .HasForeignKey(d => d.IdEmpresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_planta_empresa");
+
+            entity.HasOne(d => d.Id).WithMany(p => p.Planta)
+                .HasForeignKey(d => new { d.IdEmpresa, d.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_planta_region");
         });
 
         modelBuilder.Entity<PolSeg>(entity =>
@@ -2975,7 +3067,13 @@ public partial class SuvanDbContext : DbContext
                 .HasCharSet("utf8mb3")
                 .UseCollation("utf8mb3_general_ci");
 
-            entity.HasIndex(e => e.TiposervicioIdtiposervicio, "fk_preventivo_tiposervicio");
+            entity.HasIndex(e => e.IdMarca, "fk_prev_marca");
+
+            entity.HasIndex(e => e.IdModelo, "fk_prev_modelo");
+
+            entity.HasIndex(e => new { e.Idempresa, e.IdRegion }, "fk_prev_region");
+
+            entity.HasIndex(e => e.TiposervicioIdtiposervicio, "fk_prev_tiposervicio");
 
             entity.Property(e => e.Idpreventivo).HasColumnName("idpreventivo");
             entity.Property(e => e.FechaPrev)
@@ -2988,12 +3086,13 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
             entity.Property(e => e.IdRegion).HasColumnName("id_region");
             entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Idempresa).HasColumnName("idempresa");
             entity.Property(e => e.Meses)
                 .HasMaxLength(30)
                 .HasColumnName("meses");
-            entity.Property(e => e.Nombre)
+            entity.Property(e => e.NombrePreventivo)
                 .HasMaxLength(70)
-                .HasColumnName("nombre");
+                .HasColumnName("nombre_preventivo");
             entity.Property(e => e.ObservacionesPreventivo)
                 .HasColumnType("text")
                 .HasColumnName("observaciones_preventivo");
@@ -3002,10 +3101,29 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("proyecta");
             entity.Property(e => e.TiposervicioIdtiposervicio).HasColumnName("tiposervicio_idtiposervicio");
 
+            entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.Preventivos)
+                .HasForeignKey(d => d.IdMarca)
+                .HasConstraintName("fk_prev_marca");
+
+            entity.HasOne(d => d.IdModeloNavigation).WithMany(p => p.Preventivos)
+                .HasForeignKey(d => d.IdModelo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_prev_modelo");
+
+            entity.HasOne(d => d.IdempresaNavigation).WithMany(p => p.Preventivos)
+                .HasForeignKey(d => d.Idempresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_prev_empresa");
+
             entity.HasOne(d => d.TiposervicioIdtiposervicioNavigation).WithMany(p => p.Preventivos)
                 .HasForeignKey(d => d.TiposervicioIdtiposervicio)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_preventivo_tiposervicio");
+                .HasConstraintName("fk_prev_tiposervicio");
+
+            entity.HasOne(d => d.Id).WithMany(p => p.Preventivos)
+                .HasForeignKey(d => new { d.Idempresa, d.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_prev_region");
         });
 
         modelBuilder.Entity<Promocion>(entity =>
@@ -3284,29 +3402,103 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("region");
 
+            entity.HasIndex(e => e.IdRegion, "idx_region_ai").IsUnique();
+
             entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
-            entity.Property(e => e.IdRegion).HasColumnName("id_region");
-            entity.Property(e => e.Nombre)
+            entity.Property(e => e.IdRegion)
+                .ValueGeneratedOnAdd()
+                .HasColumnName("id_region");
+            entity.Property(e => e.Activo)
+                .HasDefaultValueSql("b'1'")
+                .HasColumnType("bit(1)")
+                .HasColumnName("activo");
+            entity.Property(e => e.NombreRegion)
                 .HasMaxLength(40)
                 .IsFixedLength()
-                .HasColumnName("nombre");
+                .HasColumnName("nombre_region");
+
+            entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Regions)
+                .HasForeignKey(d => d.IdEmpresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_region_empresa");
         });
 
         modelBuilder.Entity<RendMe>(entity =>
         {
-            entity.HasKey(e => e.IdVehic).HasName("PRIMARY");
+            entity.HasKey(e => new { e.Anio, e.Mes, e.IdVehiculo })
+                .HasName("PRIMARY")
+                .HasAnnotation("MySql:IndexPrefixLength", new[] { 0, 0, 0 });
 
             entity.ToTable("rend_mes");
 
-            entity.Property(e => e.IdVehic)
-                .HasMaxLength(15)
-                .HasColumnName("id_vehic");
+            entity.HasIndex(e => e.IdComb, "fk_rend_combustible");
+
+            entity.HasIndex(e => e.IdDeposito, "fk_rend_deposito");
+
+            entity.HasIndex(e => e.IdDepto, "fk_rend_depto");
+
+            entity.HasIndex(e => e.IdPlanta, "fk_rend_planta");
+
+            entity.HasIndex(e => new { e.Idempresa, e.IdRegion }, "fk_rend_region");
+
+            entity.HasIndex(e => e.IdVehiculo, "fk_rend_vehiculo");
+
+            entity.HasIndex(e => e.IdZona, "fk_rend_zona");
+
             entity.Property(e => e.Anio).HasColumnName("anio");
             entity.Property(e => e.Mes).HasColumnName("mes");
-            entity.Property(e => e.RendPromedio).HasColumnName("rend_promedio");
-            entity.Property(e => e.TotalImporte).HasColumnName("total_importe");
-            entity.Property(e => e.TotalKms).HasColumnName("total_kms");
-            entity.Property(e => e.TotalLitros).HasColumnName("total_litros");
+            entity.Property(e => e.IdVehiculo).HasColumnName("Id_vehiculo");
+            entity.Property(e => e.IdComb).HasColumnName("id_comb");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdDepto).HasColumnName("id_depto");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Idempresa).HasColumnName("idempresa");
+            entity.Property(e => e.Importe).HasColumnName("importe");
+            entity.Property(e => e.Kms).HasColumnName("kms");
+            entity.Property(e => e.Litros).HasColumnName("litros");
+            entity.Property(e => e.Rend).HasColumnName("rend");
+
+            entity.HasOne(d => d.IdCombNavigation).WithMany(p => p.RendMes)
+                .HasForeignKey(d => d.IdComb)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_rend_combustible");
+
+            entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.RendMes)
+                .HasForeignKey(d => d.IdDeposito)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_rend_deposito");
+
+            entity.HasOne(d => d.IdDeptoNavigation).WithMany(p => p.RendMes)
+                .HasForeignKey(d => d.IdDepto)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_rend_depto");
+
+            entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.RendMes)
+                .HasForeignKey(d => d.IdPlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_rend_planta");
+
+            entity.HasOne(d => d.IdVehiculoNavigation).WithMany(p => p.RendMes)
+                .HasForeignKey(d => d.IdVehiculo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_rend_vehiculo");
+
+            entity.HasOne(d => d.IdZonaNavigation).WithMany(p => p.RendMes)
+                .HasForeignKey(d => d.IdZona)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_rend_zona");
+
+            entity.HasOne(d => d.IdempresaNavigation).WithMany(p => p.RendMes)
+                .HasForeignKey(d => d.Idempresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_rend_empresa");
+
+            entity.HasOne(d => d.Id).WithMany(p => p.RendMes)
+                .HasForeignKey(d => new { d.Idempresa, d.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_rend_region");
         });
 
         modelBuilder.Entity<RutaParadum>(entity =>
@@ -3548,17 +3740,173 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("tar_com");
 
+            entity.HasIndex(e => e.IdComb, "fk_tarjetas_comb");
+
+            entity.HasIndex(e => e.IdDeposito, "fk_tarjetas_deposito");
+
+            entity.HasIndex(e => e.IdDepto, "fk_tarjetas_depto");
+
+            entity.HasIndex(e => e.IdPlanta, "fk_tarjetas_planta");
+
+            entity.HasIndex(e => new { e.Idempresa, e.IdRegion }, "fk_tarjetas_region");
+
+            entity.HasIndex(e => e.IdVehiculo, "fk_tarjetas_vehiculo");
+
+            entity.HasIndex(e => e.IdZona, "fk_tarjetas_zona");
+
             entity.Property(e => e.IdTarjet)
                 .HasMaxLength(30)
                 .HasColumnName("id_tarjet");
+            entity.Property(e => e.CarMax).HasColumnName("car_max");
+            entity.Property(e => e.Color).HasColumnName("color");
+            entity.Property(e => e.CosTar).HasColumnName("cos_tar");
+            entity.Property(e => e.Estatus)
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasColumnName("estatus");
+            entity.Property(e => e.FAlta)
+                .HasColumnType("datetime")
+                .HasColumnName("f_alta");
+            entity.Property(e => e.FBaja)
+                .HasColumnType("datetime")
+                .HasColumnName("f_baja");
             entity.Property(e => e.IdComb).HasColumnName("id_comb");
             entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdDepto).HasColumnName("id_depto");
             entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdProv)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("id_prov");
             entity.Property(e => e.IdRegion).HasColumnName("id_region");
-            entity.Property(e => e.IdVehic)
-                .HasMaxLength(15)
-                .HasColumnName("id_vehic");
+            entity.Property(e => e.IdVehiculo).HasColumnName("Id_vehiculo");
             entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Idempresa).HasColumnName("idempresa");
+            entity.Property(e => e.MotivoB).HasColumnName("motivo_b");
+            entity.Property(e => e.TotCarg).HasColumnName("tot_carg");
+
+            entity.HasOne(d => d.IdCombNavigation).WithMany(p => p.TarComs)
+                .HasForeignKey(d => d.IdComb)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_tarjetas_comb");
+
+            entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.TarComs)
+                .HasForeignKey(d => d.IdDeposito)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_tarjetas_deposito");
+
+            entity.HasOne(d => d.IdDeptoNavigation).WithMany(p => p.TarComs)
+                .HasForeignKey(d => d.IdDepto)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_tarjetas_depto");
+
+            entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.TarComs)
+                .HasForeignKey(d => d.IdPlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_tarjetas_planta");
+
+            entity.HasOne(d => d.IdVehiculoNavigation).WithMany(p => p.TarComs)
+                .HasForeignKey(d => d.IdVehiculo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_tarjetas_vehiculo");
+
+            entity.HasOne(d => d.IdZonaNavigation).WithMany(p => p.TarComs)
+                .HasForeignKey(d => d.IdZona)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_tarjetas_zona");
+
+            entity.HasOne(d => d.IdempresaNavigation).WithMany(p => p.TarComs)
+                .HasForeignKey(d => d.Idempresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_tarjetas_empresa");
+
+            entity.HasOne(d => d.Id).WithMany(p => p.TarComs)
+                .HasForeignKey(d => new { d.Idempresa, d.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_tarjetas_region");
+        });
+
+        modelBuilder.Entity<TarIave>(entity =>
+        {
+            entity.HasKey(e => e.IdIave).HasName("PRIMARY");
+
+            entity.ToTable("tar_iave");
+
+            entity.HasIndex(e => e.IdDeposito, "fk_iave_deposito");
+
+            entity.HasIndex(e => e.IdDepto, "fk_iave_depto");
+
+            entity.HasIndex(e => e.IdPlanta, "fk_iave_planta");
+
+            entity.HasIndex(e => new { e.Idempresa, e.IdRegion }, "fk_iave_region");
+
+            entity.HasIndex(e => e.IdTarjet, "fk_iave_tarjeta");
+
+            entity.HasIndex(e => e.IdZona, "fk_iave_zona");
+
+            entity.Property(e => e.IdIave)
+                .HasMaxLength(8)
+                .HasColumnName("id_iave");
+            entity.Property(e => e.Color).HasColumnName("color");
+            entity.Property(e => e.Estatus)
+                .HasMaxLength(1)
+                .IsFixedLength()
+                .HasColumnName("estatus");
+            entity.Property(e => e.FAlta)
+                .HasColumnType("datetime")
+                .HasColumnName("f_alta");
+            entity.Property(e => e.FBaja)
+                .HasColumnType("datetime")
+                .HasColumnName("f_baja");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdDepto).HasColumnName("id_depto");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdProv)
+                .HasMaxLength(10)
+                .IsFixedLength()
+                .HasColumnName("id_prov");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.IdTarjet)
+                .HasMaxLength(30)
+                .HasColumnName("id_tarjet");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.Idempresa).HasColumnName("idempresa");
+            entity.Property(e => e.MotivoB).HasColumnName("motivo_b");
+
+            entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.TarIaves)
+                .HasForeignKey(d => d.IdDeposito)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_iave_deposito");
+
+            entity.HasOne(d => d.IdDeptoNavigation).WithMany(p => p.TarIaves)
+                .HasForeignKey(d => d.IdDepto)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_iave_depto");
+
+            entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.TarIaves)
+                .HasForeignKey(d => d.IdPlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_iave_planta");
+
+            entity.HasOne(d => d.IdTarjetNavigation).WithMany(p => p.TarIaves)
+                .HasForeignKey(d => d.IdTarjet)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_iave_tarjeta");
+
+            entity.HasOne(d => d.IdZonaNavigation).WithMany(p => p.TarIaves)
+                .HasForeignKey(d => d.IdZona)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_iave_zona");
+
+            entity.HasOne(d => d.IdempresaNavigation).WithMany(p => p.TarIaves)
+                .HasForeignKey(d => d.Idempresa)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_iave_empresa");
+
+            entity.HasOne(d => d.Id).WithMany(p => p.TarIaves)
+                .HasForeignKey(d => new { d.Idempresa, d.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_iave_region");
         });
 
         modelBuilder.Entity<TarifaEscalonadum>(entity =>
@@ -3752,12 +4100,11 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("tipo_com");
 
-            entity.Property(e => e.IdComb)
-                .ValueGeneratedNever()
-                .HasColumnName("id_comb");
-            entity.Property(e => e.Descrip)
+            entity.Property(e => e.IdComb).HasColumnName("id_comb");
+            entity.Property(e => e.CUnidad).HasColumnName("c_unidad");
+            entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
-                .HasColumnName("descrip");
+                .HasColumnName("nombre");
             entity.Property(e => e.PrecLit).HasColumnName("prec_lit");
             entity.Property(e => e.Rubro)
                 .HasMaxLength(2)
@@ -4913,6 +5260,12 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasIndex(e => e.IdEmpresa, "fk_zona_empresa");
 
+            entity.HasIndex(e => e.IdPlanta, "fk_zona_planta");
+
+            entity.HasIndex(e => new { e.IdEmpresa, e.IdRegion }, "fk_zona_region");
+
+            entity.HasIndex(e => e.IdZona, "id_zona");
+
             entity.Property(e => e.IdZona).HasColumnName("id_zona");
             entity.Property(e => e.Activo)
                 .HasColumnType("bit(1)")
@@ -4946,6 +5299,16 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => d.IdEmpresa)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_zona_empresa");
+
+            entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.Zonas)
+                .HasForeignKey(d => d.IdPlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_zona_planta");
+
+            entity.HasOne(d => d.Id).WithMany(p => p.Zonas)
+                .HasForeignKey(d => new { d.IdEmpresa, d.IdRegion })
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_zona_region");
         });
 
         OnModelCreatingPartial(modelBuilder);

@@ -25,15 +25,29 @@ public partial class Zona
 
     public ulong Activo { get; set; }
 
-    public short IdRegion { get; set; }
+    public int IdRegion { get; set; }
 
-    public short IdPlanta { get; set; }
+    public int IdPlanta { get; set; }
+
+    public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
 
     public virtual ICollection<Depositosdisponible> Depositosdisponibles { get; set; } = new List<Depositosdisponible>();
 
+    public virtual ICollection<Depto> Deptos { get; set; } = new List<Depto>();
+
+    public virtual Region Id { get; set; } = null!;
+
     public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
 
+    public virtual Plantum IdPlantaNavigation { get; set; } = null!;
+
+    public virtual ICollection<RendMe> RendMes { get; set; } = new List<RendMe>();
+
     public virtual ICollection<Taller> Tallers { get; set; } = new List<Taller>();
+
+    public virtual ICollection<TarCom> TarComs { get; set; } = new List<TarCom>();
+
+    public virtual ICollection<TarIave> TarIaves { get; set; } = new List<TarIave>();
 
     public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
 }

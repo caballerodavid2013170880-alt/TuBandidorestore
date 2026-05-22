@@ -5,9 +5,13 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class DetPrev
 {
-    public short IdPrev { get; set; }
+    public int Idpreventivo { get; set; }
 
-    public short IdPrevDet { get; set; }
+    public int IdPrevDet { get; set; }
 
-    public short IdMano { get; set; }
+    public int IdManoObra { get; set; }
+
+    public virtual ManoObra IdManoObraNavigation { get; set; } = null!;
+
+    public virtual Preventivo IdpreventivoNavigation { get; set; } = null!;
 }

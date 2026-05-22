@@ -35,13 +35,19 @@ public partial class Vehiculo
 
     public int? IdModelo { get; set; }
 
+    public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
+
     public virtual ICollection<CorridaAsignacion> CorridaAsignacions { get; set; } = new List<CorridaAsignacion>();
 
     public virtual Empresa? EmpresaIdempresaNavigation { get; set; }
 
     public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
 
+    public virtual ICollection<RendMe> RendMes { get; set; } = new List<RendMe>();
+
     public virtual ICollection<Siniestro> Siniestros { get; set; } = new List<Siniestro>();
+
+    public virtual ICollection<TarCom> TarComs { get; set; } = new List<TarCom>();
 
     public virtual Tipovehiculo TipovehiculoIdtipovehiculoNavigation { get; set; } = null!;
 

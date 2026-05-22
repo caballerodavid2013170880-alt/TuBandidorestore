@@ -3,21 +3,9 @@ using System.Collections.Generic;
 
 namespace SUVAN.BackOffice.Database.Entities;
 
-public partial class RendMe
+public partial class TarIave
 {
-    public short Anio { get; set; }
-
-    public short Mes { get; set; }
-
-    public int IdVehiculo { get; set; }
-
-    public double Litros { get; set; }
-
-    public double Kms { get; set; }
-
-    public double Rend { get; set; }
-
-    public double Importe { get; set; }
+    public string IdIave { get; set; } = null!;
 
     public int Idempresa { get; set; }
 
@@ -31,11 +19,21 @@ public partial class RendMe
 
     public int IdDepto { get; set; }
 
-    public int IdComb { get; set; }
+    public string IdTarjet { get; set; } = null!;
+
+    public string IdProv { get; set; } = null!;
+
+    public DateTime FAlta { get; set; }
+
+    public DateTime FBaja { get; set; }
+
+    public short MotivoB { get; set; }
+
+    public string Estatus { get; set; } = null!;
+
+    public short Color { get; set; }
 
     public virtual Region Id { get; set; } = null!;
-
-    public virtual TipoCom IdCombNavigation { get; set; } = null!;
 
     public virtual Deposito IdDepositoNavigation { get; set; } = null!;
 
@@ -43,7 +41,7 @@ public partial class RendMe
 
     public virtual Plantum IdPlantaNavigation { get; set; } = null!;
 
-    public virtual Vehiculo IdVehiculoNavigation { get; set; } = null!;
+    public virtual TarCom IdTarjetNavigation { get; set; } = null!;
 
     public virtual Zona IdZonaNavigation { get; set; } = null!;
 

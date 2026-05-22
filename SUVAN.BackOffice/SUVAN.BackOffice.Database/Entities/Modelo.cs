@@ -27,5 +27,7 @@ public partial class Modelo
 
     public virtual Tipovehiculo IdTipoVNavigation { get; set; } = null!;
 
+    public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
+
     public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
 }

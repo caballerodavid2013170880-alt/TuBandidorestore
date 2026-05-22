@@ -5,15 +5,15 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class Deposito
 {
-    public short IdRegion { get; set; }
+    public int IdRegion { get; set; }
 
-    public short IdPlanta { get; set; }
+    public int IdPlanta { get; set; }
 
-    public short IdZona { get; set; }
+    public int IdZona { get; set; }
 
-    public short IdDeposi { get; set; }
+    public int IdDeposito { get; set; }
 
-    public string Descrip { get; set; } = null!;
+    public string? NombreDeposito { get; set; }
 
     public string? Direc { get; set; }
 
@@ -27,11 +27,27 @@ public partial class Deposito
 
     public string? RPerson { get; set; }
 
-    public short? IdEmpresa { get; set; }
+    public int IdEmpresa { get; set; }
 
     public string? DescCorta { get; set; }
 
     public string? Rfc { get; set; }
 
     public string? Cp { get; set; }
+
+    public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
+
+    public virtual ICollection<Depto> Deptos { get; set; } = new List<Depto>();
+
+    public virtual Region Id { get; set; } = null!;
+
+    public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
+
+    public virtual Plantum IdPlantaNavigation { get; set; } = null!;
+
+    public virtual ICollection<RendMe> RendMes { get; set; } = new List<RendMe>();
+
+    public virtual ICollection<TarCom> TarComs { get; set; } = new List<TarCom>();
+
+    public virtual ICollection<TarIave> TarIaves { get; set; } = new List<TarIave>();
 }

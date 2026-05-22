@@ -21,23 +21,41 @@ public partial class Empresa
 
     public virtual ICollection<AdminEmpresa> AdminEmpresas { get; set; } = new List<AdminEmpresa>();
 
+    public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
+
     public virtual ICollection<Conductor> Conductors { get; set; } = new List<Conductor>();
 
     public virtual ICollection<Corridum> Corrida { get; set; } = new List<Corridum>();
 
     public virtual ICollection<Datosfacturacionemisor> Datosfacturacionemisors { get; set; } = new List<Datosfacturacionemisor>();
 
+    public virtual ICollection<Deposito> Depositos { get; set; } = new List<Deposito>();
+
     public virtual ICollection<Depositosdisponible> Depositosdisponibles { get; set; } = new List<Depositosdisponible>();
+
+    public virtual ICollection<Depto> Deptos { get; set; } = new List<Depto>();
 
     public virtual Regimenfiscalreceptor? IdregimenfiscalNavigation { get; set; }
 
+    public virtual ICollection<Plantum> Planta { get; set; } = new List<Plantum>();
+
     public virtual ICollection<Politicascompensacion> Politicascompensacions { get; set; } = new List<Politicascompensacion>();
+
+    public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
 
     public virtual ICollection<PromocionEmpresa> PromocionEmpresas { get; set; } = new List<PromocionEmpresa>();
 
     public virtual ICollection<Promocion> Promocions { get; set; } = new List<Promocion>();
 
+    public virtual ICollection<Region> Regions { get; set; } = new List<Region>();
+
+    public virtual ICollection<RendMe> RendMes { get; set; } = new List<RendMe>();
+
     public virtual ICollection<Rutum> Ruta { get; set; } = new List<Rutum>();
+
+    public virtual ICollection<TarCom> TarComs { get; set; } = new List<TarCom>();
+
+    public virtual ICollection<TarIave> TarIaves { get; set; } = new List<TarIave>();
 
     public virtual ICollection<Variableempresa> Variableempresas { get; set; } = new List<Variableempresa>();
 

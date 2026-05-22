@@ -7,7 +7,7 @@ public partial class Preventivo
 {
     public int Idpreventivo { get; set; }
 
-    public string Nombre { get; set; } = null!;
+    public string? NombrePreventivo { get; set; }
 
     public string Proyecta { get; set; } = null!;
 
@@ -15,23 +15,35 @@ public partial class Preventivo
 
     public string? ObservacionesPreventivo { get; set; }
 
-    public short IdPlanta { get; set; }
+    public int IdPlanta { get; set; }
 
     public string? Meses { get; set; }
 
     public short? IdMarca { get; set; }
 
-    public short? IdModelo { get; set; }
+    public int IdModelo { get; set; }
 
-    public short IdRegion { get; set; }
+    public int IdRegion { get; set; }
 
-    public short IdZona { get; set; }
+    public int IdZona { get; set; }
 
-    public short IdDeposito { get; set; }
+    public int IdDeposito { get; set; }
 
-    public short IdDeptos { get; set; }
+    public int IdDeptos { get; set; }
 
     public DateTime? FechaPrev { get; set; }
+
+    public int Idempresa { get; set; }
+
+    public virtual ICollection<DetPrev> DetPrevs { get; set; } = new List<DetPrev>();
+
+    public virtual Region Id { get; set; } = null!;
+
+    public virtual Marca? IdMarcaNavigation { get; set; }
+
+    public virtual Modelo IdModeloNavigation { get; set; } = null!;
+
+    public virtual Empresa IdempresaNavigation { get; set; } = null!;
 
     public virtual TipoServicio TiposervicioIdtiposervicioNavigation { get; set; } = null!;
 }
