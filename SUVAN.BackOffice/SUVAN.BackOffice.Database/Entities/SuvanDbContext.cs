@@ -3,6 +3,10 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
 
+//Por error IModelRutasService
+using SUVAN.BackOffice.Models.StoredsProcedures;
+using static SUVAN.BackOffice.Models.StoredsProcedures.ModelsStoredsProcedures;
+
 namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class SuvanDbContext : DbContext
@@ -153,6 +157,7 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Mfaportal> Mfaportals { get; set; }
 
     public virtual DbSet<Modelo> Modelos { get; set; }
+    public virtual DbSet<ModelRutaConfiguracion> ModelRutaConfiguracions { get; set; }
 
     public virtual DbSet<Monedero> Monederos { get; set; }
 
@@ -2726,6 +2731,14 @@ public partial class SuvanDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_modelo_tipo_v");
         });
+
+        //ModelsStoredsProcedures.ModelRutaConfiguracions
+        modelBuilder.Entity<ModelsStoredsProcedures.ModelRutaConfiguracion>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView(null);
+        });
+
 
         modelBuilder.Entity<Monedero>(entity =>
         {

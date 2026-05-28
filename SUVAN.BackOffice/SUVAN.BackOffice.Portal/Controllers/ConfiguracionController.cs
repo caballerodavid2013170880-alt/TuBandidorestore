@@ -30,6 +30,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
         private readonly IConversacionesService conversacionesService;
         // Regiones
         private readonly IRegionService regionesService;
+        // Plantas
+        private readonly IPlantaService plantaService;
 
         public ConfiguracionController(ILogger<ConfiguracionController> logger,
           IEmpresasService empresasService,
@@ -38,7 +40,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
           IVehiculoService vehiculoService,
           ITarifaService tarifaService,
           IConversacionesService conversacionesService,
-          IRegionService regionService)
+          IRegionService regionService,
+          IPlantaService plantaService)
         {
             _logger = logger;
             this.empresasService = empresasService;
@@ -48,6 +51,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             this.tarifaService = tarifaService;
             this.conversacionesService = conversacionesService;
             this.regionesService = regionService;
+            this.plantaService = plantaService;
         }
 
         public IActionResult Index()
@@ -290,19 +294,30 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
 
 
-        // Region
+        // =========== Region ==============
         public async Task<IActionResult> Regiones()
         {
             var regiones = await regionesService.GetRegiones(User.GetEmpresaId());
             return View(regiones);
         }
 
+        // Region 260626
+        //Metodo nuevo
+        /// <summary>
+        /// Muestra el formulario para agregar o editar una región.
+        /// El ViewModel se construye en el servicio, filtrando la región por la empresa del usuario para respetar la seguridad jerárquica.
+        /// </summary>
+        /// <param name="id">Identificador de la región a editar; 0 para nueva.</param>
         public async Task<IActionResult> AgregarRegion(int id)
         {
             var agregarModel = await regionesService.GetRegionViewModel(User.GetEmpresaId(), id);
             return View(agregarModel);
         }
-
+        /// <summary>
+        /// Procesa el formulario de agregar/editar de una región.
+        /// Pasa el identificador de empresa del usuario autenticado al servicio validando que la operación quede restringida a su empresa.
+        /// </summary>
+        /// <param name="model">Datos capturados en el formulario.</param>
         [HttpPost]
         public async Task<IActionResult> AgregarRegion(RegionViewModel model)
         {
@@ -312,12 +327,15 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 {
                     return View(model);
                 }
-
-                var result = await regionesService.AgregarRegion(model);
+                int idEmpresa = User.GetEmpresaId();
+                var result = await regionesService.AgregarRegion(model, idEmpresa);
 
                 if (result)
                 {
-                    return RedirectToAction("regiones", "Configuracion");
+                    TempData["Mensaje"] = model.IdRegion == 0
+                        ? "Región registrada correctamente."
+                        : "Región actualizada correctamente.";
+                    return RedirectToAction("Regiones", "Configuracion");
                 }
 
                 return View(model);
@@ -327,9 +345,75 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 ModelState.AddModelError(string.Empty, ex.Message);
                 return View(model);
             }
-
-
         }
+
+
+        // ============== Plantas ==============
+
+        /// <summary>
+        /// Muestra el listado de plantas de la empresa del usuario autenticado.
+        /// Carga la navegación a Región para mostrar el nombre de región en la tabla.
+        /// </summary>
+        public async Task<IActionResult> Plantas()
+        {
+            var plantas = await plantaService.GetPlantas(User.GetEmpresaId());
+            return View(plantas);
+        }
+
+        /// <summary>
+        /// Muestra el formulario para agregar o editar una planta.
+        /// El selector de Región se filtra por la empresa del usuario.
+        /// </summary>
+        /// <param name="id">Identificador de la planta a editar; 0 para nueva.</param>
+        public async Task<IActionResult> AgregarPlanta(int id)
+        {
+            var model = await plantaService.GetPlantaViewModel(User.GetEmpresaId(), id);
+            return View(model);
+        }
+
+        /// <summary>
+        /// Procesa el formulario de agregar/editar de una planta.
+        /// Recarga las regiones del selector si el modelo no es válido o hay excepción.
+        /// </summary>
+        /// <param name="model">Datos capturados en el formulario.</param>
+        [HttpPost]
+        public async Task<IActionResult> AgregarPlanta(PlantaViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    // Recarga la lista de regiones antes de devolver la vista
+                    var recargar = await plantaService.GetPlantaViewModel(User.GetEmpresaId(), model.IdPlanta);
+                    model.Regiones = recargar.Regiones;
+                    return View(model);
+                }
+
+                var result = await plantaService.AgregarPlanta(model, User.GetEmpresaId());
+
+                if (result)
+                {
+                    TempData["Mensaje"] = model.IdPlanta == 0
+                        ? "Planta registrada correctamente."
+                        : "Planta actualizada correctamente.";
+                    return RedirectToAction("Plantas", "Configuracion");
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                // Recarga la lista de regiones antes de devolver la vista con el error
+                var recargar = await plantaService.GetPlantaViewModel(User.GetEmpresaId(), model.IdPlanta);
+                model.Regiones = recargar.Regiones;
+                return View(model);
+            }
+        }
+
+
+
+
 
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Models.StoredsProcedures;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 using System.Linq;
 using static SUVAN.BackOffice.Models.StoredsProcedures.ModelsStoredsProcedures;
@@ -300,7 +301,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
       
             List<ModelRutaConfiguracion> rutas = new();
       string query = String.Format("CALL sp_s_ConfiguracionRuta({0});", empresaId);
-      rutas = await context.Set<ModelRutaConfiguracion>().FromSqlRaw(query).ToListAsync();
+      rutas = await context.Set<ModelsStoredsProcedures.ModelRutaConfiguracion>().FromSqlRaw(query).ToListAsync();
       // devuelve solo las rutas que tienen al menos un false en las columnas de ModelRutaConfiguracion
       rutas = rutas.Where(x => x.corrida == false || x.estacion == false || x.asignacion == false || (x.tarifaEsc == false && x.tarifaGen == false)).ToList();
 

@@ -105,5 +105,9 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
         CausaBaja = 113,
         TipoEje = 114,
         VehiculoEspecificaciones = 115,
+        Regiones = 116,
+        Depositos = 117,
+        Plantas = 118,
+        Departamentos = 119
     }
 }

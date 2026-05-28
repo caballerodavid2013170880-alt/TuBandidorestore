@@ -15,88 +15,137 @@ namespace SUVAN.BackOffice.Service.Configuracion
     {
       this.context = context;
     }
-
-
+        //260526 POost 2do Scaffold
         /// <summary>
-        /// Obtiene el listado de empresas desde la base de datos.
+        /// Obtiene el listado de regiones de la empresa indicada,
+        /// incluyendo la navegación a <see cref="Empresa"/> (<c>IdEmpresaNavigation</c>)
+        /// para mostrar el nombre de empresa en la tabla de la vista <c>Regiones.cshtml</c>.
         /// </summary>
-        /// <param name="id_empresa">Identificador de la empresa.</param>
-        /// <returns>Lista de empresas.</returns>
-        public async Task<List<Region>> GetRegiones(int id_empresa)
+        /// <param name="idEmpresa">
+        /// Identificador de la empresa del usuario autenticado.
+        /// Actúa como filtro de seguridad sobre la consulta.
+        /// </param>
+        /// <returns>
+        /// Lista de <see cref="Region"/> con <c>IdEmpresaNavigation</c> cargada
+        /// mediante eager loading, ordenadas por nombre de región.
+        /// </returns>
+        public async Task<List<Region>> GetRegiones(int idEmpresa)
         {
-            var regiones = await context.Regions.Where(x => x.IdEmpresa == id_empresa).ToListAsync();
-
-            return regiones!;
+            var regiones = await context.Regions
+                .Include(r => r.IdEmpresaNavigation)   // Necesario para mostrar nombre de empresa en la tabla
+                .Where(r => r.IdEmpresa == idEmpresa)
+                .OrderBy(r => r.NombreRegion)
+                .ToListAsync();
+            return regiones;
         }
 
         /// <summary>
-        /// Obtiene el ViewModel para la región específica.
+        /// Construye el ViewModel para el formulario de alta o edición de una región.
+        /// Al editar, verifica que la región pertenezca a la empresa del usuario.
         /// </summary>
-        /// <param name="id_empresa">Identificador de la empresa.</param>
-        /// <param name="id_region">Identificador de la región.</param>
-        /// <returns>ViewModel para la región específica.</returns>
-        public async Task<RegionViewModel> GetRegionViewModel(int id_empresa, int id_region)
+        /// <param name="idEmpresa">
+        /// Identificador de la empresa del usuario autenticado.Asigna al campo IdEmpresa del ViewModel (al agregar).
+        /// </param>
+        /// <param name="idRegion">
+        /// Identificador de la región a editar. Pasar 0 para modo agregar.
+        /// </param>
+        /// <returns>
+        /// <see cref="RegionViewModel"/> con los datos de la región o vacío para nueva.
+        /// El campo <c>ActivoBool</c> se inicializa en <c>true</c> al crear.
+        /// </returns>
+        /// <exception cref="Exception">
+        /// Si <paramref name="idRegion"/> es mayor a <c>0</c> y la región no existe
+        /// o no pertenece a la empresa del usuario.
+        /// </exception>
+        public async Task<RegionViewModel> GetRegionViewModel(int idEmpresa, int idRegion)
         {
-            RegionViewModel vRet = new RegionViewModel();
-            var region = await context.Regions.FirstOrDefaultAsync(x => x.IdEmpresa == id_empresa && x.IdRegion == id_region);
-
-            if (region == null)
-                return vRet;
-            else
+            // Inicializar ViewModel con empresa del usuario y activo por defecto
+            var vRet = new RegionViewModel
             {
-                vRet = new RegionViewModel
-                {
-                    id_empresa = region.IdEmpresa,
-                    id_region = region.IdRegion,
-                    nombre = region.Nombre
-                };
+                IdEmpresa = idEmpresa,
+                ActivoBool = true   // Activo por defecto al crear
+            };
+            // Edición: carga datos de la región existente
+            if (idRegion > 0)
+            {
+                // Validación de seguridad: la región debe pertenecer a la empresa del usuario
+                var region = await context.Regions
+                    .FirstOrDefaultAsync(r => r.IdRegion == idRegion && r.IdEmpresa == idEmpresa);
+                if (region == null)
+                    throw new Exception("La región no pertenece a su empresa o no existe.");
+                vRet.IdRegion = region.IdRegion;
+                vRet.IdEmpresa = region.IdEmpresa;
+                vRet.NombreRegion = region.NombreRegion;
+                vRet.Activo = region.Activo ?? 0;
             }
-
             return vRet;
         }
 
+        //260526
         /// <summary>
-        /// Agrega o actualiza una region en la base de datos.
+        /// Agrega o actualiza una región en la base de datos.
+        /// Validaciones:
+        /// <list type="bullet">
+        ///   <item>La empresa del ViewModel coincide con la empresa del usuario autenticado.</item>
+        ///   <item>Al Editar, la región existe y pertenece a la empresa del usuario.</item>
+        ///   <item>No existe una región con el mismo nombre dentro de la misma empresa (excluyendo el registro actual en edición).</item>
+        /// </list>
         /// </summary>
-        /// <param name="model">ViewModel con los datos de la region.</param>
-        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<bool> AgregarRegion(RegionViewModel model)
+        /// <param name="model">ViewModel con los datos capturados en el formulario.</param>
+        /// <param name="idEmpresa">
+        /// Identificador de la empresa del usuario autenticado. Validacion seguridad y sobrescribir el campo empresa en la entidad.
+        /// </param>
+        /// <returns><c>true</c> si la operación fue exitosa.</returns>
+        /// <exception cref="Exception">
+        /// Si alguna validación de seguridad o de negocio falla.
+        /// </exception>
+        public async Task<bool> AgregarRegion(RegionViewModel model, int idEmpresa)
         {
+            // Validación de seguridad: la empresa del formulario debe coincidir con la del usuario
+            if (model.IdEmpresa != idEmpresa)
+                throw new Exception("No tiene permisos para operar sobre esta empresa.");
             Region region;
-
-            if (model.id_region > 0)
+            if (model.IdRegion > 0)
             {
-                region = await context.Regions.FirstOrDefaultAsync(x => x.IdEmpresa == model.id_empresa && x.IdRegion == model.id_region);
-
+                // Edición — valida que la región pertenece a la empresa del usuario
+                region = await context.Regions
+                    .FirstOrDefaultAsync(r => r.IdRegion == model.IdRegion && r.IdEmpresa == idEmpresa);
                 if (region == null)
-                    throw new Exception("No se encontro la region");
+                    throw new Exception("La región no pertenece a su empresa o no existe.");
             }
             else
             {
-                region = new Region();
-                region.IdEmpresa = model.id_empresa;
-                var vLastRow = await context.Regions.OrderBy(x => x.IdEmpresa).LastOrDefaultAsync(x => x.IdEmpresa == model.id_empresa);
-                region.IdRegion = (short)((vLastRow != null ? vLastRow.IdRegion : 0) + 1);
+                // Modo alta — crear nueva instancia y calcular el siguiente IdRegion para la empresa
+                region = new Region
+                {
+                    IdEmpresa = idEmpresa
+                };
+                var vLastRow = await context.Regions
+                    .Where(r => r.IdEmpresa == idEmpresa)
+                    .OrderByDescending(r => r.IdRegion)
+                    .FirstOrDefaultAsync();
+                region.IdRegion = (vLastRow != null ? vLastRow.IdRegion : 0) + 1;
             }
-
-
-            // validate if exist one region with the same name in the same empresa
-            var regionExistente = await context.Regions.FirstOrDefaultAsync(x => x.Nombre!.ToLower() == model.nombre!.ToLower()
-            && x.IdEmpresa != model.id_empresa);
-
-            if (regionExistente is not null)
-                throw new Exception("Ya existe una región con el mismo nombre en la empresa.");
-
-            region.Nombre = model.nombre;
-
-            if (model.id_region > 0)
+            // Valida existencia de regiones con el mismo nombre dentro de la misma empresa
+            // En edición se excluye el registro actual para permitir guardar sin cambiar el nombre
+            bool nombreDuplicado = await context.Regions
+                .AnyAsync(r =>
+                    r.NombreRegion!.Trim().ToLower() == model.NombreRegion!.Trim().ToLower() &&
+                    r.IdEmpresa == idEmpresa &&
+                    r.IdRegion != model.IdRegion);
+            if (nombreDuplicado)
+                throw new Exception("Ya existe una Región con el mismo nombre en esta Empresa.");
+            // Asignar valores a la entidad
+            region.NombreRegion = model.NombreRegion;
+            region.Activo = model.Activo;
+            if (model.IdRegion > 0)
             {
-                context.Regions.Entry(region);
+                // Actualizar: la entidad está rastreada por el contexto, solo guardar cambios
                 await context.SaveChangesAsync();
             }
             else
             {
+                // Insertar nuevo registro
                 context.Regions.Add(region);
                 await context.SaveChangesAsync();
             }
@@ -105,7 +154,9 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
 
 
-    public List<TipoRegimenFiscalModel> ObtenerTipoRegimen()
+        //NO se usa
+        /*
+        public List<TipoRegimenFiscalModel> ObtenerTipoRegimen()
     {
       var resul = (from o in context.Regimenfiscalreceptors
                    select new TipoRegimenFiscalModel()
@@ -116,6 +167,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                    }).ToList();
       return resul;
     }
+        */
 
   }
 }
