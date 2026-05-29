@@ -1,0 +1,306 @@
+@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+
+@{
+    ViewData["Title"] = "Viajes";
+}
+@model List<ObtenerViajesViewModel>
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.viajes);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+    <!--begin::Toolbar container-->
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <!--begin::Toolbar wrapper-->
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <!--begin::Page title-->
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <!--begin::Title-->
+                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Consulta de viajes</h1>
+                <!--end::Title-->
+
+            </div>
+            <!--end::Page title-->
+        </div>
+        <!--end::Toolbar wrapper-->
+    </div>
+    <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_toolbar" class="app-toolbar ">
+        <!--begin::Toolbar container-->
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+            <!--begin::Toolbar wrapper-->
+            <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+                <!--begin::Page title-->
+                <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                    <!--begin::Title-->
+                    <h3 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Viajes</h3>
+                    <!--end::Title-->
+
+                </div>
+                <!--end::Page title-->
+            </div>
+            <!--end::Toolbar wrapper-->
+        </div>
+        <!--end::Toolbar container-->
+    </div>
+    <!--begin::Content container-->
+    <div id="kt_app_content_container" class="app-container container-fluid">
+        <!--begin::Card-->
+        <div class="card">
+            <!--begin::Card header-->
+            <div class="card-header border-0 pt-6 py-4">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <div class="card-title py-4">
+                        <div class="fv-row row">
+                            <!--begin::Search-->
+                            <div class="d-flex align-items-center position-relative my-1 col-sm-4">
+                                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                                <input type="text" data-kt-viajes-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+                            </div>
+                            <div class="d-flex align-items-center position-relative col-sm-4" style="margin-left: auto;">
+                                <label for="PeriodoId" class="col-form-label text-gray-600 ">Período:</label>
+
+                                <select class="form-control" id="PeriodoId">
+                                    <option value="6">Seleccione..</option>
+                                    <option value="0">Hoy</option>
+                                    <option value="1">La semana anterior</option>
+                                    <option value="2">El mes anterior</option>
+                                    <option value="3">Los últimos 7 días</option>
+                                    <option value="4">Los últimos 30 días</option>
+                                    <option value="5">Personalizado</option>
+                                </select>
+                            </div>
+                            <div id="divFecha" class="d-flex align-items-center position-relative col-sm-4">
+                                <label for="txtFecha" class="col-form-label text-gray-600">Fecha:</label>
+                                <input class="form-control bg-transparent" type="text" id="txtFecha" name="txtFecha" />
+                            </div>
+                            <!--end::Search-->
+                        </div>
+                    </div>
+                </div>
+                <!--begin::Card title-->
+
+            </div>
+            <!--end::Card header-->
+            <!--begin::Card body-->
+            <div class="card-body py-4">
+                <div class="mx-auto d-flex align-items-center">
+                    <!-- Lista Horizontal -->
+                    <ul class="nav nav-pills mx-auto d-flex align-items-center" id="listaHorizontal">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="viajes-tab" data-bs-toggle="tab" href="#viajes">Viajes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="viajesproximos-tab" data-bs-toggle="tab" href="#viajesproximos">Viajes próximos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="asignaciones-tab" data-bs-toggle="tab" href="#viajescancelados">Viajes cancelados</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content" id="contenidoPestanas">
+                    <div class="tab-pane fade show active" id="viajes">
+                        <!--begin::Table-->
+                        <!--end::Table-->
+                    </div>
+
+                    <div class="tab-pane fade" id="viajesproximos">
+                    </div>
+
+                    <div class="tab-pane fade" id="viajescancelados">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+</div>
+<!--end::Content container-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_toolbar" class="app-toolbar ">
+        <!--begin::Toolbar container-->
+        <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+            <!--begin::Toolbar wrapper-->
+            <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+                <!--begin::Page title-->
+                <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                    <!--begin::Title-->
+                    <h3 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Viajes por usuario</h3>
+                    <!--end::Title-->
+
+                </div>
+                <!--end::Page title-->
+            </div>
+            <!--end::Toolbar wrapper-->
+        </div>
+        <!--end::Toolbar container-->
+    </div>
+    <!--begin::Content container-->
+    <div id="kt_app_content_container" class="app-container container-fluid">
+        <!--begin::Card-->
+        <div class="card">
+            <!--begin::Card header-->
+            <div class="card-header border-0 pt-6 py-4">
+                <!--begin::Card title-->
+                <div class="card-title">
+                    <div class="card-title py-4">
+                        <div class="fv-row row">
+                            <!--begin::Search-->
+                            <div class="d-flex align-items-center position-relative my-1 col-sm-4">
+                                <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                                <input type="text" data-kt-viajes-table-filter="search2" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+                            </div>
+                            <div class="d-flex align-items-center position-relative col-sm-4" style="margin-left: auto;">
+                                <label for="PeriodoId2" class="col-form-label text-gray-600 ">Período:</label>
+
+                                <select class="form-control" id="PeriodoId2">
+                                    <option value="6">Seleccione..</option>
+                                    <option value="0">Hoy</option>
+                                    <option value="1">La semana anterior</option>
+                                    <option value="2">El mes anterior</option>
+                                    <option value="3">Los últimos 7 días</option>
+                                    <option value="4">Los últimos 30 días</option>
+                                    <option value="5">Personalizado</option>
+                                </select>
+                            </div>
+                            <div id="divFecha2" class="d-flex align-items-center position-relative col-sm-4">
+                                <label for="txtFecha2" class="col-form-label text-gray-600">Fecha:</label>
+                                <input class="form-control bg-transparent" type="text" id="txtFecha2" name="txtFecha2" />
+                            </div>
+                            <!--end::Search-->
+                        </div>
+                    </div>
+                </div>
+                <!--begin::Card title-->
+
+            </div>
+            <!--end::Card header-->
+            <!--begin::Card body-->
+            <div class="card-body py-4">
+                <div class="mx-auto d-flex align-items-center">
+                    <!-- Lista Horizontal -->
+                    <ul class="nav nav-pills mx-auto d-flex align-items-center" id="listaHorizontal">
+                        <li class="nav-item">
+                            <a class="nav-link" id="viajesusuario-tab" data-bs-toggle="tab" href="#viajesusuario">Viajes</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="viajesproximosusuario-tab" data-bs-toggle="tab" href="#viajesproximosusuario">Viajes próximos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="viajescanceladosusuario-tab" data-bs-toggle="tab" href="#viajescanceladosusuario">Viajes cancelados</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="tab-content" id="contenidoPestanas">
+                    <div class="tab-pane fade" id="viajesusuario">
+                        <!--begin::Table-->
+                        <!--end::Table-->
+                    </div>
+
+                    <div class="tab-pane fade" id="viajesproximosusuario">
+                    </div>
+
+                    <div class="tab-pane fade" id="viajescanceladosusuario">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+</div>
+<!-- Ventana modal de edición -->
+<div class="modal modal-lg fade" tabindex="-1" id="kt_modal_detalle_viaje" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalle Viaje</h3>
+
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+
+            <div class="modal-body" id="modal-body">
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Ventana modal de mensaje cancelación -->
+<!-- Modal para confirmación -->
+<div class="modal fade" id="confirmacionCancelarModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalLabel">Confirmar cancelación</h3>
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+            <div class="modal-body">
+                ¿Deseas cancelar este viaje?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="margin-right: 16px;">No</button>
+                <button type="button" class="btn btn-danger" id="confirmarCancelar" style="margin-left: 16px;">Sí, cancelar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal para mensajes de alerta -->
+<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="alertModalLabel">Mensaje</h3>
+                <!--begin::Close-->
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+                    <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+                </div>
+                <!--end::Close-->
+            </div>
+            <div class="modal-body" id="alertModalBody">
+                <!-- El mensaje se insertará dinámicamente aquí -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--end::Content-->
+@section scripts {
+    @* <script src="~/js/comercial/Viajes.js" asp-append-version="true"></script> *@
+    <script src="~/js/comercial/navViajes.js" asp-append-version="true"></script>
+    <script src="~/js/comercial/CancelacionViajes.js" asp-append-version="true"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>
+    <script>
+        var datos = @Html.Raw(Json.Serialize(Model));
+    </script>
+}

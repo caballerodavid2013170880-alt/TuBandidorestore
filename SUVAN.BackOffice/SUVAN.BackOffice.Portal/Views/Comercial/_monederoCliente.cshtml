@@ -1,0 +1,96 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+  ViewData["Title"] = "DetalleCliente";
+}
+@model List<MonederoClienteViewModel>
+
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.gestionDeClientes);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+}
+
+<div class="container-saldo mx-auto d-flex align-items-center" style="justify-content: space-between;">
+  <div class="btn-container">
+    @Html.ActionLink("Exportar Edo. de cuenta", "ExportarPDF", new { clienteID = Model.First().Idusuario }, new { @class = "btn btn-primary" })
+  </div>
+
+  <div class="saldo-container">
+    <label for="saldo" style="font-size: 1.5em;">Saldo:</label>
+    <label class="saldo-value" style="font-size: 1.5em;">@Model.First().SaldoFinal</label>
+  </div>
+</div>
+<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_monedero_usuario">
+  <thead>
+    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+      <th class="min-w-125px">Fecha</th>
+      <th class="min-w-125px">Transacción</th>
+      <th class="min-w-125px">Método de pago</th>
+      <th class="min-w-125px">Cantidad</th>
+      <th class="min-w-125px">Tipo de transacción</th>
+    </tr>
+  </thead>
+  <tbody class="text-gray-600 fw-semibold">
+    @foreach (var item in Model)
+    {
+      <tr>
+        <td class="date-cell">
+          @{
+            var fecha = item.Fechatransaccion != null ? Convert.ToDateTime(item.Fechatransaccion).ToString("dd/MM/yyyy") : string.Empty;
+          }
+          @fecha
+        </td>
+        <td>
+          @item._Transaccion
+        </td>
+        <td>
+          @item.MetodoPago
+        </td>
+        <td>
+          @item.Cantidad
+        </td>
+        <td>
+          @item.TipoTransaccion
+        </td>
+      </tr>
+
+    }
+  </tbody>
+</table>
+
+@section Styles {
+  <style>
+    .container-saldo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .saldo-container {
+      text-align: right; /* Alinea el texto del saldo a la derecha */
+    }
+
+    .saldo-label,
+    .saldo-value {
+      font-size: 1.5em; /* Tamaño del texto más grande */
+      color: #000; /* Color de texto, ajusta según tu tema */
+      margin-left: 10px;
+    }
+
+    .btn.btn-primary {
+      padding: 10px 20px;
+      background-color: #004aad; /* Color personalizado para el botón */
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
+}

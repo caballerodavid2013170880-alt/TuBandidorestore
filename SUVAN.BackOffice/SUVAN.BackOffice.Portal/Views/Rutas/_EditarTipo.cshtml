@@ -1,0 +1,49 @@
+﻿
+
+<div class="modal modal-lg fade" tabindex="-1" id="kt_modal_editar">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Editar tipo de estación</h3>
+
+        <!--begin::Close-->
+        <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+          <i class="ki-duotone ki-cross fs-1"><span class="path1"></span><span class="path2"></span></i>
+        </div>
+        <!--end::Close-->
+      </div>
+
+      <div class="modal-body">
+
+        <div class="row">
+          <div class="col-md-12 my-2 d-flex">
+            <div class="form-check form-check-custom form-check-solid me-10">
+              <input class="form-check-input h-20px w-20px" type="radio" value="1" id="cksubidaEdit" name="cktipoestacionEditar" />
+              <label class="form-check-label" for="cksubida">
+                Solo subida
+              </label>
+            </div>
+            <div class="form-check form-check-custom form-check-solid me-10">
+              <input class="form-check-input h-20px w-20px" type="radio" value="2" id="cksubidabajadaEdit" name="cktipoestacionEditar" />
+              <label class="form-check-label" for="cksubidabajada">
+                Subida y bajada
+              </label>
+            </div>
+            <div class="form-check form-check-custom form-check-solid me-10">
+              <input class="form-check-input h-20px w-20px" type="radio" value="3" id="ckbajadaEdit" name="cktipoestacionEditar" />
+              <label class="form-check-label" for="ckbajada">
+                Solo bajada
+              </label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary" id="button-editar-tipo">Seleccionar</button>
+      </div>
+    </div>
+  </div>
+</div>

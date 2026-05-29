@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado de Cuenta</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            background-color: #99a1b7;
+            padding: 10px;
+            text-align: center;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #dddddd;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 8px;
+        }
+
+        th {
+            background-color: #99a1b7;
+        }
+
+        .footer {
+            margin-top: 20px;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Estado de cuenta</h2>
+        <p>{{Nombre del Usuario}}</p>
+    </div>
+
+    <table>
+        <tr>
+            <th>Fecha</th>
+            <th>Tipo Transacción</th>
+            <th>Método de Pago</th>
+            <th>Cantidad</th>
+        </tr>
+        {{filasTabla}}
+    </table>
+
+    <div class="footer">
+        <strong>Saldo final</strong>
+        <p>{{saldoFinal}}</p>
+    </div>
+</body>
+</html>

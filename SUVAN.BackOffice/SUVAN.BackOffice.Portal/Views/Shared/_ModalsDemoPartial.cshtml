@@ -1,0 +1,94 @@
+﻿@using SUVAN.BackOffice.Portal.Helper
+@inject IRutasHelper rutasHelper
+<!--begin::Activities drawer-->
+<div id="kt_activities" class="bg-body" data-kt-drawer="true" data-kt-drawer-name="activities" data-kt-drawer-activate="true" data-kt-drawer-overlay="true" data-kt-drawer-width="{default:'300px', 'lg': '900px'}" data-kt-drawer-direction="end" data-kt-drawer-toggle="#kt_activities_toggle" data-kt-drawer-close="#kt_activities_close">
+  <div class="card shadow-none border-0 rounded-0">
+    <!--begin::Header-->
+    <div class="card-header" id="kt_activities_header">
+      <h3 class="card-title fw-bold text-dark">Alerta - configuración de rutas</h3>
+      <div class="card-toolbar">
+        <button type="button" class="btn btn-sm btn-icon btn-active-light-primary me-n5" id="kt_activities_close">
+          <i class="ki-outline ki-cross fs-1"></i>
+        </button>
+      </div>
+    </div>
+    <!--end::Header-->
+    <!--begin::Body-->
+    <div class="card-body position-relative" id="kt_activities_body">
+      <!--begin::Content-->
+      <div id="kt_activities_scroll" class="position-relative scroll-y me-n5 pe-5" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-wrappers="#kt_activities_body" data-kt-scroll-dependencies="#kt_activities_header, #kt_activities_footer" data-kt-scroll-offset="5px">
+
+        <div class="card mt-2">
+
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table align-middle table-row-dashed fs-9 gy-5" id="kt_table_ruta_config">
+                <thead>
+                  <tr class="text-start text-muted fw-bold fs-9 text-uppercase gs-0">
+
+                    <th>Nombre de la ruta</th>
+                    <th>Configuración de corrida</th>
+                    <th>Configuración de horario estaciones</th>
+                    <th>Asignación Chofer / Unidad</th>
+                    <th>Configuración tarifa</th>
+
+                  </tr>
+                </thead>
+                <tbody class="text-gray-600 fw-semibold">
+                  @{
+                    var rutas = await rutasHelper.ObtenerRutasSinConfigurar(User.GetEmpresaId());
+                    foreach (var item in rutas)
+                    {
+                      <tr>
+                        <td>
+                          @item.nombre
+                        </td>
+                        <td>
+                          @{
+                            var colorCorrida = item.corrida ? "bg-success" : "bg-danger";
+                          }
+                          <div class="d-flex justify-content-center align-items-center text-white @colorCorrida rounded-circle" style="width: 25px; height: 25px;">
+                          </div>
+                        </td>
+                        <td>
+                          @{
+                            var colorEstacion = item.estacion ? "bg-success" : "bg-danger";
+                          }
+                          <div class="d-flex justify-content-center align-items-center  text-white @colorEstacion rounded-circle" style="width: 25px; height: 25px;">
+                          </div>
+                        </td>
+                        <td>
+                          @{
+                            var colorAsignacion = item.asignacion ? "bg-success" : "bg-danger";
+                          }
+                          <div class="d-flex justify-content-center align-items-center  text-white @colorAsignacion rounded-circle" style="width: 25px; height: 25px;">
+                          </div>
+                        </td>
+                        <td>
+                          @{
+                            var colorTarifa = (item.tarifaEsc || item.tarifaGen) ? "bg-success" : "bg-danger";
+                          }
+                          <div class="d-flex justify-content-center align-items-center  text-white @colorTarifa rounded-circle" style="width: 25px; height: 25px;">
+                          </div>
+                        </td>
+                      </tr>
+
+                    }
+                  }
+                </tbody>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div>
+      <!--end::Content-->
+    </div>
+    <!--end::Body-->
+    <!--begin::Footer-->
+    <div class="card-footer py-5 text-center" id="kt_activities_footer">
+    </div>
+    <!--end::Footer-->
+  </div>
+</div>
+<!--end::Activities drawer-->

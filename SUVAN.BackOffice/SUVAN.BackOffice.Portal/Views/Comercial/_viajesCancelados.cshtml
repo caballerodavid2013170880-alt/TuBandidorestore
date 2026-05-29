@@ -1,0 +1,76 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+
+@{
+  ViewData["Title"] = "Viajes";
+}
+@model List<ObtenerViajesViewModel>
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.viajes);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+}
+<div class="card-body py-4">
+  <!--begin::Table-->
+    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_ViajesCancelados">
+        <thead>
+            <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+
+                <th class="min-w-125px">Viajes</th>
+                <th class="min-w-125px">Pasajeros</th>
+                <th class="min-w-125px">Fecha y Hora</th>
+                <th class="min-w-125px">Conductor</th>
+                <th class="text-end min-w-100px">Acciones</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-600 fw-semibold">
+            @foreach (ObtenerViajesViewModel viajes in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="hidden" data-kt-viajes-table-filter="row_id" value="@viajes.IdCorridaAsignacion" />
+                        @viajes.Nombre
+                    </td>
+                    <td>
+                        <input type="hidden" data-kt-viajes-table-filter="row_id" value="@viajes.TotalPasajeros" />
+                        @viajes.TotalPasajeros
+                    </td>
+                    <td>
+                        <input type="hidden" data-kt-viajes-table-filter="row_id" value="@viajes.Fecha" />
+
+                        @{
+                            var fecha = viajes.Fecha != null ? Convert.ToDateTime(viajes.Fecha).ToString("dd/MM/yyyy HH:mm") : string.Empty;
+                        }
+                        @fecha
+                    </td>
+                    <td>
+                        <input type="hidden" data-kt-viajes-table-filter="row_id" value="@viajes.ConductorNombre" />
+                        @viajes.ConductorNombre
+                    </td>
+
+                    <td class="text-end">
+
+                        @if (permisosPagina!.Ejecutar)
+                        {
+                            <a class="btn btn-icon btn-active-light-primary w-30px h-30px" id="kt_viajes_detalles" data-id="@viajes.IdCorridaAsignacion" data-kt-viajes-action="edit">
+                                <i class="ki-outline ki-abstract-14 fs-3"></i>
+                            </a>
+                        }
+
+                    </td>
+                </tr>
+
+            }
+        </tbody>
+    </table>
+
+  <!--end::Table-->
+</div>
+<script src="~/js/comercial/ViajesCancelados.js" asp-append-version="true"></script>
+<script>
+    var datos = @Html.Raw(Json.Serialize(Model));
+</script>

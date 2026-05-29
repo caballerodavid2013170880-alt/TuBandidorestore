@@ -1,0 +1,482 @@
+﻿@using SUVAN.BackOffice.Models.AppSettingsModels
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Models.ViewModel.Configuracion;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@inject Microsoft.Extensions.Options.IOptions<GoogleSettingsOptions> GoogleSettingsOptions
+
+@{
+  ViewData["Title"] = "Rutas";
+}
+@model AgregarRutaViewModel
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.rutas);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+
+  var isAgaregarText = Model.RutaId == 0 ? "Agregar" : "Editar";
+}
+
+<style>
+  #kt_modal_seleccionar_punto {
+    z-index: 1051 !important;
+  }
+
+  .pac-container {
+    z-index: 1052 !important;
+  }
+
+  .badgeMarker {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background-color: red;
+    color: white;
+    padding: 5px;
+    border-radius: 50%;
+  }
+
+  .custom-label {
+    position: relative;
+    left: 30px; /* Ajusta según sea necesario para colocar la etiqueta al costado */
+    top: -10px; /* Ajusta según sea necesario para colocar la etiqueta al costado */
+    background-color: white;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    z-index: 1;
+  }
+</style>
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+  <!--begin::Toolbar container-->
+  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+    <!--begin::Toolbar wrapper-->
+    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+      <!--begin::Page title-->
+      <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+        <!--begin::Title-->
+        <a href="~/rutas" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+          <i class="ki-duotone ki-left fs-1 pe-5">
+          </i>
+          <span>@isAgaregarText Ruta</span>
+        </a>
+        <!--end::Title-->
+      </div>
+      <!--end::Page title-->
+    </div>
+    <!--end::Toolbar wrapper-->
+  </div>
+  <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+  <!--begin::Content container-->
+  <div id="kt_app_content_container" class="app-container container-fluid">
+    <!--begin::Card-->
+    <div class="card">
+      <!--begin::Card body-->
+      <div class="card-body py-4">
+        <div class="row">
+          <div class="col-xl-6">
+            <div class="row">
+              <div class="col-md-12">
+                <div id="duration"></div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <!--begin::Search-->
+                <button type="button" id="preview-ruta" class="btn btn-flex btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">
+                  <i class="fa-solid fa-rotate mx-4"></i> Actualizar ruta
+                </button>
+                <!--end::Search-->
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-12">
+                <div id="map" class="w-100 rounded mb-2 mb-lg-0 mt-2 leaflet-container leaflet-touch leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" style="height: 550px; width: 100%;"></div>
+              </div>
+            </div>
+
+            <div class="card card-flush my-4">
+              <!--begin::Card header-->
+              <div class="card-header mt-6">
+                <!--begin::Card title-->
+                <div class="card-title flex-column">
+
+                  <div id="km-totales">
+                  </div>
+
+                  @*    <h3 class="fw-bold mb-1">Tiempo estimado entre puntos</h3> *@
+                </div>
+                <!--end::Card title-->
+
+              </div>
+              <!--end::Card header-->
+              <!--begin::Card body-->
+              @*   <div class="card-body d-flex flex-column mb-9 p-9 pt-3" id="ruta-preview">
+              </div> *@
+              <!--end::Card body-->
+            </div>
+
+
+          </div>
+          <div class="col-xl-6">
+            <div class="row">
+              <div class="col-md-12 text-end">
+
+                <button type="button" id="modal-agregar-estacion" class="btn btn-flex btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">
+                  <i class="ki-duotone ki-plus-circle mx-4">
+                    <span class="path1"></span>
+                    <span class="path2"></span>
+                  </i>  Agregar estación
+                </button>
+              </div>
+              <div class="col-md-12">
+                <form class="form w-100" novalidate="novalidate" id="kt_ruta_in_form" data-kt-redirect-url="/" asp-controller="Rutas" asp-action="Agregar" method="post">
+                  @Html.AntiForgeryToken()
+                  <input asp-for="RutaId" type="hidden" />
+                  <input asp-for="PuntosJson" type="hidden" />
+                  <input asp-for="GoogleMapsRuta" type="hidden" />
+                  <input asp-for="Distancia" type="hidden" />
+                  <div class="fv-row mb-8">
+                    <div class="col-md-12">
+                      <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                        <div asp-validation-summary="All"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-12">
+                      <div class="fv-row mb-8">
+                        <label asp-for="Nombre" class="col-md-12 col-form-label text-gray-600 required">Nombre de la ruta</label>
+                        <div class="col-md-12">
+                          <input asp-for="Nombre" class="form-control bg-transparent" placeholder="Nombre de la ruta" maxlength="250" />
+                          <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                            <span asp-validation-for="Nombre"></span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-md-6">
+                      <div class="fv-row mb-8">
+                        <div class="col-md-4">
+                          <div class="form-check">
+                            <label asp-for="Activo" class="form-check-label"></label>
+                            <input asp-for="Activo" class="form-check-input" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-10 text-end">
+                    <button type="submit" id="kt_ruta_in_submit" class="btn btn-primary">
+                      <!--begin::Indicator label-->
+                      <span class="indicator-label">Guardar</span>
+                      <!--end::Indicator label-->
+                      <!--begin::Indicator progress-->
+                      <span class="indicator-progress">
+                        Por favor espere...
+                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                      </span>
+                      <!--end::Indicator progress-->
+                    </button>
+                  </div>
+                </form>
+              </div>
+              <div class="col-md-12">
+                <div class="tab-content">
+                  <div id="sortable-container">
+                    <ul class="sortable-list" id="sortable-list" style="list-style-type: none;">
+                      @*  <li class="sortable-item" draggable="true">
+                      <div class="m-0">
+                      <!--begin::Wrapper-->
+                      <div class="d-flex align-items-sm-center mb-3">
+                      <!--begin::Symbol-->
+                      <div class="symbol symbol-circle symbol-40px me-4">
+                      <span class="symbol-label bg-primary">
+                      <span class="order-label text-inverse-primary fs-4">1</span>
+                      </span>
+                      </div>
+                      <!--end::Symbol-->
+                      <!--begin::Section-->
+                      <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                      <div class="flex-grow-1 me-2">
+                      <span class="text-gray-800 fw-bold d-block fs-4">Metro Constituyentes</span>
+                      </div>
+                      <div>
+
+                      <i class="ki-duotone ki-map fs-3 text-muted me-3 my-2 add-new-point">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      </i>
+                      <i class="ki-duotone ki-arrow-up-down fs-3 text-muted me-3 my-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      </i>
+                      <i class="ki-duotone ki-cross-circle fs-3 text-muted me-3 my-2 delete-sorteable-item">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      </i>
+                      </div>
+
+                      </div>
+                      <!--end::Section-->
+                      </div>
+                      <!--end::Wrapper-->
+                      <!--begin::Timeline-->
+                      <div class="timeline mx-13">
+                      <!--begin::Timeline item-->
+                      <div class="timeline-item align-items-center mb-3">
+
+                      <!--begin::Timeline icon-->
+                      <div class="timeline-icon" style="margin-left: 11px">
+                      <i class="bi bi-arrow-return-right fs-2 text-gray-400"></i>
+
+                      </div>
+                      <!--end::Timeline icon-->
+                      <!--begin::Timeline content-->
+                      <div class="timeline-content m-0">
+                      <!--begin::Title-->
+                      <span class="fs-6 text-gray-400 fw-semibold d-block">(19.457714, -99.066879)</span>
+                      <!--end::Title-->
+
+                      </div>
+                      <!--end::Timeline content-->
+                      </div>
+                      <!--end::Timeline item-->
+                      <!--begin::Timeline item-->
+                      <div class="timeline-item align-items-center">
+
+                      <!--begin::Timeline icon-->
+                      <div class="timeline-icon" style="margin-left: 11px">
+                      <i class="bi bi-arrow-return-right fs-2 text-gray-400"></i>
+                      </div>
+                      <!--end::Timeline icon-->
+                      <!--begin::Timeline content-->
+                      <div class="timeline-content m-0">
+                      <!--begin::Title-->
+                      <span class="fs-6 text-gray-400 fw-semibold d-block">(19.457714, -99.066879)</span>
+                      <!--end::Title-->
+
+                      </div>
+                      <!--end::Timeline content-->
+                      </div>
+                      <!--end::Timeline item-->
+                      </div>
+                      <!--end::Timeline-->
+                      </div>
+
+                      <div class="separator separator-dashed my-6"></div>
+                      </li>
+                      <li class="sortable-item" draggable="true">
+                      <div class="m-0">
+                      <!--begin::Wrapper-->
+                      <div class="d-flex align-items-sm-center mb-3">
+                      <!--begin::Symbol-->
+                      <div class="symbol symbol-circle symbol-40px me-4">
+                      <span class="symbol-label bg-primary">
+                      <span class="order-label text-inverse-primary fs-4">2</span>
+                      </span>
+                      </div>
+                      <!--end::Symbol-->
+                      <!--begin::Section-->
+                      <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                      <div class="flex-grow-1 me-2">
+                      <span class="text-gray-800 fw-bold d-block fs-4">Metro Chapultepec</span>
+                      </div>
+                      <div>
+
+                      <i class="ki-duotone ki-map fs-3 text-muted me-3 my-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      </i>
+                      <i class="ki-duotone ki-arrow-up-down fs-3 text-muted me-3 my-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      </i>
+                      <i class="ki-duotone ki-cross-circle fs-3 text-muted me-3 my-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      </i>
+                      </div>
+
+                      </div>
+                      <!--end::Section-->
+                      </div>
+                      <!--end::Wrapper-->
+                      <!--begin::Timeline-->
+                      <div class="timeline mx-13">
+                      <!--begin::Timeline item-->
+                      <div class="timeline-item align-items-center mb-3">
+
+                      <!--begin::Timeline icon-->
+                      <div class="timeline-icon" style="margin-left: 11px">
+                      <i class="bi bi-arrow-return-right fs-2 text-gray-400"></i>
+
+                      </div>
+                      <!--end::Timeline icon-->
+                      <!--begin::Timeline content-->
+                      <div class="timeline-content m-0">
+                      <!--begin::Title-->
+                      <span class="fs-6 text-gray-400 fw-semibold d-block">(19.457714, -99.066879)</span>
+                      <!--end::Title-->
+
+                      </div>
+                      <!--end::Timeline content-->
+                      </div>
+                      <!--end::Timeline item-->
+                      <!--begin::Timeline item-->
+                      <div class="timeline-item align-items-center">
+
+                      <!--begin::Timeline icon-->
+                      <div class="timeline-icon" style="margin-left: 11px">
+                      <i class="bi bi-arrow-return-right fs-2 text-gray-400"></i>
+                      </div>
+                      <!--end::Timeline icon-->
+                      <!--begin::Timeline content-->
+                      <div class="timeline-content m-0">
+                      <!--begin::Title-->
+                      <span class="fs-6 text-gray-400 fw-semibold d-block">(19.457714, -99.066879)</span>
+                      <!--end::Title-->
+
+                      </div>
+                      <!--end::Timeline content-->
+                      </div>
+                      <!--end::Timeline item-->
+                      </div>
+                      <!--end::Timeline-->
+                      </div>
+
+                      <div class="separator separator-dashed my-6"></div>
+                      </li>
+                      <li class="sortable-item" draggable="true">
+                      <div class="m-0">
+                      <!--begin::Wrapper-->
+                      <div class="d-flex align-items-sm-center mb-3">
+                      <!--begin::Symbol-->
+                      <div class="symbol symbol-circle symbol-40px me-4">
+                      <span class="symbol-label bg-primary">
+                      <span class="order-label text-inverse-primary fs-4">3</span>
+                      </span>
+                      </div>
+                      <!--end::Symbol-->
+                      <!--begin::Section-->
+                      <div class="d-flex align-items-center flex-row-fluid flex-wrap">
+                      <div class="flex-grow-1 me-2">
+                      <span class="text-gray-800 fw-bold d-block fs-4">Santa Fe</span>
+                      </div>
+                      <div>
+
+                      <i class="ki-duotone ki-map fs-3 text-muted me-3 my-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      <span class="path3"></span>
+                      </i>
+                      <i class="ki-duotone ki-arrow-up-down fs-3 text-muted me-3 my-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      </i>
+                      <i class="ki-duotone ki-cross-circle fs-3 text-muted me-3 my-2">
+                      <span class="path1"></span>
+                      <span class="path2"></span>
+                      </i>
+                      </div>
+
+                      </div>
+                      <!--end::Section-->
+                      </div>
+                      <!--end::Wrapper-->
+                      <!--begin::Timeline-->
+                      <div class="timeline mx-13">
+                      <!--begin::Timeline item-->
+                      <div class="timeline-item align-items-center mb-3">
+
+                      <!--begin::Timeline icon-->
+                      <div class="timeline-icon" style="margin-left: 11px">
+                      <i class="bi bi-arrow-return-right fs-2 text-gray-400"></i>
+
+                      </div>
+                      <!--end::Timeline icon-->
+                      <!--begin::Timeline content-->
+                      <div class="timeline-content m-0">
+                      <!--begin::Title-->
+                      <span class="fs-6 text-gray-400 fw-semibold d-block">(19.457714, -99.066879)</span>
+                      <!--end::Title-->
+
+                      </div>
+                      <!--end::Timeline content-->
+                      </div>
+                      <!--end::Timeline item-->
+                      <!--begin::Timeline item-->
+                      <div class="timeline-item align-items-center">
+
+                      <!--begin::Timeline icon-->
+                      <div class="timeline-icon" style="margin-left: 11px">
+                      <i class="bi bi-arrow-return-right fs-2 text-gray-400"></i>
+                      </div>
+                      <!--end::Timeline icon-->
+                      <!--begin::Timeline content-->
+                      <div class="timeline-content m-0">
+                      <!--begin::Title-->
+                      <span class="fs-6 text-gray-400 fw-semibold d-block">(19.457714, -99.066879)</span>
+                      <!--end::Title-->
+
+                      </div>
+                      <!--end::Timeline content-->
+                      </div>
+                      <!--end::Timeline item-->
+                      </div>
+                      <!--end::Timeline-->
+                      </div>
+
+                      <div class="separator separator-dashed my-6"></div>
+                      </li> *@
+
+                    </ul>
+                  </div>
+                </div>
+
+
+              </div>
+
+            </div>
+
+
+          </div>
+
+        </div>
+
+
+      </div>
+      <!--end::Card body-->
+    </div>
+    <!--end::Card-->
+  </div>
+  <!--end::Content container-->
+</div>
+<!--end::Content-->
+<!--begin::modal-->
+<partial name="_AgregarEstacion.cshtml" />
+<partial name="_SeleccionarPuntoMapa.cshtml" />
+<partial name="_EditarTipo.cshtml" />
+<!--end::modal-->
+@section scripts {
+  <script src="~/js/rutas/add.js" asp-append-version="true"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=@GoogleSettingsOptions.Value.GoogleMapsApiKey&libraries=places&callback=KTRutas.initMap" async defer></script>
+
+  <script src="~/assets/js/widgets.bundle.js"></script>
+  <script src="~/assets/js/custom/widgets.js"></script>
+
+}

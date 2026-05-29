@@ -1,0 +1,87 @@
+@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+
+@{
+    ViewData["Title"] = "Detalle Viaje";
+}
+@model ObtenerDetalleViajesViewModel
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.viajes);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+    var fecha = DateTime.Now;
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <!--begin::Search-->
+        <div class="form-group">
+            <label for="Viaje" class="col-form-label text-gray-600">Corrida:</label>
+            <input type="text" id="Viaje" name="Viaje" class="form-control" value="@Model.Viaje" readonly>
+        </div>
+        <!--end::Search-->
+    </div>
+    <div class="col-md-6">
+        <!--begin::Search-->
+        <div class="form-group">
+            <label for="Ruta" class="col-form-label text-gray-600">Ruta:</label>
+            <input type="text" id="Viaje" name="Viaje" class="form-control" value="@Model.Ruta" readonly>
+            <input type="hidden" id="idRuta" name="idRuta" value="@Model.ViajeId" />
+        </div>
+        <!--end::Search-->
+    </div>
+    <div class="col-md-6">
+        <!--begin::Search-->
+        <div class="form-group">
+            <label for="Operador" class="col-form-label text-gray-600">Operador:</label>
+            <input type="text" id="Viaje" name="Viaje" class="form-control" value="@Model.Operador" readonly>
+        </div>
+        <!--end::Search-->
+    </div>
+    <div class="col-md-6">
+        <!--begin::Search-->
+        <div class="form-group">
+            <label for="Usuarios" class="col-form-label text-gray-600">Usuarios:</label>
+            <input type="text" id="Viaje" name="Viaje" class="form-control" value="@Model.Usuarios" readonly>
+        </div>
+        <!--end::Search-->
+    </div>
+    <div class="col-md-6">
+        <!--begin::Search-->
+        <div class="form-group">
+            <label for="Tramos" class="col-form-label text-gray-600">Tramos Realizados:</label>
+            <input type="text" id="Viaje" name="Viaje" class="form-control" value="" readonly>
+            <input type="hidden" id="corridaAsignacionId" name="corridaAsignacionId" value="@Model.CorridaAsignacionId" />
+
+        </div>
+        <!--end::Search-->
+    </div>
+    <div class="col-md-6">
+        <!--begin::Search-->
+        <div class="form-group">
+            <label for="Estaciones" class="col-form-label text-gray-600">Estaciones:</label>
+            @foreach (ParadaRutasViewModel estaciones in Model.Estaciones)
+            {
+                <input type="text" id="Viaje" name="Viaje" class="form-control" value="@estaciones.ParadaNombre" readonly style="margin-bottom: 10px;">
+                <!--end::Search-->
+            }
+        </div>
+    </div>
+    @if (Model.Fechaviaje > fecha && (Model.estatusId == 0 || Model.estatusId == 1))
+    {
+        <div class="col-md-12 d-flex justify-content-center">
+            <!--begin::Search-->
+            <div class="form-group">
+                <!-- Botón que dispara el modal -->
+                <button type="button" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold btn-cancelar-viaje" data-toggle="modal" data-target="#confirmacionCancelarModal">
+                    Cancelar Viaje
+                </button>
+            </div>
+            <!--end::Search-->
+        </div>
+    }
+</div>

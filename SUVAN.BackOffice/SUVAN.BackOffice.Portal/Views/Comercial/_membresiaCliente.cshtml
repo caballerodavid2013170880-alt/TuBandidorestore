@@ -1,0 +1,56 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+    ViewData["Title"] = "DetalleCliente";
+}
+@model List<MembresiaClienteViewModel>
+
+@{
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.gestionDeClientes);
+    if (permisosPagina == null)
+    {
+        return;
+    }
+}
+
+
+<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_membresia_usuario">
+    <thead>
+        <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+            <th class="min-w-125px">ID</th>
+            <th class="min-w-125px">Membresía</th>
+            <th class="min-w-125px">Costo</th>
+            <th class="min-w-125px">Vigencia</th>
+            @*<th class="min-w-125px">Tipo de descuento</th>
+            <th class="min-w-125px">Monto de descuento</th> *@
+        </tr>
+    </thead>
+    <tbody class="text-gray-600 fw-semibold">
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @item.MembresiaId
+                </td>
+                <td>
+                    @item.Membresia
+                </td>
+                <td>
+                    @item.Costo
+                </td>
+                <td class="date-cell2">
+                    @item.Desde - @item.Hasta
+                </td>
+                @* <td>
+                    @item.TipoDescuento
+                </td>
+                <td>
+                    @item.MontoDescuento
+                </td> *@
+            </tr>
+
+        }
+    </tbody>
+</table>

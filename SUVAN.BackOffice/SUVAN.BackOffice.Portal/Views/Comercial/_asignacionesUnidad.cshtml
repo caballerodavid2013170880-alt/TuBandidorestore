@@ -1,0 +1,51 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Comercial;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+  ViewData["Title"] = "DetalleUnidad";
+}
+@model List<AsignacionesUnidadViewModel>
+
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.gestionDeUnidades);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+}
+
+
+<table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_asignaciones_unidad">
+  <thead>
+    <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+      <th class="min-w-125px">Conductor</th>
+      <th class="min-w-125px">Ruta</th>
+      <th class="min-w-125px">Horario</th>
+      <th class="min-w-125px">Fecha</th>
+    </tr>
+  </thead>
+  <tbody class="text-gray-600 fw-semibold">
+    @foreach (var item in Model)
+    {
+      <tr>
+        <td>
+          @item.Conductor
+        </td>
+        <td>
+          @item.Ruta
+        </td>
+        <td>
+          @item.Horario
+        </td>
+        <td class="date-cell">
+          @{
+            var fecha = item.FechaAsignacion != null ? Convert.ToDateTime(item.FechaAsignacion).ToString("dd/MM/yyyy") : string.Empty;
+          }
+          @fecha
+        </td>
+      </tr>
+
+    }
+  </tbody>
+</table>

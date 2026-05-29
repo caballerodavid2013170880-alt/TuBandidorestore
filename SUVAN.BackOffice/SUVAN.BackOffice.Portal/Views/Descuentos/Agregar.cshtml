@@ -1,0 +1,219 @@
+﻿@using SUVAN.BackOffice.Models.ViewModel.Configuracion;
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
+@using SUVAN.BackOffice.Portal.Helper;
+@inject IUsuarioHelper UsuarioHelper
+@{
+  ViewData["Title"] = "Descuento";
+}
+@model AgregarDescuentoViewModel
+
+@{
+  var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.descuentos);
+  if (permisosPagina == null)
+  {
+    return;
+  }
+  var isAgaregarText = Model.DescuentoId == 0 ? "Agregar" : "Editar";
+}
+
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+  <!--begin::Toolbar container-->
+  <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+    <!--begin::Toolbar wrapper-->
+    <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+      <!--begin::Page title-->
+      <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+        <!--begin::Title-->
+        <a href="~/descuentos" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+          <i class="ki-duotone ki-left fs-1 pe-5">
+          </i>
+          <span>@isAgaregarText código de descuento</span>
+        </a>
+        <!--end::Title-->
+
+      </div>
+      <!--end::Page title-->
+
+    </div>
+    <!--end::Toolbar wrapper-->
+  </div>
+  <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+  <!--begin::Content container-->
+  <div id="kt_app_content_container" class="app-container container-fluid">
+    <form class="form w-100" novalidate="novalidate" id="kt_descuentos_in_form" data-kt-redirect-url="/" asp-controller="Descuentos" asp-action="Agregar" method="post">
+      @Html.AntiForgeryToken()
+      <div asp-validation-summary="All" class="text-danger"></div>
+      <input asp-for="DescuentoId" type="hidden" />
+      <input asp-for="Codigo" type="hidden" />
+
+
+      <div class="row">
+        <div class="col-md-6">
+          <!--begin::Card-->
+          <div class="card  my-4">
+
+            <!--begin::Card body-->
+            <div class="card-body py-4 d-flex flex-column">
+              <div class="row">
+                <div class="col-md-12">
+                  <h4>Código</h4>
+                  <label class="col-md-12 col-form-label text-gray-600">Este código es autogenerado</label>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 d-flex justify-content-center text-center">
+                  <div class="fs-4tx mb-3 text-primary" id="codigo-descuento"></div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 d-flex justify-content-center text-center">
+                  <span class="text-gray-500 fs-5 cursor-pointer" id="copy-code">
+
+                    Copiar código <i class="fa-regular fa-copy fs-2">
+                    </i>
+                  </span>
+                </div>
+              </div>
+
+              <div class="fv-row mb-8">
+                <div class="col-md-4">
+                  <div class="form-check">
+                    <label asp-for="Activo" class="form-check-label"></label>
+                    <input asp-for="Activo" class="form-check-input" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Card body-->
+          </div>
+          <!--end::Card-->
+        </div>
+        <div class="col-md-6">
+          <!--begin::Card-->
+          <div class="card  my-4">
+
+            <!--begin::Card body-->
+            <div class="card-body py-4">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="fv-row mb-8">
+                    <div class="form-check form-check-custom form-check-solid my-4">
+                      <input class="form-check-input" asp-for="TipoDescuento" type="radio" value="1" />
+                      <label class="form-check-label" asp-for="TipoDescuento">
+                        Cantidad
+                      </label>
+                    </div>
+                    <div class="form-check form-check-custom form-check-solid my-4">
+                      <input class="form-check-input" asp-for="TipoDescuento" type="radio" value="2" />
+                      <label class="form-check-label" asp-for="TipoDescuento">
+                        Porcentaje
+                      </label>
+                    </div>
+                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                      <span asp-validation-for="TipoDescuento"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="fv-row mb-8">
+                    <label asp-for="Cantidad" class="col-md-12 col-form-label text-gray-600 required">Cantidad</label>
+                    <div class="col-md-12">
+                      <input asp-for="Cantidad" class="form-control bg-transparent" placeholder="Cantidad" maxlength="250" />
+                      <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                        <span asp-validation-for="Cantidad"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="fv-row mb-8">
+                    <label asp-for="Vigencia" class="col-md-12 col-form-label text-gray-600 required">Vigencia</label>
+                    <div class="col-md-12">
+                      <input asp-for="Vigencia" class="form-control form-control-solid" placeholder="" />
+                      <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                        <span asp-validation-for="Vigencia"></span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-md-12">
+                  <h4>Aplica a</h4>
+                  <div class="fv-row mb-8">
+                    <div class="form-check form-check-custom form-check-solid my-4">
+                      <input class="form-check-input" asp-for="TipoCodigo" type="radio" value="1" />
+                      <label class="form-check-label" asp-for="TipoCodigo">
+                        El que tenga el código
+                      </label>
+                    </div>
+                    <div class="form-check form-check-custom form-check-solid my-4">
+                      <input class="form-check-input" asp-for="TipoCodigo" type="radio" value="2" />
+                      <label class="form-check-label" asp-for="TipoCodigo">
+                        A los siguientes correos electrónicos
+                      </label>
+                    </div>
+                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                      <span asp-validation-for="TipoCodigo"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="fv-row mb-8">
+                    <div class="form-group" id="correosExclusivosGroup" style="display:none;">
+
+                      <textarea asp-for="Correos" class="form-control" data-kt-autosize="true"></textarea>
+                      <label asp-for="Correos" class="col-md-12 col-form-label text-gray-400">Ingresa un correo electrónico por línea</label>
+                      <span asp-validation-for="Correos" class="text-danger"></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!--end::Card body-->
+          </div>
+          <!--end::Card-->
+        </div>
+
+      </div>
+      <div class="row">
+        <div class="col-md-12 my-10">
+          <div class="mb-10 text-end">
+            <button type="submit" id="kt_descuentos_in_submit" class="btn btn-primary">
+              <!--begin::Indicator label-->
+              <span class="indicator-label">Guardar</span>
+              <!--end::Indicator label-->
+              <!--begin::Indicator progress-->
+              <span class="indicator-progress">
+                Por favor espere...
+                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+              </span>
+              <!--end::Indicator progress-->
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <!--end::Content container-->
+</div>
+<!--end::Content-->
+@section scripts {
+  <script src="~/js/configuracion/descuentos/add.js" asp-append-version="true"></script>
+  <script src="~/assets/js/widgets.bundle.js"></script>
+  <script src="~/assets/js/custom/widgets.js"></script>
+
+}
