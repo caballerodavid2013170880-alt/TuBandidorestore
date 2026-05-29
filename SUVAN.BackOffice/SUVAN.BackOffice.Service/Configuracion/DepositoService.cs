@@ -137,7 +137,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
             deposito.DescCorta = model.DescCorta;
             deposito.Rfc = model.Rfc;
             deposito.Cp = model.Cp;
-            // forzar el valor de locfor a ser la primera letra en mayuscula
+            //forzar el valor de locfor a ser la primera letra en mayuscula
             deposito.LocFor = model.LocFor?.Trim().ToUpper().Substring(0,1);
 
             //asignacion del borrado 

@@ -26,7 +26,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// <returns>Lista de depositos.</returns>
         Task<List<Deposito>> GetDepositos(int id_empresa);
 
-        //se agregaan los metodos de Región Plantas y zonas para btener esos catálogos y mostrarlos en el combo box
+        //se agregan los metodos de Región Plantas y zonas para btener esos catálogos y mostrarlos en el combo box
         Task <List<RegionModel>> GetRegions(int id_empresa);
         Task <List<RegionModel>> GetPlantas(int id_empresa);
         Task <List<RegionModel>> GetZonas(int id_empresa);
@@ -48,6 +48,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// 
         Task<DepositoViewModel> GetDepositoViewModel(int id_empresa,int id_deposito);
 
+        //agregado para usar eliminado logico
         //Task<bool> EliminarDeposito(int idEmpresa, int idDeposito);
     }
 }

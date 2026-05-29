@@ -44,6 +44,7 @@ namespace SUVAN.BackOffice.Models.ViewModel
         [Required(ErrorMessage = "El Teléfono es requerido")]
         public string Tel { get; set; }
 
+        //validar que solo se permita L o F y que sea obligatorio
         [Required(ErrorMessage = "El campo Local/Foráneo es obligatorio")]
         [StringLength(1,ErrorMessage = "Solo se permite 1 ´letra L o F")]
         [RegularExpression(@"^[LF]$|^[lf]$",ErrorMessage = "Solo se permite la letra L o F")]

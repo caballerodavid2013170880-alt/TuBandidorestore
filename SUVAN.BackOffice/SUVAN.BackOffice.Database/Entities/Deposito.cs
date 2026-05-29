@@ -34,6 +34,8 @@ public partial class Deposito
     public string? Rfc { get; set; }
 
     public string? Cp { get; set; }
+
+    //agregado activo manualmente para el borrado lógico
     public ulong? Activo { get; set; }
 
     public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();

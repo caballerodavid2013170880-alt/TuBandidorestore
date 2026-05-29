@@ -203,7 +203,7 @@ var KTDeposito = function () {
           $zonaSelect.empty().append('<option value="0">Selecciona una zona...</option>');
 
           if (regionId > 0) {
-              //peticionAJAX al conytroller
+              //peticion AJAX al conytroller
               $.getJSON('/Configuracion/ObtenerPlantas', { regionId: regionId }, function (data) {
                   $plantaSelect.empty().append('<option value="0">Selecciona una planta...</option>');
                   $.each(data, function (index, item) {
