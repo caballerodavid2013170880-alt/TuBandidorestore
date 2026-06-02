@@ -1451,6 +1451,10 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(30)
                 .IsFixedLength()
                 .HasColumnName("tel");
+            entity.Property(e => e.Activo)
+                .HasColumnName("activo")
+                .HasColumnType("bit(1)")
+                .HasDefaultValueSql("b'1'");
 
             entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Depositos)
                 .HasForeignKey(d => d.IdEmpresa)

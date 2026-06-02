@@ -44,5 +44,5 @@ namespace SUVAN.BackOffice.Models.ViewModel
             get => Activo != 0;
             set => Activo = value ? (ulong)1 : (ulong)0;
         }
-    }
+  }
 }

@@ -12,6 +12,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
 {
     public interface IRegionService
     {
+
         /// <summary>
         /// Obtiene el listado de regiones de la empresa indicada,
         /// incluyendo la navegación a <see cref="Empresa"/> (propiedad <c>IdEmpresaNavigation</c>)

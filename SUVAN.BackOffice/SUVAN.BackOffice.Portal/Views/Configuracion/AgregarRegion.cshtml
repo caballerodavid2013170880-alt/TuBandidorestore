@@ -32,8 +32,10 @@
                     <span>@isAgregarText @ViewData["Title"]</span>
                 </a>
                 <!--end::Title-->
+
             </div>
             <!--end::Page title-->
+
         </div>
         <!--end::Toolbar wrapper-->
     </div>
@@ -46,6 +48,7 @@
     <div id="kt_app_content_container" class="app-container container-fluid">
         <!--begin::Card-->
         <div class="card">
+
             <!--begin::Card body-->
             <div class="card-body py-4">
                 <form class="form w-100" novalidate="novalidate"
@@ -84,11 +87,11 @@
                                        class="form-control bg-transparent"
                                        placeholder="Nombre de la Región"
                                        maxlength="250" />
-                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                     <span asp-validation-for="NombreRegion"></span>
                                 </div>
-                            </div>
-                        </div>
+                                    </div>
+                                </div>
                         <!--end::Nombre de la Región-->
                         <!--begin::Activo-->
                         <div class="col-sm-3 d-flex align-items-end">
@@ -101,6 +104,7 @@
                     </div>
                     <!--begin::Submit-->
                     <div class="mb-10 text-end">
+
                         <button type="submit" id="kt_region_in_submit" class="btn btn-primary">
                             <!--begin::Indicator label-->
                             <span class="indicator-label">Guardar</span>
@@ -115,6 +119,8 @@
                     </div>
                     <!--end::Submit-->
                 </form>
+
+
             </div>
             <!--end::Card body-->
         </div>

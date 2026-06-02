@@ -32,29 +32,33 @@ namespace SUVAN.BackOffice.Portal.Controllers
         private readonly IRegionService regionesService;
         // Plantas
         private readonly IPlantaService plantaService;
+        // Depositos
+        private readonly IDepositoService depositosService; //SE DECLARA el servicio de depósitos para poder usarlo en los métodos
 
         public ConfiguracionController(ILogger<ConfiguracionController> logger,
-          IEmpresasService empresasService,
-          IConductorService conductorService,
-          ITipoVehiculoService tipoVehiculoService,
-          IVehiculoService vehiculoService,
-          ITarifaService tarifaService,
-          IConversacionesService conversacionesService,
-          IRegionService regionService,
-          IPlantaService plantaService)
+        IEmpresasService empresasService,
+        IConductorService conductorService,
+        ITipoVehiculoService tipoVehiculoService,
+        IVehiculoService vehiculoService,
+        ITarifaService tarifaService,
+        IConversacionesService conversacionesService,
+        IRegionService regionService,
+        IPlantaService plantaService,
+        IDepositoService depositosService) //SE INYECTA el servicio de depósitos en el constructor para poder usarlo en los métodos relacionados con depósitos
         {
-            _logger = logger;
-            this.empresasService = empresasService;
-            this.conductorService = conductorService;
-            this.tipoVehiculoService = tipoVehiculoService;
-            this.vehiculoService = vehiculoService;
-            this.tarifaService = tarifaService;
-            this.conversacionesService = conversacionesService;
-            this.regionesService = regionService;
-            this.plantaService = plantaService;
-        }
+                _logger = logger;
+                this.empresasService = empresasService;
+                this.conductorService = conductorService;
+                this.tipoVehiculoService = tipoVehiculoService;
+                this.vehiculoService = vehiculoService;
+                this.tarifaService = tarifaService;
+                this.conversacionesService = conversacionesService;
+                this.regionesService = regionService;
+                this.plantaService = plantaService;
+                this.depositosService = depositosService;  //SE ASIGNA el servicio de depósitos
+                }
 
-        public IActionResult Index()
+public IActionResult Index()
         {
             return View();
         }
@@ -293,7 +297,6 @@ namespace SUVAN.BackOffice.Portal.Controllers
             return View(reporte);
         }
 
-
         // =========== Region ==============
         public async Task<IActionResult> Regiones()
         {
@@ -313,6 +316,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             var agregarModel = await regionesService.GetRegionViewModel(User.GetEmpresaId(), id);
             return View(agregarModel);
         }
+
         /// <summary>
         /// Procesa el formulario de agregar/editar de una región.
         /// Pasa el identificador de empresa del usuario autenticado al servicio validando que la operación quede restringida a su empresa.
@@ -347,6 +351,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
         }
 
+        // ============== Region FIN ==============
 
         // ============== Plantas ==============
 
@@ -410,7 +415,110 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 return View(model);
             }
         }
+        // ============== Planta FIN ==============
 
+        //Deposito
+        public async Task<IActionResult> Depositos()
+        {
+            var depositos = await depositosService.GetDepositos(User.GetEmpresaId());
+            return View(depositos);
+        }
+
+
+        public async Task<IActionResult> AgregarDeposito(int id)
+        {
+            var agregarModel = await depositosService.GetDepositoViewModel(User.GetEmpresaId(), id);
+
+            //llena listas de regiones, plantas y zonas
+            agregarModel.ListadoRegiones = await depositosService.GetRegions(User.GetEmpresaId());
+            agregarModel.ListadoPlantas = await depositosService.GetPlantas(User.GetEmpresaId());
+            agregarModel.ListadoZonas = await depositosService.GetZonas(User.GetEmpresaId());
+
+            return View(agregarModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AgregarDeposito(DepositoViewModel model)
+        {
+            ////forzar a que ignore listas ya que no vienen de regreso del html
+            //ModelState.Remove("ListadoRegiones");
+            //ModelState.Remove("ListadoPantas");
+            //ModelState.Remove("ListadoZonas");
+
+            try
+            {
+                //Si el formulario falla (Model.State.IsValid es false)
+                //se deben recargar catalogos de lo contrario se veran vacios y la pagina se rompe al intentrar pintarlos
+                if (!ModelState.IsValid)
+                {
+                    model.ListadoRegiones = await depositosService.GetRegions(User.GetEmpresaId());//se agrega regiones
+                    model.ListadoPlantas = await depositosService.GetPlantas(User.GetEmpresaId());//se agrega plantas
+                    model.ListadoZonas = await depositosService.GetZonas(User.GetEmpresaId());//se agrega zonas
+
+                    return View(model);
+                }
+
+                var result = await depositosService.AgregarDeposito(model);
+
+                if (result)
+                {
+                    return RedirectToAction("Depositos", "Configuracion");
+                }
+
+
+                // recarga de catalogos en caso de que servicio devuelva false
+                model.ListadoRegiones = await depositosService.GetRegions(User.GetEmpresaId());//se agrega regiones
+                model.ListadoPlantas = await depositosService.GetPlantas(User.GetEmpresaId());//se agrega plantas
+                model.ListadoZonas = await depositosService.GetZonas(User.GetEmpresaId());//se agrega zonas
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                // recarga de catalogos en caso de que el servicio lance una excepcion
+                model.ListadoRegiones = await depositosService.GetRegions(User.GetEmpresaId());//se agrega regiones
+                model.ListadoPlantas = await depositosService.GetPlantas(User.GetEmpresaId());//se agrega plantas
+                model.ListadoZonas = await depositosService.GetZonas(User.GetEmpresaId());//se agrega zonas
+
+                return View(model);
+            }
+
+
+        }
+
+
+
+        //METODOS PARA COMBOS CASCADA (AJAX)
+        [HttpGet]
+        public async Task<JsonResult> ObtenerPlantas(int regionId)
+        {
+            //obtener Id de la empresa del usuario actual
+            var idEmpresa = User.GetEmpresaId();
+
+            //llama al servicio para traer solo las plantas de esa region específica
+            var plantas = await depositosService.GetPlantasByRegion(idEmpresa, regionId);
+
+            //devolver datos en formato JSON al navegador
+            return Json(plantas);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> ObtenerZonas(int plantaId)
+        {
+            //obtener Id de la empresa
+            var idEmpresa = User.GetEmpresaId();
+
+            //llama al servicio para traer solo las zonas de esa planta específica
+            var zonas = await depositosService.GetZonasByPlanta(idEmpresa, plantaId);
+
+            //regresamos lista de zonas en formato JSON al navegador
+            return Json(zonas);
+
+        }
+
+
+        // Depositos FIN
 
 
 
