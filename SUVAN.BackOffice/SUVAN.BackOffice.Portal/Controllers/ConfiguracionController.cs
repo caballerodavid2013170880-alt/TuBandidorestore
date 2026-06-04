@@ -34,6 +34,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
         private readonly IPlantaService plantaService;
         // Depositos
         private readonly IDepositoService depositosService; //SE DECLARA el servicio de depósitos para poder usarlo en los métodos
+        // Deptos
+        private readonly IDeptoService deptoService;
 
         public ConfiguracionController(ILogger<ConfiguracionController> logger,
         IEmpresasService empresasService,
@@ -44,21 +46,23 @@ namespace SUVAN.BackOffice.Portal.Controllers
         IConversacionesService conversacionesService,
         IRegionService regionService,
         IPlantaService plantaService,
-        IDepositoService depositosService) //SE INYECTA el servicio de depósitos en el constructor para poder usarlo en los métodos relacionados con depósitos
+        IDepositoService depositosService,
+        IDeptoService deptoService) //SE INYECTA el servicio de depósitos en el constructor para poder usarlo en los métodos relacionados con depósitos
         {
-                _logger = logger;
-                this.empresasService = empresasService;
-                this.conductorService = conductorService;
-                this.tipoVehiculoService = tipoVehiculoService;
-                this.vehiculoService = vehiculoService;
-                this.tarifaService = tarifaService;
-                this.conversacionesService = conversacionesService;
-                this.regionesService = regionService;
-                this.plantaService = plantaService;
-                this.depositosService = depositosService;  //SE ASIGNA el servicio de depósitos
-                }
+            _logger = logger;
+            this.empresasService = empresasService;
+            this.conductorService = conductorService;
+            this.tipoVehiculoService = tipoVehiculoService;
+            this.vehiculoService = vehiculoService;
+            this.tarifaService = tarifaService;
+            this.conversacionesService = conversacionesService;
+            this.regionesService = regionService;
+            this.plantaService = plantaService;
+            this.depositosService = depositosService;  //SE ASIGNA el servicio de depósitos
+            this.deptoService = deptoService;
+        }
 
-public IActionResult Index()
+        public IActionResult Index()
         {
             return View();
         }
@@ -520,8 +524,146 @@ public IActionResult Index()
 
         // Depositos FIN
 
+        // ============== Departamentos ==============
 
+        /// <summary>
+        /// Muestra el listado de departamentos de la empresa del usuario autenticado.
+        /// Carga la navegaciÃ³n a DepÃ³sito para mostrar el nombre del depÃ³sito en la tabla.
+        /// </summary>
+        public async Task<IActionResult> Depto()
+        {
+            var deptos = await deptoService.GetDepto(User.GetEmpresaId());
+            return View(deptos);
+        }
 
+        /// <summary>
+        /// Muestra el formulario para agregar o editar un departamento.
+        /// En modo alta solo carga las regiones; el resto de selectores se cargan vÃ­a AJAX.
+        /// En modo ediciÃ³n pre-carga los cuatro selectores desde el servidor.
+        /// </summary>
+        /// <param name="id">Identificador del departamento a editar; 0 para nuevo.</param>
+        public async Task<IActionResult> AgregarDepto(int id)
+        {
+            var model = await deptoService.GetDeptoViewModel(User.GetEmpresaId(), id);
+            return View(model);
+        }
+
+        /// <summary>
+        /// Procesa el formulario de agregar/editar de un departamento.
+        /// Valida la jerarquÃ­a completa (Empresa â†’ RegiÃ³n â†’ Planta â†’ Zona â†’ DepÃ³sito)
+        /// y recarga las listas de selectores si la validaciÃ³n falla.
+        /// </summary>
+        /// <param name="model">Datos capturados en el formulario.</param>
+        [HttpPost]
+        public async Task<IActionResult> AgregarDepto(DeptoViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    // Recarga las listas de selectores antes de devolver la vista
+                    var recargar = await deptoService.GetDeptoViewModel(User.GetEmpresaId(), model.IdDepto);
+                    model.Regiones = recargar.Regiones;
+                    model.Plantas = recargar.Plantas;
+                    model.Zonas = recargar.Zonas;
+                    model.Depositos = recargar.Depositos;
+                    return View(model);
+                }
+
+                var result = await deptoService.AgregarDepto(model, User.GetEmpresaId());
+
+                if (result)
+                {
+                    TempData["Mensaje"] = model.IdDepto == 0
+                        ? "Departamento registrado correctamente."
+                        : "Departamento actualizado correctamente.";
+                    return RedirectToAction("Deptos", "Configuracion");
+                }
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                // Recarga las listas de selectores antes de devolver la vista con el error
+                var recargar = await deptoService.GetDeptoViewModel(User.GetEmpresaId(), model.IdDepto);
+                model.Regiones = recargar.Regiones;
+                model.Plantas = recargar.Plantas;
+                model.Zonas = recargar.Zonas;
+                model.Depositos = recargar.Depositos;
+                model.CascadeJson = recargar.CascadeJson;
+                return View(model);
+            }
+        }
+
+        /*
+        /// <summary>
+        /// Elimina un departamento. Valida que pertenezca a la empresa del usuario
+        /// antes de realizar la operación.
+        /// </summary>
+        /// <param name="model">Modelo con el <c>IdDepto</c> del departamento a eliminar.</param>
+        [HttpPost]
+        public async Task<IActionResult> EliminarDepto([FromBody] DeptoViewModel model)
+        {
+            try
+            {
+                await deptoService.EliminarDepto(model.IdDepto, User.GetEmpresaId());
+                return Ok(new { success = true });
+            }
+            catch (Exception ex)
+            {
+                return Ok(new { success = false, message = ex.Message });
+            }
+        }
+        */
+        // ── Endpoints AJAX para la carga en cascada de los selectores ──
+
+        /// <summary>
+        /// Endpoint AJAX: devuelve las plantas disponibles para la región indicada,
+        /// filtradas por la empresa del usuario autenticado.
+        /// Consumido por el selector de Planta al cambiar la Región en el formulario.
+        /// </summary>
+        /// <param name="idRegion">Identificador de la región seleccionada.</param>
+        /// <returns>JSON con la lista de plantas (<c>idPlanta</c>, <c>nombre</c>).</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetPlantasPorRegion(int idRegion)
+        {
+            var plantas = await deptoService.GetPlantasPorRegion(User.GetEmpresaId(), idRegion);
+            return Json(plantas);
+        }
+
+        /// <summary>
+        /// Endpoint AJAX: devuelve las zonas disponibles para la región y planta indicadas,
+        /// filtradas por la empresa del usuario autenticado.
+        /// Consumido por el selector de Zona al cambiar la Planta en el formulario.
+        /// </summary>
+        /// <param name="idRegion">Identificador de la región actualmente seleccionada.</param>
+        /// <param name="idPlanta">Identificador de la planta seleccionada.</param>
+        /// <returns>JSON con la lista de zonas (<c>idZona</c>, <c>nombre</c>).</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetZonasPorPlanta(int idRegion, int idPlanta)
+        {
+            var zonas = await deptoService.GetZonasPorPlanta(User.GetEmpresaId(), idRegion, idPlanta);
+            return Json(zonas);
+        }
+
+        /// <summary>
+        /// Endpoint AJAX: devuelve los depósitos disponibles para la región, planta y zona indicadas,
+        /// filtrados por la empresa del usuario autenticado.
+        /// Consumido por el selector de Depósito al cambiar la Zona en el formulario.
+        /// </summary>
+        /// <param name="idRegion">Identificador de la región actualmente seleccionada.</param>
+        /// <param name="idPlanta">Identificador de la planta actualmente seleccionada.</param>
+        /// <param name="idZona">Identificador de la zona seleccionada.</param>
+        /// <returns>JSON con la lista de depósitos (<c>idDeposito</c>, <c>nombre</c>).</returns>
+        [HttpGet]
+        public async Task<IActionResult> GetDepositosPorZona(int idRegion, int idPlanta, int idZona)
+        {
+            var depositos = await deptoService.GetDepositosPorZona(User.GetEmpresaId(), idRegion, idPlanta, idZona);
+            return Json(depositos);
+        }
+
+        // ============== Departamentos FIN ==============
 
     }
 }

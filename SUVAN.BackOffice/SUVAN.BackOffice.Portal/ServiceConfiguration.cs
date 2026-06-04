@@ -76,6 +76,9 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<IPlantaService, PlantaService>();
             //Depositos
             services.AddTransient<IDepositoService, DepositosService>();
+            //Departamentos
+            services.AddTransient<IDeptoService, DeptoService>();
+
         }
 
         /// <summary>
