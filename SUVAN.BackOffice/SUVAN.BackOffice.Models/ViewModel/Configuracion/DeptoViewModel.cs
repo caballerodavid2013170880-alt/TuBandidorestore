@@ -112,13 +112,6 @@ namespace SUVAN.BackOffice.Models.ViewModel
         // ──────────────────────────────────────────────────────────────────
         //  Submodelos de ítem para cada selector
         // ──────────────────────────────────────────────────────────────────
-        /// <summary>
-        /// Submodelo que representa un ítem del selector de Región.
-        /// </summary>
-        /// 
-        // ──────────────────────────────────────────────────────────────────
-        //  Submodelos de ítem para cada selector
-        // ──────────────────────────────────────────────────────────────────
         public class RegionItemViewModel
             {
                 /// <summary>Identificador de la región.</summary>

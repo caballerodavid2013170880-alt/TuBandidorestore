@@ -10,10 +10,6 @@ namespace SUVAN.BackOffice.Service.Configuracion
     public class DeptoService : IDeptoService
     {
         private readonly SuvanDbContext context;
-        /// <summary>
-        /// Inicializa una nueva instancia de <see cref="DeptoService"/>.
-        /// </summary>
-        /// <param name="context">Contexto de base de datos de SUVAN.</param>
         public DeptoService(SuvanDbContext context)
         {
             this.context = context;
@@ -55,8 +51,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// <see cref="DeptoViewModel"/> poblado con las listas y datos necesarios.
         /// </returns>
         /// <exception cref="Exception">
-        /// Si <paramref name="idDepto"/> es mayor a 0 y el departamento no existe
-        /// o no pertenece a la empresa del usuario.
+        /// Si <paramref name="idDepto"/> es mayor a 0 y el departamento no existe o no pertenece a la empresa del usuario.
         /// </exception>
         public async Task<DeptoViewModel> GetDeptoViewModel(int idEmpresa, int idDepto)
         {
@@ -219,7 +214,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
             Depto depto;
             if (model.IdDepto > 0)
             {
-                // Modo edición: valida que el departamento pertenece a la empresa del usuario
+                // Al Editar: valida que el departamento pertenece a la empresa del usuario
                 depto = await context.Deptos
                     .FirstOrDefaultAsync(d => d.IdDepto == model.IdDepto && d.IdEmpresa == idEmpresa);
                 if (depto == null)
@@ -227,7 +222,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
             }
             else
             {
-                // Modo alta: crea nueva instancia y genera el siguiente IdDepto (global MAX + 1)
+                // Al Agregar: crea nueva instancia y genera el siguiente IdDepto (global MAX + 1)
                 depto = new Depto();
                 var lastId = await context.Deptos
                     .OrderByDescending(d => d.IdDepto)

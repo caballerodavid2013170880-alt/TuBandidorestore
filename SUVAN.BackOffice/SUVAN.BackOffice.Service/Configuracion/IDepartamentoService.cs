@@ -13,12 +13,10 @@ namespace SUVAN.BackOffice.Service.Configuracion
     {
         /// <summary>
         /// Obtiene el listado de departamentos de la empresa indicada,
-        /// incluyendo la navegación a <see cref="Deposito"/>
-        /// (<c>IdDepositoNavigation</c>) para mostrar el nombre del depósito en la tabla.
+        /// incluyendo la navegación a <see cref="Deposito"/> (<c>IdDepositoNavigation</c>) para mostrar el nombre del depósito en la tabla.
         /// </summary>
         /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado.
-        /// Se utiliza como filtro de seguridad para restringir los resultados.
+        /// Identificador de la empresa del usuario autenticado.Se utiliza como filtro de seguridad para restringir los resultados.
         /// </param>
         /// <returns>
         /// Lista de entidades <see cref="Depto"/> con la propiedad de navegación
@@ -27,8 +25,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// </returns>
         Task<List<Depto>> GetDepto(int idEmpresa);
         /// <summary>
-        /// Construye y devuelve el <see cref="DeptoViewModel"/> necesario para
-        /// renderizar el formulario de alta o edición de un departamento.
+        /// Construye y devuelve el <see cref="DeptoViewModel"/> necesario para renderizar el formulario al agregar o editar de un departamento.
         /// <list type="bullet">
         ///   <item>
         ///     Al Agregar (<paramref name="idDepto"/> == 0) únicamente carga
@@ -46,15 +43,13 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// </param>
         /// <param name="idDepto">
         /// Identificador del departamento a editar.
-        /// Pasar <c>0</c> para obtener un ViewModel vacío (modo alta).
+        /// Pasar <c>0</c> para obtener un ViewModel vacío (al agregar).
         /// </param>
         /// <returns>
-        /// <see cref="DeptoViewModel"/> poblado con regiones disponibles y, en modo edición,
-        /// también con plantas, zonas, depósitos y datos del departamento existente.
+        /// <see cref="DeptoViewModel"/> poblado con regiones disponibles y, al editar, también con plantas, zonas, depósitos y datos del departamento existente.
         /// </returns>
         /// <exception cref="Exception">
-        /// Si <paramref name="idDepto"/> es mayor a 0 y el departamento no existe
-        /// o no pertenece a la empresa del usuario.
+        /// Si <paramref name="idDepto"/> es mayor a 0 y el departamento no existe o no pertenece a la empresa del usuario.
         /// </exception>
         Task<DeptoViewModel> GetDeptoViewModel(int idEmpresa, int idDepto);
         /// <summary>
@@ -71,8 +66,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// </summary>
         /// <param name="model">ViewModel con los datos capturados en el formulario.</param>
         /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado.
-        /// Se utiliza para validar la jerarquía y sobrescribir el campo empresa en la entidad.
+        /// Identificador de la empresa del usuario autenticado. Se utiliza para validar la jerarquía y sobrescribir el campo empresa en la entidad.
         /// </param>
         /// <returns><c>true</c> si la operación fue exitosa.</returns>
         /// <exception cref="Exception">
@@ -81,8 +75,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         Task<bool> AgregarDepto(DeptoViewModel model, int idEmpresa);
         /// <summary>
         /// Obtiene la lista de plantas disponibles para una región específica,
-        /// filtradas por empresa del usuario. Se invoca desde el controlador como
-        /// endpoint AJAX para la carga en cascada Región → Planta.
+        /// filtradas por empresa del usuario. Invado desde el controlador como endpoint AJAX para la carga en cascada Región → Planta.
         /// </summary>
         /// <param name="idEmpresa">Identificador de la empresa del usuario autenticado.</param>
         /// <param name="idRegion">Identificador de la región seleccionada.</param>
@@ -92,8 +85,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// </returns>
         Task<List<DeptoViewModel.PlantaItemViewModel>> GetPlantasPorRegion(int idEmpresa, int idRegion);
         /// <summary>
-        /// Obtiene la lista de zonas disponibles para una región y planta específicas,
-        /// filtradas por empresa del usuario. Se invoca desde el controlador como
+        /// Obtiene la lista de zonas disponibles para una región y planta específicas, filtradas por empresa del usuario. Se invoca desde el controlador como
         /// endpoint AJAX para la carga en cascada Planta → Zona.
         /// </summary>
         /// <param name="idEmpresa">Identificador de la empresa del usuario autenticado.</param>
@@ -105,8 +97,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// </returns>
         Task<List<DeptoViewModel.ZonaItemViewModel>> GetZonasPorPlanta(int idEmpresa, int idRegion, int idPlanta);
         /// <summary>
-        /// Obtiene la lista de depósitos disponibles para una región, planta y zona específicas,
-        /// filtrados por empresa del usuario. Se invoca desde el controlador como
+        /// Obtiene la lista de depósitos disponibles para una región, planta y zona específicas, filtrados por empresa del usuario. Se invoca desde el controlador como
         /// endpoint AJAX para la carga en cascada Zona → Depósito.
         /// </summary>
         /// <param name="idEmpresa">Identificador de la empresa del usuario autenticado.</param>
