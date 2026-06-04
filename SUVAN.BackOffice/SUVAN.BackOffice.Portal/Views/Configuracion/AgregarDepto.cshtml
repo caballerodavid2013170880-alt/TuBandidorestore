@@ -23,7 +23,7 @@
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
             <!--begin::Page title (enlace de regreso al listado)-->
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                <a href="~/configuracion/deptos"
+                <a href="~/configuracion/depto"
                    class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0">
                     <i class="ki-duotone ki-left fs-1 pe-5"></i>
                     <span>@isAgregarText @ViewData["Title"]</span>
@@ -71,7 +71,7 @@
                                 <label asp-for="IdRegion" class="col-form-label text-gray-600 required">Región</label>
                                 @if (isEdicion)
                                 {
-                                    @* Modo edición: selector visible pero deshabilitado; hidden garantiza el POST *@
+                                    @* Al Editar: selector visible pero deshabilitado; hidden garantiza el POST *@
                                     <select id="selectIdRegion" name="IdRegion_display"
                                             class="form-select bg-transparent" disabled>
                                         <option value="">-- Seleccione una Región --</option>
@@ -87,7 +87,7 @@
                                 }
                                 else
                                 {
-                                    @* Modo alta: id y name explícitos (sin asp-for) para
+                                    @* Al Agregar: id y name explícitos (sin asp-for) para
                                        evitar que SelectTagHelper sobrescriba el id con el nombre del property *@
                                     <select id="selectIdRegion" name="IdRegion"
                                             class="form-select bg-transparent">
@@ -110,7 +110,7 @@
                                 <label asp-for="IdPlanta" class="col-form-label text-gray-600 required">Planta</label>
                                 @if (isEdicion)
                                 {
-                                    @* Modo edición: deshabilitado, pre-cargado desde servidor *@
+                                    @* Al Editar: deshabilitado, pre-cargado desde servidor *@
                                     <select id="selectIdPlanta" name="IdPlanta_display"
                                             class="form-select bg-transparent" disabled>
                                         <option value="">-- Seleccione una Planta --</option>
@@ -126,7 +126,7 @@
                                 }
                                 else
                                 {
-                                    @* Modo alta: deshabilitado hasta que se seleccione una Región *@
+                                    @* Al Agregar: deshabilitado hasta que se seleccione una Región *@
                                     <select id="selectIdPlanta" name="IdPlanta"
                                             class="form-select bg-transparent" disabled>
                                         <option value="0">-- Primero seleccione una Región --</option>
@@ -148,7 +148,7 @@
                                 <label asp-for="IdZona" class="col-form-label text-gray-600 required">Zona</label>
                                 @if (isEdicion)
                                 {
-                                    @* Modo edición: deshabilitado, pre-cargado desde servidor *@
+                                    @* Al Editar: deshabilitado, pre-cargado desde servidor *@
                                     <select id="selectIdZona" name="IdZona_display"
                                             class="form-select bg-transparent" disabled>
                                         <option value="">-- Seleccione una Zona --</option>
@@ -164,7 +164,7 @@
                                 }
                                 else
                                 {
-                                    @* Modo alta: deshabilitado hasta que se seleccione una Planta *@
+                                    @* Al Agregar: deshabilitado hasta que se seleccione una Planta *@
                                     <select id="selectIdZona" name="IdZona"
                                             class="form-select bg-transparent" disabled>
                                         <option value="0">-- Primero seleccione una Planta --</option>
@@ -182,7 +182,7 @@
                                 <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Depósito</label>
                                 @if (isEdicion)
                                 {
-                                    @* Modo edición: deshabilitado, pre-cargado desde servidor *@
+                                    @* Al Editar: deshabilitado, pre-cargado desde servidor *@
                                     <select id="selectIdDeposito" name="IdDeposito_display"
                                             class="form-select bg-transparent" disabled>
                                         <option value="">-- Seleccione un Depósito --</option>
@@ -198,7 +198,7 @@
                                 }
                                 else
                                 {
-                                    @* Modo alta: deshabilitado hasta que se seleccione una Zona *@
+                                    @* Al Agregar: deshabilitado hasta que se seleccione una Zona *@
                                     <select id="selectIdDeposito" name="IdDeposito"
                                             class="form-select bg-transparent" disabled>
                                         <option value="0">-- Primero seleccione una Zona --</option>
@@ -283,6 +283,6 @@
 @section scripts {
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
-    <script src="~/js/configuracion/depto/add.js" asp-append-version="true"></script>
+    <script src="~/js/configuracion/departamentos/add.js" asp-append-version="true"></script>
 }
 }

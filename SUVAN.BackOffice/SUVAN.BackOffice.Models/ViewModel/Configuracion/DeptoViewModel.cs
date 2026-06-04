@@ -24,23 +24,23 @@ namespace SUVAN.BackOffice.Models.ViewModel
             /// <summary>
             /// Identificador de la región seleccionada.
             /// Selector deshabilitado en modo edición para preservar la jerarquía.
-            /// En modo alta actúa como disparador de la cascada Región → Planta.
+            /// Al Agregar actúa como disparador de la cascada Región → Planta.
             /// </summary>
-            [Required(ErrorMessage = "La Región es requerida")]
+        [Required(ErrorMessage = "La Región es requerida")]
             public int IdRegion { get; set; }
             /// <summary>
             /// Identificador de la planta seleccionada.
             /// Se carga en cascada al seleccionar la región (AJAX).
             /// Selector deshabilitado en modo edición.
-            /// En modo alta actúa como disparador de la cascada Planta → Zona.
+            /// Al Agregar actúa como disparador de la cascada Planta → Zona.
             /// </summary>
             [Required(ErrorMessage = "La Planta es requerida")]
-            public int IdPlanta { get; set; }
+                public int IdPlanta { get; set; }
             /// <summary>
             /// Identificador de la zona seleccionada.
             /// Se carga en cascada al seleccionar la planta (AJAX).
             /// Selector deshabilitado en modo edición.
-            /// En modo alta actúa como disparador de la cascada Zona → Depósito.
+            /// Al Agregar actúa como disparador de la cascada Zona → Depósito.
             /// </summary>
             [Required(ErrorMessage = "La Zona es requerida")]
             public int IdZona { get; set; }
@@ -88,26 +88,26 @@ namespace SUVAN.BackOffice.Models.ViewModel
             /// <summary>
             /// Lista de plantas disponibles para el selector del formulario.
             /// Cargada en cascada vía AJAX al seleccionar la región en modo alta.
-            /// En modo edición se pre-carga desde el servidor con las plantas de la región guardada.
+            /// Al Editar se pre-carga desde el servidor con las plantas de la región guardada.
             /// </summary>
             public List<PlantaItemViewModel> Plantas { get; set; } = new();
             /// <summary>
             /// Lista de zonas disponibles para el selector del formulario.
             /// Cargada en cascada vía AJAX al seleccionar la planta en modo alta.
-            /// En modo edición se pre-carga desde el servidor con las zonas de la planta guardada.
+            /// Al Editar se pre-carga desde el servidor con las zonas de la planta guardada.
             /// </summary>
             public List<ZonaItemViewModel> Zonas { get; set; } = new();
             /// <summary>
             /// Lista de depósitos disponibles para el selector del formulario.
             /// Cargada en cascada vía AJAX al seleccionar la zona en modo alta.
-            /// En modo edición se pre-carga desde el servidor con los depósitos de la zona guardada.
+            /// Al Editar se pre-carga desde el servidor con los depósitos de la zona guardada.
             /// </summary>
             public List<DepositoItemViewModel> Depositos { get; set; } = new();
-        /// <summary>
-        /// JSON serializado con la jerarquía completa Región → Planta → Zona → Depósito
-        /// para la carga en cascada de los selectores en el cliente.
-        /// Solo se usa en modo alta; en modo edición es null.
-        /// </summary>
+            /// <summary>
+            /// JSON serializado con la jerarquía completa Región → Planta → Zona → Depósito
+            /// para la carga en cascada de los selectores en el cliente.
+            /// Solo se usa en modo alta; en modo edición es null.
+            /// </summary>
             public string? CascadeJson { get; set; }
         // ──────────────────────────────────────────────────────────────────
         //  Submodelos de ítem para cada selector

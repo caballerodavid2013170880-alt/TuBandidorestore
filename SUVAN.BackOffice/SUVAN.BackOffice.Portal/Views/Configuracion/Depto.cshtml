@@ -69,8 +69,6 @@
             <!--begin::Card body-->
             <div class="card-body py-4">
                 <!--TempData: leído por table.js para mostrar SweetAlert de confirmación-->
-                <input type="hidden" id="mensajeTempData" value="@TempData["Mensaje"]" />
-                <!--Token CSRF: utilizado por table.js al eliminar vía fetch POST-->
                 @Html.AntiForgeryToken()
                 <!--begin::Table-->
                 <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_depto">
@@ -84,7 +82,7 @@
                             <th class="min-w-150px">Responsable</th>
                             <!--Columna Estatus: badge Activo/Inactivo-->
                             <th class="min-w-100px">Estatus</th>
-                            <!--Columna Acciones: editar y eliminar según permisos-->
+                            <!--Columna Acciones: editar según permisos-->
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
                     </thead>
@@ -106,7 +104,7 @@
                                     }
                                     <span class="badge @badgeClass">@activo</span>
                                 </td>
-                                <!--Acciones: editar/eliminar según permisos del perfil-->
+                                <!--Acciones: editar según permisos del perfil-->
                                 <td class="text-end">
                                     @if (permisosPagina!.Editar)
                                     {
@@ -115,17 +113,6 @@
                                            title="Editar departamento">
                                             <i class="ki-outline ki-pencil fs-3"></i>
                                         </a>
-                                    }
-                                    @if (permisosPagina!.Eliminar)
-                                    {
-                                        <button type="button"
-                                                id="btnEliminar_@depto.IdDepto"
-                                                class="btn btn-icon btn-active-light-danger w-30px h-30px btn-eliminar-depto"
-                                                data-id="@depto.IdDepto"
-                                                data-nombre="@depto.NombreDepto"
-                                                title="Eliminar departamento">
-                                            <i class="ki-outline ki-trash fs-3"></i>
-                                        </button>
                                     }
                                 </td>
                             </tr>
@@ -141,44 +128,9 @@
     <!--end::Content container-->
 </div>
 <!--end::Content-->
-<!--begin::Modal de confirmación de eliminación (patrón Planta)-->
-<div class="modal fade" id="kt_modal_eliminar_depto" tabindex="-1" aria-labelledby="kt_modal_eliminar_depto_label" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered mw-650px">
-        <div class="modal-content">
-            <!--begin::Modal header-->
-            <div class="modal-header">
-                <h2 class="fw-bold" id="kt_modal_eliminar_depto_label">Eliminar Departamento</h2>
-                <div class="btn btn-icon btn-sm btn-active-icon-primary" data-bs-dismiss="modal" aria-label="Cerrar">
-                    <i class="ki-outline ki-cross fs-1"></i>
-                </div>
-            </div>
-            <!--end::Modal header-->
-            <!--begin::Modal body-->
-            <div class="modal-body py-5 px-lg-10">
-                <p class="fs-6 fw-semibold text-gray-700">
-                    ¿Está seguro de que desea eliminar el departamento <strong id="modal_depto_nombre"></strong>?<br />
-                    Esta acción no se puede deshacer.
-                </p>
-            </div>
-            <!--end::Modal body-->
-            <!--begin::Modal footer-->
-            <div class="modal-footer flex-center">
-                <button type="button" id="btnCancelarEliminar" class="btn btn-light me-3" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" id="btnConfirmarEliminar" class="btn btn-danger">
-                    <span class="indicator-label">Sí, eliminar</span>
-                    <span class="indicator-progress">
-                        Eliminando...
-                        <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                    </span>
-                </button>
-            </div>
-            <!--end::Modal footer-->
-        </div>
-    </div>
-</div>
-<!--end::Modal de confirmación de eliminación-->
+
 @section scripts {
-    <script src="~/js/configuracion/depto/table.js" asp-append-version="true"></script>
+    <script src="~/js/configuracion/departamentos/table.js" asp-append-version="true"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }

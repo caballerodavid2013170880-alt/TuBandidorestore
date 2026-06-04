@@ -31,11 +31,11 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// renderizar el formulario de alta o edición de un departamento.
         /// <list type="bullet">
         ///   <item>
-        ///     En modo alta (<paramref name="idDepto"/> == 0) únicamente carga
+        ///     Al Agregar (<paramref name="idDepto"/> == 0) únicamente carga
         ///     la lista de Regiones; el resto de selectores se cargan en cascada vía AJAX.
         ///   </item>
         ///   <item>
-        ///     En modo edición pre-carga los cuatro selectores con los datos del
+        ///     Al Editar pre-carga los cuatro selectores con los datos del
         ///     departamento existente respetando la jerarquía de seguridad.
         ///   </item>
         /// </list>
@@ -65,7 +65,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
         ///   <item>La planta seleccionada pertenece a la región y empresa.</item>
         ///   <item>La zona seleccionada pertenece a la región, planta y empresa.</item>
         ///   <item>El depósito seleccionado pertenece a la región, planta, zona y empresa.</item>
-        ///   <item>En modo edición, el departamento existe y pertenece a la empresa del usuario.</item>
+        ///   <item>Al Editar, el departamento existe y pertenece a la empresa del usuario.</item>
         ///   <item>No existe un departamento con el mismo nombre en el mismo depósito y empresa.</item>
         /// </list>
         /// </summary>
@@ -79,19 +79,6 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// Si alguna validación de seguridad o de negocio falla.
         /// </exception>
         Task<bool> AgregarDepto(DeptoViewModel model, int idEmpresa);
-        /// <summary>
-        /// Elimina un departamento de la base de datos previa validación de pertenencia.
-        /// </summary>
-        /// <param name="idDepto">Identificador del departamento a eliminar.</param>
-        /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado.
-        /// Se usa para validar que el departamento pertenece a la empresa antes de eliminar.
-        /// </param>
-        /// <returns><c>true</c> si la eliminación fue exitosa.</returns>
-        /// <exception cref="Exception">
-        /// Si el departamento no existe o no pertenece a la empresa del usuario.
-        /// </exception>
-        Task<bool> EliminarDepto(int idDepto, int idEmpresa);
         /// <summary>
         /// Obtiene la lista de plantas disponibles para una región específica,
         /// filtradas por empresa del usuario. Se invoca desde el controlador como

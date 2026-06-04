@@ -577,7 +577,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     TempData["Mensaje"] = model.IdDepto == 0
                         ? "Departamento registrado correctamente."
                         : "Departamento actualizado correctamente.";
-                    return RedirectToAction("Deptos", "Configuracion");
+                    return RedirectToAction("Depto", "Configuracion");
                 }
 
                 return View(model);

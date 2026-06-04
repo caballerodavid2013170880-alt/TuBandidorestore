@@ -26,7 +26,6 @@ var KTDepto = function () {
     var currentZona = null;
 
     // ── Helpers ───────────────────────────────────────────────────────
-
     function modoEdicion() {
         var input = document.getElementById('IdDepto') ||
             document.querySelector('input[name="IdDepto"]');
@@ -54,20 +53,6 @@ var KTDepto = function () {
 
     // ── Cascada ───────────────────────────────────────────────────────
 
-    function initCascadeData() {
-        var jsonInput = document.getElementById('CascadeJson');
-        if (!jsonInput) {
-            console.warn('[KTDepto] No se encontró #CascadeJson – cascada no disponible.');
-            return;
-        }
-        try {
-            cascadeData = JSON.parse(jsonInput.value);
-            console.log('[KTDepto] CascadeData cargado:', cascadeData.length, 'regiones');
-        } catch (e) {
-            console.error('[KTDepto] Error al parsear CascadeJson:', e);
-        }
-    }
-
     function initCascadeListeners() {
         if (modoEdicion()) {
             console.log('[KTDepto] Modo edición – cascada desactivada.');
@@ -82,9 +67,6 @@ var KTDepto = function () {
         // Región → Planta
         selRegion.addEventListener('change', function () {
             var idRegion = parseInt(this.value, 10);
-            currentRegion = null;
-            currentPlanta = null;
-            currentZona = null;
 
             resetChild(selPlanta, '-- Seleccione una Planta --');
             resetChild(selZona, '-- Primero seleccione una Planta --');
@@ -92,85 +74,84 @@ var KTDepto = function () {
 
             if (!idRegion || idRegion === 0) return;
 
-            currentRegion = cascadeData.find(function (r) {
-                return r.IdRegion === idRegion;
-            });
-
-            if (currentRegion && currentRegion.Plantas && currentRegion.Plantas.length > 0) {
-                clearSelect(selPlanta);
-                addOption(selPlanta, '0', '-- Seleccione una Planta --');
-                currentRegion.Plantas.forEach(function (p) {
-                    addOption(selPlanta, p.IdPlanta, p.Nombre);
-                });
-                selPlanta.disabled = false;
-            } else {
-                resetChild(selPlanta, '-- Sin plantas para esta Región --');
-            }
-
-            if (validator) { try { validator.revalidateField('IdRegion'); } catch (e) { } }
+            fetch('/Configuracion/GetPlantasPorRegion?idRegion=' + idRegion)
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    if (data && data.length > 0) {
+                        clearSelect(selPlanta);
+                        addOption(selPlanta, '0', '-- Seleccione una Planta --');
+                        data.forEach(function (p) {
+                            addOption(selPlanta, p.idPlanta || p.IdPlanta, p.nombre || p.Nombre);
+                        });
+                        selPlanta.disabled = false;
+                    } else {
+                        resetChild(selPlanta, '-- Sin plantas para esta Región --');
+                    }
+                    if (validator) { try { validator.revalidateField('IdRegion'); } catch (e) { } }
+                })
+                .catch(function (error) { console.error('Error obteniendo plantas:', error); });
         });
 
         // Planta → Zona
         selPlanta.addEventListener('change', function () {
+            var idRegion = parseInt(selRegion.value, 10);
             var idPlanta = parseInt(this.value, 10);
-            currentPlanta = null;
-            currentZona = null;
 
             resetChild(selZona, '-- Seleccione una Zona --');
             resetChild(selDeposito, '-- Primero seleccione una Zona --');
 
-            if (!idPlanta || idPlanta === 0 || !currentRegion) return;
+            if (!idPlanta || idPlanta === 0 || !idRegion) return;
 
-            currentPlanta = currentRegion.Plantas.find(function (p) {
-                return p.IdPlanta === idPlanta;
-            });
-
-            if (currentPlanta && currentPlanta.Zonas && currentPlanta.Zonas.length > 0) {
-                clearSelect(selZona);
-                addOption(selZona, '0', '-- Seleccione una Zona --');
-                currentPlanta.Zonas.forEach(function (z) {
-                    addOption(selZona, z.IdZona, z.Nombre);
-                });
-                selZona.disabled = false;
-            } else {
-                resetChild(selZona, '-- Sin zonas para esta Planta --');
-            }
-
-            if (validator) { try { validator.revalidateField('IdPlanta'); } catch (e) { } }
+            fetch('/Configuracion/GetZonasPorPlanta?idRegion=' + idRegion + '&idPlanta=' + idPlanta)
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    if (data && data.length > 0) {
+                        clearSelect(selZona);
+                        addOption(selZona, '0', '-- Seleccione una Zona --');
+                        data.forEach(function (z) {
+                            addOption(selZona, z.idZona || z.IdZona, z.nombre || z.Nombre);
+                        });
+                        selZona.disabled = false;
+                    } else {
+                        resetChild(selZona, '-- Sin zonas para esta Planta --');
+                    }
+                    if (validator) { try { validator.revalidateField('IdPlanta'); } catch (e) { } }
+                })
+                .catch(function (error) { console.error('Error obteniendo zonas:', error); });
         });
 
         // Zona → Depósito
         selZona.addEventListener('change', function () {
+            var idRegion = parseInt(selRegion.value, 10);
+            var idPlanta = parseInt(selPlanta.value, 10);
             var idZona = parseInt(this.value, 10);
-            currentZona = null;
 
             resetChild(selDeposito, '-- Seleccione un Depósito --');
 
-            if (!idZona || idZona === 0 || !currentPlanta) return;
+            if (!idZona || idZona === 0 || !idPlanta) return;
 
-            currentZona = currentPlanta.Zonas.find(function (z) {
-                return z.IdZona === idZona;
-            });
-
-            if (currentZona && currentZona.Depositos && currentZona.Depositos.length > 0) {
-                clearSelect(selDeposito);
-                addOption(selDeposito, '0', '-- Seleccione un Depósito --');
-                currentZona.Depositos.forEach(function (d) {
-                    addOption(selDeposito, d.IdDeposito, d.Nombre);
-                });
-                selDeposito.disabled = false;
-            } else {
-                resetChild(selDeposito, '-- Sin depósitos para esta Zona --');
-            }
-
-            if (validator) { try { validator.revalidateField('IdZona'); } catch (e) { } }
+            fetch('/Configuracion/GetDepositosPorZona?idRegion=' + idRegion + '&idPlanta=' + idPlanta + '&idZona=' + idZona)
+                .then(function (response) { return response.json(); })
+                .then(function (data) {
+                    if (data && data.length > 0) {
+                        clearSelect(selDeposito);
+                        addOption(selDeposito, '0', '-- Seleccione un Depósito --');
+                        data.forEach(function (d) {
+                            addOption(selDeposito, d.idDeposito || d.IdDeposito, d.nombre || d.Nombre);
+                        });
+                        selDeposito.disabled = false;
+                    } else {
+                        resetChild(selDeposito, '-- Sin depósitos para esta Zona --');
+                    }
+                    if (validator) { try { validator.revalidateField('IdZona'); } catch (e) { } }
+                })
+                .catch(function (error) { console.error('Error obteniendo depósitos:', error); });
         });
 
-        console.log('[KTDepto] Cascada inicializada correctamente.');
+        console.log('[KTDepto] Cascada AJAX inicializada correctamente.');
     }
 
     // ── Validación ────────────────────────────────────────────────────
-
     function initValidation() {
         var esEdicion = modoEdicion();
 
@@ -212,7 +193,6 @@ var KTDepto = function () {
             }
         });
     }
-
     function initSubmit() {
         submitButton.addEventListener('click', function (e) {
             e.preventDefault();
@@ -239,7 +219,7 @@ var KTDepto = function () {
             selZona = document.getElementById('selectIdZona');
             selDeposito = document.getElementById('selectIdDeposito');
 
-            initCascadeData();
+            // Se elimina initCascadeData() para procesarlo completamente por los Endpoints AJAX ya definidos
             initCascadeListeners();
             initValidation();
             initSubmit();

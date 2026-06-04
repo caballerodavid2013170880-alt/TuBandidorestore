@@ -1,8 +1,6 @@
 ﻿"use strict";
 /**
- * @fileoverview Módulo de tabla de Departamentos para el BackOffice de SUVAN.
- * Gestiona la DataTable, la búsqueda en tiempo real, el mensaje TempData,
- * y la eliminación con confirmación mediante modal Bootstrap y SweetAlert.
+ * Gestiona la DataTable, la búsqueda en tiempo real, el mensaje TempData mediante modal Bootstrap y SweetAlert.
  * Patrón de eliminación: modal Bootstrap para confirmación visual + fetch POST.
  * @module KTDeptoTable
  */
@@ -11,16 +9,11 @@
  * @namespace KTDeptoTable
  * @description Módulo principal para el manejo de la tabla de Departamentos.
  */
-var KTDeptoTable = function () {
-    /** @type {HTMLElement} Referencia al elemento table del DOM. */
-    var table;
-    /** @type {object} Instancia de DataTable inicializada. */
-    var datatable;
-
-    /** @type {number} Identificador del departamento a eliminar (leído al abrir el modal). */
-    var idDeptoAEliminar = 0;
-    /** @type {HTMLElement} Fila de la tabla correspondiente al departamento a eliminar. */
-    var rowAEliminar = null;
+    var KTDeptoTable = function () {
+        /** @type {HTMLElement} Referencia al elemento table del DOM. */
+        var table;
+        /** @type {object} Instancia de DataTable inicializada. */
+        var datatable;
 
     /**
      * Inicializa la DataTable con configuración de columnas, idioma en español
@@ -90,91 +83,7 @@ var KTDeptoTable = function () {
         var tokenInput = document.querySelector('input[name="__RequestVerificationToken"]');
         return tokenInput ? tokenInput.value : '';
     };
-
-    /**
-     * Inicializa el modal Bootstrap de confirmación de eliminación y
-     * enlaza los botones de eliminar de cada fila.
-     * Al confirmar, envía una petición POST al endpoint EliminarDepto
-     * y elimina la fila de la DataTable sin recargar la página.
-     * @private
-     */
-    var handleDeleteModal = function () {
-        var modalEl = document.getElementById('kt_modal_eliminar_depto');
-        var nombreEl = document.getElementById('modal_depto_nombre');
-        var btnConf = document.getElementById('btnConfirmarEliminar');
-        if (!modalEl || !btnConf) return;
-
-        var modal = new bootstrap.Modal(modalEl);
-
-        // Enlace de cada botón de eliminación para abrir el modal con datos del depto
-        document.querySelectorAll('.btn-eliminar-depto').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                idDeptoAEliminar = parseInt(this.getAttribute('data-id'), 10);
-                rowAEliminar = this.closest('tr');
-                if (nombreEl) {
-                    nombreEl.textContent = this.getAttribute('data-nombre') || '';
-                }
-                modal.show();
-            });
-        });
-
-        // Confirmación de eliminación: llama al endpoint y actualiza la tabla
-        btnConf.addEventListener('click', function () {
-            var btn = this;
-            btn.setAttribute('data-kt-indicator', 'on');
-            btn.disabled = true;
-
-            fetch('/Configuracion/EliminarDepto', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'RequestVerificationToken': getCsrfToken()
-                },
-                body: JSON.stringify({ IdDepto: idDeptoAEliminar })
-            })
-                .then(function (res) { return res.json(); })
-                .then(function (data) {
-                    btn.removeAttribute('data-kt-indicator');
-                    btn.disabled = false;
-                    modal.hide();
-
-                    if (data.success) {
-                        // Elimina la fila de la DataTable sin recargar la página
-                        if (datatable && rowAEliminar) {
-                            datatable.row(rowAEliminar).remove().draw();
-                        }
-                        Swal.fire({
-                            text: 'Departamento eliminado correctamente.',
-                            icon: 'success',
-                            buttonsStyling: false,
-                            confirmButtonText: 'Aceptar',
-                            customClass: { confirmButton: 'btn btn-primary' }
-                        });
-                    } else {
-                        Swal.fire({
-                            text: data.message || 'Ocurrió un error al eliminar el departamento.',
-                            icon: 'error',
-                            buttonsStyling: false,
-                            confirmButtonText: 'Aceptar',
-                            customClass: { confirmButton: 'btn btn-primary' }
-                        });
-                    }
-                })
-                .catch(function () {
-                    btn.removeAttribute('data-kt-indicator');
-                    btn.disabled = false;
-                    modal.hide();
-                    Swal.fire({
-                        text: 'Error de conexión. Intente nuevamente.',
-                        icon: 'error',
-                        buttonsStyling: false,
-                        confirmButtonText: 'Aceptar',
-                        customClass: { confirmButton: 'btn btn-primary' }
-                    });
-                });
-        });
-    };
-
+    
     // ── API pública del módulo ────────────────────────────────────────
     return {
         /**
@@ -187,7 +96,6 @@ var KTDeptoTable = function () {
             initDatatable();
             handleSearchDatatable();
             handleTempDataMessage();
-            handleDeleteModal();
         }
     };
 }();

@@ -24,12 +24,11 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// el nombre del depósito en la tabla de la vista <c>Deptos.cshtml</c>.
         /// </summary>
         /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado.
-        /// Actúa como filtro de seguridad sobre la consulta.
+        /// Identificador de la empresa del usuario autenticado.Actúa como filtro de seguridad sobre la consulta.
         /// </param>
         /// <returns>
         /// Lista de <see cref="Depto"/> con <c>IdDepositoNavigation</c> cargada
-        /// mediante eager loading, ordenadas por nombre de depósito y luego por nombre de departamento.
+        /// mediante eager loading, orden por nombre de depósito y luego por nombre de departamento.
         /// </returns>
         public async Task<List<Depto>> GetDepto(int idEmpresa)
         {
@@ -43,12 +42,10 @@ namespace SUVAN.BackOffice.Service.Configuracion
         }
         /// <summary>
         /// Construye el ViewModel para el formulario de alta o edición de un departamento.
-        /// En modo alta solo carga las regiones. En modo edición pre-carga los cuatro
-        /// selectores con los datos del departamento respetando la jerarquía de seguridad.
+        /// Al Agregar solo carga las regiones. Al Editar pre-carga los cuatro selectores con los datos del departamento respetando la jerarquía de seguridad.
         /// </summary>
         /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado.
-        /// Determina qué regiones, plantas, zonas y depósitos se muestran.
+        /// Identificador de la empresa del usuario autenticado.Determina qué regiones, plantas, zonas y depósitos se muestran.
         /// </param>
         /// <param name="idDepto">
         /// Identificador del departamento a editar.
@@ -122,7 +119,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 ActivoBool = true,   // Activo por defecto al crear
                 CascadeJson = cascadeJson
             };
-            // Modo edición: carga datos del departamento y pre-llena los cuatro selectores
+            // Al Editar: carga datos del departamento y pre-llena los cuatro selectores
             if (idDepto > 0)
             {
                 // Validación de seguridad: el departamento debe pertenecer a la empresa del usuario
@@ -179,14 +176,12 @@ namespace SUVAN.BackOffice.Service.Configuracion
             return vRet;
         }
         /// <summary>
-        /// Agrega o actualiza un departamento en la base de datos.
-        /// Valida la jerarquía completa: Empresa → Región → Planta → Zona → Depósito.
-        /// En modo alta genera el <c>IdDepto</c> como MAX global + 1.
+        /// Agrega o actualiza un departamento en la base de datos.Valida la jerarquía completa: Empresa → Región → Planta → Zona → Depósito.
+        /// Al agregar genera el <c>IdDepto</c> como MAX global + 1.
         /// </summary>
         /// <param name="model">ViewModel con los datos capturados en el formulario.</param>
         /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado.
-        /// Se utiliza para validar cada nivel jerárquico y sobrescribir la empresa en la entidad.
+        /// Identificador de la empresa del usuario autenticado. Se utiliza para validar cada nivel jerárquico y sobrescribir la empresa en la entidad.
         /// </param>
         /// <returns><c>true</c> si la operación fue exitosa.</returns>
         /// <exception cref="Exception">Si alguna validación de seguridad o de negocio falla.</exception>
@@ -271,34 +266,12 @@ namespace SUVAN.BackOffice.Service.Configuracion
             }
             return true;
         }
-        /// <summary>
-        /// Elimina un departamento de la base de datos previa validación de pertenencia a la empresa.
-        /// </summary>
-        /// <param name="idDepto">Identificador del departamento a eliminar.</param>
-        /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado.
-        /// Garantiza que solo se eliminen departamentos de la propia empresa.
-        /// </param>
-        /// <returns><c>true</c> si la eliminación fue exitosa.</returns>
-        /// <exception cref="Exception">
-        /// Si el departamento no existe o no pertenece a la empresa del usuario.
-        /// </exception>
-        public async Task<bool> EliminarDepto(int idDepto, int idEmpresa)
-        {
-            var depto = await context.Deptos
-                .FirstOrDefaultAsync(d => d.IdDepto == idDepto && d.IdEmpresa == idEmpresa);
-            if (depto == null)
-                throw new Exception("El departamento no pertenece a su empresa o no existe.");
-            context.Deptos.Remove(depto);
-            await context.SaveChangesAsync();
-            return true;
-        }
+
         // ──────────────────────────────────────────────────────────────────
         //  Endpoints de cascada para los selectores AJAX
         // ──────────────────────────────────────────────────────────────────
         /// <summary>
-        /// Obtiene plantas filtradas por empresa y región.
-        /// Consumido como endpoint AJAX para la cascada Región → Planta.
+        /// Obtiene plantas filtradas por empresa y región.Consumido como endpoint AJAX para la cascada Región → Planta.
         /// </summary>
         /// <param name="idEmpresa">Identificador de la empresa del usuario autenticado.</param>
         /// <param name="idRegion">Identificador de la región seleccionada.</param>
@@ -318,8 +291,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 .ToListAsync();
         }
         /// <summary>
-        /// Obtiene zonas filtradas por empresa, región y planta.
-        /// Consumido como endpoint AJAX para la cascada Planta → Zona.
+        /// Obtiene zonas filtradas por empresa, región y planta.Consumido como endpoint AJAX para la cascada Planta → Zona.
         /// </summary>
         /// <param name="idEmpresa">Identificador de la empresa del usuario autenticado.</param>
         /// <param name="idRegion">Identificador de la región seleccionada.</param>
@@ -342,8 +314,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 .ToListAsync();
         }
         /// <summary>
-        /// Obtiene depósitos filtrados por empresa, región, planta y zona.
-        /// Consumido como endpoint AJAX para la cascada Zona → Depósito.
+        /// Obtiene depósitos filtrados por empresa, región, planta y zona.Consumido como endpoint AJAX para la cascada Zona → Depósito.
         /// </summary>
         /// <param name="idEmpresa">Identificador de la empresa del usuario autenticado.</param>
         /// <param name="idRegion">Identificador de la región seleccionada.</param>
