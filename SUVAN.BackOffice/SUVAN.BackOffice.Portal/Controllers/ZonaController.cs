@@ -27,7 +27,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
         public async Task<IActionResult> AgregarZona(int id)
         {
-            var agregarModel = await zonaService.GetZonaViewModel(id);
+            var agregarModel = await zonaService.GetZonaViewModel(id, User.GetEmpresaId());
             return View(agregarModel);
         }
 
@@ -37,6 +37,16 @@ namespace SUVAN.BackOffice.Portal.Controllers
             try
             {
                 int IdEmpresa = User.GetEmpresaId();
+
+                if (!ModelState.IsValid)
+                {
+                    //si el modelo es invalido recarga catalogos para que no salgan vacios
+                    var recargar = await zonaService.GetZonaViewModel(model.ZonaId, IdEmpresa);
+                    model.ListadoRegiones = recargar.ListadoRegiones;
+                    model.ListadoPlantas = recargar.ListadoPlantas;
+                    return View(model);
+                }
+            //}
                 var result = await zonaService.AgregarZona(model, IdEmpresa);
 
                 if (result)
@@ -48,11 +58,21 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     return RedirectToAction("Index", "Zona");
                 }
 
+                var reload = await zonaService.GetZonaViewModel(model.ZonaId, IdEmpresa);
+                model.ListadoRegiones = reload.ListadoRegiones;
+                model.ListadoPlantas = reload.ListadoPlantas;
+
                 return View(model);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+
+                //recrgar en caso de excepcion 
+                var recargar = await zonaService.GetZonaViewModel(model.ZonaId, User.GetEmpresaId());
+                model.ListadoRegiones = recargar.ListadoRegiones;
+                model.ListadoPlantas = recargar.ListadoPlantas;
+
                 return View(model);
             }
 
@@ -75,6 +95,15 @@ namespace SUVAN.BackOffice.Portal.Controllers
             {
                 return Ok(new { success = false, message = ex.Message });
             }
+        }
+
+
+        [HttpGet]
+        public async Task<JsonResult> ObtenerPlantas(int regionId)
+        {
+            var idEmpresa = User.GetEmpresaId();
+            var plantas = await zonaService.ObtenerPlantasPorRegion(idEmpresa, regionId);
+            return Json(plantas);
         }
     }
 }

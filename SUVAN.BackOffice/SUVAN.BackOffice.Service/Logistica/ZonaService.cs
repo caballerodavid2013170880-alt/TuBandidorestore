@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
 using System.Collections.Generic;
@@ -32,27 +33,51 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// </summary>
         /// <param name="id">Identificador de la zona.</param>
         /// <returns>ViewModel para la zona especifica.</returns>
-        public async Task<ZonaViewModel> GetZonaViewModel(int id)
+        public async Task<ZonaViewModel> GetZonaViewModel(int id, int IdEmpresa)
         {
             ZonaViewModel vRet = new ZonaViewModel();
+
+
+            //caraga de regiones de la empresa actual
+            vRet.ListadoRegiones = await context.Regions
+                .Where(x => x.IdEmpresa == IdEmpresa && (x.Activo ?? 0) != 0)
+                .Select(x => new RegionModel
+                {
+                    Id = x.IdRegion,
+                    Nombre = x.NombreRegion
+                }).ToListAsync();
+
             var zona = await context.Zonas.FirstOrDefaultAsync(x => x.IdZona == id);
 
             if (zona == null)
+            {
                 return vRet;
+            }
             else
             {
-                vRet = new ZonaViewModel
-                {
-                    ZonaId = zona.IdZona!,
-                    ZonaNombre = zona.NombreZona!,
-                    Rfc = zona.Rfc!,
-                    Domicilio = zona.Domicilio!,
-                    Telefono1 = zona.Telefono1!,
-                    Telefono2 = zona.Telefono2!,
-                    Responsable = zona.Responsable!,
-                    FechaApertura = zona.FechaApertura!,
-                    Activo = zona.Activo!,
-                };
+                //vRet = new ZonaViewModel
+                //{
+                vRet.ZonaId = zona.IdZona;
+                vRet.ZonaNombre = zona.NombreZona;
+                vRet.Rfc = zona.Rfc;
+                vRet.Domicilio = zona.Domicilio;
+                vRet.Telefono1 = zona.Telefono1;
+                vRet.Telefono2 = zona.Telefono2;
+                vRet.Responsable = zona.Responsable;
+                vRet.FechaApertura = zona.FechaApertura;
+                vRet.Activo = zona.Activo;
+                vRet.IdEmpresa = zona.IdEmpresa;
+
+                vRet.IdRegion = zona.IdRegion;
+                vRet.IdPlanta = zona.IdPlanta;
+
+                vRet.ListadoPlantas = await context.Planta.Where(x => x.IdRegion == zona.IdRegion && x.IdEmpresa == IdEmpresa)
+                    .Select(x => new RegionModel
+                    {
+                        Id = x.IdPlanta,
+                        Nombre = x.NombrePlanta
+                    }).ToListAsync();
+                //};
             }
 
             return vRet;
@@ -120,6 +145,9 @@ namespace SUVAN.BackOffice.Service.Logistica
             zona.IdEmpresa = IdEmpresa;
             zona.Activo = model.Activo;
 
+            zona.IdRegion = model.IdRegion;
+            zona.IdPlanta = model.IdPlanta;
+
             if (model.ZonaId > 0)
             {
                 context.Zonas.Entry(zona);
@@ -165,5 +193,16 @@ namespace SUVAN.BackOffice.Service.Logistica
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
         }
+        public async Task<List<RegionModel>> ObtenerPlantasPorRegion(int idEmpresa, int IdRegion)
+        {
+            return await context.Planta
+                .Where(x => x.IdEmpresa == idEmpresa && x.IdRegion == IdRegion)
+                .Select(x => new RegionModel
+                {
+                    Id = x.IdPlanta,
+                    Nombre = x.NombrePlanta
+                }).ToListAsync();
+        }
+
     }
 }

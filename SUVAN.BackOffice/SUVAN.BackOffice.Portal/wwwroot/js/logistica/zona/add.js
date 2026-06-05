@@ -8,6 +8,61 @@ var KTZona = function () {
     var validator;
 
 
+
+    //Funcion para cascada
+    var handleCascadaCombos = function () {
+        //Para cuando se cambia la Región
+        $('#IdRegion').on('change', function () {
+            var regionId = $(this).val();
+            var $plantaSelect = $('#IdPlanta');
+
+            var plantaSeleccionadaId = $('#IdPlantaHidden').val();
+
+            //limpia combos y muestra estado de carga
+            $plantaSelect.empty().append('<option value="">Cargando plantas...</option>');
+
+            if (regionId && regionId !== "0" && regionId !== "") {
+                //Petición AJAX al controlador de zona
+                $.getJSON('/Zona/ObtenerPlantas', { regionId: regionId }, function (data) {
+                    //console.log("Buscando PlantaID: ",plantaSeleccionadaId); //para ver en consola que datos estan llegando
+                    //console.log("Datos recibidos del server: ", data);
+                    $plantaSelect.empty().append('<option value="">Seleccione una planta</option>');
+
+                    $.each(data, function (i, item) {
+                        $plantaSelect.append($('<option>', {
+                            value: item.id,
+                            text: item.nombre
+                        }));
+                    });
+
+                    if (plantaSeleccionadaId && plantaSeleccionadaId !== "0") {
+
+                        var idASeleccionar = plantaSeleccionadaId.toString();
+
+                        $plantaSelect.prop('disabled', false);
+
+                        $plantaSelect.val(idASeleccionar);
+
+                        //console.log("3. Valor despues de intentar asignar: ", $plantaSelect.val());
+
+                        if ($('#ZonaId').val() > 0) {
+                            $plantaSelect.prop('disabled', true);
+                        }
+                    }
+
+
+                }).fail(function () {
+                    //console.log("Error en petición:", textStatus, errorThrown);
+                    $plantaSelect.empty().append('<option value="">Error al cargar plantas</option>');
+                });
+            } else {
+                $plantaSelect.empty().append('<option value="">Seleccione una región primero</option>');
+                //$plantaSelect.trigger('change.select2');
+            }
+        });
+    };
+
+
     // Handle form
     var handleValidation = function (e) {
         // Init form validation rules. For more info check the FormValidation plugin's official documentation:https://formvalidation.io/
@@ -15,16 +70,31 @@ var KTZona = function () {
             form,
             {
                 fields: {
+                    'IdRegion': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Seleccione una Región'
+                            },
+                        }
+                    },
+
+                    'IdPlanta': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Seleccione una Planta'
+                            },
+                        }
+                    },
                     'ZonaNombre': {
                         validators: {
                             notEmpty: {
                                 message: 'Nombre de la Zona requerido'
                             },
                             stringLength: {
-                                min: 7,
+                                min: 5,
                                 max: 225,
 
-                                message: 'deben tener entre 7 y 225 caracteres',
+                                message: 'deben tener entre 5 y 225 caracteres',
                             },
                         }
                     },
@@ -101,7 +171,13 @@ var KTZona = function () {
                         rowSelector: '.fv-row',
                         eleInvalidClass: '',  // comment to enable invalid state icons
                         eleValidClass: '' // comment to enable valid state icons
-                    })
+                }),
+
+            excluded: new FormValidation.plugins.Excluded({
+                excluded: function (name, ele, nodes) {
+                    return ele.disabled === true || ele.type === 'hidden';
+                }
+            }),
                 }
             }
         );
@@ -125,16 +201,18 @@ var KTZona = function () {
         });
     }
 
-    const handleControls = () => {
-
-        var fechaApertura = $("#FechaApertura").val();
+    var handleControls = function () {
+        var elementoFecha = $("#FechaApertura");
+        var fechaApertura = elementoFecha.val();
 
         if (!fechaApertura || fechaApertura === "01/01/0001") {
             fechaApertura = moment().format("DD/MM/YYYY");
         }
 
-        $("#FechaApertura").daterangepicker({
+        elementoFecha.daterangepicker({
             singleDatePicker: true,
+            showDropdowns: true,
+            autoUpdateInput: false,
             locale: {
                 format: "DD/MM/YYYY",
                 applyLabel: "Aceptar",
@@ -147,7 +225,37 @@ var KTZona = function () {
             },
             startDate: moment(fechaApertura, "DD/MM/YYYY")
         });
-    }
+        elementoFecha.on('apply.daterangepicker', function (ev, picker) {
+            var fechaSeleccionada = picker.startDate.format('DD/MM/YYYY');
+            console.log("Boton aceptar presionado");
+            $(this).val(fechaSeleccionada);
+
+
+            if (validator) {
+                validator.revalidateField('FechaApertura');
+            }
+        });
+
+        elementoFecha.on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+    };
+
+    //     //envio del formulario
+    // var handleSubmitValidation = function () {
+    //     submitButton.addEventListener('click', function (e) {
+    //         e.preventDefault();
+    //         if (validator) {
+    //             validator.validate().then(function (status) {
+    //                 if (status == 'Valid') {
+    //                     submitButton.setAttribute('data-kt-indicator', 'on');
+    //                     submitButton.disabled = true;
+    //                     form.submit();
+    //                 }
+    //             });
+    //         }
+    //     });
+    // };
 
     // Public functions
     return {
@@ -164,7 +272,7 @@ var KTZona = function () {
                 this.value = this.value.replace(/[^0-9]/g, '');
             });
 
-
+            handleCascadaCombos();
             handleValidation();
             handleControls();
 

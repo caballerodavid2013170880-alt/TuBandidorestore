@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,11 +11,19 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
     public class ZonaViewModel
     {
-        public List<EmpresaViewModel> EmpresaView { get; set; } = new();
         public int ZonaId { get; set; }
+        public int IdEmpresa { get; set; }
 
+        [Required(ErrorMessage = "La Región es obligatoria")]
+        public int IdRegion { get; set; }
+
+        [Required(ErrorMessage = "La Planta es obligatoria")]
+        public int IdPlanta { get; set; }
+
+        [Required(ErrorMessage = "El Nombre de la Zona es obligatoria")]
         public string ZonaNombre { get; set; } = null!;
 
+        [Required(ErrorMessage = "El RFC es obligatorio")]
         public string Rfc { get; set; } = null!;
 
         public string Domicilio { get; set; } = null!;
@@ -25,14 +34,15 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public string Responsable { get; set; } = null!;
 
-        [DataType(DataType.Text)]
-        public DateTime FechaApertura { get; set; }
-
-        public int IdEmpresa { get; set; }
-
         public ulong Activo { get; set; }
 
-        public List<DepositosViewModel> Depositos { get; set; } = new();
+        [DataType(DataType.Date)]
+        public DateTime FechaApertura { get; set; } = DateTime.Now;
+
+        [ValidateNever]
+        public List<RegionModel> ListadoRegiones { get; set; } = new();
+        [ValidateNever]
+        public List<RegionModel> ListadoPlantas { get; set; } = new();
 
         public bool ActivoBool
         {
@@ -41,20 +51,29 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         }
         public string IdNombre => $"{ZonaId} - {ZonaNombre}";
 
-        public class EmpresaViewModel
-        {
-            public int EmpresaId { get; set; }
-            public string? NombreCorto { get; set; }
-            public string IdNombre => $"{EmpresaId} - {NombreCorto}";
-        }
+        //Esta clase solo se usa si se listan empresas dentro de esteviewmodel
+        //public class EmpresaViewModel
+        //{
+        //    public int EmpresaId { get; set; }
+        //    public string? NombreCorto { get; set; }
+        //    public string IdNombre => $"{EmpresaId} - {NombreCorto}";
+        //}
 
-        public class DepositosViewModel
-        {
-            public int DepositoId { get; set; }
+        //public class RegionModel
+        //{
+        //    public int Id { get; set; }
+        //    public string Nombre { get; set; }
+        //}
 
-            public string NombreDeposito { get; set; } = null!;
 
-            public string DepositoNombreId => $"{DepositoId} - {NombreDeposito}";
-        }
+
+        //public class DepositosViewModel
+        //{
+        //    public int DepositoId { get; set; }
+
+        //    public string NombreDeposito { get; set; } = null!;
+
+        //    public string DepositoNombreId => $"{DepositoId} - {NombreDeposito}";
+        //}
     }
 }

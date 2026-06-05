@@ -71,6 +71,7 @@ var KTZonaList = function () {
                         confirmButton: "btn fw-bold btn-danger",
                         cancelButton: "btn fw-bold btn-active-light-primary"
                     },
+                    showLoaderOnConfirm: true,
                     preConfirm: async () => {
 
                         const zonaId = parseInt(d.getAttribute('data-kt-zona-delete-item'));
@@ -79,7 +80,7 @@ var KTZonaList = function () {
                             headers: {
                                 'Content-Type': 'application/json'
                             },
-                            body: JSON.stringify({ zonaId: zonaId })
+                            body: JSON.stringify({ ZonaId: zonaId })
                         });
                         const data = await response.json();
                         console.log(data);
@@ -87,7 +88,7 @@ var KTZonaList = function () {
 
                     }
                 }).then(function (result) {
-                    if (result.value) {
+                    if (result.isConfirmed) {
                         Swal.fire({
                             text: `Usted eliminó la zona ${contenidoName}`,
                             icon: "success",

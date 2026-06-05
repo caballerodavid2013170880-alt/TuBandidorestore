@@ -70,11 +70,11 @@ namespace SUVAN.BackOffice.Models.ViewModel
             /// (<c>0</c> = inactivo, <c>1</c> = activo).
             /// </summary>
             public ulong Activo { get; set; }
-            /// <summary>
-            /// Propiedad auxiliar que convierte <see cref="Activo"/> (ulong) a un valor
-            /// booleano para usar el checkbox HTML en la vista Razor.
-            /// </summary>
-            public bool ActivoBool
+        /// <summary>
+        /// Propiedad auxiliar que convierte <see cref="Activo"/> (ulong) a un valor
+        /// booleano para usar el checkbox HTML en la vista Razor.
+        /// </summary>
+        public bool ActivoBool
             {
                 get => Activo != 0;
                 set => Activo = value ? (ulong)1 : (ulong)0;

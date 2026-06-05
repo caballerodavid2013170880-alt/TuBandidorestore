@@ -1,4 +1,5 @@
 ﻿using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// </summary>
         /// <param name="id">Identificador de la zona.</param>
         /// <returns>ViewModel para la zona especifica.</returns>
-        Task<ZonaViewModel> GetZonaViewModel(int id);
+        Task<ZonaViewModel> GetZonaViewModel(int id, int IdEmpresa);
 
         /// <summary>
         /// Agrega o actualiza una zona en la base de datos.
@@ -39,5 +40,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <exception cref="Exception"></exception>
 
         Task<bool> EliminarZona(int IdZona);
+
+        Task<List<RegionModel>> ObtenerPlantasPorRegion(int idEmpresa, int idRegion);
     }
 }
