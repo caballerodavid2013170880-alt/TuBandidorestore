@@ -51,6 +51,10 @@ public partial class CombCarga
 
     public int IdDepto { get; set; }
 
+    public int? Idusuario { get; set; }
+
+    public DateTime? Fecharegistro { get; set; }
+
     public virtual Region Id { get; set; } = null!;
 
     public virtual TipoCom IdCombNavigation { get; set; } = null!;
@@ -68,4 +72,6 @@ public partial class CombCarga
     public virtual Empresa IdempresaNavigation { get; set; } = null!;
 
     public virtual Factura IdfacturaNavigation { get; set; } = null!;
+
+    public virtual Usuario? IdusuarioNavigation { get; set; }
 }

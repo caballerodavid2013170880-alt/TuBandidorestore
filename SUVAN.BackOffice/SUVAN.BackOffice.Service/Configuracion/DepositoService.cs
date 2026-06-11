@@ -73,7 +73,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
                     Tel = deposito.Tel,
                     LocFor = deposito.LocFor,
                     RPerson = deposito.RPerson,
-                    DescCorta = deposito.DescCorta,
+                    NomCorto = deposito.NomCorto,
                     Rfc = deposito.Rfc,
                     Cp = deposito.Cp
                 };
@@ -134,7 +134,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
             deposito.Tel = model.Tel;
             deposito.LocFor = model.LocFor;
             deposito.RPerson = model.RPerson;
-            deposito.DescCorta = model.DescCorta;
+            deposito.NomCorto = model.NomCorto;
             deposito.Rfc = model.Rfc;
             deposito.Cp = model.Cp;
             //forzar el valor de locfor a ser la primera letra en mayuscula

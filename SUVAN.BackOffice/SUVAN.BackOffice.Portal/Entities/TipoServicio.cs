@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace SUVAN.BackOffice.Portal.Entities;
+
+public partial class TipoServicio
+{
+    public int IdTiposervicio { get; set; }
+
+    public string Nombre { get; set; } = null!;
+
+    public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
+}

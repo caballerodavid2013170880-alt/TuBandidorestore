@@ -86,4 +86,6 @@ public partial class Conductor
     public virtual ICollection<LiquidacionCabecera> LiquidacionCabeceras { get; set; } = new List<LiquidacionCabecera>();
 
     public virtual ICollection<Siniestro> Siniestros { get; set; } = new List<Siniestro>();
+
+    public virtual ICollection<TarIave> TarIaves { get; set; } = new List<TarIave>();
 }

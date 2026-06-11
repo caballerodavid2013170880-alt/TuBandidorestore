@@ -35,7 +35,11 @@ public partial class Usuario
 
     public virtual Codigopai? CodigopaisIdcodigopaisNavigation { get; set; }
 
+    public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
+
     public virtual ICollection<Datosfacturacionreceptor> Datosfacturacionreceptors { get; set; } = new List<Datosfacturacionreceptor>();
+
+    public virtual ICollection<DetPrev> DetPrevs { get; set; } = new List<DetPrev>();
 
     public virtual ICollection<Factura> Facturas { get; set; } = new List<Factura>();
 
@@ -45,9 +49,23 @@ public partial class Usuario
 
     public virtual Fotografium? Fotografium { get; set; }
 
+    public virtual ICollection<Insumo> Insumos { get; set; } = new List<Insumo>();
+
+    public virtual ICollection<ManoObra> ManoObras { get; set; } = new List<ManoObra>();
+
     public virtual ICollection<Membresium> Membresia { get; set; } = new List<Membresium>();
 
     public virtual Monedero? Monedero { get; set; }
+
+    public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
+
+    public virtual ICollection<RendMe> RendMes { get; set; } = new List<RendMe>();
+
+    public virtual ICollection<TarCom> TarComs { get; set; } = new List<TarCom>();
+
+    public virtual ICollection<TarIave> TarIaves { get; set; } = new List<TarIave>();
+
+    public virtual ICollection<TipoCom> TipoComs { get; set; } = new List<TipoCom>();
 
     public virtual ICollection<Tokenpago> Tokenpagos { get; set; } = new List<Tokenpago>();
 

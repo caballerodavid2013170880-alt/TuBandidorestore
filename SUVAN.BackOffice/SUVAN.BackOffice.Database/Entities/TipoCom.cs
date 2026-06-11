@@ -17,7 +17,13 @@ public partial class TipoCom
 
     public short CUnidad { get; set; }
 
+    public int? Idusuario { get; set; }
+
+    public DateTime? Fecharegistro { get; set; }
+
     public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
+
+    public virtual Usuario? IdusuarioNavigation { get; set; }
 
     public virtual ICollection<RendMe> RendMes { get; set; } = new List<RendMe>();
 

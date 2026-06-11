@@ -10,6 +10,4 @@ public partial class TipoServicio
     public string Nombre { get; set; } = null!;
 
     public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
-
-    public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
 }

@@ -11,8 +11,6 @@ public partial class Preventivo
 
     public string Proyecta { get; set; } = null!;
 
-    public int TiposervicioIdtiposervicio { get; set; }
-
     public string? ObservacionesPreventivo { get; set; }
 
     public int IdPlanta { get; set; }
@@ -35,6 +33,10 @@ public partial class Preventivo
 
     public int Idempresa { get; set; }
 
+    public int? Idusuario { get; set; }
+
+    public DateTime? Fecharegistro { get; set; }
+
     public virtual ICollection<DetPrev> DetPrevs { get; set; } = new List<DetPrev>();
 
     public virtual Region Id { get; set; } = null!;
@@ -45,5 +47,5 @@ public partial class Preventivo
 
     public virtual Empresa IdempresaNavigation { get; set; } = null!;
 
-    public virtual TipoServicio TiposervicioIdtiposervicioNavigation { get; set; } = null!;
+    public virtual Usuario? IdusuarioNavigation { get; set; }
 }

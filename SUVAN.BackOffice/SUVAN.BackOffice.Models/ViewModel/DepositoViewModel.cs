@@ -51,7 +51,7 @@ namespace SUVAN.BackOffice.Models.ViewModel
         public string LocFor { get; set; }
         public string RPerson { get; set; }
         public int IdEmpresa { get; set; }
-        public string DescCorta { get; set; }
+        public string NomCorto { get; set; }
 
         [Required(ErrorMessage = "El RFC es requerido")]
         public string Rfc { get; set; }

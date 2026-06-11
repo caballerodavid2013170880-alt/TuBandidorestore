@@ -29,13 +29,12 @@ public partial class Deposito
 
     public int IdEmpresa { get; set; }
 
-    public string? DescCorta { get; set; }
+    public string? NomCorto { get; set; }
 
     public string? Rfc { get; set; }
 
     public string? Cp { get; set; }
 
-    //agregado activo manualmente para el borrado lógico
     public ulong? Activo { get; set; }
 
     public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
