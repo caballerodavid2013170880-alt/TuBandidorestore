@@ -12,7 +12,7 @@ public partial class ManoObra
     /// <summary>
     /// Monto del IVA aplicado
     /// </summary>
-    public decimal Iva { get; set; }
+    //public decimal Iva { get; set; }
 
     /// <summary>
     /// Costo hora/servicio con impuestos

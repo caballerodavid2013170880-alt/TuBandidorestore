@@ -9,8 +9,6 @@ public partial class Preventivo
 
     public string? NombrePreventivo { get; set; }
 
-    public string Proyecta { get; set; } = null!;
-
     public string? ObservacionesPreventivo { get; set; }
 
     public int IdPlanta { get; set; }
@@ -48,4 +46,5 @@ public partial class Preventivo
     public virtual Empresa IdempresaNavigation { get; set; } = null!;
 
     public virtual Usuario? IdusuarioNavigation { get; set; }
+
 }

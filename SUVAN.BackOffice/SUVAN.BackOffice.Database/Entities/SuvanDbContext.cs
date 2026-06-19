@@ -2400,10 +2400,10 @@ public partial class SuvanDbContext : DbContext
             entity.HasIndex(e => e.Idusuario, "fk_manoobra_usuario");
 
             entity.Property(e => e.IdManoObra).HasColumnName("id_mano_obra");
-            entity.Property(e => e.Activo)
+            /*entity.Property(e => e.Activo)
                 .HasDefaultValueSql("'1'")
                 .HasComment("Bandera de baja lógica")
-                .HasColumnName("activo");
+                .HasColumnName("activo");*/
             entity.Property(e => e.CostoTotal)
                 .HasPrecision(10, 2)
                 .HasComment("Costo hora/servicio con impuestos")
@@ -2418,10 +2418,10 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.Idusuario)
                 .HasComment("Usuario que creó/modificó (FK)")
                 .HasColumnName("idusuario");
-            entity.Property(e => e.Iva)
+            /*entity.Property(e => e.Iva)
                 .HasPrecision(5, 4)
                 .HasComment("Monto del IVA aplicado")
-                .HasColumnName("iva");
+                .HasColumnName("iva");*/
 
             entity.HasOne(d => d.IdusuarioNavigation).WithMany(p => p.ManoObras)
                 .HasForeignKey(d => d.Idusuario)
@@ -3218,9 +3218,6 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.ObservacionesPreventivo)
                 .HasColumnType("text")
                 .HasColumnName("observaciones_preventivo");
-            entity.Property(e => e.Proyecta)
-                .HasMaxLength(10)
-                .HasColumnName("proyecta");
 
             entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.Preventivos)
                 .HasForeignKey(d => d.IdMarca)

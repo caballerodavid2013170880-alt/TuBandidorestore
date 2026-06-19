@@ -108,6 +108,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
         Regiones = 116,
         Depositos = 117,
         Plantas = 118,
-        Departamentos = 119
+        Departamentos = 119,
+        MantenimientoPreventivo = 120
     }
 }
