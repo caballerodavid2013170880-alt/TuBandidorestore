@@ -49,8 +49,6 @@ public partial class Usuario
 
     public virtual Fotografium? Fotografium { get; set; }
 
-    public virtual ICollection<Insumo> Insumos { get; set; } = new List<Insumo>();
-
     public virtual ICollection<ManoObra> ManoObras { get; set; } = new List<ManoObra>();
 
     public virtual ICollection<Membresium> Membresia { get; set; } = new List<Membresium>();

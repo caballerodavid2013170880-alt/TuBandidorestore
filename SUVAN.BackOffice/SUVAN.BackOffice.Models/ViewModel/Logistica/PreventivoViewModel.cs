@@ -32,9 +32,11 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         [Required(ErrorMessage = "El Modelo es requerido")]
         public int IdModelo { get; set; }
 
-        // Variable temporal para la Mano de Obra a usar al generar el detalle preventivo
+        // Variable temporal para capturar la Mano de Obra
         [Required(ErrorMessage = "La Mano de Obra es requerida")]
         public int IdManoObra { get; set; }
+
+        public decimal? CostoTotal { get; set; }
 
         public List<PlantaItemViewModel> Plantas { get; set; } = new();
         public List<DepositoItemViewModel> Depositos { get; set; } = new();

@@ -9,20 +9,7 @@ public partial class ManoObra
 
     public string? DescripcionManoobra { get; set; }
 
-    /// <summary>
-    /// Monto del IVA aplicado
-    /// </summary>
-    //public decimal Iva { get; set; }
-
-    /// <summary>
-    /// Costo hora/servicio con impuestos
-    /// </summary>
-    public decimal CostoTotal { get; set; }
-
-    /// <summary>
-    /// Bandera de baja lógica
-    /// </summary>
-    public bool? Activo { get; set; }
+    public decimal? CostoUnitario { get; set; }
 
     /// <summary>
     /// Usuario que creó/modificó (FK)
@@ -31,7 +18,7 @@ public partial class ManoObra
 
     public DateTime? Fecharegistro { get; set; }
 
-    public virtual ICollection<DetPrev> DetPrevs { get; set; } = new List<DetPrev>();
+    public virtual ICollection<DetPrevMo> DetPrevMos { get; set; } = new List<DetPrevMo>();
 
     public virtual Usuario? IdusuarioNavigation { get; set; }
 }

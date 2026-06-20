@@ -27,6 +27,8 @@ public partial class Plantum
 
     public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
 
+    public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
+
     public virtual ICollection<RendMe> RendMes { get; set; } = new List<RendMe>();
 
     public virtual ICollection<TarCom> TarComs { get; set; } = new List<TarCom>();

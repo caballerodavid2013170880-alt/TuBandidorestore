@@ -75,13 +75,13 @@ namespace SUVAN.BackOffice.Service.Logistica
                 vRet.Idpreventivo = preventivo.Idpreventivo;
                 vRet.NombrePreventivo = preventivo.NombrePreventivo;
                 vRet.ObservacionesPreventivo = preventivo.ObservacionesPreventivo;
-                vRet.IdPlanta = preventivo.IdPlanta;
-                vRet.IdDeposito = preventivo.IdDeposito;
+                //vRet.IdPlanta = preventivo.IdPlanta;
+                //vRet.IdDeposito = preventivo.IdDeposito;
                 vRet.Meses = preventivo.Meses;
                 vRet.IdMarca = preventivo.IdMarca;
                 vRet.IdModelo = preventivo.IdModelo;
 
-                vRet.Depositos = await GetDepositosPorPlanta(idEmpresa, preventivo.IdPlanta);
+               // vRet.Depositos = await GetDepositosPorPlanta(idEmpresa, preventivo.IdPlanta);
                 if (preventivo.IdMarca.HasValue)
                 {
                     vRet.Modelos = await GetModelosPorMarca(preventivo.IdMarca.Value);

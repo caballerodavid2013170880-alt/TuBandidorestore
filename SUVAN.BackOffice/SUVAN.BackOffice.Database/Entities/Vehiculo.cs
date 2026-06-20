@@ -39,6 +39,8 @@ public partial class Vehiculo
 
     public virtual ICollection<CorridaAsignacion> CorridaAsignacions { get; set; } = new List<CorridaAsignacion>();
 
+    public virtual ICollection<DetPrevMo> DetPrevMos { get; set; } = new List<DetPrevMo>();
+
     public virtual Empresa? EmpresaIdempresaNavigation { get; set; }
 
     public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();

@@ -5,21 +5,9 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class DetPrev
 {
-    public int Idpreventivo { get; set; }
-
     public int IdPrevDet { get; set; }
 
-    public int IdManoObra { get; set; }
-
-    /// <summary>
-    /// FK al catálogo global de refacciones
-    /// </summary>
-    public int? IdInsumo { get; set; }
-
-    /// <summary>
-    /// Cantidad de piezas o horas laboradas
-    /// </summary>
-    public decimal Cantidad { get; set; }
+    public int Idpreventivo { get; set; }
 
     /// <summary>
     /// Costo unitario congelado al momento del servicio
@@ -39,10 +27,6 @@ public partial class DetPrev
     public int? Idusuario { get; set; }
 
     public DateTime? Fecharegistro { get; set; }
-
-    public virtual Insumo? IdInsumoNavigation { get; set; }
-
-    public virtual ManoObra IdManoObraNavigation { get; set; } = null!;
 
     public virtual Preventivo IdpreventivoNavigation { get; set; } = null!;
 
