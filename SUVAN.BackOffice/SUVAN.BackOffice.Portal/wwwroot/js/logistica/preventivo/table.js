@@ -23,6 +23,7 @@ var KTPreventivoTable = function () {
             "columnDefs": [
                 { "orderable": false, "targets": 4 }
             ]
+
         });
     };
 
@@ -46,6 +47,8 @@ var KTPreventivoTable = function () {
             });
         }
     };
+
+
 
     return {
         init: function () {

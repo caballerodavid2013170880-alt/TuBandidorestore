@@ -28,6 +28,10 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
             this._logger = logger;
             this.preventivoService = preventivoService;
         }
+
+        /// <summary>
+        /// Muestra la vista principal. Responde a la raíz del controlador.
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -82,8 +86,6 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
                 }
 
                 int idEmpresa = User.GetEmpresaId();
-
-                // SOLUCIÓN AL ERROR CS1061: Extracción limpia a través de Claims nativos de ASP.NET Identity Core
                 string claimUsuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
                 int idUsuario = Convert.ToInt32(claimUsuarioId);
 
@@ -94,14 +96,14 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
                     TempData["Mensaje"] = model.Idpreventivo == 0
                         ? "Plan Preventivo registrado correctamente."
                         : "Plan Preventivo actualizado correctamente.";
-                    return RedirectToAction("Preventivos");
+                    return RedirectToAction("Index"); // <-- Redirigir a Index, ya no a Preventivos
                 }
 
                 return View(model);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al intentar guardar el plan de mantenimiento preventivo.");
+                _logger.LogError(ex, "Error al intentar guardar el plan.");
                 ModelState.AddModelError(string.Empty, ex.Message);
 
                 var recargar = await preventivoService.GetPreventivoViewModel(User.GetEmpresaId(), model.Idpreventivo);
@@ -136,6 +138,42 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
         {
             var modelos = await preventivoService.GetModelosPorMarca(idMarca);
             return Json(modelos);
+        }
+
+        // ===================     SP       ====================
+        /// <summary>
+        /// Estructura auxiliar para recibir datos JSON desde Fetch
+        /// </summary>
+        public class GenerarPreventivoRequest
+        {
+            public int IdPreventivo { get; set; }
+            public int IdManoObra { get; set; }
+        }
+
+        /// <summary>
+        /// Endpoint asíncrono que recibe la orden de procesar el Stored Procedure para generar preventivos.
+        /// </summary>
+        [HttpPost("GenerarDetalles")]
+        public async Task<IActionResult> GenerarDetalles([FromBody] GenerarPreventivoRequest request)
+        {
+            try
+            {
+                if (request == null || request.IdPreventivo <= 0 || request.IdManoObra <= 0)
+                    return Json(new { success = false, message = "Datos inválidos. Asegúrese de seleccionar una Mano de Obra." });
+
+                int idEmpresa = User.GetEmpresaId();
+                string claimUsuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
+                int idUsuario = Convert.ToInt32(claimUsuarioId);
+
+                var result = await preventivoService.GenerarDetallePreventivoAsync(request.IdPreventivo, request.IdManoObra, idEmpresa, idUsuario);
+
+                return Json(new { success = true, message = "Los preventivos han sido generados exitosamente en el Detalle." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al ejecutar generación de preventivos para el ID {request?.IdPreventivo}");
+                return Json(new { success = false, message = ex.Message });
+            }
         }
     }
 }

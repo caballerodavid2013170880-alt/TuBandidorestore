@@ -3,7 +3,7 @@
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
 @{
-    ViewData["Title"] = "Mantenimiento Preventivo";
+    ViewData["Title"] = "";
 }
 @model PreventivoViewModel
 @{
@@ -11,6 +11,16 @@
     if (permisosPagina == null) { return; }
     var isAgregarText = Model.Idpreventivo == 0 ? "Agregar" : "Editar";
 }
+
+<script>
+    window.SUVAN = window.SUVAN || {};
+    window.SUVAN.Urls = {
+        GetDepositos: '@Url.Action("GetDepositosPorPlanta", "MantenimientoPreventivo")',
+        GetModelos: '@Url.Action("GetModelosPorMarca", "MantenimientoPreventivo")',
+        GenerarPreventivos: '@Url.Action("GenerarDetalles", "MantenimientoPreventivo")'
+    };
+</script>
+
 <div id="kt_app_toolbar" class="app-toolbar ">
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
@@ -41,6 +51,8 @@
                                 <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="NombrePreventivo"></span></div>
                             </div>
                         </div>
+                        <!--
+                            Quitar meses
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="Meses" class="col-form-label text-gray-600 required">Meses</label>
@@ -49,31 +61,60 @@
                             </div>
                         </div>
                     </div>
-
+                    --> 
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="IdPlanta" class="col-form-label text-gray-600 required">Planta</label>
-                                <select id="selectIdPlanta" name="IdPlanta" class="form-select bg-transparent">
-                                    <option value="0">-- Seleccione una Planta --</option>
-                                    @foreach (var planta in Model.Plantas)
-                                    {
-                                        <option value="@planta.IdPlanta" selected="@(planta.IdPlanta == Model.IdPlanta ? "selected" : null)">@planta.Nombre</option>
-                                    }
-                                </select>
+                                @if (permisosPagina!.Editar)
+                                {
+                                    <select id="selectIdPlanta" class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Seleccione una Planta --</option>
+                                        @foreach (var planta in Model.Plantas)
+                                        {
+                                            <option value="@planta.IdPlanta" selected="@(planta.IdPlanta == Model.IdPlanta ? "selected" : null)">@planta.Nombre</option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdPlanta" />
+                                }
+                                else
+                                {
+                                    <select id="selectIdPlanta" name="IdPlanta" class="form-select bg-transparent">
+                                        <option value="0">-- Seleccione una Planta --</option>
+                                        @foreach (var planta in Model.Plantas)
+                                        {
+                                            <option value="@planta.IdPlanta" selected="@(planta.IdPlanta == Model.IdPlanta ? "selected" : null)">@planta.Nombre</option>
+                                        }
+                                    </select>
+                                }
                                 <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdPlanta"></span></div>
                             </div>
                         </div>
+
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Depósito</label>
-                                <select id="selectIdDeposito" name="IdDeposito" class="form-select bg-transparent" @(Model.Idpreventivo == 0 ? "disabled" : "")>
-                                    <option value="0">-- Seleccione un Depósito --</option>
-                                    @foreach (var dep in Model.Depositos)
-                                    {
-                                        <option value="@dep.IdDeposito" selected="@(dep.IdDeposito == Model.IdDeposito ? "selected" : null)">@dep.Nombre</option>
-                                    }
-                                </select>
+                                @if (permisosPagina!.Editar)
+                                {
+                                    <select id="selectIdDeposito" class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Seleccione un Depósito --</option>
+                                        @foreach (var dep in Model.Depositos)
+                                        {
+                                            <option value="@dep.IdDeposito" selected="@(dep.IdDeposito == Model.IdDeposito ? "selected" : null)">@dep.Nombre</option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdDeposito" />
+                                }
+                                else
+                                {
+                                    <select id="selectIdDeposito" name="IdDeposito" class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Seleccione un Depósito --</option>
+                                        @foreach (var dep in Model.Depositos)
+                                        {
+                                            <option value="@dep.IdDeposito" selected="@(dep.IdDeposito == Model.IdDeposito ? "selected" : null)">@dep.Nombre</option>
+                                        }
+                                    </select>
+                                }
                                 <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdDeposito"></span></div>
                             </div>
                         </div>
@@ -83,26 +124,55 @@
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Marca</label>
-                                <select id="selectIdMarca" name="IdMarca" class="form-select bg-transparent">
-                                    <option value="0">-- Seleccione una Marca --</option>
-                                    @foreach (var marca in Model.Marcas)
-                                    {
-                                        <option value="@marca.IdMarca" selected="@(marca.IdMarca == Model.IdMarca ? "selected" : null)">@marca.Nombre</option>
-                                    }
-                                </select>
+                                @if (permisosPagina!.Editar)
+                                {
+                                    <select id="selectIdMarca" class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Seleccione una Marca --</option>
+                                        @foreach (var marca in Model.Marcas)
+                                        {
+                                            <option value="@marca.IdMarca" selected="@(marca.IdMarca == Model.IdMarca ? "selected" : null)">@marca.Nombre</option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdMarca" />
+                                }
+                                else
+                                {
+                                    <select id="selectIdMarca" name="IdMarca" class="form-select bg-transparent">
+                                        <option value="0">-- Seleccione una Marca --</option>
+                                        @foreach (var marca in Model.Marcas)
+                                        {
+                                            <option value="@marca.IdMarca" selected="@(marca.IdMarca == Model.IdMarca ? "selected" : null)">@marca.Nombre</option>
+                                        }
+                                    </select>
+                                }
                                 <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdMarca"></span></div>
                             </div>
                         </div>
+
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="IdModelo" class="col-form-label text-gray-600 required">Modelo</label>
-                                <select id="selectIdModelo" name="IdModelo" class="form-select bg-transparent" @(Model.Idpreventivo == 0 ? "disabled" : "")>
-                                    <option value="0">-- Seleccione un Modelo --</option>
-                                    @foreach (var mod in Model.Modelos)
-                                    {
-                                        <option value="@mod.IdModelo" selected="@(mod.IdModelo == Model.IdModelo ? "selected" : null)">@mod.Nombre</option>
-                                    }
-                                </select>
+                                @if (permisosPagina!.Editar)
+                                {
+                                    <select id="selectIdModelo" class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Seleccione un Modelo --</option>
+                                        @foreach (var mod in Model.Modelos)
+                                        {
+                                            <option value="@mod.IdModelo" selected="@(mod.IdModelo == Model.IdModelo ? "selected" : null)">@mod.Nombre</option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdModelo" />
+                                }
+                                else
+                                {
+                                    <select id="selectIdModelo" name="IdModelo" class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Seleccione un Modelo --</option>
+                                        @foreach (var mod in Model.Modelos)
+                                        {
+                                            <option value="@mod.IdModelo" selected="@(mod.IdModelo == Model.IdModelo ? "selected" : null)">@mod.Nombre</option>
+                                        }
+                                    </select>
+                                }
                                 <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdModelo"></span></div>
                             </div>
                         </div>
@@ -130,7 +200,21 @@
                         </div>
                     </div>
 
+
                     <div class="mb-10 text-end">
+                        @if (permisosPagina!.Editar)
+                        {
+                            <button type="button" id="btn_revertir_preventivos" class="btn btn-danger me-2">
+                                <i class="ki-outline ki-trash fs-3"></i> Revertir Preventivos
+                            </button>
+
+                            <button type="button" id="btn_generar_preventivos" class="btn btn-primary me-2">
+                                <span class="indicator-label">Generar Preventivos</span>
+                                <span class="indicator-progress">Procesando... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
+                            </button>
+                        }
+
+
                         <button type="submit" id="kt_preventivo_in_submit" class="btn btn-primary">
                             <span class="indicator-label">Guardar</span>
                             <span class="indicator-progress">Por favor espere... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>

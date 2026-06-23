@@ -20,7 +20,6 @@ namespace SUVAN.BackOffice.Service.Logistica
         public async Task<List<Preventivo>> GetPreventivos(int idEmpresa)
         {
             return await context.Preventivos
-                .Include(p => p.Id) // Región / Planta asumiendo navegación
                 .Include(p => p.IdMarcaNavigation)
                 .Include(p => p.IdModeloNavigation)
                 .Where(p => p.Idempresa == idEmpresa)
@@ -33,28 +32,18 @@ namespace SUVAN.BackOffice.Service.Logistica
             var plantas = await context.Planta
                 .Where(p => p.IdEmpresa == idEmpresa)
                 .OrderBy(p => p.NombrePlanta)
-                .Select(p => new PreventivoViewModel.PlantaItemViewModel
-                {
-                    IdPlanta = p.IdPlanta,
-                    Nombre = p.NombrePlanta
-                }).ToListAsync();
+                .Select(p => new PreventivoViewModel.PlantaItemViewModel { IdPlanta = p.IdPlanta, Nombre = p.NombrePlanta })
+                .ToListAsync();
 
             var marcas = await context.Marcas
                 .OrderBy(m => m.Descripcion)
-                .Select(m => new PreventivoViewModel.MarcaItemViewModel
-                {
-                    IdMarca = m.IdMarca,
-                    Nombre = m.Descripcion
-                }).ToListAsync();
+                .Select(m => new PreventivoViewModel.MarcaItemViewModel { IdMarca = m.IdMarca, Nombre = m.Descripcion })
+                .ToListAsync();
 
-            // Ignorar iva y activo de mano de obra según especificaciones
             var manosObra = await context.ManoObras
                 .OrderBy(mo => mo.DescripcionManoobra)
-                .Select(mo => new PreventivoViewModel.ManoObraItemViewModel
-                {
-                    IdManoObra = mo.IdManoObra,
-                    Descripcion = mo.DescripcionManoobra
-                }).ToListAsync();
+                .Select(mo => new PreventivoViewModel.ManoObraItemViewModel { IdManoObra = mo.IdManoObra, Descripcion = mo.DescripcionManoobra })
+                .ToListAsync();
 
             var vRet = new PreventivoViewModel
             {
@@ -69,23 +58,21 @@ namespace SUVAN.BackOffice.Service.Logistica
                 var preventivo = await context.Preventivos
                     .FirstOrDefaultAsync(p => p.Idpreventivo == idPreventivo && p.Idempresa == idEmpresa);
 
-                if (preventivo == null)
-                    throw new Exception("El mantenimiento preventivo no existe o no pertenece a su empresa.");
+                if (preventivo == null) throw new Exception("El mantenimiento preventivo no existe o no pertenece a su empresa.");
 
                 vRet.Idpreventivo = preventivo.Idpreventivo;
                 vRet.NombrePreventivo = preventivo.NombrePreventivo;
                 vRet.ObservacionesPreventivo = preventivo.ObservacionesPreventivo;
-                //vRet.IdPlanta = preventivo.IdPlanta;
-                //vRet.IdDeposito = preventivo.IdDeposito;
                 vRet.Meses = preventivo.Meses;
-                vRet.IdMarca = preventivo.IdMarca;
-                vRet.IdModelo = preventivo.IdModelo;
 
-               // vRet.Depositos = await GetDepositosPorPlanta(idEmpresa, preventivo.IdPlanta);
-                if (preventivo.IdMarca.HasValue)
-                {
-                    vRet.Modelos = await GetModelosPorMarca(preventivo.IdMarca.Value);
-                }
+                // Mapeo seguro de nullables a int
+                vRet.IdPlanta = preventivo.IdPlanta ?? 0;
+                vRet.IdDeposito = preventivo.IdDeposito ?? 0;
+                vRet.IdMarca = preventivo.IdMarca;
+                vRet.IdModelo = preventivo.IdModelo; // Modelo no es nullable en la BD según tu nuevo código
+
+                if (vRet.IdPlanta > 0) vRet.Depositos = await GetDepositosPorPlanta(idEmpresa, vRet.IdPlanta);
+                if (preventivo.IdMarca.HasValue) vRet.Modelos = await GetModelosPorMarca(preventivo.IdMarca.Value);
             }
             return vRet;
         }
@@ -113,18 +100,18 @@ namespace SUVAN.BackOffice.Service.Logistica
 
             preventivo.NombrePreventivo = model.NombrePreventivo;
             preventivo.ObservacionesPreventivo = model.ObservacionesPreventivo;
-            preventivo.IdPlanta = model.IdPlanta;
-            preventivo.IdDeposito = model.IdDeposito;
             preventivo.Meses = model.Meses;
-            preventivo.IdMarca = model.IdMarca;
             preventivo.IdModelo = model.IdModelo;
+
+            // Asignación tolerante a los nuevos campos nulos
+            preventivo.IdPlanta = model.IdPlanta > 0 ? model.IdPlanta : null;
+            preventivo.IdDeposito = model.IdDeposito > 0 ? model.IdDeposito : null;
+            preventivo.IdMarca = model.IdMarca > 0 ? model.IdMarca : null;
             preventivo.Idempresa = idEmpresa;
 
-            // Asignación de auditoría
+            // Auditoría/COntrol
             preventivo.Idusuario = idUsuario;
             preventivo.Fecharegistro = DateTime.Now;
-
-            // Nota: model.IdManoObra se procesa aquí para interactuar con Detalles si es requerido posteriormente.
 
             await context.SaveChangesAsync();
             return true;
@@ -135,11 +122,12 @@ namespace SUVAN.BackOffice.Service.Logistica
             return await context.Depositos
                 .Where(d => d.IdEmpresa == idEmpresa && d.IdPlanta == idPlanta)
                 .OrderBy(d => d.NombreDeposito)
-                .Select(d => new PreventivoViewModel.DepositoItemViewModel
-                {
-                    IdDeposito = d.IdDeposito,
-                    Nombre = d.NombreDeposito
-                }).ToListAsync();
+                .Select(d => new PreventivoViewModel.DepositoItemViewModel 
+                { 
+                    IdDeposito = d.IdDeposito, 
+                    Nombre = d.NombreDeposito 
+                })
+                .ToListAsync();
         }
 
         public async Task<List<PreventivoViewModel.ModeloItemViewModel>> GetModelosPorMarca(short idMarca)
@@ -147,11 +135,35 @@ namespace SUVAN.BackOffice.Service.Logistica
             return await context.Modelos
                 .Where(m => m.IdMarca == idMarca)
                 .OrderBy(m => m.Descripcion)
-                .Select(m => new PreventivoViewModel.ModeloItemViewModel
-                {
-                    IdModelo = m.IdModelo,
-                    Nombre = m.Descripcion
-                }).ToListAsync();
+                .Select(m => new PreventivoViewModel.ModeloItemViewModel 
+                { IdModelo = m.IdModelo, 
+                    Nombre = m.Descripcion 
+                })
+                .ToListAsync();
+        }
+
+        /// ========================= <SP/> ====================================
+        public async Task<bool> GenerarDetallePreventivoAsync(int idPreventivo, int idManoObra, int idEmpresa, int idUsuario)
+        {
+            // Validar existencia y permisos
+            var preventivo = await context.Preventivos
+                .FirstOrDefaultAsync(p => p.Idpreventivo == idPreventivo && p.Idempresa == idEmpresa);
+
+            if (preventivo == null)
+                throw new Exception("El plan de mantenimiento preventivo no existe o no tiene acceso.");
+
+            var manoObra = await context.ManoObras.FirstOrDefaultAsync(m => m.IdManoObra == idManoObra);
+            if (manoObra == null)
+                throw new Exception("La Mano de Obra seleccionada no es válida o no existe.");
+
+            // Ejecutar Stored Procedure de MySQL
+            // EF Core lanzará una excepción (que atrapará el Controller) si el SP ejecuta el ROLLBACK.
+            await context.Database.ExecuteSqlRawAsync(
+                "CALL sp_GenerarDetallePreventivo({0}, {1}, {2})",
+                idPreventivo, idManoObra, idUsuario
+            );
+
+            return true;
         }
     }
 }

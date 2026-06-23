@@ -4,10 +4,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
+    /// <summary>
+    /// Modelo de vista para la transferencia de datos de Mantenimiento Preventivo entre la UI y el Controlador.
+    /// </summary>
     public class PreventivoViewModel
     {
         public int Idpreventivo { get; set; }
-
         public int Idempresa { get; set; }
 
         [Required(ErrorMessage = "El Nombre del Preventivo es requerido")]
@@ -32,11 +34,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         [Required(ErrorMessage = "El Modelo es requerido")]
         public int IdModelo { get; set; }
 
-        // Variable temporal para capturar la Mano de Obra
         [Required(ErrorMessage = "La Mano de Obra es requerida")]
         public int IdManoObra { get; set; }
-
-        public decimal? CostoTotal { get; set; }
 
         public List<PlantaItemViewModel> Plantas { get; set; } = new();
         public List<DepositoItemViewModel> Depositos { get; set; } = new();
@@ -44,34 +43,10 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public List<ModeloItemViewModel> Modelos { get; set; } = new();
         public List<ManoObraItemViewModel> ManosObra { get; set; } = new();
 
-        public class PlantaItemViewModel
-        {
-            public int IdPlanta { get; set; }
-            public string? Nombre { get; set; }
-        }
-
-        public class DepositoItemViewModel
-        {
-            public int IdDeposito { get; set; }
-            public string? Nombre { get; set; }
-        }
-
-        public class MarcaItemViewModel
-        {
-            public short IdMarca { get; set; }
-            public string? Nombre { get; set; }
-        }
-
-        public class ModeloItemViewModel
-        {
-            public int IdModelo { get; set; }
-            public string? Nombre { get; set; }
-        }
-
-        public class ManoObraItemViewModel
-        {
-            public int IdManoObra { get; set; }
-            public string? Descripcion { get; set; }
-        }
+        public class PlantaItemViewModel { public int IdPlanta { get; set; } public string? Nombre { get; set; } }
+        public class DepositoItemViewModel { public int IdDeposito { get; set; } public string? Nombre { get; set; } }
+        public class MarcaItemViewModel { public short IdMarca { get; set; } public string? Nombre { get; set; } }
+        public class ModeloItemViewModel { public int IdModelo { get; set; } public string? Nombre { get; set; } }
+        public class ManoObraItemViewModel { public int IdManoObra { get; set; } public string? Descripcion { get; set; } }
     }
 }
