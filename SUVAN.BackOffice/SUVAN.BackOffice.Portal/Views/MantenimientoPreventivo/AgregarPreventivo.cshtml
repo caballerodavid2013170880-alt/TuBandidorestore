@@ -9,7 +9,10 @@
 @{
     var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.MantenimientoPreventivo);
     if (permisosPagina == null) { return; }
-    var isAgregarText = Model.Idpreventivo == 0 ? "Agregar" : "Editar";
+
+    // Variable para saber si estamos editando un registro existente
+    bool isEdicion = Model.Idpreventivo > 0;
+    var isAgregarText = !isEdicion ? "Agregar" : "Editar";
 }
 
 <script>
@@ -51,22 +54,22 @@
                                 <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="NombrePreventivo"></span></div>
                             </div>
                         </div>
-                        <!--
-                            Quitar meses
+
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
-                                <label asp-for="Meses" class="col-form-label text-gray-600 required">Meses</label>
-                                <input asp-for="Meses" class="form-control bg-transparent" placeholder="Ej. 1, 3, 6, 12" maxlength="30" />
-                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="Meses"></span></div>
+                                <label asp-for="FechaPrev" class="col-form-label text-gray-600 required">Fecha Prevista</label>
+                                <input asp-for="FechaPrev" type="date" class="form-control bg-transparent" />
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="FechaPrev"></span></div>
                             </div>
                         </div>
                     </div>
-                    --> 
+
+
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="IdPlanta" class="col-form-label text-gray-600 required">Planta</label>
-                                @if (permisosPagina!.Editar)
+                                 @if (isEdicion)
                                 {
                                     <select id="selectIdPlanta" class="form-select bg-transparent" disabled>
                                         <option value="0">-- Seleccione una Planta --</option>
@@ -94,7 +97,7 @@
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Depósito</label>
-                                @if (permisosPagina!.Editar)
+                                @if (isEdicion)
                                 {
                                     <select id="selectIdDeposito" class="form-select bg-transparent" disabled>
                                         <option value="0">-- Seleccione un Depósito --</option>
@@ -107,7 +110,7 @@
                                 }
                                 else
                                 {
-                                    <select id="selectIdDeposito" name="IdDeposito" class="form-select bg-transparent" disabled>
+                                    <select id="selectIdDeposito" name="IdDeposito" class="form-select bg-transparent">
                                         <option value="0">-- Seleccione un Depósito --</option>
                                         @foreach (var dep in Model.Depositos)
                                         {
@@ -124,7 +127,7 @@
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Marca</label>
-                                @if (permisosPagina!.Editar)
+                                @if (isEdicion)
                                 {
                                     <select id="selectIdMarca" class="form-select bg-transparent" disabled>
                                         <option value="0">-- Seleccione una Marca --</option>
@@ -152,7 +155,7 @@
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <label asp-for="IdModelo" class="col-form-label text-gray-600 required">Modelo</label>
-                                @if (permisosPagina!.Editar)
+                                @if (isEdicion)
                                 {
                                     <select id="selectIdModelo" class="form-select bg-transparent" disabled>
                                         <option value="0">-- Seleccione un Modelo --</option>
@@ -165,7 +168,7 @@
                                 }
                                 else
                                 {
-                                    <select id="selectIdModelo" name="IdModelo" class="form-select bg-transparent" disabled>
+                                    <select id="selectIdModelo" name="IdModelo" class="form-select bg-transparent">
                                         <option value="0">-- Seleccione un Modelo --</option>
                                         @foreach (var mod in Model.Modelos)
                                         {
@@ -198,24 +201,20 @@
                                 <textarea asp-for="ObservacionesPreventivo" class="form-control bg-transparent" rows="2" placeholder="Observaciones generales"></textarea>
                             </div>
                         </div>
-                    </div>
-
+                        </div>
 
                     <div class="mb-10 text-end">
-                        @if (permisosPagina!.Editar)
-                        {
+                        
                             <button type="button" id="btn_generar_preventivos" class="btn btn-primary me-2">
                                 <span class="indicator-label">Generar Preventivos</span>
                                 <span class="indicator-progress">Procesando... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                             </button>
-                        }
-
-
+                        
                         <button type="submit" id="kt_preventivo_in_submit" class="btn btn-primary">
                             <span class="indicator-label">Guardar</span>
                             <span class="indicator-progress">Por favor espere... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
-                    </div>
+                    </div> 
                 </form>
             </div>
         </div>

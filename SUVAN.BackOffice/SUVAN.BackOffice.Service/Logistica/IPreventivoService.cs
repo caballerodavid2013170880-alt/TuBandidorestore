@@ -19,8 +19,8 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="idManoObra">ID de la mano de obra seleccionada en la vista.</param>
         /// <param name="idEmpresa">ID de la empresa de la sesión.</param>
         /// <param name="idUsuario">ID del usuario que detona la acción.</param>
-        Task<bool> GenerarDetallePreventivoAsync(int idPreventivo, int idManoObra, int idEmpresa, int idUsuario);
-
+        /// /// <param name="fechaPrev"> Fecha programada para realizar el mantenimiento preventivo.</param>
+        Task<bool> GenerarDetallePreventivoAsync(int idPreventivo, int idManoObra, DateTime fechaPrev, int idEmpresa, int idUsuario);
         /// <summary>
         /// Obtiene el resumen general y el registro masivo asociado a un plan preventivo.
         /// </summary>

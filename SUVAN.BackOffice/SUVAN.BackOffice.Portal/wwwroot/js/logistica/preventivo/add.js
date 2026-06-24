@@ -109,9 +109,9 @@ var KTPreventivo = function () {
                         stringLength: { min: 3, max: 70, message: 'Entre 3 y 70 caracteres' }
                     }
                 },
-                Meses: {
+                FechaPrev: {
                     validators: {
-                        notEmpty: { message: 'Los meses son requeridos' }
+                        notEmpty: { message: 'La fecha prevista es requerida' }
                     }
                 },
                 IdPlanta: { validators: { callback: { message: 'Seleccione una Planta', callback: selectorOk } } },
@@ -152,8 +152,9 @@ var KTPreventivo = function () {
 
             var idPreventivo = parseInt(document.querySelector('input[name="Idpreventivo"]').value, 10);
             var idManoObra = parseInt(selManoObra.value, 10);
+            var fechaPrev = document.querySelector('input[name="FechaPrev"]').value;
 
-            if (!idManoObra || idManoObra === 0) {
+            if (!idManoObra || idManoObra === 0 || !fechaPrev) {
                 Swal.fire({
                     text: "Por favor, seleccione una Mano de Obra antes de generar los preventivos.",
                     icon: "warning",
@@ -186,7 +187,8 @@ var KTPreventivo = function () {
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             IdPreventivo: idPreventivo,
-                            IdManoObra: idManoObra
+                            IdManoObra: idManoObra,
+                            FechaPrev: fechaPrev  // Envía la fecha capturada
                         })
                     })
                         .then(function (response) { return response.json(); })

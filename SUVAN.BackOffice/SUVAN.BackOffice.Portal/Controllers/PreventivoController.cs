@@ -148,6 +148,7 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
         {
             public int IdPreventivo { get; set; }
             public int IdManoObra { get; set; }
+            public DateTime FechaPrev { get; set; }
         }
 
         /// <summary>
@@ -158,21 +159,61 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
         {
             try
             {
-                if (request == null || request.IdPreventivo <= 0 || request.IdManoObra <= 0)
+                if (request == null || request.IdPreventivo <= 0 || request.IdManoObra <= 0 || request.FechaPrev == DateTime.MinValue) 
                     return Json(new { success = false, message = "Datos inválidos. Asegúrese de seleccionar una Mano de Obra." });
 
                 int idEmpresa = User.GetEmpresaId();
                 string claimUsuarioId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0";
                 int idUsuario = Convert.ToInt32(claimUsuarioId);
 
-                var result = await preventivoService.GenerarDetallePreventivoAsync(request.IdPreventivo, request.IdManoObra, idEmpresa, idUsuario);
-
+                var result = await preventivoService.GenerarDetallePreventivoAsync(request.IdPreventivo, request.IdManoObra, request.FechaPrev, idEmpresa, idUsuario);
                 return Json(new { success = true, message = "Los preventivos han sido generados exitosamente en el Detalle." });
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error al ejecutar generación de preventivos para el ID {request?.IdPreventivo}");
                 return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// Muestra la vista con el resumen general del plan y la tabla masiva de det_prev.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> DetalleGeneral(int id)
+        {
+            try
+            {
+                if (id <= 0) return RedirectToAction("Index");
+                var model = await preventivoService.GetDetalleGeneralAsync(User.GetEmpresaId(), id);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al cargar detalle general para el ID {id}");
+                TempData["MensajeError"] = ex.Message;
+                return RedirectToAction("Index");
+            }
+        }
+
+        /// <summary>
+        /// Muestra la vista con el desglose unitario por vehículo coincidente (det_prev_mo).
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> DetallePreventivoMO(int id)
+        {
+            try
+            {
+                if (id <= 0) return RedirectToAction("Index");
+                ViewBag.IdPreventivo = id;
+                var model = await preventivoService.GetDetalleVehiculosAsync(User.GetEmpresaId(), id);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al cargar detalle de vehículos para el ID {id}");
+                TempData["MensajeError"] = ex.Message;
+                return RedirectToAction("Index");
             }
         }
     }

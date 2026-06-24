@@ -20,6 +20,8 @@ namespace SUVAN.BackOffice.Service.Logistica
         public async Task<List<Preventivo>> GetPreventivos(int idEmpresa)
         {
             return await context.Preventivos
+                .Include(p => p.IdPlantaNavigation)
+                .Include(p => p.IdDepositoNavigation)
                 .Include(p => p.IdMarcaNavigation)
                 .Include(p => p.IdModeloNavigation)
                 .Where(p => p.Idempresa == idEmpresa)
@@ -63,6 +65,7 @@ namespace SUVAN.BackOffice.Service.Logistica
                 vRet.Idpreventivo = preventivo.Idpreventivo;
                 vRet.NombrePreventivo = preventivo.NombrePreventivo;
                 vRet.ObservacionesPreventivo = preventivo.ObservacionesPreventivo;
+                vRet.FechaPrev = preventivo.FechaPrev;
 
                 // Mapeo seguro de nullables a int
                 vRet.IdPlanta = preventivo.IdPlanta ?? 0;
@@ -100,6 +103,7 @@ namespace SUVAN.BackOffice.Service.Logistica
             preventivo.NombrePreventivo = model.NombrePreventivo;
             preventivo.ObservacionesPreventivo = model.ObservacionesPreventivo;
             preventivo.IdModelo = model.IdModelo;
+            preventivo.FechaPrev = model.FechaPrev.Value;
 
             // Asignación tolerante a los nuevos campos nulos
             preventivo.IdPlanta = model.IdPlanta > 0 ? model.IdPlanta : null;
@@ -141,9 +145,9 @@ namespace SUVAN.BackOffice.Service.Logistica
         }
 
         /// ========================= <SP/> ====================================
-        public async Task<bool> GenerarDetallePreventivoAsync(int idPreventivo, int idManoObra, int idEmpresa, int idUsuario)
+        public async Task<bool> GenerarDetallePreventivoAsync(int idPreventivo, int idManoObra, DateTime fechaPrev, int idEmpresa, int idUsuario)
         {
-            // Validar existencia y permisos
+            // 1. Validar existencia y permisos
             var preventivo = await context.Preventivos
                 .FirstOrDefaultAsync(p => p.Idpreventivo == idPreventivo && p.Idempresa == idEmpresa);
 
@@ -154,14 +158,67 @@ namespace SUVAN.BackOffice.Service.Logistica
             if (manoObra == null)
                 throw new Exception("La Mano de Obra seleccionada no es válida o no existe.");
 
-            // Ejecutar Stored Procedure de MySQL
-            // EF Core lanzará una excepción (que atrapará el Controller) si el SP ejecuta el ROLLBACK.
             await context.Database.ExecuteSqlRawAsync(
-                "CALL sp_GenerarDetallePreventivo({0}, {1}, {2})",
-                idPreventivo, idManoObra, idUsuario
+            "CALL sp_GenerarDetallePreventivo({0}, {1}, {2}, {3})",
+            idPreventivo, idManoObra, fechaPrev, idUsuario // Pasamos la fecha al Stored Procedure
             );
-
             return true;
         }
+
+        public async Task<DetalleGeneralViewModel> GetDetalleGeneralAsync(int idEmpresa, int idPreventivo)
+        {
+            var preventivo = await context.Preventivos
+               // .Include(p => p.IdPlantaNavigation)  //
+               // .Include(p => p.IdDepositoNavigation) //
+                .Include(p => p.IdMarcaNavigation)
+                .Include(p => p.IdModeloNavigation)
+                .Include(p => p.DetPrevs)
+                .FirstOrDefaultAsync(p => p.Idpreventivo == idPreventivo && p.Idempresa == idEmpresa);
+
+            if (preventivo == null)
+                throw new Exception("El plan de mantenimiento preventivo no existe o no tiene acceso.");
+
+            var detPrevResumen = preventivo.DetPrevs.FirstOrDefault();
+
+            return new DetalleGeneralViewModel
+            {
+                IdPreventivo = preventivo.Idpreventivo,
+                NombrePreventivo = preventivo.NombrePreventivo,
+                Marca = preventivo.IdMarcaNavigation?.Descripcion ?? "N/A",
+                Modelo = preventivo.IdModeloNavigation?.Descripcion ?? "N/A",
+                FechaPrev = preventivo.FechaPrev,
+                CostoUnitario = detPrevResumen?.CostoUnitario ?? 0,
+                IvaTotal = detPrevResumen?.Iva ?? 0,
+                CostoTotal = preventivo.CostoTotal ?? detPrevResumen?.CostoTotal ?? 0,
+                Detalles = preventivo.DetPrevs.Select(d => new DetPrevItemViewModel
+                {
+                    IdPrevDet = d.IdPrevDet,
+                    CostoUnitario = d.CostoUnitario,
+                    Iva = d.Iva,
+                    CostoTotal = d.CostoTotal,
+                    FechaRegistro = d.Fecharegistro
+                }).ToList()
+            };
+        }
+
+        public async Task<List<DetPrevMoItemViewModel>> GetDetalleVehiculosAsync(int idEmpresa, int idPreventivo)
+        {
+            return await context.DetPrevMos
+                .Include(d => d.IdpreventivoNavigation)
+                .Include(d => d.IdManoObraNavigation)
+                .Where(d => d.Idpreventivo == idPreventivo && d.IdpreventivoNavigation.Idempresa == idEmpresa)
+                .Select(d => new DetPrevMoItemViewModel
+                {
+                    IdPrevMo = d.IdPrevMo,
+                    NombrePreventivo = d.IdpreventivoNavigation.NombrePreventivo,
+                    ManoObra = d.IdManoObraNavigation.DescripcionManoobra,
+                    Iva = d.Iva,
+                    CostoTotalUnitario = d.CostoTotalUnitario,
+                    FechaPrev = d.IdpreventivoNavigation.FechaPrev
+                })
+                .ToListAsync();
+        }
+
+
     }
 }

@@ -42,7 +42,7 @@
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                             <th class="min-w-200px">Nombre</th>
-                            <th class="min-w-150px">Meses</th>
+                            <th class="min-w-150px">Planta / Depósito</th>
                             <th class="min-w-150px">Marca / Modelo</th>
                             <th class="min-w-150px">Fecha de creación </th>
                             <th class="text-end min-w-100px">Acciones</th>
@@ -53,7 +53,12 @@
                         {
                             <tr>
                                 <td>@prev.NombrePreventivo</td>
-                                <td>@(prev.IdMarcaNavigation?.Descripcion) / @(prev.IdModeloNavigation?.Descripcion)</td>
+                                <td>
+                                    @(prev.IdPlantaNavigation?.NombrePlanta ?? "N/A") /
+                                    @(prev.IdDepositoNavigation?.NombreDeposito ?? "N/A")
+                                </td>
+                                <td>@(prev.IdMarcaNavigation?.Descripcion) / 
+                                    @(prev.IdModeloNavigation?.Descripcion)</td>
                                 <td>@(prev.Fecharegistro?.ToString("dd/MM/yyyy HH:mm"))</td>
                                 <td class="text-end">
                                     @if (permisosPagina!.Editar)
