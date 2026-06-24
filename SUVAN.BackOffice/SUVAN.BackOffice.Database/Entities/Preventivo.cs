@@ -21,11 +21,11 @@ public partial class Preventivo
 
     public string? ObservacionesPreventivo { get; set; }
 
-    public string? Meses { get; set; }
-
     public short? IdMarca { get; set; }
 
     public int IdModelo { get; set; }
+
+    public DateTime FechaPrev { get; set; }
 
     public decimal? CostoTotal { get; set; }
 

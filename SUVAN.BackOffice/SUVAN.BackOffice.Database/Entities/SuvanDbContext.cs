@@ -119,6 +119,7 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<GrupoReparacion> GrupoReparacions { get; set; }
 
     public virtual DbSet<Infracc> Infraccs { get; set; }
+
     public virtual DbSet<LiquidacionCabecera> LiquidacionCabeceras { get; set; }
 
     public virtual DbSet<LiquidacionDetalle> LiquidacionDetalles { get; set; }
@@ -153,8 +154,9 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Mfaportal> Mfaportals { get; set; }
 
-    public virtual DbSet<ModelRutaConfiguracion> ModelRutaConfiguracions { get; set; }
     public virtual DbSet<Modelo> Modelos { get; set; }
+
+    public virtual DbSet<ModelRutaConfiguracion> ModelRutaConfiguracions { get; set; }
 
     public virtual DbSet<Monedero> Monederos { get; set; }
 
@@ -293,7 +295,7 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Zona> Zonas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+    // #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
     => optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -2802,6 +2804,13 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_modelo_tipo_v");
         });
 
+
+        modelBuilder.Entity<ModelsStoredsProcedures.ModelRutaConfiguracion>(entity =>
+        {
+            entity.HasNoKey();
+            entity.ToView(null);
+        });
+
         modelBuilder.Entity<Monedero>(entity =>
         {
             entity.HasKey(e => e.UsuarioIdusuario).HasName("PRIMARY");
@@ -2824,13 +2833,6 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey<Monedero>(d => d.UsuarioIdusuario)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_monedero_usuario1");
-        });
-
-        //ModelsStoredsProcedures.ModelRutaConfiguracions
-        modelBuilder.Entity<ModelsStoredsProcedures.ModelRutaConfiguracion>(entity =>
-        {
-            entity.HasNoKey();
-            entity.ToView(null);
         });
 
         modelBuilder.Entity<MotivoAuxilioVial>(entity =>
@@ -3167,6 +3169,9 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.CostoTotal)
                 .HasPrecision(10, 2)
                 .HasColumnName("costo_total");
+            entity.Property(e => e.FechaPrev)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_prev");
             entity.Property(e => e.Fecharegistro)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("datetime")
@@ -3179,9 +3184,6 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.IdZona).HasColumnName("id_zona");
             entity.Property(e => e.Idempresa).HasColumnName("idempresa");
             entity.Property(e => e.Idusuario).HasColumnName("idusuario");
-            entity.Property(e => e.Meses)
-                .HasMaxLength(30)
-                .HasColumnName("meses");
             entity.Property(e => e.NombrePreventivo)
                 .HasMaxLength(70)
                 .HasColumnName("nombre_preventivo");

@@ -20,5 +20,15 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <param name="idEmpresa">ID de la empresa de la sesión.</param>
         /// <param name="idUsuario">ID del usuario que detona la acción.</param>
         Task<bool> GenerarDetallePreventivoAsync(int idPreventivo, int idManoObra, int idEmpresa, int idUsuario);
+
+        /// <summary>
+        /// Obtiene el resumen general y el registro masivo asociado a un plan preventivo.
+        /// </summary>
+        Task<DetalleGeneralViewModel> GetDetalleGeneralAsync(int idEmpresa, int idPreventivo);
+
+        /// <summary>
+        /// Obtiene el detalle unitario desglosado por cada vehículo coincidente.
+        /// </summary>
+        Task<List<DetPrevMoItemViewModel>> GetDetalleVehiculosAsync(int idEmpresa, int idPreventivo);
     }
 }

@@ -63,7 +63,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                 vRet.Idpreventivo = preventivo.Idpreventivo;
                 vRet.NombrePreventivo = preventivo.NombrePreventivo;
                 vRet.ObservacionesPreventivo = preventivo.ObservacionesPreventivo;
-                vRet.Meses = preventivo.Meses;
 
                 // Mapeo seguro de nullables a int
                 vRet.IdPlanta = preventivo.IdPlanta ?? 0;
@@ -100,7 +99,6 @@ namespace SUVAN.BackOffice.Service.Logistica
 
             preventivo.NombrePreventivo = model.NombrePreventivo;
             preventivo.ObservacionesPreventivo = model.ObservacionesPreventivo;
-            preventivo.Meses = model.Meses;
             preventivo.IdModelo = model.IdModelo;
 
             // Asignación tolerante a los nuevos campos nulos
