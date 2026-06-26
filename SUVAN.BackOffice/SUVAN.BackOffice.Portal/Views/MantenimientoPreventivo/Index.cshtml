@@ -2,13 +2,36 @@
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
 @{
-    ViewData["Title"] = "Mantenimiento Preventivo";
+    ViewData["Title"] = "Mantenimiento Preventivo - Planes Preventivos";
 }
 @model List<SUVAN.BackOffice.Database.Entities.Preventivo>
 @{
     var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.MantenimientoPreventivo);
     if (permisosPagina == null) { return; }
 }
+
+<style>
+    /* Estilos personalizados para las pestañas según la imagen adjunta */
+    .nav-tab-custom {
+        color: #7E8299; /* Gris sutil para inactivos */
+        font-weight: 500;
+        padding: 0.65rem 1.25rem;
+        border-radius: 0.475rem;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        margin-right: 1rem;
+    }
+    .nav-tab-custom:hover {
+        color: #0052cc; /* Azul al pasar el mouse */
+    }
+    .nav-tab-active {
+        background-color: #004AAD; /* Azul oscuro sólido */
+        color: #ffffff !important;
+        font-weight: 600;
+        box-shadow: 0 0 0 4px #d6e4f9; /* Halo celeste de la imagen */
+    }
+</style>
+
 <div id="kt_app_toolbar" class="app-toolbar ">
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
@@ -18,7 +41,7 @@
             <div class="d-flex align-items-center gap-2 gap-lg-3">
                 @if (permisosPagina!.Agregar)
                 {
-                    <a href="~/MantenimientoPreventivo/AgregarPreventivo" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Preventivo</a>
+                    <a href="~/MantenimientoPreventivo/AgregarPreventivo" class="btn btn-flex btn-primary h-40px fs-7 fw-bold">Agregar Preventivo</a>
                 }
             </div>
         </div>
@@ -27,6 +50,14 @@
 
 <div id="kt_app_content" class="app-content flex-column-fluid">
     <div id="kt_app_content_container" class="app-container container-fluid">
+
+        <!-- PESTAÑAS -->
+        <div class="d-flex align-items-center mb-8 overflow-auto">
+            <a href="~/MantenimientoPreventivo/Index" class="nav-tab-custom nav-tab-active">Planes Preventivos</a>
+            <a href="~/MantenimientoPreventivo/IndexDetalleGeneral" class="nav-tab-custom">Detalle General</a>
+            <a href="~/MantenimientoPreventivo/IndexDetalleUnitario" class="nav-tab-custom">Detalle Unitario</a>
+        </div>
+
         <div class="card">
             <div class="card-header border-0 pt-6">
                 <div class="card-title">
@@ -44,7 +75,6 @@
                             <th class="min-w-200px">Nombre</th>
                             <th class="min-w-150px">Planta / Depósito</th>
                             <th class="min-w-150px">Marca / Modelo</th>
-                            <th class="min-w-150px">Fecha de creación </th>
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
                     </thead>
@@ -57,19 +87,24 @@
                                     @(prev.IdPlantaNavigation?.NombrePlanta ?? "N/A") /
                                     @(prev.IdDepositoNavigation?.NombreDeposito ?? "N/A")
                                 </td>
-                                <td>@(prev.IdMarcaNavigation?.Descripcion) / 
-                                    @(prev.IdModeloNavigation?.Descripcion)</td>
-                                <td>@(prev.Fecharegistro?.ToString("dd/MM/yyyy HH:mm"))</td>
+                                <td>
+                                    @(prev.IdMarcaNavigation?.Descripcion ?? "N/A") /
+                                    @(prev.IdModeloNavigation?.Descripcion ?? "N/A")
+                                </td>
                                 <td class="text-end">
+                                    <!-- Botón Ver (Ojo) en color Info (Celeste) -->
+                                    <a href="~/MantenimientoPreventivo/DetalleGeneral/@prev.Idpreventivo" class="btn btn-icon btn-light-info btn-active-info w-30px h-30px me-1" title="Consultar Detalles del Plan">
+                                        <i class="ki-outline ki-eye fs-3"></i>
+                                    </a>
+
+                                    <!-- Botón Editar (Lápiz) en color Warning (Amarillo) -->
                                     @if (permisosPagina!.Editar)
                                     {
-                                        <a href="~/MantenimientoPreventivo/AgregarPreventivo/@prev.Idpreventivo" class="btn btn-icon btn-active-light-primary w-30px h-30px" title="Editar preventivo">
+                                        <a href="~/MantenimientoPreventivo/AgregarPreventivo/@prev.Idpreventivo" class="btn btn-icon btn-light-warning btn-active-warning w-30px h-30px" title="Editar preventivo">
                                             <i class="ki-outline ki-pencil fs-3"></i>
                                         </a>
                                     }
                                 </td>
-
-                               
                             </tr>
                         }
                     </tbody>
@@ -81,6 +116,4 @@
 
 @section scripts {
     <script src="~/js/logistica/preventivo/table.js" asp-append-version="true"></script>
-    <script src="~/assets/js/widgets.bundle.js"></script>
-    <script src="~/assets/js/custom/widgets.js"></script>
 }

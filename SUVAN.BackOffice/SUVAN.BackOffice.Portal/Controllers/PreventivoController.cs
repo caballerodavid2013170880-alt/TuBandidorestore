@@ -179,6 +179,8 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
         /// <summary>
         /// Muestra la vista con el resumen general del plan y la tabla masiva de det_prev.
         /// </summary>
+        /// <param name="id">Identificador del Mantenimiento Preventivo (Plantilla).</param>
+        /// <returns>Vista renderizada con el modelo DetalleGeneralViewModel.</returns>
         [HttpGet]
         public async Task<IActionResult> DetalleGeneral(int id)
         {
@@ -199,6 +201,8 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
         /// <summary>
         /// Muestra la vista con el desglose unitario por vehículo coincidente (det_prev_mo).
         /// </summary>
+        /// <param name="id">Identificador del Mantenimiento Preventivo.</param>
+        /// <returns>Vista renderizada con la lista de vehículos asociados.</returns>
         [HttpGet]
         public async Task<IActionResult> DetallePreventivoMO(int id)
         {
@@ -216,5 +220,27 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
                 return RedirectToAction("Index");
             }
         }
+        //INDEX MIXTO
+
+        /// <summary>
+        /// Muestra la vista global de la pestaña "Detalle General" listando todos los registros de det_prev.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> IndexDetalleGeneral()
+        {
+            var model = await preventivoService.GetAllDetalleGeneralAsync(User.GetEmpresaId());
+            return View(model);
+        }
+
+        /// <summary>
+        /// Muestra la vista global de la pestaña "Detalle Unitario" listando todos los registros de det_prev_mo.
+        /// </summary>
+        [HttpGet]
+        public async Task<IActionResult> IndexDetalleUnitario()
+        {
+            var model = await preventivoService.GetAllDetalleVehiculosAsync(User.GetEmpresaId());
+            return View(model);
+        }
+
     }
 }

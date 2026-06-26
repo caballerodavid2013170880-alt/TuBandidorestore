@@ -165,11 +165,14 @@ namespace SUVAN.BackOffice.Service.Logistica
             return true;
         }
 
+        /// <summary>
+        /// Obtiene el resumen general (masivo) asociado a un plan preventivo, incluyendo información de Planta y Depósito.
+        /// </summary>
         public async Task<DetalleGeneralViewModel> GetDetalleGeneralAsync(int idEmpresa, int idPreventivo)
         {
             var preventivo = await context.Preventivos
-               // .Include(p => p.IdPlantaNavigation)  //
-               // .Include(p => p.IdDepositoNavigation) //
+                .Include(p => p.IdPlantaNavigation)
+                .Include(p => p.IdDepositoNavigation)
                 .Include(p => p.IdMarcaNavigation)
                 .Include(p => p.IdModeloNavigation)
                 .Include(p => p.DetPrevs)
@@ -184,6 +187,8 @@ namespace SUVAN.BackOffice.Service.Logistica
             {
                 IdPreventivo = preventivo.Idpreventivo,
                 NombrePreventivo = preventivo.NombrePreventivo,
+                Planta = preventivo.IdPlantaNavigation?.NombrePlanta ?? "N/A",
+                Deposito = preventivo.IdDepositoNavigation?.NombreDeposito ?? "N/A",
                 Marca = preventivo.IdMarcaNavigation?.Descripcion ?? "N/A",
                 Modelo = preventivo.IdModeloNavigation?.Descripcion ?? "N/A",
                 FechaPrev = preventivo.FechaPrev,
@@ -201,17 +206,23 @@ namespace SUVAN.BackOffice.Service.Logistica
             };
         }
 
+        /// <summary>
+        /// Obtiene el detalle unitario desglosado por cada vehículo coincidente en el plan preventivo.
+        /// </summary>
         public async Task<List<DetPrevMoItemViewModel>> GetDetalleVehiculosAsync(int idEmpresa, int idPreventivo)
         {
             return await context.DetPrevMos
                 .Include(d => d.IdpreventivoNavigation)
                 .Include(d => d.IdManoObraNavigation)
+                .Include(d => d.IdVehiculoNavigation) // Requerido para leer Placas/VIN
                 .Where(d => d.Idpreventivo == idPreventivo && d.IdpreventivoNavigation.Idempresa == idEmpresa)
                 .Select(d => new DetPrevMoItemViewModel
                 {
                     IdPrevMo = d.IdPrevMo,
                     NombrePreventivo = d.IdpreventivoNavigation.NombrePreventivo,
                     ManoObra = d.IdManoObraNavigation.DescripcionManoobra,
+                    Placas = d.IdVehiculoNavigation.Placas,
+                    Vin = d.IdVehiculoNavigation.Vin,
                     Iva = d.Iva,
                     CostoTotalUnitario = d.CostoTotalUnitario,
                     FechaPrev = d.IdpreventivoNavigation.FechaPrev
@@ -219,6 +230,48 @@ namespace SUVAN.BackOffice.Service.Logistica
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Obtiene el listado de todos los registros masivos (det_prev) de la empresa para la vista global.
+        /// </summary>
+        public async Task<List<DetalleGeneralViewModel>> GetAllDetalleGeneralAsync(int idEmpresa)
+        {
+            return await context.DetPrevs
+                .Include(d => d.IdpreventivoNavigation)
+                .Where(d => d.IdpreventivoNavigation.Idempresa == idEmpresa)
+                .Select(d => new DetalleGeneralViewModel
+                {
+                    IdPreventivo = d.Idpreventivo,
+                    NombrePreventivo = d.IdpreventivoNavigation.NombrePreventivo,
+                    FechaPrev = d.IdpreventivoNavigation.FechaPrev,
+                    CostoUnitario = d.CostoUnitario,
+                    IvaTotal = d.Iva,
+                    CostoTotal = d.CostoTotal
+                })
+                .ToListAsync();
+        }
 
+        /// <summary>
+        /// Obtiene el listado de todos los desgloses unitarios (det_prev_mo) de la empresa para la vista global.
+        /// </summary>
+        public async Task<List<DetPrevMoItemViewModel>> GetAllDetalleVehiculosAsync(int idEmpresa)
+        {
+            return await context.DetPrevMos
+                .Include(d => d.IdpreventivoNavigation)
+                .Include(d => d.IdManoObraNavigation)
+                .Include(d => d.IdVehiculoNavigation)
+                .Where(d => d.IdpreventivoNavigation.Idempresa == idEmpresa)
+                .Select(d => new DetPrevMoItemViewModel
+                {
+                    IdPrevMo = d.IdPrevMo,
+                    NombrePreventivo = d.IdpreventivoNavigation.NombrePreventivo,
+                    ManoObra = d.IdManoObraNavigation.DescripcionManoobra,
+                    Placas = d.IdVehiculoNavigation.Placas,
+                    Vin = d.IdVehiculoNavigation.Vin,
+                    Iva = d.Iva,
+                    CostoTotalUnitario = d.CostoTotalUnitario,
+                    FechaPrev = d.IdpreventivoNavigation.FechaPrev
+                })
+                .ToListAsync();
+        }
     }
 }

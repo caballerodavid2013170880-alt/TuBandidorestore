@@ -80,6 +80,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
     {
         public int IdPreventivo { get; set; }
         public string? NombrePreventivo { get; set; }
+        public string? Planta { get; set; }
+        public string? Deposito { get; set; }
         public string? Marca { get; set; }
         public string? Modelo { get; set; }
         public DateTime FechaPrev { get; set; }
@@ -107,6 +109,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public int IdPrevMo { get; set; }
         public string? NombrePreventivo { get; set; }
         public string? ManoObra { get; set; }
+        public string? Placas { get; set; }
+        public string? Vin { get; set; }
         public decimal? Iva { get; set; }
         public decimal CostoTotalUnitario { get; set; }
         public DateTime FechaPrev { get; set; }

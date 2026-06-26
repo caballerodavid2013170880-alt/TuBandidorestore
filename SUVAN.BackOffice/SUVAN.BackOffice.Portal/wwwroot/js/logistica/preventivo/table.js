@@ -21,7 +21,7 @@ var KTPreventivoTable = function () {
                 }
             },
             "columnDefs": [
-                { "orderable": false, "targets": 4 }
+                { "orderable": false, "targets": 3 }
             ]
 
         });

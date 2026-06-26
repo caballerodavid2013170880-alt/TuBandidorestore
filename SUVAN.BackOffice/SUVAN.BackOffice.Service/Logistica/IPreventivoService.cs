@@ -30,5 +30,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// Obtiene el detalle unitario desglosado por cada vehículo coincidente.
         /// </summary>
         Task<List<DetPrevMoItemViewModel>> GetDetalleVehiculosAsync(int idEmpresa, int idPreventivo);
+        Task<List<DetalleGeneralViewModel>> GetAllDetalleGeneralAsync(int idEmpresa);
+        Task<List<DetPrevMoItemViewModel>> GetAllDetalleVehiculosAsync(int idEmpresa);
     }
 }
