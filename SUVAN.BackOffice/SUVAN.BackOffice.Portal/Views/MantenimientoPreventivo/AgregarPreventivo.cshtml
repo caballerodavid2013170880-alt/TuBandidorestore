@@ -1,220 +1,161 @@
 ﻿@using SUVAN.BackOffice.Models.ViewModel.Logistica;
-@using SUVAN.BackOffice.Models.ViewModel.Enums;
-@using SUVAN.BackOffice.Portal.Helper;
-@inject IUsuarioHelper UsuarioHelper
-@{
-    ViewData["Title"] = "";
-}
 @model PreventivoViewModel
 @{
-    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.MantenimientoPreventivo);
-    if (permisosPagina == null) { return; }
-
-    // Variable para saber si estamos editando un registro existente
     bool isEdicion = Model.Idpreventivo > 0;
     var isAgregarText = !isEdicion ? "Agregar" : "Editar";
+    ViewData["Title"] = isAgregarText + " Mantenimiento Preventivo";
 }
 
 <script>
     window.SUVAN = window.SUVAN || {};
     window.SUVAN.Urls = {
-        GetDepositos: '@Url.Action("GetDepositosPorPlanta", "MantenimientoPreventivo")',
+        GetPlantas: '@Url.Action("GetPlantasPorRegion", "MantenimientoPreventivo")',
+        GetZonas: '@Url.Action("GetZonasPorPlanta", "MantenimientoPreventivo")',
+        GetDepositos: '@Url.Action("GetDepositosPorZona", "MantenimientoPreventivo")',
         GetModelos: '@Url.Action("GetModelosPorMarca", "MantenimientoPreventivo")',
-        GenerarPreventivos: '@Url.Action("GenerarDetalles", "MantenimientoPreventivo")'
+        AjaxSave: '@Url.Action("AgregarPreventivoAjax", "MantenimientoPreventivo")',
+        AjaxGenerar: '@Url.Action("GenerarDetallesAjax", "MantenimientoPreventivo")'
     };
 </script>
 
-<div id="kt_app_toolbar" class="app-toolbar ">
-    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
-        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
-            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                <a href="~/MantenimientoPreventivo/Index" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0">
-                    <i class="ki-duotone ki-left fs-1 pe-5"></i>
-                    <span>@isAgregarText @ViewData["Title"]</span>
-                </a>
-            </div>
+<div class="app-toolbar" id="kt_app_toolbar">
+    <div class="app-container container-fluid">
+        <div class="page-title d-flex justify-content-between">
+            <h1 class="page-heading text-dark fw-bold fs-3">@ViewData["Title"]</h1>
+            <a href="~/MantenimientoPreventivo/Index" class="btn btn-sm btn-light">Volver</a>
         </div>
     </div>
 </div>
 
-<div id="kt_app_content" class="app-content flex-column-fluid">
-    <div id="kt_app_content_container" class="app-container container-fluid">
+<div class="app-content flex-column-fluid">
+    <div class="app-container container-fluid">
         <div class="card">
             <div class="card-body py-4">
-                <form class="form w-100" novalidate="novalidate" id="kt_preventivo_in_form" asp-controller="MantenimientoPreventivo" asp-action="AgregarPreventivo" method="post">
+                <form class="form w-100" id="form_agregar_preventivo">
                     @Html.AntiForgeryToken()
                     <input asp-for="Idpreventivo" type="hidden" />
-                    <input asp-for="Idempresa" type="hidden" value="@User.GetEmpresaId()" />
 
                     <div class="row">
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="NombrePreventivo" class="col-form-label text-gray-600 required">Nombre Preventivo</label>
-                                <input asp-for="NombrePreventivo" class="form-control bg-transparent" placeholder="Nombre del Plan Preventivo" maxlength="70" />
-                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="NombrePreventivo"></span></div>
-                            </div>
+                        <div class="col-sm-6 mb-8">
+                            <label class="required col-form-label">Nombre Preventivo</label>
+                            <input asp-for="NombrePreventivo" class="form-control" />
                         </div>
-
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="FechaPrev" class="col-form-label text-gray-600 required">Fecha Prevista</label>
-                                <input asp-for="FechaPrev" type="date" class="form-control bg-transparent" />
-                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="FechaPrev"></span></div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="row">
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="IdPlanta" class="col-form-label text-gray-600 required">Planta</label>
-                                 @if (isEdicion)
-                                {
-                                    <select id="selectIdPlanta" class="form-select bg-transparent" disabled>
-                                        <option value="0">-- Seleccione una Planta --</option>
-                                        @foreach (var planta in Model.Plantas)
-                                        {
-                                            <option value="@planta.IdPlanta" selected="@(planta.IdPlanta == Model.IdPlanta ? "selected" : null)">@planta.Nombre</option>
-                                        }
-                                    </select>
-                                    <input type="hidden" asp-for="IdPlanta" />
-                                }
-                                else
-                                {
-                                    <select id="selectIdPlanta" name="IdPlanta" class="form-select bg-transparent">
-                                        <option value="0">-- Seleccione una Planta --</option>
-                                        @foreach (var planta in Model.Plantas)
-                                        {
-                                            <option value="@planta.IdPlanta" selected="@(planta.IdPlanta == Model.IdPlanta ? "selected" : null)">@planta.Nombre</option>
-                                        }
-                                    </select>
-                                }
-                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdPlanta"></span></div>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Depósito</label>
-                                @if (isEdicion)
-                                {
-                                    <select id="selectIdDeposito" class="form-select bg-transparent" disabled>
-                                        <option value="0">-- Seleccione un Depósito --</option>
-                                        @foreach (var dep in Model.Depositos)
-                                        {
-                                            <option value="@dep.IdDeposito" selected="@(dep.IdDeposito == Model.IdDeposito ? "selected" : null)">@dep.Nombre</option>
-                                        }
-                                    </select>
-                                    <input type="hidden" asp-for="IdDeposito" />
-                                }
-                                else
-                                {
-                                    <select id="selectIdDeposito" name="IdDeposito" class="form-select bg-transparent">
-                                        <option value="0">-- Seleccione un Depósito --</option>
-                                        @foreach (var dep in Model.Depositos)
-                                        {
-                                            <option value="@dep.IdDeposito" selected="@(dep.IdDeposito == Model.IdDeposito ? "selected" : null)">@dep.Nombre</option>
-                                        }
-                                    </select>
-                                }
-                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdDeposito"></span></div>
-                            </div>
+                        <div class="col-sm-6 mb-8">
+                            <label class="required col-form-label">Fecha Prevista</label>
+                            <input asp-for="FechaPrev" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Marca</label>
-                                @if (isEdicion)
+                        <div class="col-sm-3 mb-8">
+                            <label class="required col-form-label">Región</label>
+                            <select asp-for="IdRegion" class="form-select" disabled="@isEdicion">
+                                <option value="0">-- Seleccione --</option>
+                                @foreach (var r in Model.Regiones)
                                 {
-                                    <select id="selectIdMarca" class="form-select bg-transparent" disabled>
-                                        <option value="0">-- Seleccione una Marca --</option>
-                                        @foreach (var marca in Model.Marcas)
-                                        {
-                                            <option value="@marca.IdMarca" selected="@(marca.IdMarca == Model.IdMarca ? "selected" : null)">@marca.Nombre</option>
-                                        }
-                                    </select>
-                                    <input type="hidden" asp-for="IdMarca" />
+                                    <option value="@r.Id">@r.Nombre</option>
                                 }
-                                else
-                                {
-                                    <select id="selectIdMarca" name="IdMarca" class="form-select bg-transparent">
-                                        <option value="0">-- Seleccione una Marca --</option>
-                                        @foreach (var marca in Model.Marcas)
-                                        {
-                                            <option value="@marca.IdMarca" selected="@(marca.IdMarca == Model.IdMarca ? "selected" : null)">@marca.Nombre</option>
-                                        }
-                                    </select>
-                                }
-                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdMarca"></span></div>
-                            </div>
+                            </select>
+                            @if (isEdicion)
+                            {
+                                <input type="hidden" asp-for="IdRegion" />
+                            }
                         </div>
-
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="IdModelo" class="col-form-label text-gray-600 required">Modelo</label>
-                                @if (isEdicion)
+                        <div class="col-sm-3 mb-8">
+                            <label class="required col-form-label">Planta</label>
+                            <select asp-for="IdPlanta" class="form-select" disabled="@isEdicion">
+                                <option value="0">-- Seleccione --</option>
+                                @foreach (var p in Model.Plantas)
                                 {
-                                    <select id="selectIdModelo" class="form-select bg-transparent" disabled>
-                                        <option value="0">-- Seleccione un Modelo --</option>
-                                        @foreach (var mod in Model.Modelos)
-                                        {
-                                            <option value="@mod.IdModelo" selected="@(mod.IdModelo == Model.IdModelo ? "selected" : null)">@mod.Nombre</option>
-                                        }
-                                    </select>
-                                    <input type="hidden" asp-for="IdModelo" />
+                                    <option value="@p.Id">@p.Nombre</option>
                                 }
-                                else
+                            </select>
+                            @if (isEdicion)
+                            {
+                                <input type="hidden" asp-for="IdPlanta" />
+                            }
+                        </div>
+                        <div class="col-sm-3 mb-8">
+                            <label class="required col-form-label">Zona</label>
+                            <select asp-for="IdZona" class="form-select" disabled="@isEdicion">
+                                <option value="0">-- Seleccione --</option>
+                                @foreach (var z in Model.Zonas)
                                 {
-                                    <select id="selectIdModelo" name="IdModelo" class="form-select bg-transparent">
-                                        <option value="0">-- Seleccione un Modelo --</option>
-                                        @foreach (var mod in Model.Modelos)
-                                        {
-                                            <option value="@mod.IdModelo" selected="@(mod.IdModelo == Model.IdModelo ? "selected" : null)">@mod.Nombre</option>
-                                        }
-                                    </select>
+                                    <option value="@z.Id">@z.Nombre</option>
                                 }
-                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdModelo"></span></div>
-                            </div>
+                            </select>
+                            @if (isEdicion)
+                            {
+                                <input type="hidden" asp-for="IdZona" />
+                            }
+                        </div>
+                        <div class="col-sm-3 mb-8">
+                            <label class="required col-form-label">Depósito</label>
+                            <select asp-for="IdDeposito" class="form-select" disabled="@isEdicion">
+                                <option value="0">-- Seleccione --</option>
+                                @foreach (var d in Model.Depositos)
+                                {
+                                    <option value="@d.Id">@d.Nombre</option>
+                                }
+                            </select>
+                            @if (isEdicion)
+                            {
+                                <input type="hidden" asp-for="IdDeposito" />
+                            }
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="IdManoObra" class="col-form-label text-gray-600 required">Mano de Obra</label>
-                                <select id="selectIdManoObra" name="IdManoObra" class="form-select bg-transparent">
-                                    <option value="0">-- Seleccione Mano de Obra --</option>
-                                    @foreach (var mo in Model.ManosObra)
-                                    {
-                                        <option value="@mo.IdManoObra" selected="@(mo.IdManoObra == Model.IdManoObra ? "selected" : null)">@mo.Descripcion</option>
-                                    }
-                                </select>
-                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdManoObra"></span></div>
-                            </div>
+                        <div class="col-sm-6 mb-8">
+                            <label class="required col-form-label">Marca</label>
+                            <select asp-for="IdMarca" class="form-select" disabled="@isEdicion">
+                                <option value="0">-- Seleccione --</option>
+                                @foreach (var m in Model.Marcas)
+                                {
+                                    <option value="@m.Id">@m.Nombre</option>
+                                }
+                            </select>
+                            @if (isEdicion)
+                            {
+                                <input type="hidden" asp-for="IdMarca" />
+                            }
                         </div>
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="ObservacionesPreventivo" class="col-form-label text-gray-600">Observaciones</label>
-                                <textarea asp-for="ObservacionesPreventivo" class="form-control bg-transparent" rows="2" placeholder="Observaciones generales"></textarea>
-                            </div>
+                        <div class="col-sm-6 mb-8">
+                            <label class="required col-form-label">Modelo</label>
+                            <select asp-for="IdModelo" class="form-select" disabled="@isEdicion">
+                                <option value="0">-- Seleccione --</option>
+                                @foreach (var m in Model.Modelos)
+                                {
+                                    <option value="@m.Id">@m.Nombre</option>
+                                }
+                            </select>
+                            @if (isEdicion)
+                            {
+                                <input type="hidden" asp-for="IdModelo" />
+                            }
                         </div>
-                        </div>
+                    </div>
 
-                    <div class="mb-10 text-end">
-                        
-                            <button type="button" id="btn_generar_preventivos" class="btn btn-primary me-2">
-                                <span class="indicator-label">Generar Preventivos</span>
-                                <span class="indicator-progress">Procesando... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                            </button>
-                        
-                        <button type="submit" id="kt_preventivo_in_submit" class="btn btn-primary">
-                            <span class="indicator-label">Guardar</span>
-                            <span class="indicator-progress">Por favor espere... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
-                        </button>
-                    </div> 
+                    <div class="row">
+                        <div class="col-sm-6 mb-8">
+                            <label class="required col-form-label">Servicio (Mano de Obra)</label>
+                            <select asp-for="IdManoObra" class="form-select">
+                                <option value="0">-- Seleccione --</option>
+                                @foreach (var mo in Model.ManosObra)
+                                {
+                                    <option value="@mo.Id">@mo.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-sm-6 mb-8">
+                            <label class="col-form-label">Observaciones</label>
+                            <textarea asp-for="ObservacionesPreventivo" class="form-control" rows="2"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="text-end">
+                        <button type="submit" id="btn_guardar" class="btn btn-primary">Guardar Registro</button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -222,7 +163,5 @@
 </div>
 
 @section scripts {
-    <script src="~/assets/js/widgets.bundle.js"></script>
-    <script src="~/assets/js/custom/widgets.js"></script>
     <script src="~/js/logistica/preventivo/add.js" asp-append-version="true"></script>
 }

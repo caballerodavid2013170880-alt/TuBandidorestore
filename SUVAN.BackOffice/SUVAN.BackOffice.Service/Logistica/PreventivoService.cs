@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// --- PreventivoService.cs ---
+using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
@@ -12,18 +13,18 @@ namespace SUVAN.BackOffice.Service.Logistica
     {
         private readonly SuvanDbContext context;
 
-        public PreventivoService(SuvanDbContext context)
-        {
-            this.context = context;
-        }
+        public PreventivoService(SuvanDbContext context) { this.context = context; }
 
         public async Task<List<Preventivo>> GetPreventivos(int idEmpresa)
         {
+            // NOTA RBAC: Aquí en el futuro aplicarás .Where() validando los accesos a región/planta del usuario
             return await context.Preventivos
                 .Include(p => p.IdPlantaNavigation)
                 .Include(p => p.IdDepositoNavigation)
                 .Include(p => p.IdMarcaNavigation)
                 .Include(p => p.IdModeloNavigation)
+                // .Include(p => p.IdRegionNavigation) // Asumiendo que existe
+                // .Include(p => p.IdZonaNavigation)   // Asumiendo que existe
                 .Where(p => p.Idempresa == idEmpresa)
                 .OrderByDescending(p => p.Fecharegistro)
                 .ToListAsync();
@@ -31,246 +32,156 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public async Task<PreventivoViewModel> GetPreventivoViewModel(int idEmpresa, int idPreventivo)
         {
-            var plantas = await context.Planta
-                .Where(p => p.IdEmpresa == idEmpresa)
-                .OrderBy(p => p.NombrePlanta)
-                .Select(p => new PreventivoViewModel.PlantaItemViewModel { IdPlanta = p.IdPlanta, Nombre = p.NombrePlanta })
-                .ToListAsync();
+            var vRet = new PreventivoViewModel { Idempresa = idEmpresa };
 
-            var marcas = await context.Marcas
-                .OrderBy(m => m.Descripcion)
-                .Select(m => new PreventivoViewModel.MarcaItemViewModel { IdMarca = m.IdMarca, Nombre = m.Descripcion })
-                .ToListAsync();
-
-            var manosObra = await context.ManoObras
-                .OrderBy(mo => mo.DescripcionManoobra)
-                .Select(mo => new PreventivoViewModel.ManoObraItemViewModel { IdManoObra = mo.IdManoObra, Descripcion = mo.DescripcionManoobra })
-                .ToListAsync();
-
-            var vRet = new PreventivoViewModel
-            {
-                Idempresa = idEmpresa,
-                Plantas = plantas,
-                Marcas = marcas,
-                ManosObra = manosObra
-            };
+            vRet.Regiones = await GetRegiones(idEmpresa);
+            vRet.Marcas = await context.Marcas.Select(m => new PreventivoViewModel.CatalogItemViewModel { Id = m.IdMarca, Nombre = m.Descripcion }).ToListAsync();
+            vRet.ManosObra = await context.ManoObras.Select(mo => new PreventivoViewModel.CatalogItemViewModel { Id = mo.IdManoObra, Nombre = mo.DescripcionManoobra }).ToListAsync();
 
             if (idPreventivo > 0)
             {
-                var preventivo = await context.Preventivos
-                    .FirstOrDefaultAsync(p => p.Idpreventivo == idPreventivo && p.Idempresa == idEmpresa);
-
-                if (preventivo == null) throw new Exception("El mantenimiento preventivo no existe o no pertenece a su empresa.");
+                var preventivo = await context.Preventivos.FirstOrDefaultAsync(p => p.Idpreventivo == idPreventivo && p.Idempresa == idEmpresa);
+                if (preventivo == null) throw new Exception("El mantenimiento preventivo no existe.");
 
                 vRet.Idpreventivo = preventivo.Idpreventivo;
                 vRet.NombrePreventivo = preventivo.NombrePreventivo;
                 vRet.ObservacionesPreventivo = preventivo.ObservacionesPreventivo;
                 vRet.FechaPrev = preventivo.FechaPrev;
-
-                // Mapeo seguro de nullables a int
+                vRet.IdRegion = preventivo.IdRegion ?? 0;
                 vRet.IdPlanta = preventivo.IdPlanta ?? 0;
+                vRet.IdZona = preventivo.IdZona ?? 0;
                 vRet.IdDeposito = preventivo.IdDeposito ?? 0;
                 vRet.IdMarca = preventivo.IdMarca;
-                vRet.IdModelo = preventivo.IdModelo; // Modelo no es nullable en la BD según tu nuevo código
+                vRet.IdModelo = preventivo.IdModelo;
 
-                if (vRet.IdPlanta > 0) vRet.Depositos = await GetDepositosPorPlanta(idEmpresa, vRet.IdPlanta);
-                if (preventivo.IdMarca.HasValue) vRet.Modelos = await GetModelosPorMarca(preventivo.IdMarca.Value);
+                // Cargar catálogos en cascada para edición
+                if (vRet.IdRegion > 0) vRet.Plantas = await GetPlantasPorRegion(vRet.IdRegion);
+                if (vRet.IdPlanta > 0) vRet.Zonas = await GetZonasPorPlanta(vRet.IdPlanta);
+                if (vRet.IdZona > 0) vRet.Depositos = await GetDepositosPorZona(vRet.IdZona);
+                if (vRet.IdMarca.HasValue) vRet.Modelos = await GetModelosPorMarca(vRet.IdMarca.Value);
             }
             return vRet;
         }
 
-        public async Task<bool> AgregarPreventivo(PreventivoViewModel model, int idEmpresa, int idUsuario)
+        public async Task<int> AgregarPreventivoAjax(PreventivoViewModel model, int idEmpresa, int idUsuario)
         {
             Preventivo preventivo;
-
             if (model.Idpreventivo > 0)
             {
-                preventivo = await context.Preventivos
-                    .FirstOrDefaultAsync(p => p.Idpreventivo == model.Idpreventivo && p.Idempresa == idEmpresa);
-                if (preventivo == null) throw new Exception("El registro no existe.");
+                preventivo = await context.Preventivos.FirstOrDefaultAsync(p => p.Idpreventivo == model.Idpreventivo && p.Idempresa == idEmpresa);
+                if (preventivo == null) throw new Exception("Registro no encontrado.");
             }
             else
             {
                 preventivo = new Preventivo();
-                var lastId = await context.Preventivos
-                    .OrderByDescending(p => p.Idpreventivo)
-                    .Select(p => (int?)p.Idpreventivo)
-                    .FirstOrDefaultAsync();
-                preventivo.Idpreventivo = (lastId ?? 0) + 1;
+                preventivo.Idpreventivo = (await context.Preventivos.MaxAsync(p => (int?)p.Idpreventivo) ?? 0) + 1;
                 context.Preventivos.Add(preventivo);
             }
 
+            preventivo.Idempresa = idEmpresa;
             preventivo.NombrePreventivo = model.NombrePreventivo;
             preventivo.ObservacionesPreventivo = model.ObservacionesPreventivo;
-            preventivo.IdModelo = model.IdModelo;
             preventivo.FechaPrev = model.FechaPrev.Value;
-
-            // Asignación tolerante a los nuevos campos nulos
+            preventivo.IdRegion = model.IdRegion > 0 ? model.IdRegion : null;
             preventivo.IdPlanta = model.IdPlanta > 0 ? model.IdPlanta : null;
+            preventivo.IdZona = model.IdZona > 0 ? model.IdZona : null;
             preventivo.IdDeposito = model.IdDeposito > 0 ? model.IdDeposito : null;
             preventivo.IdMarca = model.IdMarca > 0 ? model.IdMarca : null;
-            preventivo.Idempresa = idEmpresa;
-
-            // Auditoría/COntrol
+            preventivo.IdModelo = model.IdModelo;
             preventivo.Idusuario = idUsuario;
             preventivo.Fecharegistro = DateTime.Now;
 
             await context.SaveChangesAsync();
-            return true;
+            return preventivo.Idpreventivo; // Devolvemos el ID para poder generar preventivos después
         }
 
-        public async Task<List<PreventivoViewModel.DepositoItemViewModel>> GetDepositosPorPlanta(int idEmpresa, int idPlanta)
-        {
-            return await context.Depositos
-                .Where(d => d.IdEmpresa == idEmpresa && d.IdPlanta == idPlanta)
-                .OrderBy(d => d.NombreDeposito)
-                .Select(d => new PreventivoViewModel.DepositoItemViewModel 
-                { 
-                    IdDeposito = d.IdDeposito, 
-                    Nombre = d.NombreDeposito 
-                })
-                .ToListAsync();
-        }
+        // ================= Métodos de Cascada (Ajusta DbSets si es necesario) =================
+        public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetRegiones(int idEmpresa) =>
+            await context.Regions.Where(r => r.IdEmpresa == idEmpresa).Select(r => new PreventivoViewModel.CatalogItemViewModel { Id = r.IdRegion, Nombre = r.NombreRegion }).ToListAsync();
 
-        public async Task<List<PreventivoViewModel.ModeloItemViewModel>> GetModelosPorMarca(short idMarca)
-        {
-            return await context.Modelos
-                .Where(m => m.IdMarca == idMarca)
-                .OrderBy(m => m.Descripcion)
-                .Select(m => new PreventivoViewModel.ModeloItemViewModel 
-                { IdModelo = m.IdModelo, 
-                    Nombre = m.Descripcion 
-                })
-                .ToListAsync();
-        }
+        public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetPlantasPorRegion(int idRegion) =>
+            await context.Planta.Where(p => p.IdRegion == idRegion).Select(p => new PreventivoViewModel.CatalogItemViewModel { Id = p.IdPlanta, Nombre = p.NombrePlanta }).ToListAsync();
 
-        /// ========================= <SP/> ====================================
+        public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetZonasPorPlanta(int idPlanta) =>
+            await context.Zonas.Where(z => z.IdPlanta == idPlanta).Select(z => new PreventivoViewModel.CatalogItemViewModel { Id = z.IdZona, Nombre = z.NombreZona }).ToListAsync();
+
+        public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetDepositosPorZona(int idZona) =>
+            await context.Depositos.Where(d => d.IdZona == idZona).Select(d => new PreventivoViewModel.CatalogItemViewModel { Id = d.IdDeposito, Nombre = d.NombreDeposito }).ToListAsync();
+
+        public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetModelosPorMarca(short idMarca) =>
+            await context.Modelos.Where(m => m.IdMarca == idMarca).Select(m => new PreventivoViewModel.CatalogItemViewModel { Id = m.IdModelo, Nombre = m.Descripcion }).ToListAsync();
+
+        // ================= SP & Detalles =================
         public async Task<bool> GenerarDetallePreventivoAsync(int idPreventivo, int idManoObra, DateTime fechaPrev, int idEmpresa, int idUsuario)
         {
-            // 1. Validar existencia y permisos
-            var preventivo = await context.Preventivos
-                .FirstOrDefaultAsync(p => p.Idpreventivo == idPreventivo && p.Idempresa == idEmpresa);
-
-            if (preventivo == null)
-                throw new Exception("El plan de mantenimiento preventivo no existe o no tiene acceso.");
-
-            var manoObra = await context.ManoObras.FirstOrDefaultAsync(m => m.IdManoObra == idManoObra);
-            if (manoObra == null)
-                throw new Exception("La Mano de Obra seleccionada no es válida o no existe.");
-
-            await context.Database.ExecuteSqlRawAsync(
-            "CALL sp_GenerarDetallePreventivo({0}, {1}, {2}, {3})",
-            idPreventivo, idManoObra, fechaPrev, idUsuario // Pasamos la fecha al Stored Procedure
-            );
+            await context.Database.ExecuteSqlRawAsync("CALL sp_GenerarDetallePreventivo({0}, {1}, {2}, {3})", idPreventivo, idManoObra, fechaPrev, idUsuario);
             return true;
         }
 
-        /// <summary>
-        /// Obtiene el resumen general (masivo) asociado a un plan preventivo, incluyendo información de Planta y Depósito.
-        /// </summary>
         public async Task<DetalleGeneralViewModel> GetDetalleGeneralAsync(int idEmpresa, int idPreventivo)
         {
-            var preventivo = await context.Preventivos
-                .Include(p => p.IdPlantaNavigation)
-                .Include(p => p.IdDepositoNavigation)
-                .Include(p => p.IdMarcaNavigation)
-                .Include(p => p.IdModeloNavigation)
-                .Include(p => p.DetPrevs)
-                .FirstOrDefaultAsync(p => p.Idpreventivo == idPreventivo && p.Idempresa == idEmpresa);
+            var p = await context.Preventivos
+                .Include(x => x.IdPlantaNavigation)
+                .Include(x => x.IdDepositoNavigation)
+                .Include(x => x.IdMarcaNavigation)
+                .Include(x => x.IdModeloNavigation)
+                .Include(x => x.DetPrevs)
+                .FirstOrDefaultAsync(x => x.Idpreventivo == idPreventivo && x.Idempresa == idEmpresa);
 
-            if (preventivo == null)
-                throw new Exception("El plan de mantenimiento preventivo no existe o no tiene acceso.");
-
-            var detPrevResumen = preventivo.DetPrevs.FirstOrDefault();
+            if (p == null) return null;
+            var det = p.DetPrevs.FirstOrDefault();
 
             return new DetalleGeneralViewModel
             {
-                IdPreventivo = preventivo.Idpreventivo,
-                NombrePreventivo = preventivo.NombrePreventivo,
-                Planta = preventivo.IdPlantaNavigation?.NombrePlanta ?? "N/A",
-                Deposito = preventivo.IdDepositoNavigation?.NombreDeposito ?? "N/A",
-                Marca = preventivo.IdMarcaNavigation?.Descripcion ?? "N/A",
-                Modelo = preventivo.IdModeloNavigation?.Descripcion ?? "N/A",
-                FechaPrev = preventivo.FechaPrev,
-                CostoUnitario = detPrevResumen?.CostoUnitario ?? 0,
-                IvaTotal = detPrevResumen?.Iva ?? 0,
-                CostoTotal = preventivo.CostoTotal ?? detPrevResumen?.CostoTotal ?? 0,
-                Detalles = preventivo.DetPrevs.Select(d => new DetPrevItemViewModel
-                {
-                    IdPrevDet = d.IdPrevDet,
-                    CostoUnitario = d.CostoUnitario,
-                    Iva = d.Iva,
-                    CostoTotal = d.CostoTotal,
-                    FechaRegistro = d.Fecharegistro
-                }).ToList()
+                IdPreventivo = p.Idpreventivo,
+                NombrePreventivo = p.NombrePreventivo,
+                Planta = p.IdPlantaNavigation?.NombrePlanta ?? "N/A",
+                Deposito = p.IdDepositoNavigation?.NombreDeposito ?? "N/A",
+                Marca = p.IdMarcaNavigation?.Descripcion ?? "N/A",
+                Modelo = p.IdModeloNavigation?.Descripcion ?? "N/A",
+                Region = "N/A", // Si tienes navigation p.IdRegionNavigation inclúyelo
+                Zona = "N/A",   // Si tienes navigation p.IdZonaNavigation inclúyelo
+                FechaPrev = p.FechaPrev,
+                FechaRegistro = p.Fecharegistro,
+                CostoUnitario = det?.CostoUnitario ?? 0,
+                IvaUnitario = (det?.CostoUnitario ?? 0) * 0.16m, // IVA por unidad
+                IvaTotal = det?.Iva ?? 0,
+                CostoTotal = p.CostoTotal ?? det?.CostoTotal ?? 0
             };
         }
 
-        /// <summary>
-        /// Obtiene el detalle unitario desglosado por cada vehículo coincidente en el plan preventivo.
-        /// </summary>
-        public async Task<List<DetPrevMoItemViewModel>> GetDetalleVehiculosAsync(int idEmpresa, int idPreventivo)
+        public async Task<List<DetPrevMoItemViewModel>> GetDetalleVehiculosAsync(int idEmpresa, int idPreventivo = 0)
         {
-            return await context.DetPrevMos
-                .Include(d => d.IdpreventivoNavigation)
-                .Include(d => d.IdManoObraNavigation)
-                .Include(d => d.IdVehiculoNavigation) // Requerido para leer Placas/VIN
-                .Where(d => d.Idpreventivo == idPreventivo && d.IdpreventivoNavigation.Idempresa == idEmpresa)
-                .Select(d => new DetPrevMoItemViewModel
-                {
-                    IdPrevMo = d.IdPrevMo,
-                    NombrePreventivo = d.IdpreventivoNavigation.NombrePreventivo,
-                    ManoObra = d.IdManoObraNavigation.DescripcionManoobra,
-                    Placas = d.IdVehiculoNavigation.Placas,
-                    Vin = d.IdVehiculoNavigation.Vin,
-                    Iva = d.Iva,
-                    CostoTotalUnitario = d.CostoTotalUnitario,
-                    FechaPrev = d.IdpreventivoNavigation.FechaPrev
-                })
-                .ToListAsync();
-        }
-
-        /// <summary>
-        /// Obtiene el listado de todos los registros masivos (det_prev) de la empresa para la vista global.
-        /// </summary>
-        public async Task<List<DetalleGeneralViewModel>> GetAllDetalleGeneralAsync(int idEmpresa)
-        {
-            return await context.DetPrevs
-                .Include(d => d.IdpreventivoNavigation)
-                .Where(d => d.IdpreventivoNavigation.Idempresa == idEmpresa)
-                .Select(d => new DetalleGeneralViewModel
-                {
-                    IdPreventivo = d.Idpreventivo,
-                    NombrePreventivo = d.IdpreventivoNavigation.NombrePreventivo,
-                    FechaPrev = d.IdpreventivoNavigation.FechaPrev,
-                    CostoUnitario = d.CostoUnitario,
-                    IvaTotal = d.Iva,
-                    CostoTotal = d.CostoTotal
-                })
-                .ToListAsync();
-        }
-
-        /// <summary>
-        /// Obtiene el listado de todos los desgloses unitarios (det_prev_mo) de la empresa para la vista global.
-        /// </summary>
-        public async Task<List<DetPrevMoItemViewModel>> GetAllDetalleVehiculosAsync(int idEmpresa)
-        {
-            return await context.DetPrevMos
-                .Include(d => d.IdpreventivoNavigation)
+            var query = context.DetPrevMos
+                .Include(d => d.IdpreventivoNavigation).ThenInclude(p => p.IdPlantaNavigation)
+                .Include(d => d.IdpreventivoNavigation).ThenInclude(p => p.IdMarcaNavigation)
                 .Include(d => d.IdManoObraNavigation)
                 .Include(d => d.IdVehiculoNavigation)
-                .Where(d => d.IdpreventivoNavigation.Idempresa == idEmpresa)
-                .Select(d => new DetPrevMoItemViewModel
-                {
-                    IdPrevMo = d.IdPrevMo,
-                    NombrePreventivo = d.IdpreventivoNavigation.NombrePreventivo,
-                    ManoObra = d.IdManoObraNavigation.DescripcionManoobra,
-                    Placas = d.IdVehiculoNavigation.Placas,
-                    Vin = d.IdVehiculoNavigation.Vin,
-                    Iva = d.Iva,
-                    CostoTotalUnitario = d.CostoTotalUnitario,
-                    FechaPrev = d.IdpreventivoNavigation.FechaPrev
-                })
+                .Where(d => d.IdpreventivoNavigation.Idempresa == idEmpresa);
+
+            if (idPreventivo > 0) query = query.Where(d => d.Idpreventivo == idPreventivo);
+
+            return await query.Select(d => new DetPrevMoItemViewModel
+            {
+                IdPrevMo = d.IdPrevMo,
+                IdPreventivo = d.Idpreventivo,
+                NombrePreventivo = d.IdpreventivoNavigation.NombrePreventivo,
+                ManoObra = d.IdManoObraNavigation.DescripcionManoobra,
+                Placas = d.IdVehiculoNavigation.Placas,
+                Vin = d.IdVehiculoNavigation.Vin,
+                Iva = d.Iva,
+                CostoTotalUnitario = d.CostoTotalUnitario,
+                FechaPrev = d.IdpreventivoNavigation.FechaPrev,
+                Planta = d.IdpreventivoNavigation.IdPlantaNavigation.NombrePlanta,
+                Marca = d.IdpreventivoNavigation.IdMarcaNavigation.Descripcion
+            }).ToListAsync();
+        }
+
+        public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetDropdownPreventivos(int idEmpresa)
+        {
+            return await context.Preventivos
+                .Where(p => p.Idempresa == idEmpresa)
+                .Select(p => new PreventivoViewModel.CatalogItemViewModel { Id = p.Idpreventivo, Nombre = p.NombrePreventivo })
                 .ToListAsync();
         }
     }

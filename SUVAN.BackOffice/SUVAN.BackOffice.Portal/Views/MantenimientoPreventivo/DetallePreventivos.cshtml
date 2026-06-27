@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Detalle de Preventivos";
+    var listaPlanes = ViewBag.ListaPreventivos as List<SUVAN.BackOffice.Models.ViewModel.Logistica.PreventivoViewModel.CatalogItemViewModel>;
+}
+<link href="~/css/logistica/preventivo/tabs-preventivo.css" rel="stylesheet" type="text/css" />
+
+<div id="kt_app_toolbar" class="app-toolbar">
+    <div class="app-container container-fluid d-flex flex-stack">
+        <div class="page-title"><h1 class="page-heading text-dark fw-bold fs-3">@ViewData["Title"]</h1></div>
+    </div>
+</div>
+
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div class="app-container container-fluid">
+        <div class="d-flex align-items-center mb-8 overflow-auto">
+            <a href="~/MantenimientoPreventivo/Index" class="nav-tab-custom">Mantenimientos</a>
+            <a href="~/MantenimientoPreventivo/DetallePreventivos" class="nav-tab-custom nav-tab-active">Detalle de Preventivos</a>
+        </div>
+
+        <div class="card mb-5">
+            <div class="card-body py-4 d-flex align-items-center">
+                <span class="fs-5 fw-bold me-4">Seleccione un Plan Preventivo:</span>
+                <select id="selectPreventivoGlobal" class="form-select w-400px" data-control="select2">
+                    <option value="">-- Seleccione un Plan --</option>
+                    @foreach (var plan in listaPlanes)
+                    {
+                        <option value="@plan.Id" selected="@(plan.Id == ViewBag.IdPreventivoSeleccionado ? "selected" : null)">@plan.Nombre</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div id="detalleCompletoContainer" style="display:none;">
+            <div class="card mb-5 mb-xl-10">
+                <div class="card-body pt-9 pb-0">
+                    <div class="d-flex justify-content-between">
+                        <div class="d-flex flex-column">
+                            <span class="text-gray-900 fs-2 fw-bold mb-2" id="lblNombre">Cargando...</span>
+                            <div class="d-flex flex-wrap fw-semibold fs-6 mb-4">
+                                <span class="me-5"><i class="ki-outline ki-shop fs-4 me-1"></i> <span id="lblUbicacion"></span></span>
+                                <span class="me-5"><i class="ki-outline ki-car fs-4 me-1"></i> <span id="lblVehiculo"></span></span>
+                                <span class="me-5"><i class="ki-outline ki-calendar fs-4 me-1"></i> Fecha Prevista: <span id="lblFechaPrev"></span></span>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge badge-light-primary fs-7">Creado: <span id="lblFechaRegistro"></span></span>
+                        </div>
+                    </div>
+
+                    <div class="d-flex flex-wrap flex-stack mt-2">
+                        <div class="d-flex flex-wrap">
+                            <div class="border border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="fs-2 fw-bold" id="lblCostoBase"></div><div class="fs-7 text-gray-400">Costo Base/Unidad</div>
+                            </div>
+                            <div class="border border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="fs-2 fw-bold" id="lblIvaUnidad"></div><div class="fs-7 text-gray-400">IVA por Unidad</div>
+                            </div>
+                            <div class="border border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="fs-2 fw-bold text-success" id="lblGranTotal"></div><div class="fs-7 text-gray-400">Gran Total (Masivo)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-flush">
+                <div class="card-header border-0 pt-6 d-flex flex-column">
+                    <h3 class="card-title fw-bold">Detalle de Vehículos</h3>
+                    <div class="row w-100 mt-2">
+                        <div class="col-md-3">
+                            <input type="text" data-kt-vehiculos-filter="search" class="form-control form-control-solid" placeholder="Buscar texto general..." />
+                        </div>
+                        <div class="col-md-3"><input type="text" id="fvPlacas" class="form-control form-control-solid" placeholder="Filtrar por Placas..." /></div>
+                        <div class="col-md-3"><input type="text" id="fvServicio" class="form-control form-control-solid" placeholder="Filtrar por Servicio..." /></div>
+                    </div>
+                </div>
+                <div class="card-body pt-0">
+                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_vehiculos_consolidado">
+                        <thead>
+                            <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
+                                <th>Servicio</th>
+                                <th>Vehículo (Placas/VIN)</th>
+                                <th>Monto IVA</th>
+                                <th>Costo total por unidad</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbodyVehiculos"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script src="~/js/logistica/preventivo/detalle_preventivos.js" asp-append-version="true"></script>
+}

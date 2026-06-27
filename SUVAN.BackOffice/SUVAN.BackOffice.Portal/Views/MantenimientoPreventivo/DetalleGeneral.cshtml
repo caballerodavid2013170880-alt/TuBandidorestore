@@ -4,6 +4,8 @@
     ViewData["Title"] = "Detalle de Mantenimiento Preventivo";
 }
 
+<link href="~/css/logistica/preventivo/tabs-preventivo.css" rel="stylesheet" type="text/css" />
+
 <div class="app-toolbar" id="kt_app_toolbar">
     <div class="app-container container-fluid d-flex flex-stack">
         <div class="page-title d-flex flex-column justify-content-center flex-wrap me-3">
@@ -11,96 +13,57 @@
                 @ViewData["Title"] - @Model.NombrePreventivo
             </h1>
         </div>
-        <div class="d-flex align-items-center gap-2 gap-lg-3">
-            <a href="~/MantenimientoPreventivo/Index" class="btn btn-sm btn-light-primary">Volver al Listado</a>
-        </div>
     </div>
 </div>
 
 <div class="app-content flex-column-fluid" id="kt_app_content">
     <div class="app-container container-fluid">
-        <!-- CABECERA CON DATOS GENERALES -->
+        <div class="d-flex align-items-center mb-8 overflow-auto">
+            <a href="~/MantenimientoPreventivo/Index" class="nav-tab-custom">Mantenimientos</a>
+            <a href="~/MantenimientoPreventivo/DetallePreventivos" class="nav-tab-custom nav-tab-active">Detalle de Preventivos</a>
+        </div>
+
         <div class="card mb-5 mb-xl-10">
             <div class="card-body pt-9 pb-0">
                 <div class="d-flex flex-wrap flex-sm-nowrap">
                     <div class="flex-grow-1">
                         <div class="d-flex justify-content-between align-items-start flex-wrap mb-2">
                             <div class="d-flex flex-column">
-                                <div class="d-flex align-items-center mb-2">
-                                    <span class="text-gray-900 fs-2 fw-bold me-1">@Model.NombrePreventivo</span>
-                                </div>
+                                <span class="text-gray-900 fs-2 fw-bold me-1">@Model.NombrePreventivo</span>
                                 <div class="d-flex flex-wrap fw-semibold fs-6 mb-4 pe-2">
-                                    <span class="d-flex align-items-center text-gray-400 me-5 mb-2">
-                                        <i class="ki-outline ki-geolocation fs-4 me-1"></i> Planta: @Model.Planta
-                                    </span>
-                                    <span class="d-flex align-items-center text-gray-400 me-5 mb-2">
-                                        <i class="ki-outline ki-shop fs-4 me-1"></i> Depósito: @Model.Deposito
-                                    </span>
-                                    <span class="d-flex align-items-center text-gray-400 me-5 mb-2">
-                                        <i class="ki-outline ki-car fs-4 me-1"></i> @Model.Marca / @Model.Modelo
-                                    </span>
-                                    <span class="d-flex align-items-center text-gray-400 mb-2">
-                                        <i class="ki-outline ki-calendar fs-4 me-1"></i> Fecha: @Model.FechaPrev.ToString("dd/MM/yyyy")
-                                    </span>
+                                    <span class="text-gray-400 me-5 mb-2"><i class="ki-outline ki-geolocation fs-4 me-1"></i> Planta: @Model.Planta</span>
+                                    <span class="text-gray-400 me-5 mb-2"><i class="ki-outline ki-shop fs-4 me-1"></i> Depósito: @Model.Deposito</span>
+                                    <span class="text-gray-400 me-5 mb-2"><i class="ki-outline ki-calendar fs-4 me-1"></i> Fecha Prevista: @Model.FechaPrev.ToString("dd/MM/yyyy")</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="d-flex flex-wrap flex-stack">
-                            <div class="d-flex flex-column flex-grow-1 pe-8">
-                                <div class="d-flex flex-wrap">
-                                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                                        <div class="d-flex align-items-center"><div class="fs-2 fw-bold">@Model.CostoUnitario.ToString("C")</div></div>
-                                        <div class="fw-semibold fs-6 text-gray-400">Costo Base/Unidad</div>
-                                    </div>
-                                    <div class="border border-gray-300 border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
-                                        <div class="d-flex align-items-center"><div class="fs-2 fw-bold text-success">@Model.CostoTotal.ToString("C")</div></div>
-                                        <div class="fw-semibold fs-6 text-gray-400">Gran Total</div>
-                                    </div>
-                                </div>
+                        <div class="d-flex flex-wrap">
+                            <div class="border border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="fs-2 fw-bold">@Model.CostoUnitario.ToString("C")</div>
+                                <div class="fw-semibold fs-6 text-gray-400">Costo Base/Unidad</div>
+                            </div>
+                            <div class="border border-dashed rounded min-w-125px py-3 px-4 me-6 mb-3">
+                                <div class="fs-2 fw-bold">@Model.IvaUnitario.ToString("C")</div>
+                                <div class="fw-semibold fs-6 text-gray-400">IVA por Unidad</div>
+                            </div>
+                            <div class="border border-dashed rounded min-w-125px py-3 px-4 mb-3">
+                                <div class="fs-2 fw-bold text-success">@Model.CostoTotal.ToString("C")</div>
+                                <div class="fw-semibold fs-6 text-gray-400">Gran Total</div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
-        <!-- TABLA MASIVA (DET_PREV) -->
-        <div class="card card-flush">
-            <div class="card-header pt-8">
-                <div class="card-title"><h2>Registros Generales (Resumen Masivo)</h2></div>
-            </div>
-            <div class="card-body pt-0">
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_det_prev">
-                    <thead>
-                        <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                            <th>ID Detalle</th>
-                            <th>Costo Base</th>
-                            <th>Gran Total</th>
-                            <th>Fecha Generación</th>
-                            <th class="text-end">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="fw-semibold text-gray-600">
-                        @foreach (var item in Model.Detalles)
-                        {
-                            <tr>
-                                <td>#@item.IdPrevDet</td>
-                                <td>@item.CostoUnitario.ToString("C")</td>
-                                <td><span class="badge badge-light-success">@item.CostoTotal.ToString("C")</span></td>
-                                <td>@(item.FechaRegistro?.ToString("dd/MM/yyyy HH:mm"))</td>
-                                <td class="text-end">
-                                    <a href="~/MantenimientoPreventivo/DetallePreventivoMO/@Model.IdPreventivo" class="btn btn-sm btn-primary">
-                                        <i class="ki-outline ki-car-2 fs-3"></i> Vehículos Coincidentes
-                                    </a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 </div>
-@section scripts {
-    <script src="~/js/logistica/preventivo/det_general.js" asp-append-version="true"></script>
-}
+<h3>Detalle de Vehículos</h3>
+<table class="table align-middle table-row-dashed fs-6 gy-5">
+    <thead><tr><th>Servicio</th><th>Vehículo</th><th>Total</th></tr></thead>
+    <tbody>
+        @foreach (var v in (List<DetPrevMoItemViewModel>)ViewBag.Vehiculos)
+        {
+            <tr><td>@v.ManoObra</td><td>@v.Placas</td><td>@v.CostoTotalUnitario.ToString("C")</td></tr>
+        }
+    </tbody>
+</table>

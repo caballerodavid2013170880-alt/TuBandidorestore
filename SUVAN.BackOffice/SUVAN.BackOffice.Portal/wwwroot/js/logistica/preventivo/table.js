@@ -1,66 +1,35 @@
 ﻿"use strict";
-
+var datatable;
 var KTPreventivoTable = function () {
-    var table;
-    var datatable;
-
     var initDatatable = function () {
-        datatable = $(table).DataTable({
-            "info": false,
-            "order": [],
-            "pageLength": 10,
-            "language": {
-                "emptyTable": "No hay mantenimientos preventivos registrados",
-                "zeroRecords": "No se encontraron resultados",
-                "lengthMenu": "Mostrar _MENU_ registros",
-                "paginate": {
-                    "first": "Primero",
-                    "last": "Último",
-                    "next": "Siguiente",
-                    "previous": "Anterior"
-                }
-            },
-            "columnDefs": [
-                { "orderable": false, "targets": 3 }
-            ]
+        var table = document.querySelector('#kt_table_preventivo');
+        if (!table) return;
+        datatable = $(table).DataTable({ "info": false, "order": [], "columnDefs": [{ "orderable": false, "targets": 5 }] });
 
+        // Filtros específicos por columna (Nombre:0, Planta:1, Marca:2, Fecha:4)
+        $('#filtroNombre').on('keyup', function () { datatable.column(0).search(this.value).draw(); });
+        $('#filtroPlanta').on('keyup', function () { datatable.column(1).search(this.value).draw(); });
+        $('#filtroMarca').on('keyup', function () { datatable.column(2).search(this.value).draw(); });
+        $('#filtroFecha').on('change', function () {
+            // Formatear la fecha al formato que se muestra en la tabla (dd/MM/yyyy)
+            let v = this.value; if (v) { let p = v.split('-'); datatable.column(4).search(p[2] + '/' + p[1] + '/' + p[0]).draw(); }
+            else { datatable.column(4).search('').draw(); }
         });
-    };
-
-    var handleSearchDatatable = function () {
-        var filterSearch = document.querySelector('[data-kt-preventivo-table-filter="search"]');
-        if (!filterSearch) return;
-        filterSearch.addEventListener('keyup', function (e) {
+        document.querySelector('[data-kt-preventivo-table-filter="search"]').addEventListener('keyup', function (e) {
             datatable.search(e.target.value).draw();
         });
     };
-
-    var handleTempDataMessage = function () {
-        var mensaje = document.getElementById('mensajeTempData');
-        if (mensaje && mensaje.value) {
-            Swal.fire({
-                text: mensaje.value,
-                icon: 'success',
-                buttonsStyling: false,
-                confirmButtonText: 'Aceptar',
-                customClass: { confirmButton: 'btn btn-primary' }
-            });
-        }
-    };
-
-
-
-    return {
-        init: function () {
-            table = document.querySelector('#kt_table_preventivo');
-            if (!table) return;
-            initDatatable();
-            handleSearchDatatable();
-            handleTempDataMessage();
-        }
-    };
+    return { init: function () { initDatatable(); } };
 }();
 
-KTUtil.onDOMContentLoaded(function () {
-    KTPreventivoTable.init();
-});
+function abrirModalDetalle(id) {
+    fetch('/MantenimientoPreventivo/GetModalDetalle?id=' + id)
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('modalContentAjax').innerHTML = html;
+            var modal = new bootstrap.Modal(document.getElementById('modalDetallePreventivo'));
+            modal.show();
+            $('#kt_table_modal_vehiculos').DataTable({ "info": false, "pageLength": 5 });
+        });
+}
+KTUtil.onDOMContentLoaded(function () { KTPreventivoTable.init(); });
