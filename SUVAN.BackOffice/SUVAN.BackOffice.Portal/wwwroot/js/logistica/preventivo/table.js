@@ -6,10 +6,7 @@ var KTPreventivoTable = function () {
         if (!table) return;
         datatable = $(table).DataTable({ "info": false, "order": [], "columnDefs": [{ "orderable": false, "targets": 5 }] });
 
-        // Filtros específicos por columna (Nombre:0, Planta:1, Marca:2, Fecha:4)
-        $('#filtroNombre').on('keyup', function () { datatable.column(0).search(this.value).draw(); });
-        $('#filtroPlanta').on('keyup', function () { datatable.column(1).search(this.value).draw(); });
-        $('#filtroMarca').on('keyup', function () { datatable.column(2).search(this.value).draw(); });
+        // Filtros específicos por columna (Fecha:4)
         $('#filtroFecha').on('change', function () {
             // Formatear la fecha al formato que se muestra en la tabla (dd/MM/yyyy)
             let v = this.value; if (v) { let p = v.split('-'); datatable.column(4).search(p[2] + '/' + p[1] + '/' + p[0]).draw(); }

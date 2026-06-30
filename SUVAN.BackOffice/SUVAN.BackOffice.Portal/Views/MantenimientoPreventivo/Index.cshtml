@@ -10,8 +10,6 @@
     if (permisosPagina == null) { return; }
 }
 
-<link href="~/css/logistica/preventivo/tabs-preventivo.css" rel="stylesheet" type="text/css" />
-
 <div id="kt_app_toolbar" class="app-toolbar">
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
@@ -31,8 +29,8 @@
 <div id="kt_app_content" class="app-content flex-column-fluid">
     <div id="kt_app_content_container" class="app-container container-fluid">
         <div class="d-flex align-items-center mb-8 overflow-auto">
-            <a href="~/MantenimientoPreventivo/Index" class="nav-tab-custom nav-tab-active">Mantenimientos</a>
-            <a href="~/MantenimientoPreventivo/DetallePreventivos" class="nav-tab-custom">Detalle de Preventivos</a>
+            <a href="~/MantenimientoPreventivo/Index" class="btn btn-primary me-3">Mantenimientos</a>
+            <a href="~/MantenimientoPreventivo/DetallePreventivos" class="btn btn-light btn-active-primary">Detalle de Preventivos</a>
         </div>
 
         <div class="card">
@@ -41,12 +39,9 @@
                     <div class="col-md-3">
                         <div class="d-flex align-items-center position-relative my-1">
                             <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                            <input type="text" data-kt-preventivo-table-filter="search" class="form-control form-control-solid ps-13" placeholder="Buscar texto..." />
+                            <input type="text" id="filtroGeneralMantenimientos" name="filtroGeneralMantenimientos" data-kt-preventivo-table-filter="search" class="form-control form-control-solid ps-13" placeholder="Buscar por texto..." />
                         </div>
                     </div>
-                    <div class="col-md-2"><input type="text" id="filtroNombre" class="form-control form-control-solid" placeholder="Nombre..." /></div>
-                    <div class="col-md-2"><input type="text" id="filtroPlanta" class="form-control form-control-solid" placeholder="Planta..." /></div>
-                    <div class="col-md-2"><input type="text" id="filtroMarca" class="form-control form-control-solid" placeholder="Marca/Modelo..." /></div>
                     <div class="col-md-3"><input type="date" id="filtroFecha" class="form-control form-control-solid" /></div>
                 </div>
             </div>

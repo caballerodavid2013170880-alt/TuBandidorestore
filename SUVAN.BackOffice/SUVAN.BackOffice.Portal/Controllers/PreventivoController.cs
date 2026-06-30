@@ -22,28 +22,45 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
             this.preventivoService = preventivoService;
         }
 
-        // 1. VISTA: MANTENIMIENTOS (Principal)
+        /// <summary>
+        /// Obtiene variables de contexto de sesión del usuario para validación de datos.
+        /// </summary>
+        private (int idEmpresa, int idUsuario, int? idRegion, int? idPlanta, int? idZona, int? idDeposito) GetUserContext()
+        {
+            int idEmpresa = User.GetEmpresaId();
+            int idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+
+            // Reemplazar estas asignaciones nulas cuando los claims de jerarquía estén implementados
+            int? idRegion = null;
+            int? idPlanta = null;
+            int? idZona = null;
+            int? idDeposito = null;
+
+            return (idEmpresa, idUsuario, idRegion, idPlanta, idZona, idDeposito);
+        }
+        //Mantenimiento Preventivo y Detalle de Preventivos
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var preventivos = await preventivoService.GetPreventivos(User.GetEmpresaId());
+            var usr = GetUserContext();
+            var preventivos = await preventivoService.GetPreventivos(usr.idEmpresa, usr.idRegion, usr.idPlanta, usr.idZona, usr.idDeposito);
             return View(preventivos);
         }
 
-        // 2. VISTA: DETALLE DE PREVENTIVOS (COmbinada)
         [HttpGet]
         public async Task<IActionResult> DetallePreventivos(int id = 0)
         {
+            var usr = GetUserContext();
             ViewBag.IdPreventivoSeleccionado = id;
-            ViewBag.ListaPreventivos = await preventivoService.GetDropdownPreventivos(User.GetEmpresaId());
+            ViewBag.ListaPreventivos = await preventivoService.GetDropdownPreventivos(usr.idEmpresa, usr.idRegion, usr.idPlanta);
             return View();
         }
 
-        // 3. AGREGAR / EDITAR
         [HttpGet]
         public async Task<IActionResult> AgregarPreventivo(int id = 0)
         {
-            var model = await preventivoService.GetPreventivoViewModel(User.GetEmpresaId(), id);
+            var usr = GetUserContext();
+            var model = await preventivoService.GetPreventivoViewModel(usr.idEmpresa, id);
             return View(model);
         }
 
@@ -55,10 +72,8 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
             {
                 if (!ModelState.IsValid) return Json(new { success = false, message = "Datos incompletos o inválidos." });
 
-                int idEmpresa = User.GetEmpresaId();
-                int idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-
-                int newId = await preventivoService.AgregarPreventivoAjax(model, idEmpresa, idUsuario);
+                var usr = GetUserContext();
+                int newId = await preventivoService.AgregarPreventivoAjax(model, usr.idEmpresa, usr.idUsuario);
 
                 return Json(new { success = true, idPreventivo = newId, message = "Plan guardado correctamente." });
             }
@@ -75,8 +90,8 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
             try
             {
                 if (model.Idpreventivo <= 0 || model.IdManoObra <= 0) return Json(new { success = false, message = "Faltan datos para generar." });
-                int idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
-                await preventivoService.GenerarDetallePreventivoAsync(model.Idpreventivo, model.IdManoObra, model.FechaPrev.Value, User.GetEmpresaId(), idUsuario);
+                var usr = GetUserContext();
+                await preventivoService.GenerarDetallePreventivoAsync(model.Idpreventivo, model.IdManoObra, model.FechaPrev.Value, usr.idEmpresa, usr.idUsuario);
                 return Json(new { success = true, message = "Preventivos generados exitosamente." });
             }
             catch (Exception ex)
@@ -85,28 +100,33 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
             }
         }
 
-        // MODAL Y TABLAS AJAX
         [HttpGet]
         public async Task<IActionResult> GetModalDetalle(int id)
         {
-            var model = await preventivoService.GetDetalleGeneralAsync(User.GetEmpresaId(), id);
-            ViewBag.Vehiculos = await preventivoService.GetDetalleVehiculosAsync(User.GetEmpresaId(), id);
+            var usr = GetUserContext();
+            var model = await preventivoService.GetDetalleGeneralAsync(usr.idEmpresa, id, usr.idRegion, usr.idPlanta);
+            ViewBag.Vehiculos = await preventivoService.GetDetalleVehiculosAsync(usr.idEmpresa, id, usr.idRegion);
             return PartialView("_DetalleModal", model);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetDatosDetalleView(int id)
         {
-            var model = await preventivoService.GetDetalleGeneralAsync(User.GetEmpresaId(), id);
-            var vehiculos = await preventivoService.GetDetalleVehiculosAsync(User.GetEmpresaId(), id);
+            var usr = GetUserContext();
+            var model = await preventivoService.GetDetalleGeneralAsync(usr.idEmpresa, id, usr.idRegion, usr.idPlanta);
+            var vehiculos = await preventivoService.GetDetalleVehiculosAsync(usr.idEmpresa, id, usr.idRegion);
             return Json(new { success = true, general = model, vehiculos = vehiculos });
         }
 
-        public async Task<IActionResult> DetalleGeneral(int id)
+        //Consulta de Mantto Preventivos
+        [HttpGet]
+        public async Task<IActionResult> ConsultaPreventivos()
         {
-            var model = await preventivoService.GetDetalleGeneralAsync(User.GetEmpresaId(), id);
-            // Carga los vehículos asociados a este preventivo específico
-            ViewBag.Vehiculos = await preventivoService.GetDetalleVehiculosAsync(User.GetEmpresaId(), id);
+            var usr = GetUserContext();
+            // Cargamos catálogos para los combos de filtros
+            var model = await preventivoService.GetPreventivoViewModel(usr.idEmpresa, 0);
+            // Cargamos todos los planes para alimentar la tabla
+            ViewBag.ListaPreventivos = await preventivoService.GetPreventivos(usr.idEmpresa, usr.idRegion, usr.idPlanta, usr.idZona, usr.idDeposito);
             return View(model);
         }
 

@@ -53,7 +53,7 @@
                                 <option value="0">-- Seleccione --</option>
                                 @foreach (var r in Model.Regiones)
                                 {
-                                    <option value="@r.Id">@r.Nombre</option>
+                                    <option value="@r.Id" selected="@(r.Id == Model.IdRegion ? "selected" : null)">@r.Nombre</option>
                                 }
                             </select>
                             @if (isEdicion)
@@ -67,7 +67,7 @@
                                 <option value="0">-- Seleccione --</option>
                                 @foreach (var p in Model.Plantas)
                                 {
-                                    <option value="@p.Id">@p.Nombre</option>
+                                    <option value="@p.Id" selected="@(p.Id == Model.IdPlanta ? "selected" : null)">@p.Nombre</option>
                                 }
                             </select>
                             @if (isEdicion)
@@ -81,7 +81,7 @@
                                 <option value="0">-- Seleccione --</option>
                                 @foreach (var z in Model.Zonas)
                                 {
-                                    <option value="@z.Id">@z.Nombre</option>
+                                    <option value="@z.Id" selected="@(z.Id == Model.IdZona ? "selected" : null)">@z.Nombre</option>
                                 }
                             </select>
                             @if (isEdicion)
@@ -95,7 +95,7 @@
                                 <option value="0">-- Seleccione --</option>
                                 @foreach (var d in Model.Depositos)
                                 {
-                                    <option value="@d.Id">@d.Nombre</option>
+                                    <option value="@d.Id" selected="@(d.Id == Model.IdDeposito ? "selected" : null)">@d.Nombre</option>
                                 }
                             </select>
                             @if (isEdicion)
@@ -126,7 +126,7 @@
                                 <option value="0">-- Seleccione --</option>
                                 @foreach (var m in Model.Modelos)
                                 {
-                                    <option value="@m.Id">@m.Nombre</option>
+                                    <option value="@m.Id" selected="@(m.Id == Model.IdModelo ? "selected" : null)">@m.Nombre</option>
                                 }
                             </select>
                             @if (isEdicion)

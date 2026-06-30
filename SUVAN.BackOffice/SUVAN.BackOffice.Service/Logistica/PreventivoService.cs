@@ -1,5 +1,4 @@
-﻿// --- PreventivoService.cs ---
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
@@ -15,19 +14,22 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         public PreventivoService(SuvanDbContext context) { this.context = context; }
 
-        public async Task<List<Preventivo>> GetPreventivos(int idEmpresa)
+        public async Task<List<Preventivo>> GetPreventivos(int idEmpresa, int? idRegion = null, int? idPlanta = null, int? idZona = null, int? idDeposito = null)
         {
-            // NOTA RBAC: Aquí en el futuro aplicarás .Where() validando los accesos a región/planta del usuario
-            return await context.Preventivos
+            var query = context.Preventivos
                 .Include(p => p.IdPlantaNavigation)
                 .Include(p => p.IdDepositoNavigation)
                 .Include(p => p.IdMarcaNavigation)
                 .Include(p => p.IdModeloNavigation)
-                // .Include(p => p.IdRegionNavigation) // Asumiendo que existe
-                // .Include(p => p.IdZonaNavigation)   // Asumiendo que existe
-                .Where(p => p.Idempresa == idEmpresa)
-                .OrderByDescending(p => p.Fecharegistro)
-                .ToListAsync();
+                .Where(p => p.Idempresa == idEmpresa);
+
+            // Filtros preparados para RBAC Jerárquico
+            if (idRegion.HasValue && idRegion > 0) query = query.Where(p => p.IdRegion == idRegion);
+            if (idPlanta.HasValue && idPlanta > 0) query = query.Where(p => p.IdPlanta == idPlanta);
+            if (idZona.HasValue && idZona > 0) query = query.Where(p => p.IdZona == idZona);
+            if (idDeposito.HasValue && idDeposito > 0) query = query.Where(p => p.IdDeposito == idDeposito);
+
+            return await query.OrderByDescending(p => p.Fecharegistro).ToListAsync();
         }
 
         public async Task<PreventivoViewModel> GetPreventivoViewModel(int idEmpresa, int idPreventivo)
@@ -54,7 +56,6 @@ namespace SUVAN.BackOffice.Service.Logistica
                 vRet.IdMarca = preventivo.IdMarca;
                 vRet.IdModelo = preventivo.IdModelo;
 
-                // Cargar catálogos en cascada para edición
                 if (vRet.IdRegion > 0) vRet.Plantas = await GetPlantasPorRegion(vRet.IdRegion);
                 if (vRet.IdPlanta > 0) vRet.Zonas = await GetZonasPorPlanta(vRet.IdPlanta);
                 if (vRet.IdZona > 0) vRet.Depositos = await GetDepositosPorZona(vRet.IdZona);
@@ -92,10 +93,9 @@ namespace SUVAN.BackOffice.Service.Logistica
             preventivo.Fecharegistro = DateTime.Now;
 
             await context.SaveChangesAsync();
-            return preventivo.Idpreventivo; // Devolvemos el ID para poder generar preventivos después
+            return preventivo.Idpreventivo;
         }
 
-        // ================= Métodos de Cascada (Ajusta DbSets si es necesario) =================
         public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetRegiones(int idEmpresa) =>
             await context.Regions.Where(r => r.IdEmpresa == idEmpresa).Select(r => new PreventivoViewModel.CatalogItemViewModel { Id = r.IdRegion, Nombre = r.NombreRegion }).ToListAsync();
 
@@ -111,24 +111,28 @@ namespace SUVAN.BackOffice.Service.Logistica
         public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetModelosPorMarca(short idMarca) =>
             await context.Modelos.Where(m => m.IdMarca == idMarca).Select(m => new PreventivoViewModel.CatalogItemViewModel { Id = m.IdModelo, Nombre = m.Descripcion }).ToListAsync();
 
-        // ================= SP & Detalles =================
         public async Task<bool> GenerarDetallePreventivoAsync(int idPreventivo, int idManoObra, DateTime fechaPrev, int idEmpresa, int idUsuario)
         {
             await context.Database.ExecuteSqlRawAsync("CALL sp_GenerarDetallePreventivo({0}, {1}, {2}, {3})", idPreventivo, idManoObra, fechaPrev, idUsuario);
             return true;
         }
 
-        public async Task<DetalleGeneralViewModel> GetDetalleGeneralAsync(int idEmpresa, int idPreventivo)
+        public async Task<DetalleGeneralViewModel> GetDetalleGeneralAsync(int idEmpresa, int idPreventivo, int? idRegion = null, int? idPlanta = null)
         {
-            var p = await context.Preventivos
+            var query = context.Preventivos
                 .Include(x => x.IdPlantaNavigation)
                 .Include(x => x.IdDepositoNavigation)
                 .Include(x => x.IdMarcaNavigation)
                 .Include(x => x.IdModeloNavigation)
                 .Include(x => x.DetPrevs)
-                .FirstOrDefaultAsync(x => x.Idpreventivo == idPreventivo && x.Idempresa == idEmpresa);
+                .Where(x => x.Idempresa == idEmpresa && x.Idpreventivo == idPreventivo);
 
+            if (idRegion.HasValue && idRegion > 0) query = query.Where(x => x.IdRegion == idRegion);
+            if (idPlanta.HasValue && idPlanta > 0) query = query.Where(x => x.IdPlanta == idPlanta);
+
+            var p = await query.FirstOrDefaultAsync();
             if (p == null) return null;
+
             var det = p.DetPrevs.FirstOrDefault();
 
             return new DetalleGeneralViewModel
@@ -139,27 +143,25 @@ namespace SUVAN.BackOffice.Service.Logistica
                 Deposito = p.IdDepositoNavigation?.NombreDeposito ?? "N/A",
                 Marca = p.IdMarcaNavigation?.Descripcion ?? "N/A",
                 Modelo = p.IdModeloNavigation?.Descripcion ?? "N/A",
-                Region = "N/A", // Si tienes navigation p.IdRegionNavigation inclúyelo
-                Zona = "N/A",   // Si tienes navigation p.IdZonaNavigation inclúyelo
                 FechaPrev = p.FechaPrev,
                 FechaRegistro = p.Fecharegistro,
                 CostoUnitario = det?.CostoUnitario ?? 0,
-                IvaUnitario = (det?.CostoUnitario ?? 0) * 0.16m, // IVA por unidad
+                IvaUnitario = (det?.CostoUnitario ?? 0) * 0.16m,
                 IvaTotal = det?.Iva ?? 0,
                 CostoTotal = p.CostoTotal ?? det?.CostoTotal ?? 0
             };
         }
 
-        public async Task<List<DetPrevMoItemViewModel>> GetDetalleVehiculosAsync(int idEmpresa, int idPreventivo = 0)
+        public async Task<List<DetPrevMoItemViewModel>> GetDetalleVehiculosAsync(int idEmpresa, int idPreventivo = 0, int? idRegion = null)
         {
             var query = context.DetPrevMos
-                .Include(d => d.IdpreventivoNavigation).ThenInclude(p => p.IdPlantaNavigation)
-                .Include(d => d.IdpreventivoNavigation).ThenInclude(p => p.IdMarcaNavigation)
+                .Include(d => d.IdpreventivoNavigation)
                 .Include(d => d.IdManoObraNavigation)
                 .Include(d => d.IdVehiculoNavigation)
                 .Where(d => d.IdpreventivoNavigation.Idempresa == idEmpresa);
 
             if (idPreventivo > 0) query = query.Where(d => d.Idpreventivo == idPreventivo);
+            if (idRegion.HasValue && idRegion > 0) query = query.Where(d => d.IdpreventivoNavigation.IdRegion == idRegion);
 
             return await query.Select(d => new DetPrevMoItemViewModel
             {
@@ -171,18 +173,17 @@ namespace SUVAN.BackOffice.Service.Logistica
                 Vin = d.IdVehiculoNavigation.Vin,
                 Iva = d.Iva,
                 CostoTotalUnitario = d.CostoTotalUnitario,
-                FechaPrev = d.IdpreventivoNavigation.FechaPrev,
-                Planta = d.IdpreventivoNavigation.IdPlantaNavigation.NombrePlanta,
-                Marca = d.IdpreventivoNavigation.IdMarcaNavigation.Descripcion
+                FechaPrev = d.IdpreventivoNavigation.FechaPrev
             }).ToListAsync();
         }
 
-        public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetDropdownPreventivos(int idEmpresa)
+        public async Task<List<PreventivoViewModel.CatalogItemViewModel>> GetDropdownPreventivos(int idEmpresa, int? idRegion = null, int? idPlanta = null)
         {
-            return await context.Preventivos
-                .Where(p => p.Idempresa == idEmpresa)
-                .Select(p => new PreventivoViewModel.CatalogItemViewModel { Id = p.Idpreventivo, Nombre = p.NombrePreventivo })
-                .ToListAsync();
+            var query = context.Preventivos.Where(p => p.Idempresa == idEmpresa);
+            if (idRegion.HasValue && idRegion > 0) query = query.Where(p => p.IdRegion == idRegion);
+            if (idPlanta.HasValue && idPlanta > 0) query = query.Where(p => p.IdPlanta == idPlanta);
+
+            return await query.Select(p => new PreventivoViewModel.CatalogItemViewModel { Id = p.Idpreventivo, Nombre = p.NombrePreventivo }).ToListAsync();
         }
     }
 }

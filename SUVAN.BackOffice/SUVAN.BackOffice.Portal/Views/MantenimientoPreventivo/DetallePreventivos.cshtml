@@ -2,7 +2,6 @@
     ViewData["Title"] = "Detalle de Preventivos";
     var listaPlanes = ViewBag.ListaPreventivos as List<SUVAN.BackOffice.Models.ViewModel.Logistica.PreventivoViewModel.CatalogItemViewModel>;
 }
-<link href="~/css/logistica/preventivo/tabs-preventivo.css" rel="stylesheet" type="text/css" />
 
 <div id="kt_app_toolbar" class="app-toolbar">
     <div class="app-container container-fluid d-flex flex-stack">
@@ -13,8 +12,8 @@
 <div id="kt_app_content" class="app-content flex-column-fluid">
     <div class="app-container container-fluid">
         <div class="d-flex align-items-center mb-8 overflow-auto">
-            <a href="~/MantenimientoPreventivo/Index" class="nav-tab-custom">Mantenimientos</a>
-            <a href="~/MantenimientoPreventivo/DetallePreventivos" class="nav-tab-custom nav-tab-active">Detalle de Preventivos</a>
+            <a href="~/MantenimientoPreventivo/Index" class="btn btn-light btn-active-primary me-3">Mantenimientos</a>
+            <a href="~/MantenimientoPreventivo/DetallePreventivos" class="btn btn-primary">Detalle de Preventivos</a>
         </div>
 
         <div class="card mb-5">
@@ -68,7 +67,7 @@
                     <h3 class="card-title fw-bold">Detalle de Vehículos</h3>
                     <div class="row w-100 mt-2">
                         <div class="col-md-3">
-                            <input type="text" data-kt-vehiculos-filter="search" class="form-control form-control-solid" placeholder="Buscar texto general..." />
+                            <input type="text" id="filtroGeneralVehiculos" name="filtroGeneralVehiculos" data-kt-vehiculos-filter="search" class="form-control form-control-solid" placeholder="Buscar por texto..." />
                         </div>
                         <div class="col-md-3"><input type="text" id="fvPlacas" class="form-control form-control-solid" placeholder="Filtrar por Placas..." /></div>
                         <div class="col-md-3"><input type="text" id="fvServicio" class="form-control form-control-solid" placeholder="Filtrar por Servicio..." /></div>
@@ -80,14 +79,29 @@
                             <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
                                 <th>Servicio</th>
                                 <th>Vehículo (Placas/VIN)</th>
-                                <th>Monto IVA</th>
                                 <th>Costo total por unidad</th>
+                                <th class="text-end">Acciones</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyVehiculos"></tbody>
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" tabindex="-1" id="modalInfoVehiculo">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detalle Unitario de Vehículo</h3>
+                <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal">
+                    <i class="ki-duotone ki-cross fs-1"></i>
+                </div>
+            </div>
+            <div class="modal-body" id="modalInfoVehiculoBody"></div>
         </div>
     </div>
 </div>
