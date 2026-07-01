@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.DepositosDisponiblesViewModel;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public class DepositosDisponiblesService : IDepositosDisponibles
     {

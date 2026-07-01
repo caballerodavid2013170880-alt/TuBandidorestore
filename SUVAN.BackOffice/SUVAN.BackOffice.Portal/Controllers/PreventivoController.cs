@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Portal.Helper;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -119,13 +119,13 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
         }
 
         //Consulta de Mantto Preventivos
-        [HttpGet]
+        [HttpGet("/ConsultaPrev")]
         public async Task<IActionResult> ConsultaPreventivos()
         {
             var usr = GetUserContext();
-            // Cargamos catálogos para los combos de filtros
+            // Carga catálogos para los combos de filtros
             var model = await preventivoService.GetPreventivoViewModel(usr.idEmpresa, 0);
-            // Cargamos todos los planes para alimentar la tabla
+            // Carga todos los planes para alimentar la tabla
             ViewBag.ListaPreventivos = await preventivoService.GetPreventivos(usr.idEmpresa, usr.idRegion, usr.idPlanta, usr.idZona, usr.idDeposito);
             return View(model);
         }

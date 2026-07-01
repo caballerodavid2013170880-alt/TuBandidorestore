@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using SUVAN.BackOffice.Models.Mensajeria;
 using SUVAN.BackOffice.Service.MensajeriaService;
 using SUVAN.BackOffice.Models.Facturacion;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using Newtonsoft.Json;
 using SUVAN.BackOffice.Database.Entities;
 

@@ -35,54 +35,85 @@
 
         <div class="card">
             <div class="card-header border-0 pt-6 d-flex flex-column">
-                <div class="row w-100 mb-4">
-                    <div class="col-md-3">
+                <div class="row g-4 w-100 mb-4">
+                    <div class="col-md-6">
                         <div class="d-flex align-items-center position-relative my-1">
                             <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                            <input type="text" id="filtroGeneralMantenimientos" name="filtroGeneralMantenimientos" data-kt-preventivo-table-filter="search" class="form-control form-control-solid ps-13" placeholder="Buscar por texto..." />
+                            <input type="text" id="filtroGeneralMantenimientos" data-kt-preventivo-table-filter="search" class="form-control form-control-solid ps-13" placeholder="Buscar texto general..." />
                         </div>
                     </div>
-                    <div class="col-md-3"><input type="date" id="filtroFecha" class="form-control form-control-solid" /></div>
+                    <div class="col-md-6">
+                        <div class="d-flex align-items-center position-relative my-1">
+                            <i class="ki-outline ki-calendar fs-3 position-absolute ms-5"></i>
+                            <input type="date" id="filtroFecha" class="form-control form-control-solid ps-13" />
+                        </div>
+                    </div>
                 </div>
-            </div>
+                <div class="row g-4 w-100 border-top pt-4">
+                    <div class="col-md-12 d-flex align-items-center justify-content-end">
+                        <label class="form-label fs-7 fw-bold text-gray-700 me-4 mb-0">Ordenar Por:</label>
+                        <select id="sortColumn" class="form-select form-select-sm w-150px me-2">
+                            <option value="0">Nombre</option>
+                            <option value="7">Costo Total</option>
+                            <option value="8">Fecha Prevista</option>
+                        </select>
+                        <select id="sortDirection" class="form-select form-select-sm w-150px me-3">
+                            <option value="asc">Ascendente</option>
+                            <option value="desc">Descendente</option>
+                        </select>
+                        <button type="button" id="btnSort" class="btn btn-sm btn-primary">Aplicar Orden</button>
+                    </div>
+                </div>
 
             <div class="card-body py-4">
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_preventivo">
-                    <thead>
-                        <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                            <th class="min-w-250px">Nombre</th>
-                            <th class="min-w-150px">Planta / Depósito</th>
-                            <th class="min-w-150px">Marca / Modelo</th>
-                            <th class="min-w-125px">Costo Total</th>
-                            <th class="min-w-125px">Fecha Prevista</th>
-                            <th class="text-end min-w-100px">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-gray-600 fw-semibold">
-                        @foreach (var prev in Model)
-                        {
-                            <tr>
-                                <td class="text-wrap mw-250px">@prev.NombrePreventivo</td>
-                                <td>@(prev.IdPlantaNavigation?.NombrePlanta) / @(prev.IdDepositoNavigation?.NombreDeposito)</td>
-                                <td>@(prev.IdMarcaNavigation?.Descripcion) / @(prev.IdModeloNavigation?.Descripcion)</td>
-                                <td><span class="badge badge-light-success">@((prev.CostoTotal ?? 0).ToString("C"))</span></td>
-                                <td>@prev.FechaPrev.ToString("dd/MM/yyyy")</td>
-                                <td class="text-end">
-                                    <button class="btn btn-icon btn-light btn-active-light-primary w-30px h-30px me-1" onclick="abrirModalDetalle(@prev.Idpreventivo)" title="Ver detalles del plan preventivo">
-                                        <i class="ki-outline ki-eye fs-3"></i>
-                                    </button>
-                                    @if (permisosPagina!.Editar)
-                                    {
-                                        <a href="~/MantenimientoPreventivo/AgregarPreventivo/@prev.Idpreventivo" class="btn btn-icon btn-light btn-active-light-primary w-30px h-30px" title="Editar preventivo">
-                                            <i class="ki-outline ki-pencil fs-3"></i>
-                                        </a>
-                                    }
-                                </td>
+                <div class="table-responsive">
+                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_preventivo">
+                        <thead>
+                            <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                <th>Nombre</th>
+                                <th>Región</th>
+                                <th>Planta</th>
+                                <th>Zona</th>
+                                <th>Depósito</th>
+                                <th>Marca</th>
+                                <th>Modelo</th>
+                                <th>Costo Total</th>
+                                <th>Fecha Prevista</th>
+                                <th class="text-end min-w-100px">Acciones</th>
                             </tr>
-                        }
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="text-gray-600 fw-semibold">
+                            @foreach (var prev in Model)
+                            {
+                                <tr>
+                                    <td>@prev.NombrePreventivo</td>
+                                    <td>@(prev.Id?.NombreRegion ?? "-")</td>
+                                    <td>@(prev.IdPlantaNavigation?.NombrePlanta ?? "-")</td>
+                                    <td>@(prev.IdZonaNavigation?.NombreZona ?? "-")</td>
+                                    <td>@(prev.IdDepositoNavigation?.NombreDeposito ?? "-")</td>
+                                    <td>@(prev.IdMarcaNavigation?.Descripcion ?? "-")</td>
+                                    <td>@(prev.IdModeloNavigation?.Descripcion ?? "-")</td>
+                                    <td><span class="badge badge-light-success">@((prev.CostoTotal ?? 0).ToString("C"))</span></td>
+                                    <td data-sort="@prev.FechaPrev.ToString("yyyyMMdd")">@prev.FechaPrev.ToString("dd/MM/yyyy")</td>
+                                    <td class="text-end">
+                                        <button class="btn btn-icon btn-light btn-active-light-primary w-30px h-30px me-1" onclick="abrirModalDetalle(@prev.Idpreventivo)" title="Ver detalles del plan preventivo">
+                                            <i class="ki-outline ki-eye fs-3"></i>
+                                        </button>
+                                        @if (permisosPagina!.Editar)
+                                        {
+                                            <a href="~/MantenimientoPreventivo/AgregarPreventivo/@prev.Idpreventivo" class="btn btn-icon btn-light btn-active-light-primary w-30px h-30px" title="Editar preventivo">
+                                                <i class="ki-outline ki-pencil fs-3"></i>
+                                            </a>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
+        </div>
+
         </div>
     </div>
 </div>

@@ -10,7 +10,7 @@ using SUVAN.BackOffice.Service.LogEntidades;
 using SUVAN.BackOffice.Service.Dashboard;
 using SUVAN.BackOffice.Service.MensajeriaService;
 using SUVAN.BackOffice.Service.Pago;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using SUVAN.BackOffice.Portal.Controllers;
 
 namespace SUVAN.BackOffice.Portal

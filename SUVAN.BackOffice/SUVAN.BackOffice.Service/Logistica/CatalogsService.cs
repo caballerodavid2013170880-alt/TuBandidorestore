@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static SUVAN.BackOffice.Models.ViewModel.CatalogsViewModel;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public class CatalogsService : ICatalogsService
     {

@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleViewModel;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.CausaMantenimientoViewModel;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public class MantenimientoService : IMantenimientoService
     {

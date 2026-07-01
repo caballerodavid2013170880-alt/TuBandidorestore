@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.CausaMantenimientoViewModel;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.MantenimientoDetalleViewModel;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public interface IMantenimientoService
     {

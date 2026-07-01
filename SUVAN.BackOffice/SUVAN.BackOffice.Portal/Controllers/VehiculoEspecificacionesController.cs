@@ -8,7 +8,7 @@ using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Configuracion;
 using SUVAN.BackOffice.Service.Ingresos;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using System.Security.Claims;
 
 namespace SUVAN.BackOffice.Portal.Controllers

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using SUVAN.BackOffice.Database.Entities;
 
 namespace SUVAN.BackOffice.Portal.Controllers

@@ -5,7 +5,7 @@ using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using static SUVAN.BackOffice.Database.Entities.Marca;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public interface IMarcaService
     {

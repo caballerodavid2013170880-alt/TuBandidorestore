@@ -8,7 +8,7 @@
 
 @model MotivoAuxilioVialViewModel
 @{
-    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.depositosDisponibles);
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.ManoObra);
     if (permisosPagina == null)
     {
         return;

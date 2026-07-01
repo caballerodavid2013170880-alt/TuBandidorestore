@@ -83,8 +83,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
         politicaCompensacion = 69,
         politicaCompensacionEmpresa = 70,
         ReporteOperadores = 71,
-        logistica = 72,
-        depositosDisponibles = 73,
+        Administrativo = 72,
+        ManoObra = 73,
         MotivoAuxilioVial = 74,
         FallaAuxilioVial = 75,
         Siniestros = 76,
@@ -110,6 +110,10 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
         Plantas = 118,
         Departamentos = 119,
         MantenimientoPreventivo = 120,
-        ConsultaPreventivos= 122
+        CargasPeriodo = 121,
+        CargasTransitorias = 122,
+        Logística= 123,
+        ConsultaPrev = 124,
+        OrdEmbarque = 125
     }
 }

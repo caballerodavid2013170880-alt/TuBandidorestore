@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;

@@ -7,7 +7,7 @@ using SUVAN.BackOffice.Models.AppSettingsModels;
 using SUVAN.BackOffice.Models.Auth.Token;
 using SUVAN.BackOffice.Service.MensajeriaService;
 using System.Text;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using Microsoft.AspNetCore.Mvc;
 using SUVAN.BackOffice.Service.Configuracion;
 using SUVAN.BackOffice.Service.MensajeriaService;

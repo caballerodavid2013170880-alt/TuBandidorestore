@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public class TipoEjeService : ITipoEjeService
     {

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public class PreventivoService : IPreventivoService
     {
@@ -17,7 +17,9 @@ namespace SUVAN.BackOffice.Service.Logistica
         public async Task<List<Preventivo>> GetPreventivos(int idEmpresa, int? idRegion = null, int? idPlanta = null, int? idZona = null, int? idDeposito = null)
         {
             var query = context.Preventivos
+                .Include(p => p.Id)
                 .Include(p => p.IdPlantaNavigation)
+                .Include(p => p.IdZonaNavigation)
                 .Include(p => p.IdDepositoNavigation)
                 .Include(p => p.IdMarcaNavigation)
                 .Include(p => p.IdModeloNavigation)

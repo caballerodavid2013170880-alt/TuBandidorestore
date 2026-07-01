@@ -3,7 +3,7 @@ using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using SUVAN.BackOffice.Service.Seguridad;
 using System;
 using System.Collections.Generic;

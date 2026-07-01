@@ -88,6 +88,7 @@ window.verInfoVehiculo = function (idMo) {
             <div class="mb-4"><b>Servicio:</b> ${v.manoObra}</div>
             <div class="mb-4"><b>Vehículo:</b> ${v.placas} <br><span class="text-muted">VIN: ${v.vin}</span></div>
             <div class="mb-4"><b>Fecha Prevista:</b> ${new Date(v.fechaPrev).toLocaleDateString('en-GB')}</div>
+            <div class="mb-4"><b>Monto IVA:</b> $${(v.iva || 0).toFixed(2)}</div>
             <div class="mb-4"><b>Costo Total Unitario:</b> <span class="text-success fw-bold">$${v.costoTotalUnitario.toFixed(2)}</span></div>
         `;
         document.getElementById('modalInfoVehiculoBody').innerHTML = html;
