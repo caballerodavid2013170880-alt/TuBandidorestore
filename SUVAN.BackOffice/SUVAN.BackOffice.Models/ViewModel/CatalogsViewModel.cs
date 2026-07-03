@@ -93,5 +93,14 @@ namespace SUVAN.BackOffice.Models.ViewModel
             public string? Descripcion { get; set; } = null!;
 
         }
+
+        public class PreventivoCatalogViewModel
+        {
+            [JsonPropertyOrder(1)]
+            public int Id { get; set; }
+
+            [JsonPropertyOrder(2)]
+            public string NombrePreventivo { get; set; } = null!;
+        }
     }
 }

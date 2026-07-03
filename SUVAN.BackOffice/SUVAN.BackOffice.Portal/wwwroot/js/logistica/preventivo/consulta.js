@@ -10,23 +10,33 @@ var KTConsultaPreventivos = function () {
         datatable = $(table).DataTable({
             "info": true,
             "order": [[0, 'asc']], // Orden inicial por nombre
-            "columnDefs": [{ "orderable": false, "targets": 6 }] // Quitar orden en Acciones (C 6)
+            "columnDefs": [{ "orderable": false, "targets": 6 }] // (Columnas 6)
         });
 
-        // Eventos de Filtro Texto y Fechas
+        // Eventos de Filtro Texto
         $('#fcNombre').on('keyup', function () {
             datatable.column(0).search(this.value).draw();
         });
 
-        $('#fcFecha').on('change', function () {
-            let v = this.value;
-            if (v) {
-                let p = v.split('-');
-                datatable.column(4).search(p[2] + '/' + p[1] + '/' + p[0]).draw(); // Fecha es la columna 4
-            } else {
+        // Lógica de Filtro Combinado para Mes y Año con Regex en C 4
+        var aplicarFiltroFecha = function () {
+            var mes = $('#filtroMes').val();
+            var anio = $('#filtroAnio').val();
+
+            // Si no hay seleccionado nada, limpiar filtro de la columna
+            if (!mes && !anio) {
                 datatable.column(4).search('').draw();
+                return;
             }
-        });
+
+            // Construye Regex. Formato de celda visto por el usuario: dd/MM/yyyy
+            var regex = '^.{2}/' + (mes ? mes : '.{2}') + '/' + (anio ? anio : '.{4}') + '$';
+
+            // Buscar usando regex (true) y sin smart search (false)
+            datatable.column(4).search(regex, true, false).draw();
+        };
+
+        $('#filtroMes, #filtroAnio').on('change', aplicarFiltroFecha);
 
         // Limpiar Filtros
         $('#btnClearFilters').on('click', function () {

@@ -4,8 +4,12 @@
 }
 
 <div id="kt_app_toolbar" class="app-toolbar">
-    <div class="app-container container-fluid d-flex flex-stack">
-        <div class="page-title"><h1 class="page-heading text-dark fw-bold fs-3">@ViewData["Title"]</h1></div>
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">@ViewData["Title"]</h1>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -18,14 +22,18 @@
 
         <div class="card mb-5">
             <div class="card-body py-4 d-flex align-items-center">
-                <span class="fs-5 fw-bold me-4">Seleccione un Plan Preventivo:</span>
-                <select id="selectPreventivoGlobal" class="form-select w-400px" data-control="select2">
-                    <option value="">-- Seleccione un Plan --</option>
-                    @foreach (var plan in listaPlanes)
-                    {
-                        <option value="@plan.Id" selected="@(plan.Id == ViewBag.IdPreventivoSeleccionado ? "selected" : null)">@plan.Nombre</option>
-                    }
-                </select>
+                <span class="fs-5 fw-bold me-4">Seleccione un Mantenimiento Preventivo:</span>
+                @{
+                    var preventivoSeleccionado = listaPlanes?.FirstOrDefault(x => x.Id == ViewBag.IdPreventivoSeleccionado);
+                    var nombrePreventivoSeleccionado = preventivoSeleccionado?.Nombre ?? "";
+                }
+                <div class="input-group input-group-sm w-400px">
+                    <input type="text" id="PreventivoGlobalVisible" value="@nombrePreventivoSeleccionado" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Lista de Mantenimientos Preventivos" data-catalog-for="selectPreventivoGlobal" readonly disabled />
+                    <span class="input-group-text" style="cursor:pointer;">
+                        <i class="fas fa-search show-modal-catalog" data-suvan-catalog="preventivo" data-suvan-catalog-description="nombrePreventivo"></i>
+                    </span>
+                </div>
+                <input type="hidden" id="selectPreventivoGlobal" name="selectPreventivoGlobal" value="@ViewBag.IdPreventivoSeleccionado" />
             </div>
         </div>
 
@@ -65,12 +73,25 @@
             <div class="card card-flush">
                 <div class="card-header border-0 pt-6 d-flex flex-column">
                     <h3 class="card-title fw-bold">Detalle de Vehículos</h3>
-                    <div class="row w-100 mt-2">
-                        <div class="col-md-3">
-                            <input type="text" id="filtroGeneralVehiculos" name="filtroGeneralVehiculos" data-kt-vehiculos-filter="search" class="form-control form-control-solid" placeholder="Buscar por texto..." />
-                        </div>
+                    <div class="row w-100 mt-2 mb-2">
                         <div class="col-md-3"><input type="text" id="fvPlacas" class="form-control form-control-solid" placeholder="Filtrar por Placas..." /></div>
-                        <div class="col-md-3"><input type="text" id="fvServicio" class="form-control form-control-solid" placeholder="Filtrar por Servicio..." /></div>
+                        <div class="col-md-3"><input type="text" id="fvVin" class="form-control form-control-solid" placeholder="Filtrar por VIN..." /></div>
+                    </div>
+                    <div class="row w-100 mt-2">
+                        <div class="col-md-12 d-flex align-items-center gap-2">
+                            <span class="fw-bold text-gray-700">Ordenar por:</span>
+                            <select id="sortPlacas" class="form-select form-select-sm form-select-solid w-150px">
+                                <option value="">Placas</option>
+                                <option value="asc">Ascendente</option>
+                                <option value="desc">Descendente</option>
+                            </select>
+                            <select id="sortVin" class="form-select form-select-sm form-select-solid w-150px">
+                                <option value="">VIN</option>
+                                <option value="asc">Ascendente</option>
+                                <option value="desc">Descendente</option>
+                            </select>
+                            <button id="btnLimpiarOrden" class="btn btn-sm btn-light">Limpiar Orden</button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body pt-0">
@@ -78,8 +99,9 @@
                         <thead>
                             <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
                                 <th>Servicio</th>
-                                <th>Vehículo (Placas/VIN)</th>
-                                <th>Costo total por unidad</th>
+                                <th>Placas</th>
+                                <th>VIN</th>
+                                <th>Costo total unitario</th>
                                 <th class="text-end">Acciones</th>
                             </tr>
                         </thead>

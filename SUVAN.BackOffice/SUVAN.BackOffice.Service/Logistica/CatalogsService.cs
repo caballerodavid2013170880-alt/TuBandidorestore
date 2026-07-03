@@ -49,6 +49,9 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 case "deposito":
                     return await ObtenerDepositos(nClaveFiltro);
 
+                case "preventivo":
+                    return await ObtenerPreventivos(IdEmpresa);
+
                 default:
                     throw new ArgumentException($"Catálogo '{catalogName}' no reconocido.");
             }
@@ -160,5 +163,18 @@ namespace SUVAN.BackOffice.Service.Administrativo
                                    }).ToListAsync();
             return resultado;
         }
+
+        public async Task<List<PreventivoCatalogViewModel>> ObtenerPreventivos(int IdEmpresa)
+        {
+            var resultado = await (from p in context.Preventivos
+                                   where p.Idempresa == IdEmpresa
+                                   select new PreventivoCatalogViewModel
+                                   {
+                                       Id = p.Idpreventivo,
+                                       NombrePreventivo = p.NombrePreventivo
+                                   }).ToListAsync();
+            return resultado;
+        }
+
     }
 }

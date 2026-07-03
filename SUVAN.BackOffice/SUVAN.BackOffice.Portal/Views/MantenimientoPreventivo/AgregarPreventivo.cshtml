@@ -19,10 +19,14 @@
 </script>
 
 <div class="app-toolbar" id="kt_app_toolbar">
-    <div class="app-container container-fluid">
-        <div class="page-title d-flex justify-content-between">
-            <h1 class="page-heading text-dark fw-bold fs-3">@ViewData["Title"]</h1>
-            <a href="~/MantenimientoPreventivo/Index" class="btn btn-sm btn-light">Volver</a>
+    <div class="app-container container-fluid d-flex align-items-stretch">
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <a href="~/MantenimientoPreventivo/Index" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+                    <i class="ki-duotone ki-left fs-1 pe-5"></i>
+                    <span>@ViewData["Title"]</span>
+                </a>
+            </div>
         </div>
     </div>
 </div>
@@ -31,7 +35,7 @@
     <div class="app-container container-fluid">
         <div class="card">
             <div class="card-body py-4">
-                <form class="form w-100" id="form_agregar_preventivo">
+                <form class="form w-100" novalidate="novalidate" id="form_agregar_preventivo">
                     @Html.AntiForgeryToken()
                     <input asp-for="Idpreventivo" type="hidden" />
 
@@ -154,7 +158,13 @@
                     </div>
 
                     <div class="text-end">
-                        <button type="submit" id="btn_guardar" class="btn btn-primary">Guardar Registro</button>
+                        <button type="submit" id="btn_guardar" class="btn btn-primary">
+                            <span class="indicator-label">Guardar Registro</span>
+                            <span class="indicator-progress">
+                                Por favor espere...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
                     </div>
                 </form>
             </div>
