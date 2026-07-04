@@ -21,4 +21,6 @@ public partial class ManoObra
     public virtual ICollection<DetPrevMo> DetPrevMos { get; set; } = new List<DetPrevMo>();
 
     public virtual Usuario? IdusuarioNavigation { get; set; }
+
+    public virtual ICollection<ManoObraDetalle> ManoObraDetalles { get; set; } = new List<ManoObraDetalle>();
 }

@@ -10,15 +10,14 @@ namespace SUVAN.BackOffice.Database.Entities;
 public partial class SuvanDbContext : DbContext
 {
     private readonly IConfiguration configuration;
-    public SuvanDbContext()
-    {
-    }
-
-    public SuvanDbContext(DbContextOptions<SuvanDbContext> options, IConfiguration configuration)
+        public SuvanDbContext()
+        {
+        }
+        public SuvanDbContext(DbContextOptions options, IConfiguration configuration)
         : base(options)
-    {
-        this.configuration = configuration;
-    }
+        {
+            this.configuration = configuration;
+        }
 
     public virtual DbSet<Admin> Admins { get; set; }
 
@@ -133,6 +132,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Logtransaccionesentidade> Logtransaccionesentidades { get; set; }
 
     public virtual DbSet<ManoObra> ManoObras { get; set; }
+
+    public virtual DbSet<ManoObraDetalle> ManoObraDetalles { get; set; }
 
     public virtual DbSet<Mantenimiento> Mantenimientos { get; set; }
 
@@ -295,8 +296,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Zona> Zonas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    // #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-    => optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
+// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+=> optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -2396,6 +2397,36 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_manoobra_usuario");
         });
 
+        modelBuilder.Entity<ManoObraDetalle>(entity =>
+        {
+            entity.HasKey(e => e.IdMoDetalle).HasName("PRIMARY");
+
+            entity
+                .ToTable("mano_obra_detalle")
+                .UseCollation("utf8mb4_unicode_ci");
+
+            entity.HasIndex(e => e.IdManoObra, "fk_mo_detalle_mano_obra");
+
+            entity.Property(e => e.IdMoDetalle).HasColumnName("id_mo_detalle");
+            entity.Property(e => e.DescripcionActividad)
+                .HasMaxLength(150)
+                .HasColumnName("descripcion_actividad");
+            entity.Property(e => e.EsObligatorio)
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_obligatorio");
+            entity.Property(e => e.Fecharegistro)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecharegistro");
+            entity.Property(e => e.IdManoObra).HasColumnName("id_mano_obra");
+            entity.Property(e => e.Idusuario).HasColumnName("idusuario");
+
+            entity.HasOne(d => d.IdManoObraNavigation).WithMany(p => p.ManoObraDetalles)
+                .HasForeignKey(d => d.IdManoObra)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_mo_detalle_mano_obra");
+        });
+
         modelBuilder.Entity<Mantenimiento>(entity =>
         {
             entity.HasKey(e => e.IdMantenimiento).HasName("PRIMARY");
@@ -2810,6 +2841,7 @@ public partial class SuvanDbContext : DbContext
             entity.HasNoKey();
             entity.ToView(null);
         });
+
 
         modelBuilder.Entity<Monedero>(entity =>
         {
