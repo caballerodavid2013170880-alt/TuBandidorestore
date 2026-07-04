@@ -12,6 +12,7 @@ using SUVAN.BackOffice.Service.MensajeriaService;
 using SUVAN.BackOffice.Service.Pago;
 using SUVAN.BackOffice.Service.Administrativo;
 using SUVAN.BackOffice.Portal.Controllers;
+using SUVAN.BackOffice.Service.Logistica;
 
 namespace SUVAN.BackOffice.Portal
 {
@@ -80,6 +81,8 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<IDeptoService, DeptoService>();
             // Preventivo
             services.AddTransient<IPreventivoService, PreventivoService>();
+            // Mano de Obra
+            services.AddTransient<IManoObraService, ManoObraService>();
 
         }
 

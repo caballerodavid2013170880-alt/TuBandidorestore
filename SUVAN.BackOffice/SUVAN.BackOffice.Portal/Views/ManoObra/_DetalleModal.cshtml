@@ -1,0 +1,52 @@
+﻿@model List<SUVAN.BackOffice.Models.ViewModel.Logistica.ManoObraDetalleViewModel>
+@{
+    var servicio = ViewBag.Servicio as string;
+}
+<div class="modal-header">
+    <h5 class="modal-title">Actividades del Servicio: <span class="text-primary fw-bold">@servicio</span></h5>
+    <div class="btn btn-icon btn-sm btn-active-light-primary ms-2" data-bs-dismiss="modal" aria-label="Close">
+        <i class="ki-outline ki-cross fs-1"></i>
+    </div>
+</div>
+<div class="modal-body">
+    <div class="table-responsive">
+        <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_modal_actividades">
+            <thead>
+                <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                    <th>Actividad</th>
+                    <th>Obligatoria</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 fw-semibold">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var det in Model)
+                    {
+                        <tr>
+                            <td>@det.DescripcionActividad</td>
+                            <td>
+                                @if (det.EsObligatorio)
+                                {
+                                    <span class="badge badge-light-success">Sí</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-light-secondary">No</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2" class="text-center text-muted">No se encontraron actividades para este servicio.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+</div>
