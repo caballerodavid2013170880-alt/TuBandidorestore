@@ -46,7 +46,7 @@
                         </div>
                         <div class="col-sm-6 mb-8">
                             <label class="required col-form-label">Fecha Prevista</label>
-                            <input asp-for="FechaPrev" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" class="form-control" />
+                            <input asp-for="FechaPrev" type="date" min="@DateTime.Now.ToString("yyyy-MM-dd")" max="@DateTime.Now.AddYears(5).ToString("yyyy-MM-dd")" class="form-control" />
                         </div>
                     </div>
 

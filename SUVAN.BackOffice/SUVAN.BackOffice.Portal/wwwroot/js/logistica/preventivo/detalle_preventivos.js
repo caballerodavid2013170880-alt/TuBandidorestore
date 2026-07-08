@@ -124,7 +124,10 @@ window.verInfoVehiculo = function (idMo) {
     var v = vehiculosDataGlobal.find(x => x.idPrevMo === idMo || x.IdPrevMo === idMo);
     if (v) {
         var html = `
-            <div class="mb-4"><b>Servicio:</b> ${v.manoObra}</div>
+            <div class="mb-4">
+                <b>Servicio:</b> <span class="text-dark fw-bold">${v.manoObra}</span>
+                ${(v.actividades && v.actividades.length > 0) ? `<ul class="text-muted fs-8 mt-2 ps-4 mb-0">${v.actividades.map(a => `<li>${a}</li>`).join('')}</ul>` : ''}
+            </div>
             <div class="mb-4"><b>Vehículo:</b> ${v.placas} <br><span class="text-muted">VIN: ${v.vin}</span></div>
             <div class="mb-4"><b>Fecha Prevista:</b> ${new Date(v.fechaPrev).toLocaleDateString('en-GB')}</div>
             <div class="mb-4"><b>Monto IVA:</b> $${(v.iva || 0).toFixed(2)}</div>

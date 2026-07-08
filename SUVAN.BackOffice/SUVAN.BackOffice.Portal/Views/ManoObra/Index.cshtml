@@ -18,7 +18,7 @@
             <div class="d-flex align-items-center gap-2 gap-lg-3">
                 @if (permisosPagina!.Agregar)
                 {
-                    <a href="~/ManoObra/AgregarManoObra" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Mano de Obra</a>
+                    <a href="@Url.Action("AgregarManoObra", "ManoObra")" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Mano de Obra</a>
                 }
             </div>
         </div>
@@ -27,8 +27,8 @@
 <div id="kt_app_content" class="app-content flex-column-fluid">
     <div id="kt_app_content_container" class="app-container container-fluid">
         <div class="d-flex align-items-center mb-8 overflow-auto">
-            <a href="~/ManoObra/Index" class="btn btn-primary me-3">Servicios (Mano de obra)</a>
-            <a href="~/ManoObra/DetalleManoObras" class="btn btn-light btn-active-primary">Detalle de Mano de Obra</a>
+            <a href="@Url.Action("Index", "ManoObra")" class="btn btn-primary me-3">Servicios (Mano de obra)</a>
+            <a href="@Url.Action("DetalleManoObras", "ManoObra")" class="btn btn-light btn-active-primary">Detalle de Mano de Obra</a>
         </div>
         <div class="card">
             <div class="card-header border-0 pt-6 d-flex flex-column">
@@ -81,7 +81,7 @@
                                         </button>
                                         @if (permisosPagina!.Editar)
                                         {
-                                            <a href="~/ManoObra/AgregarManoObra/@mo.IdManoObra" class="btn btn-icon btn-active-light-primary w-30px h-30px" title="Editar mano de obra">
+                                            <a href="@Url.Action("AgregarManoObra", "ManoObra", new { id = mo.IdManoObra })" class="btn btn-icon btn-active-light-primary w-30px h-30px" title="Editar mano de obra">
                                                 <i class="ki-outline ki-pencil fs-3"></i>
                                             </a>
                                         }

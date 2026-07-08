@@ -6,7 +6,7 @@ using System.Security.Claims;
 namespace SUVAN.BackOffice.Portal.Controllers.Logistica
 {
     [Authorize]
-    [Route("ManoObra")]
+    //[Route("ManoObra")]
     public class ManoObraController : Controller
     {
         private readonly ILogger<ManoObraController> _logger;
@@ -21,7 +21,7 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
             return Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
         }
         
-        [HttpGet]
+        //[HttpGet]
         //[HttpGet("")]
         //[HttpGet("Index")]
         public async Task<IActionResult> Index()
@@ -40,12 +40,18 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
             if (model == null) return NotFound();
             return View(model);
         }
-        [HttpPost("AgregarManoObraAjax")]
+        //[HttpPost("AgregarManoObraAjax")]
+        [ValidateAntiForgeryToken]
+        [HttpPost]
         public async Task<IActionResult> AgregarManoObraAjax(ManoObraViewModel model)
         {
             try
             {
-                if (!ModelState.IsValid) return Json(new { success = false, message = "Datos incompletos o inválidos." });
+                if (!ModelState.IsValid)
+                {
+                    var errors = string.Join(" ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                    return Json(new { success = false, message = errors });
+                }
                 int idUsuario = GetUserId();
                 int newId = await _manoObraService.GuardarManoObraAsync(model, idUsuario);
                 return Json(new { success = true, idManoObra = newId, message = "Mano de obra guardada correctamente." });
@@ -56,13 +62,13 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
                 return Json(new { success = false, message = ex.Message });
             }
         }
-        [HttpGet("DetalleManoObras")]
+        //[HttpGet("DetalleManoObras")]
         public async Task<IActionResult> DetalleManoObras()
         {
             var model = await _manoObraService.GetTodasActividades();
             return View(model);
         }
-        [HttpGet("GetModalDetalle")]
+        //[HttpGet("GetModalDetalle")]
         public async Task<IActionResult> GetModalDetalle(int id)
         {
             var model = await _manoObraService.GetActividadesPorManoObra(id);

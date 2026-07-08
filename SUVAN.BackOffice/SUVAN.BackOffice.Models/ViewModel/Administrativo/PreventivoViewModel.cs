@@ -4,6 +4,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
+    public class FutureDateAttribute : ValidationAttribute
+    {
+        public override bool IsValid(object? value)
+        {
+            if (value is DateTime date)
+            {
+                // Solo fechas mayores o iguales al "hoy"
+                return date.Date >= DateTime.Now.Date;
+            }
+            return true;
+        }
+    }
+
+
     public class PreventivoViewModel
     {
         public int Idpreventivo { get; set; }
@@ -14,6 +28,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public string? NombrePreventivo { get; set; }
 
         [Required(ErrorMessage = "La Fecha Programada es requerida")]
+        [FutureDate(ErrorMessage = "La fecha no puede ser anterior al día de hoy")]
         public DateTime? FechaPrev { get; set; }
         public string? ObservacionesPreventivo { get; set; }
 
@@ -83,6 +98,9 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public decimal? Iva { get; set; }
         public decimal CostoTotalUnitario { get; set; }
         public DateTime FechaPrev { get; set; }
+
+        public List<string> Actividades { get; set; } = new List<string>();
+
 
         // Propiedades adicionales para filtros en datatables
         public string? Region { get; set; }

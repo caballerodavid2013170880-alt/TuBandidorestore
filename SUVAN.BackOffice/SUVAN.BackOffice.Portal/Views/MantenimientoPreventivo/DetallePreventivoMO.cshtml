@@ -45,7 +45,19 @@
                         {
                             <tr>
                                 <td>@mo.NombrePreventivo</td>
-                                <td>@mo.ManoObra</td>
+                                <td>
+                                  <span class="text-dark fw-bold">@mo.ManoObra</span>
+                                    @if (mo.Actividades != null && mo.Actividades.Any())
+                                    {
+                                        <ul class="text-muted fs-8 mt-2 ps-4 mb-0">
+                                            @foreach (var act in mo.Actividades)
+                                            {
+                                                <li>@act</li>
+                                            }
+                                        </ul>
+                                    }
+                                </td>
+                                <td>
                                 <td>
                                     <span class="text-dark fw-bold">@mo.Placas</span> <br />
                                     <span class="text-muted fs-7">VIN: @mo.Vin</span>

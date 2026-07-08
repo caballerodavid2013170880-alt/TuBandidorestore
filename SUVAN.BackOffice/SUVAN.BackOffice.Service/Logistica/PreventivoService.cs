@@ -159,6 +159,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
             var query = context.DetPrevMos
                 .Include(d => d.IdpreventivoNavigation)
                 .Include(d => d.IdManoObraNavigation)
+                  .ThenInclude(mo => mo.ManoObraDetalles)
                 .Include(d => d.IdVehiculoNavigation)
                 .Where(d => d.IdpreventivoNavigation.Idempresa == idEmpresa);
 
@@ -171,6 +172,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 IdPreventivo = d.Idpreventivo,
                 NombrePreventivo = d.IdpreventivoNavigation.NombrePreventivo,
                 ManoObra = d.IdManoObraNavigation.DescripcionManoobra,
+                Actividades = d.IdManoObraNavigation.ManoObraDetalles.Select(a => a.DescripcionActividad).ToList(),
                 Placas = d.IdVehiculoNavigation.Placas,
                 Vin = d.IdVehiculoNavigation.Vin,
                 Iva = d.Iva,

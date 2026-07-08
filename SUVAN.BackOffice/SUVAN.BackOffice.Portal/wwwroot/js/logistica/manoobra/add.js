@@ -28,8 +28,8 @@ var KTManoObraAdd = function () {
                     </td>
                     <td class="text-center">
                         <div class="form-check form-switch form-check-custom form-check-solid d-flex justify-content-center">
-                            <input class="form-check-input h-20px w-30px" type="checkbox" name="Detalles[${index}].EsObligatorio" value="true" />
-                            <input type="hidden" name="Detalles[${index}].EsObligatorio" value="false" />
+                            <input type="hidden" name="Detalles[${index}].EsObligatorio" class="hidden-obligatorio" value="false" />
+                            <input class="form-check-input h-20px w-30px chk-obligatorio" type="checkbox" />
                         </div>
                     </td>
                     <td class="text-end">
@@ -54,6 +54,11 @@ var KTManoObraAdd = function () {
                 `;
             }
         });
+
+        $(tbodyActividades).on('change', '.chk-obligatorio', function () {
+            $(this).siblings('.hidden-obligatorio').val(this.checked ? "true" : "false");
+        });
+
         var reindexRows = function () {
             var rows = tbodyActividades.querySelectorAll('tr.actividad-row');
             rows.forEach((row, newIndex) => {
@@ -101,10 +106,35 @@ var KTManoObraAdd = function () {
             }
             submitButton.setAttribute('data-kt-indicator', 'on');
             submitButton.disabled = true;
-            var formData = new FormData(form);
+            var payload = {
+                IdManoObra: parseInt(form.querySelector('[name="IdManoObra"]').value) || 0,
+                DescripcionManoobra: descripcion,
+                CostoUnitario: parseFloat(costo) || 0,
+                Detalles: []
+            };
+
+            tbodyActividades.querySelectorAll('tr.actividad-row').forEach(function (row) {
+                var idDetalle = row.querySelector('.id-detalle').value;
+                var idMo = row.querySelector('input[name*=".IdManoObra"]').value;
+                var descAct = row.querySelector('input[type="text"]').value;
+                var isObligatorio = row.querySelector('input[type="checkbox"]').checked;
+
+                payload.Detalles.push({
+                    IdMoDetalle: parseInt(idDetalle) || 0,
+                    IdManoObra: parseInt(idMo) || 0,
+                    DescripcionActividad: descAct,
+                    EsObligatorio: isObligatorio
+                });
+            });
+
+            var token = form.querySelector('input[name="__RequestVerificationToken"]').value;
             fetch(window.SUVAN.Urls.AjaxSave, {
                 method: 'POST',
-                body: formData
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': token
+                },
+                body: JSON.stringify(payload)
             })
                 .then(response => response.json())
                 .then(data => {

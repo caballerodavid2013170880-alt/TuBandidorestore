@@ -15,7 +15,7 @@
     <div class="app-container container-fluid d-flex align-items-stretch">
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                <a href="~/ManoObra" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+                <a href="@Url.Action("Index", "ManoObra")" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
                     <i class="ki-duotone ki-left fs-1 pe-5"></i>
                     <span>@ViewData["Title"]</span>
                 </a>
@@ -83,8 +83,8 @@
                                             </td>
                                             <td class="text-center">
                                                 <div class="form-check form-switch form-check-custom form-check-solid d-flex justify-content-center">
-                                                    <input class="form-check-input h-20px w-30px" type="checkbox" name="Detalles[@index].EsObligatorio" value="true" @(det.EsObligatorio ? "checked" : "") />
-                                                    <input type="hidden" name="Detalles[@index].EsObligatorio" value="false" />
+                                                    <input type="hidden" name="Detalles[@index].EsObligatorio" class="hidden-obligatorio" value="@(det.EsObligatorio ? "true" : "false")" />
+                                                    <input class="form-check-input h-20px w-30px chk-obligatorio" type="checkbox" @(det.EsObligatorio ? "checked" : "") />
                                                 </div>
                                             </td>
                                             <td class="text-end">
@@ -106,7 +106,7 @@
                         </table>
                     </div>
                     <div class="text-end mt-8">
-                        <a href="~/ManoObra" class="btn btn-light me-3">Cancelar</a>
+                        <a href="@Url.Action("Index", "ManoObra")" class="btn btn-light me-3">Cancelar</a>                        
                         <button type="submit" id="btn_guardar" class="btn btn-primary">
                             <span class="indicator-label">Guardar Registro</span>
                             <span class="indicator-progress">

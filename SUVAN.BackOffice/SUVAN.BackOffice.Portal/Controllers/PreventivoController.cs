@@ -70,8 +70,11 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
         {
             try
             {
-                if (!ModelState.IsValid) return Json(new { success = false, message = "Datos incompletos o inválidos." });
-
+                if (!ModelState.IsValid)
+                {
+                    var errors = string.Join(" ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
+                    return Json(new { success = false, message = errors });
+                }
                 var usr = GetUserContext();
                 int newId = await preventivoService.AgregarPreventivoAjax(model, usr.idEmpresa, usr.idUsuario);
 
