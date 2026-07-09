@@ -54,6 +54,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Views\Zona\" />
     <Folder Include="wwwroot\assets\img\" />
   </ItemGroup>
 

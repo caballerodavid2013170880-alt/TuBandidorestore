@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
-using SUVAN.BackOffice.Models.ViewModel;
+using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
 using System.Collections.Generic;

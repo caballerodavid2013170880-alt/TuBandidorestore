@@ -1,6 +1,6 @@
 ﻿using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.Facturacion;
-using SUVAN.BackOffice.Models.ViewModel;
+using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 //Nuevo
-namespace SUVAN.BackOffice.Service.Configuracion
+namespace SUVAN.BackOffice.Service.Logistica
 {
     public interface IRegionService
     {

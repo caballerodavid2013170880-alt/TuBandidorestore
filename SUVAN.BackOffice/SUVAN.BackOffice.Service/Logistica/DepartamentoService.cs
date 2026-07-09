@@ -2,10 +2,10 @@
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.Configuracion.Tarifas;
 using SUVAN.BackOffice.Models.Facturacion;
-using SUVAN.BackOffice.Models.ViewModel;
+using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 
-namespace SUVAN.BackOffice.Service.Configuracion
+namespace SUVAN.BackOffice.Service.Logistica
 {
     public class DeptoService : IDeptoService
     {

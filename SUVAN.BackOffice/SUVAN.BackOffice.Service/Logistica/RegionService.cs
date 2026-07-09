@@ -2,10 +2,10 @@
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.Configuracion.Tarifas;
 using SUVAN.BackOffice.Models.Facturacion;
-using SUVAN.BackOffice.Models.ViewModel;
+using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 
-namespace SUVAN.BackOffice.Service.Configuracion
+namespace SUVAN.BackOffice.Service.Logistica
 {
   public class RegionesService : IRegionService
   {
@@ -115,16 +115,11 @@ namespace SUVAN.BackOffice.Service.Configuracion
             }
             else
             {
-                // Modo alta — crear nueva instancia y calcular el siguiente IdRegion para la empresa
+                // 090726 Modo alta — crear nueva instancia. La base de datos asignará IdRegion automáticamente (ValueGeneratedOnAdd).
                 region = new Region
                 {
                     IdEmpresa = idEmpresa
                 };
-                var vLastRow = await context.Regions
-                    .Where(r => r.IdEmpresa == idEmpresa)
-                    .OrderByDescending(r => r.IdRegion)
-                    .FirstOrDefaultAsync();
-                region.IdRegion = (vLastRow != null ? vLastRow.IdRegion : 0) + 1;
             }
             // Valida existencia de regiones con el mismo nombre dentro de la misma empresa
             // En edición se excluye el registro actual para permitir guardar sin cambiar el nombre

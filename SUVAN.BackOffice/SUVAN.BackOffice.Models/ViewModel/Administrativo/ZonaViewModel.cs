@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

@@ -1,38 +1,38 @@
-﻿
-@using SUVAN.BackOffice.Models.ViewModel.Enums;
+﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
 
 @{
-  ViewData["Title"] = "Plantas";
+    ViewData["Title"] = "Zona";
 }
+@model List<SUVAN.BackOffice.Database.Entities.Zona>
 
-@model List<SUVAN.BackOffice.Database.Entities.Plantum>
 @{
-    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.empresas);
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Zona);
     if (permisosPagina == null)
     {
         return;
     }
 }
+
 <!--begin::Toolbar-->
 <div id="kt_app_toolbar" class="app-toolbar ">
-    <!--begin::Toolbar container-->
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
         <!--begin::Toolbar wrapper-->
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
             <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
                 <!--begin::Title-->
-                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">@ViewData["Title"]</h1>
+                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Zonas</h1>
                 <!--end::Title-->
+
             </div>
             <!--end::Page title-->
             <!--begin::Actions-->
             <div class="d-flex align-items-center gap-2 gap-lg-3">
                 @if (permisosPagina!.Agregar)
                 {
-                    <a href="~/configuracion/agregarplanta" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Planta</a>
+                    <a href="~/Administrativo/AgregarZona" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Zona</a>
                 }
             </div>
             <!--end::Actions-->
@@ -55,55 +55,84 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                        <input type="text" data-kt-planta-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
+                        <input type="text" data-kt-zona-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
                     </div>
                     <!--end::Search-->
                 </div>
-                <!--end::Card title-->
+                <!--begin::Card title-->
+
             </div>
             <!--end::Card header-->
             <!--begin::Card body-->
             <div class="card-body py-4">
                 <input type="hidden" id="mensajeTempData" value="@TempData["Mensaje"]" />
                 <!--begin::Table-->
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_planta">
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_zona">
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                            <th class="min-w-150px">Región</th>
-                            <th class="min-w-150px">Planta</th>
-                            <th class="min-w-125px">Librería</th>
-                            <th class="min-w-100px">Estatus</th>
+                            <th class="min-w-125px">Número de Zona</th>
+                            <th class="min-w-125px">Nombre</th>
+                            <th class="min-w-125px">RFC</th>
+                            <th class="min-w-125px">Domicilio</th>
+                            <th class="min-w-125px">Teléfono</th>
+                            <th class="min-w-125px">Responsable</th>
+                            <th class="min-w-125px">Fecha de Apertuta</th>
+                            <th class="min-w-125px">Empresa</th>
+                            <th class="min-w-125px">Activo</th>
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-semibold">
-                        @foreach (var contenido in Model)
+                         @foreach (var contenido in Model)
                         {
                             <tr>
                                 <td>
-                                    @contenido.Id?.NombreRegion
+                                    @contenido.IdZona
                                 </td>
                                 <td>
-                                    @contenido.NombrePlanta
+                                    @contenido.NombreZona
                                 </td>
                                 <td>
-                                    @contenido.Libreria
+                                    @contenido.Rfc
+                                </td>
+                                <td>
+                                    @contenido.Domicilio
+                                </td>
+                                <td>
+                                    @contenido.Telefono1 
+                                    <br/>
+                                    @contenido.Telefono2
+                                </td>
+                                <td>
+                                    @contenido.Responsable
+                                </td>
+                                <td>
+                                    @contenido.FechaApertura.ToShortDateString()
+                                </td>
+                                <td>
+                                    @contenido.IdEmpresaNavigation.Nombrecorto
                                 </td>
                                 <td>
                                     @{
-                                        var activo = contenido.Activo == 1 ? "Activo" : "Inactivo";
-                                        var badgeClass = contenido.Activo == 1 ? "badge-light-success" : "badge-light-danger";
+                                        var activo = contenido.Activo == 1 ? "Si" : "No";
                                     }
-                                    <span class="badge @badgeClass">@activo</span>
+                                    @activo
                                 </td>
-                                <td class="text-end">
+
+                                 <td class="text-end">
                                     @if (permisosPagina!.Editar)
                                     {
-                                        <a href="~/configuracion/agregarplanta/@contenido.IdPlanta" class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                        <a href="~/Administrativo/AgregarZona/@contenido.IdZona" class="btn btn-icon btn-active-light-primary w-30px h-30px">
                                             <i class="ki-outline ki-pencil fs-3"></i>
                                         </a>
                                     }
-                                </td>
+                                    @if (permisosPagina!.Eliminar)
+                                    {
+                                        <a class="btn btn-icon btn-active-light-primary w-30px h-30px" data-kt-zona-delete-item="@contenido.IdZona" data-kt-zona-table-filter="delete_row">
+                                            <i class="ki-outline ki-trash fs-3"></i>
+                                        </a>
+                                    }
+                                </td> 
                             </tr>
                         }
                     </tbody>
@@ -118,7 +147,8 @@
 </div>
 <!--end::Content-->
 @section scripts {
-    <script src="~/js/configuracion/planta/table.js" asp-append-version="true"></script>
+    <script src="~/js/logistica/zona/table.js" asp-append-version="true"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
+    <script src="~/assets/js/custom/utilities/modals/users-search.js" asp-append-version="true"></script>
 }

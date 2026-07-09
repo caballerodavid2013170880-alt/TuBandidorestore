@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SUVAN.BackOffice.Models.ViewModel
+namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
 {
     /// <summary>
     /// ViewModel para el formulario de alta y edición de Planta.

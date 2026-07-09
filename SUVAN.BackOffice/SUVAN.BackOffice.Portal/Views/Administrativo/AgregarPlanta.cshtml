@@ -1,5 +1,6 @@
 ﻿@using SUVAN.BackOffice.Models.Facturacion
 @using SUVAN.BackOffice.Models.ViewModel;
+@using SUVAN.BackOffice.Models.ViewModel.Administrativo
 @using SUVAN.BackOffice.Models.ViewModel.Enums;
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
@@ -26,7 +27,7 @@
             <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
                 <!--begin::Title-->
-                <a href="~/configuracion/plantas" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
+                <a href="~/Administrativo/Plantas" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
                     <i class="ki-duotone ki-left fs-1 pe-5"></i>
                     <span>@isAgregarText @ViewData["Title"]</span>
                 </a>
@@ -48,7 +49,7 @@
             <!--begin::Card body-->
             <div class="card-body py-4">
                 <form class="form w-100" novalidate="novalidate" id="kt_planta_in_form"
-                      asp-controller="Configuracion" asp-action="AgregarPlanta" method="post">
+                      asp-controller="Administrativo" asp-action="AgregarPlanta" method="post">
                     @Html.AntiForgeryToken()
                     <!--Campos ocultos: IdPlanta e IdEmpresa-->
                     <input asp-for="IdPlanta" type="hidden" />
@@ -165,7 +166,7 @@
 </div>
 <!--end::Content-->
 @section scripts {
-    <script src="~/js/configuracion/planta/add.js" asp-append-version="true"></script>
+    <script src="~/js/logistica/planta/add.js" asp-append-version="true"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }

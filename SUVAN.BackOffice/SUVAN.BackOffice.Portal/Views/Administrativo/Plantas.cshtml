@@ -1,14 +1,15 @@
-﻿@using SUVAN.BackOffice.Models.ViewModel.Enums;
+﻿
+@using SUVAN.BackOffice.Models.ViewModel.Enums;
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
 
 @{
-  ViewData["Title"] = "Regiones";
+  ViewData["Title"] = "Plantas";
 }
 
-@model List<SUVAN.BackOffice.Database.Entities.Region>
+@model List<SUVAN.BackOffice.Database.Entities.Plantum>
 @{
-    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Regiones);
+    var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.empresas);
     if (permisosPagina == null)
     {
         return;
@@ -31,7 +32,7 @@
             <div class="d-flex align-items-center gap-2 gap-lg-3">
                 @if (permisosPagina!.Agregar)
                 {
-                    <a href="~/configuracion/agregarregion" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar región</a>
+                    <a href="~/Administrativo/AgregarPlanta" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold">Agregar Planta</a>
                 }
             </div>
             <!--end::Actions-->
@@ -54,61 +55,51 @@
                     <!--begin::Search-->
                     <div class="d-flex align-items-center position-relative my-1">
                         <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                        <input type="text" data-kt-region-table-filter="search"
-                               class="form-control form-control-solid w-450px ps-13"
-                               placeholder="Buscar" />
+                        <input type="text" data-kt-planta-table-filter="search" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar" />
                     </div>
                     <!--end::Search-->
                 </div>
-                <!--begin::Card title-->
+                <!--end::Card title-->
             </div>
             <!--end::Card header-->
             <!--begin::Card body-->
             <div class="card-body py-4">
-                <!--begin::TempData message (leído por table.js)-->
                 <input type="hidden" id="mensajeTempData" value="@TempData["Mensaje"]" />
-                <!--end::TempData message-->
                 <!--begin::Table-->
-                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_region">
+                <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_planta">
                     <thead>
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
-                            <!--Columna Empresa: muestra el nombre de la empresa propietaria (navegación eager-loaded)-->
-                            <th class="min-w-150px">Empresa</th>
-                            <!--Columna Región: nombre de la región-->
                             <th class="min-w-150px">Región</th>
-                            <!--Columna Estatus: badge Activo / Inactivo-->
+                            <th class="min-w-150px">Planta</th>
+                            <th class="min-w-125px">Librería</th>
                             <th class="min-w-100px">Estatus</th>
                             <th class="text-end min-w-100px">Acciones</th>
                         </tr>
                     </thead>
                     <tbody class="text-gray-600 fw-semibold">
-                        @foreach (var region in Model)
+                        @foreach (var contenido in Model)
                         {
                             <tr>
-                                <!--Empresa: se carga vía Include(r => r.IdEmpresaNavigation) en RegionService.GetRegiones-->
                                 <td>
-                                    @region.IdEmpresaNavigation?.Nombre
+                                    @contenido.Id?.NombreRegion
                                 </td>
-                                <!--Nombre de la región-->
                                 <td>
-                                    <input type="hidden" data-kt-region-table-filter="row_id" value="@region.IdRegion" />
-                                    @region.NombreRegion
+                                    @contenido.NombrePlanta
                                 </td>
-                                <!--Estatus: badge verde = Activo, rojo = Inactivo-->
+                                <td>
+                                    @contenido.Libreria
+                                </td>
                                 <td>
                                     @{
-                                        var activo     = region.Activo == 1 ? "Activo" : "Inactivo";
-                                        var badgeClass = region.Activo == 1 ? "badge-light-success" : "badge-light-danger";
+                                        var activo = contenido.Activo == 1 ? "Activo" : "Inactivo";
+                                        var badgeClass = contenido.Activo == 1 ? "badge-light-success" : "badge-light-danger";
                                     }
                                     <span class="badge @badgeClass">@activo</span>
                                 </td>
-                                <!--Acciones: editar (solo si el usuario tiene permiso)-->
                                 <td class="text-end">
                                     @if (permisosPagina!.Editar)
                                     {
-                                        <a href="~/configuracion/agregarregion/@region.IdRegion"
-                                           class="btn btn-icon btn-active-light-primary w-30px h-30px"
-                                           title="Editar región">
+                                        <a href="~/Administrativo/AgregarPlanta/@contenido.IdPlanta" class="btn btn-icon btn-active-light-primary w-30px h-30px">
                                             <i class="ki-outline ki-pencil fs-3"></i>
                                         </a>
                                     }
@@ -127,7 +118,7 @@
 </div>
 <!--end::Content-->
 @section scripts {
-    <script src="~/js/configuracion/region/table.js" asp-append-version="true"></script>
+    <script src="~/js/logistica/planta/table.js" asp-append-version="true"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }

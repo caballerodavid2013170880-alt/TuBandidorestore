@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SUVAN.BackOffice.Models.ViewModel
+namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
 {
     //Clases "espejo" para evitar cargar las entidades de la bd aqui
     public class RegionModel

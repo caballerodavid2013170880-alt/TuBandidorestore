@@ -1,4 +1,5 @@
 ﻿@using SUVAN.BackOffice.Models.ViewModel;
+@using SUVAN.BackOffice.Models.ViewModel.Administrativo
 @using SUVAN.BackOffice.Models.ViewModel.Enums;
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
@@ -23,7 +24,7 @@
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
             <!--begin::Page title (enlace de regreso al listado)-->
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                <a href="~/configuracion/depto"
+                <a href="~/Administrativo/Departamentos"
                    class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0">
                     <i class="ki-duotone ki-left fs-1 pe-5"></i>
                     <span>@isAgregarText @ViewData["Title"]</span>
@@ -45,7 +46,7 @@
             <!--begin::Card body-->
             <div class="card-body py-4">
                 <form class="form w-100" novalidate="novalidate" id="kt_depto_in_form"
-                      asp-controller="Configuracion" asp-action="AgregarDepto" method="post">
+                      asp-controller="Administrativo" asp-action="AgregarDepto" method="post">
                     @Html.AntiForgeryToken()
                     <!--Campos ocultos: IdDepto e IdEmpresa-->
                     <input asp-for="IdDepto" type="hidden" />
@@ -283,6 +284,5 @@
 @section scripts {
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
-    <script src="~/js/configuracion/departamentos/add.js" asp-append-version="true"></script>
-}
+    <script src="~/js/logistica/departamentos/add.js" asp-append-version="true"></script>
 }
