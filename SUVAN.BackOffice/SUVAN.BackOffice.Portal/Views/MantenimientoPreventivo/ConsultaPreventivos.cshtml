@@ -93,7 +93,7 @@
 </div>
 
 @section scripts {
-    <script src="~/js/logistica/preventivo/consulta.js" asp-append-version="true"></script>
+    <script src="~/js/administrativo/preventivo/consulta.js" asp-append-version="true"></script>
     <script>
         function abrirModalDetalle(id) {
         fetch('/MantenimientoPreventivo/GetModalDetalle?id=' + id).then(response => response.text()).then(html => {
