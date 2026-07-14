@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿/*
+ * 
+ * using Microsoft.AspNetCore.Mvc;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Portal.Helper;
@@ -107,3 +109,6 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
     }
 }
+
+
+*/

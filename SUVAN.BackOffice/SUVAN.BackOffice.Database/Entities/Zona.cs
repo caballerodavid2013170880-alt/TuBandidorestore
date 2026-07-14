@@ -7,6 +7,10 @@ public partial class Zona
 {
     public int IdZona { get; set; }
 
+    public int IdRegion { get; set; }
+
+    public int IdPlanta { get; set; }
+
     public string NombreZona { get; set; } = null!;
 
     public string Rfc { get; set; } = null!;
@@ -25,10 +29,6 @@ public partial class Zona
 
     public ulong Activo { get; set; }
 
-    public int IdRegion { get; set; }
-
-    public int IdPlanta { get; set; }
-
     public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
 
     public virtual ICollection<Deposito> Depositos { get; set; } = new List<Deposito>();
@@ -39,9 +39,7 @@ public partial class Zona
 
     public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
 
-    //public virtual Plantum IdPlantaNavigation { get; set; } = null!;
-    public virtual ICollection<Region> Regiones { get; set; } = new List<Region>();
-    public virtual ICollection<Plantum> Plantas { get; set; } = new List<Plantum>();
+    public virtual Plantum IdPlantaNavigation { get; set; } = null!;
 
     public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
 

@@ -1,4 +1,4 @@
-﻿/*using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SUVAN.BackOffice.Database.Entities;
@@ -34,17 +34,4 @@ public partial class Depositosdisponible
     public string Cp { get; set; } = null!;
 
     public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
-
-    public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
-
-    public virtual ICollection<Mecanico> Mecanicos { get; set; } = new List<Mecanico>();
-
-    public virtual ICollection<Siniestro> Siniestros { get; set; } = new List<Siniestro>();
-
-    public virtual ICollection<Taller> Tallers { get; set; } = new List<Taller>();
-
-    public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
-
-    public virtual Zona Zona { get; set; } = null!;
 }
-*/

@@ -101,11 +101,23 @@ public partial class VehiculoDetalle
 
     public string? UsuarioCaptura { get; set; }
 
-    //public virtual Depositosdisponible? IdDepositoNavigation { get; set; }
+    public int? IdEmpresa { get; set; }
+
+    public int? IdRegion { get; set; }
+
+    public int? IdPlanta { get; set; }
+
+    public virtual Region? Id { get; set; }
+
+    public virtual Deposito? IdDepositoNavigation { get; set; }
+
+    public virtual Empresa? IdEmpresaNavigation { get; set; }
 
     public virtual Marca? IdMarcaNavigation { get; set; }
 
     public virtual Modelo? IdModeloNavigation { get; set; }
+
+    public virtual Plantum? IdPlantaNavigation { get; set; }
 
     public virtual TipoEje? IdTipoEjeNavigation { get; set; }
 

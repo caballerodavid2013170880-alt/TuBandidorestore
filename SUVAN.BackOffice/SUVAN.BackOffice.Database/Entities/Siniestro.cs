@@ -9,23 +9,23 @@ public partial class Siniestro
 
     public int VehiculoIdvehiculo { get; set; }
 
+    public uint MotivoAuxilioIdIdmotivo { get; set; }
+
+    public uint FallaAuxilioIdIdfalla { get; set; }
+
+    public int DepositoIdIdDeposito { get; set; }
+
+    public int ConductorIdconductor { get; set; }
+
     public DateOnly FechaReporte { get; set; }
 
     public TimeOnly HoraReporte { get; set; }
 
     public string NumeroAuxilio { get; set; } = null!;
 
-    public uint MotivoAuxilioIdIdmotivo { get; set; }
-
-    public uint FallaAuxilioIdIdfalla { get; set; }
-
     public string Orden { get; set; } = null!;
 
-    public int DepositoIdIdDeposito { get; set; }
-
     public string Estatus { get; set; } = null!;
-
-    public int ConductorIdconductor { get; set; }
 
     public string? TipoPoliza { get; set; }
 
@@ -51,7 +51,7 @@ public partial class Siniestro
 
     public virtual Conductor ConductorIdconductorNavigation { get; set; } = null!;
 
-    //public virtual Depositosdisponible DepositoIdIdDepositoNavigation { get; set; } = null!;
+    public virtual Deposito DepositoIdIdDepositoNavigation { get; set; } = null!;
 
     public virtual FallaAuxilioVial FallaAuxilioIdIdfallaNavigation { get; set; } = null!;
 

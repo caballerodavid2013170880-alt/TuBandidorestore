@@ -31,7 +31,7 @@ public partial class Empresa
 
     public virtual ICollection<Deposito> Depositos { get; set; } = new List<Deposito>();
 
-    //public virtual ICollection<Depositosdisponible> Depositosdisponibles { get; set; } = new List<Depositosdisponible>();
+    public virtual ICollection<Depositosdisponible> Depositosdisponibles { get; set; } = new List<Depositosdisponible>();
 
     public virtual ICollection<Depto> Deptos { get; set; } = new List<Depto>();
 
@@ -58,6 +58,8 @@ public partial class Empresa
     public virtual ICollection<TarIave> TarIaves { get; set; } = new List<TarIave>();
 
     public virtual ICollection<Variableempresa> Variableempresas { get; set; } = new List<Variableempresa>();
+
+    public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
 
     public virtual ICollection<Vehiculo> Vehiculos { get; set; } = new List<Vehiculo>();
 

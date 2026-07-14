@@ -9,9 +9,9 @@ public partial class Taller
 
     public int ZonaIdzona { get; set; }
 
-    public string NombreTaller { get; set; } = null!;
-
     public int IdDeposito { get; set; }
+
+    public string NombreTaller { get; set; } = null!;
 
     public string? TTaller { get; set; }
 
@@ -31,7 +31,6 @@ public partial class Taller
 
     public float? ValorUnitario { get; set; }
 
-    //public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
     public virtual Deposito IdDepositoNavigation { get; set; } = null!;
 
     public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();

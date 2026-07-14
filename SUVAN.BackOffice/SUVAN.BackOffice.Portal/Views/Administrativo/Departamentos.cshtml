@@ -91,7 +91,7 @@
                         {
                             <tr>
                                 <!--Depósito: se carga vía Include(d => d.IdDepositoNavigation) en DeptoService.GetDeptos-->
-                                <td>@depto.Id.NombreDeposito</td>
+                                <td>@depto.IdDepositoNavigation?.NombreDeposito</td>
                                 <!--Nombre del departamento-->
                                 <td>@depto.NombreDepto</td>
                                 <!--Responsable del departamento-->

@@ -11,15 +11,17 @@ public partial class Mantenimiento
 
     public int IdTiposervicio { get; set; }
 
-    public int OrdenServicio { get; set; }
-
-    public int? IdPreventivo { get; set; }
-
     public int IdVehiculo { get; set; }
 
     public int? IdTaller { get; set; }
 
     public int? IdMecanico { get; set; }
+
+    public int? IdTipoMantenimiento { get; set; }
+
+    public int OrdenServicio { get; set; }
+
+    public int? IdPreventivo { get; set; }
 
     public DateTime? FechaProgramacion { get; set; }
 
@@ -61,8 +63,6 @@ public partial class Mantenimiento
 
     public string? Vale { get; set; }
 
-    public int? IdTipoMantenimiento { get; set; }
-
     public int? FoReOp { get; set; }
 
     public short? Refac { get; set; }
@@ -73,8 +73,7 @@ public partial class Mantenimiento
 
     public string? Refacciones { get; set; }
 
-    //Anteriorpublic virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
-    //Propuesta de actualizadcion public virtual Deposito IdDepositoNavigation { get; set; } = null!;
+    public virtual Deposito IdDepositoNavigation { get; set; } = null!;
 
     public virtual Mecanico? IdMecanicoNavigation { get; set; }
 

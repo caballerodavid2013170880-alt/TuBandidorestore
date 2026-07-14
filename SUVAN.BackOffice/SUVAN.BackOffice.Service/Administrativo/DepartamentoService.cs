@@ -32,7 +32,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 .Include(d => d.Id) // Para mostrar NombreDeposito en la tabla
                 .Include(d => d.IdEmpresaNavigation)
                 .Where(d => d.IdEmpresa == idEmpresa)
-                .OrderBy(d => d.Id.NombreDeposito)
+                .OrderBy(d => d.IdDepositoNavigation.NombreDeposito)
                 .ThenBy(d => d.NombreDepto)
                 .ToListAsync();
             return deptos;
@@ -85,7 +85,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     .OrderBy(d => d.NombreDeposito)
                     .Select(d => new { d.IdDeposito, d.NombreDeposito, d.IdZona, d.IdPlanta, d.IdRegion })
                     .ToListAsync();
-                // Armar jerarqu�a anidada: Regi�n ? Planta ? Zona ? Dep�sito
+                // Armar jerarquia anidada: Regi�n ? Planta ? Zona ? Dep�sito
                 var hierarchy = regiones.Select(r => new
                 {
                     r.Id,
