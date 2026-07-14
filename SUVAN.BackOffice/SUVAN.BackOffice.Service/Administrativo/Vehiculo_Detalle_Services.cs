@@ -40,9 +40,9 @@ namespace SUVAN.BackOffice.Service.Administrativo
                             on detalle.IdZona equals zona.IdZona into zonaGroup
                         from zona in zonaGroup.DefaultIfEmpty()
 
-                        join deposito in context.Depositosdisponibles
-                            on detalle.IdDeposito equals deposito.IdDeposito into depositoGroup
-                        from deposito in depositoGroup.DefaultIfEmpty()
+                            // 1407 evitar conflictos con depostios disponibles: join deposito in context.Depositosdisponibles
+                            // 1407 evitar conflictos con depostios disponibles:   on detalle.IdDeposito equals deposito.IdDeposito into depositoGroup
+                            // 1407 evitar conflictos con depostios disponibles:from deposito in depositoGroup.DefaultIfEmpty()
 
                         where vehiculo.EmpresaIdempresa == idEmpresa
 
@@ -54,8 +54,8 @@ namespace SUVAN.BackOffice.Service.Administrativo
                             Descripcion = marca.Descripcion,
                             IdZona = zona.IdZona,
                             NombreZona = zona.NombreZona,
-                            IdDeposito = deposito.IdDeposito,
-                            NombreDeposito = deposito.DepositoNombre,
+                            // 1407 evitar conflictos con depostios disponibles:IdDeposito = deposito.IdDeposito,
+                            // 1407 evitar conflictos con depostios disponibles:NombreDeposito = deposito.DepositoNombre,
                             NumeroSerie = detalle.NumeroSerie,
                             NumeroMotor = detalle.NumeroMotor,
                             FechaCompra = detalle.FechaCompra
@@ -74,7 +74,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         public async Task<VehiculoDetalleViewModel> GetVehiculoDetalleViewModel(int id)
         {
             var vehiculo = await context.VehiculoDetalles.Include(v => v.IdMarcaNavigation).Include(v => v.IdModeloNavigation).
-                Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdTipoEjeNavigation).Include(v => v.IdDepositoNavigation).Include(v => v.IdZonaNavigation).
+                //1407 Evita conflictos con Depositosdisponibles Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdTipoEjeNavigation).Include(v => v.IdDepositoNavigation).Include(v => v.IdZonaNavigation).
                 Include(v => v.IdVehiculoNavigation).FirstOrDefaultAsync(x => x.IdVehiculoDetalle == id);
 
             if (vehiculo == null)
@@ -93,7 +93,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 IdZona = vehiculo?.IdZona,
                 NombreZona = vehiculo?.IdZonaNavigation?.NombreZona,
                 IdDeposito = vehiculo?.IdDeposito,
-                NombreDeposito = vehiculo?.IdDepositoNavigation?.DepositoNombre,
+                 // 1407 evitar conflictos con depostios disponiblesNombreDeposito = vehiculo?.IdDepositoNavigation?.DepositoNombre,
                 IdVehiculo = vehiculo.IdVehiculo,
                 PlacasVehiculo = vehiculo.IdVehiculoNavigation.Placas,
                 IdVehiculoDetalle = vehiculo.IdVehiculoDetalle,
@@ -166,7 +166,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
             // Valida si el Detalle Vehiculo teien el mismo Carroceria/VIN en la misma empresa
             var vehiculoExistente = await context.VehiculoDetalles.FirstOrDefaultAsync(x =>
                 x.Carroceria!.Trim().ToLower() == model.Carroceria!.Trim().ToLower() &&
-                x.IdDepositoNavigation.IdEmpresa == IdEmpresa &&
+                // 1407 / //1407 Evita conflictos con Depositosdisponibles x.IdDepositoNavigation.IdEmpresa == IdEmpresa &&
                 x.IdVehiculoDetalle != model.IdVehiculoDetalle);
 
             if (vehiculoExistente is not null)
@@ -286,7 +286,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         {
             var resultado = await context.VehiculoDetalles.Where(v => v.IdVehiculoDetalle == idVehiculoDetalle).Include(v => v.IdVehiculoNavigation).Include(v => v.IdMarcaNavigation)
                 .Include(v => v.IdModeloNavigation).Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdZonaNavigation)
-                .Include(v => v.IdDepositoNavigation)
+                // 1407 evitar conflictos con depostios disponibles:.Include(v => v.IdDepositoNavigation)
                 .Select(vehiculo => new VehiculoDetalleViewModel
                 {
                     IdVehiculoDetalle = vehiculo.IdVehiculoDetalle,
@@ -302,7 +302,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     IdZona = vehiculo.IdZona,
                     NombreZona = vehiculo.IdZonaNavigation.NombreZona,
                     IdDeposito = vehiculo.IdDeposito,
-                    NombreDeposito = vehiculo.IdDepositoNavigation.DepositoNombre,
+                    // 1407 evitar conflictos con depostios disponibles: NombreDeposito = vehiculo.IdDepositoNavigation.DepositoNombre,
                     CopiaFactura = vehiculo.CopiaFactura,
                     CopiaVerificacion = vehiculo.CopiaVerificacion,
                     Proveedor = vehiculo.Proveedor,

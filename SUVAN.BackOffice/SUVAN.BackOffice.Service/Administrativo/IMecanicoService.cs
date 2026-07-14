@@ -14,14 +14,14 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// Obtiene el listado de los Mecanicos desde la base de datos.
         /// </summary>
         /// <returns>Lista de Mecanicos</returns>
-        Task<List<Mecanico>> GetMecanico(int IdEmpresa);
+        // 1407 evitar conflictos con depostios disponibles Task<List<Mecanico>> GetMecanico(int IdEmpresa);
 
         /// <summary>
         /// Obtiene el ViewModel del mecanico específico.
         /// </summary>
         /// <param name="id">Identificador del mecanico.</param>
         /// <returns>ViewModel para el mecanico especifico.</returns>
-        Task<MecanicoViewModel> GetMecanicoViewModel(int id, int IdEmpresa);
+        // 1407 evitar conflictos con depostios disponibles: Task<MecanicoViewModel> GetMecanicoViewModel(int id, int IdEmpresa);
 
         /// <summary>
         /// Agrega o actualiza un mecanico en la base de datos.
@@ -40,6 +40,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
         Task<bool> EliminarMecanico(int MecanicoId);
 
-        List<MecanicoViewModel.TallerViewModel> ObtenerTaller(int depositoId);
+        // 1407 evitar conflictos con depostios disponibles: List<MecanicoViewModel.TallerViewModel> ObtenerTaller(int depositoId);
     }
 }

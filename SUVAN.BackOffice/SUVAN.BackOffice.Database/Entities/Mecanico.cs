@@ -17,7 +17,7 @@ public partial class Mecanico
 
     public string Puesto { get; set; } = null!;
 
-    public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
+    //public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
 
     public virtual Taller IdTallerNavigation { get; set; } = null!;
 

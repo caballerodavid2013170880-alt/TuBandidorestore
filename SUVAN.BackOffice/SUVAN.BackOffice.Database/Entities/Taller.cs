@@ -31,7 +31,8 @@ public partial class Taller
 
     public float? ValorUnitario { get; set; }
 
-    public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
+    //public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
+    public virtual Deposito IdDepositoNavigation { get; set; } = null!;
 
     public virtual ICollection<Mantenimiento> Mantenimientos { get; set; } = new List<Mantenimiento>();
 

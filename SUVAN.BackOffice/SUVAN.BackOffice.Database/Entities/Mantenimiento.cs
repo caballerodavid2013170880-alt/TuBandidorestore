@@ -73,7 +73,8 @@ public partial class Mantenimiento
 
     public string? Refacciones { get; set; }
 
-    public virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
+    //Anteriorpublic virtual Depositosdisponible IdDepositoNavigation { get; set; } = null!;
+    //Propuesta de actualizadcion public virtual Deposito IdDepositoNavigation { get; set; } = null!;
 
     public virtual Mecanico? IdMecanicoNavigation { get; set; }
 

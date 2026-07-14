@@ -23,19 +23,20 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// Obtiene el listado de los Mecanicos desde la base de datos.
         /// </summary>
         /// <returns>Lista de Mecanicos</returns>
-        public async Task<List<Mecanico>> GetMecanico(int IdEmpresa)
+        /*public async Task<List<Mecanico>> GetMecanico(int IdEmpresa)
         {
             var mecanico = await context.Mecanicos.Where(e => e.IdDepositoNavigation.IdEmpresa == IdEmpresa).Include(d => d.IdDepositoNavigation).Include(t => t.IdTallerNavigation).ToListAsync();
 
             return mecanico!;
         }
+        */ //1407
         /// <summary>
         /// Obtiene el ViewModel del mecanico específico.
         /// </summary>
         /// <param name="id">Identificador del mecanico.</param>
         /// <returns>ViewModel para el mecanico especifico.</returns>
-        public async Task<MecanicoViewModel> GetMecanicoViewModel(int id, int IdEmpresa)
-        {
+        // 1407 evitar conflictos con depostios disponibles: public async Task<MecanicoViewModel> GetMecanicoViewModel(int id, int IdEmpresa)
+        /* { 
             var mecanico = await context.Mecanicos
                 .Where(x => x.IdMecanico == id)
                 .Select(d => new MecanicoViewModel
@@ -48,7 +49,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     IdDeposito = d.IdDeposito,
                 })
                 .FirstOrDefaultAsync();
-
+           
             var deposito = await (from z in context.Depositosdisponibles
                                where z.IdEmpresa == IdEmpresa
                                select new MecanicoViewModel.DepositosViewModel()
@@ -63,7 +64,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                                        NombreTaller = d.NombreTaller
                                    }).ToList()
                                }).ToListAsync();
-
+            
             if (mecanico != null)
             {
                 mecanico.DepositoView = deposito;
@@ -71,7 +72,8 @@ namespace SUVAN.BackOffice.Service.Administrativo
             }
 
             return new MecanicoViewModel { DepositoView = deposito };
-        }
+            
+        }*/ // 1407 evitar conflictos con depostios disponibles
 
         /// <summary>
         /// Agrega o actualiza un mecanico en la base de datos.
@@ -110,7 +112,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
             mecanico.Puesto = model.Puesto;
             mecanico.IdTaller = model.IdTaller;
             mecanico.Activo = model.Activo;
-            mecanico.IdDeposito = model.IdDeposito;
+            // 1407 evitar conflictos con depostios disponibles: mecanico.IdDeposito = model.IdDeposito;
 
             if (model.IdMecanico > 0)
             {
@@ -157,10 +159,12 @@ namespace SUVAN.BackOffice.Service.Administrativo
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
         }
-
+        /*
         public List<MecanicoViewModel.TallerViewModel> ObtenerTaller(int depositoId)
         {
             var taller = context.Tallers
+                // 1407 evitar conflictos con depostios disponibles:
+
                 .Where(t => t.IdDeposito == depositoId)
                 .Select(t => new MecanicoViewModel.TallerViewModel
                 {
@@ -169,6 +173,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 }).ToList();
 
             return taller;
-        }
+        }*/
     }
 }

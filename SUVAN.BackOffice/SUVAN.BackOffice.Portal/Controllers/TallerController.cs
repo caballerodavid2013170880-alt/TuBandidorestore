@@ -30,7 +30,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> AgregarTaller(int id)
         {
             var agregarModel = await taller.GetTallerViewModel(id, User.GetEmpresaId());
-            agregarModel.DepositoView = taller.ObtenerDeposito(agregarModel.ZonaIdzona);
+            // 1407 evitar conflictos con depostios disponibles   agregarModel.DepositoView = taller.ObtenerDeposito(agregarModel.ZonaIdzona);
             agregarModel.ZonaJson = JsonConvert.SerializeObject(agregarModel.ZonaView);
             return View(agregarModel);
         }
@@ -40,7 +40,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
-                model.DepositoView = taller.ObtenerDeposito(model.ZonaIdzona);
+                // 1407 evitar conflictos con depostios disponibles model.DepositoView = taller.ObtenerDeposito(model.ZonaIdzona);
 
                 if (!ModelState.IsValid)
                 {

@@ -20,26 +20,26 @@ namespace SUVAN.BackOffice.Portal.Controllers
             this.mecanicoService = mecanicoService;
 
         }
-        public async Task<IActionResult> Index()
-        {
-            var mecanico = await mecanicoService.GetMecanico(User.GetEmpresaId());
-            return View(mecanico);
-        }
+        // 1407 evitar conflictos con depostios disponibles public async Task<IActionResult> Index()
+        // 1407 evitar conflictos con depostios disponibles {
+        // 1407 evitar conflictos con depostios disponibles var mecanico = await mecanicoService.GetMecanico(User.GetEmpresaId());
+        // 1407 evitar conflictos con depostios disponibles return View(mecanico);
+        // 1407 evitar conflictos con depostios disponibles }
 
-        public async Task<IActionResult> AgregarMecanico(int id)
-        {
-            var agregarModel = await mecanicoService.GetMecanicoViewModel(id, User.GetEmpresaId());
-            agregarModel.TallerView = mecanicoService.ObtenerTaller(agregarModel.IdDeposito);
-            agregarModel.DepositoJson = JsonConvert.SerializeObject(agregarModel.DepositoView);
-            return View(agregarModel);
-        }
+        // 1407 evitar conflictos con depostios disponibles public async Task<IActionResult> AgregarMecanico(int id)
+        // 1407 evitar conflictos con depostios disponibles {
+        // 1407 evitar conflictos con depostios disponibles var agregarModel = await mecanicoService.GetMecanicoViewModel(id, User.GetEmpresaId());
+        // 1407 evitar conflictos con depostios disponibles agregarModel.TallerView = mecanicoService.ObtenerTaller(agregarModel.IdDeposito);
+        // 1407 evitar conflictos con depostios disponibles agregarModel.DepositoJson = JsonConvert.SerializeObject(agregarModel.DepositoView);
+        // 1407 evitar conflictos con depostios disponibles return View(agregarModel);
+        // 1407 evitar conflictos con depostios disponibles }
 
         [HttpPost]
         public async Task<IActionResult> AgregarMecanico(MecanicoViewModel model)
         {
             try
             {
-                model.TallerView = mecanicoService.ObtenerTaller(model.IdDeposito);
+                // 1407 evitar conflictos con depostios disponibles model.TallerView = mecanicoService.ObtenerTaller(model.IdDeposito);
 
                 var result = await mecanicoService.AgregarMecanico(model);
 

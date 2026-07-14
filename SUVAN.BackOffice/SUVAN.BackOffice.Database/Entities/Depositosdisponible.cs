@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 
 namespace SUVAN.BackOffice.Database.Entities;
@@ -47,3 +47,4 @@ public partial class Depositosdisponible
 
     public virtual Zona Zona { get; set; } = null!;
 }
+*/

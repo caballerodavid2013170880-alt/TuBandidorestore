@@ -47,7 +47,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     return await ObtenerZona(IdEmpresa);
 
                 case "deposito":
-                    return await ObtenerDepositos(nClaveFiltro);
+                //1407 Evita conflictos con Depositosdisponibles    return await ObtenerDepositos(nClaveFiltro);
 
                 case "preventivo":
                     return await ObtenerPreventivos(IdEmpresa);
@@ -138,18 +138,21 @@ namespace SUVAN.BackOffice.Service.Administrativo
                               {
                                   Id = m.IdZona,
                                   Descripcion = m.NombreZona,
-                                  Depositos = context.Depositosdisponibles
-                                  .Where(d => d.ZonaId == m.IdZona)
-                                  .Select(d => new DepositosViewModel
-                                  {
-                                      Id = d.IdDeposito,
-                                      Descripcion = d.DepositoNombre
-                                  }).ToList()
+                                  /* // 1407 evitar conflictos con depostios disponibles:
+                                   * Depositos = context.Depositosdisponibles
+                                   .Where(d => d.ZonaId == m.IdZona)
+                                   .Select(d => new DepositosViewModel
+                                   {
+                                       Id = d.IdDeposito,
+                                       Descripcion = d.DepositoNombre
+
+                                   }).ToList()
+                               */
                               }).ToListAsync();
 
             return zona;
         }
-
+        /*
         public async Task<List<DepositosViewModel>> ObtenerDepositos(int IdZona)
         {
             var resultado = await (from t in context.Depositosdisponibles
@@ -163,7 +166,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                                    }).ToListAsync();
             return resultado;
         }
-
+        */
         public async Task<List<PreventivoCatalogViewModel>> ObtenerPreventivos(int IdEmpresa)
         {
             var resultado = await (from p in context.Preventivos

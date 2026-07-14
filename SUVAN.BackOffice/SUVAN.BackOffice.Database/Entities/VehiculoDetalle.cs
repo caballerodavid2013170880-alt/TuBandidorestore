@@ -101,7 +101,7 @@ public partial class VehiculoDetalle
 
     public string? UsuarioCaptura { get; set; }
 
-    public virtual Depositosdisponible? IdDepositoNavigation { get; set; }
+    //public virtual Depositosdisponible? IdDepositoNavigation { get; set; }
 
     public virtual Marca? IdMarcaNavigation { get; set; }
 

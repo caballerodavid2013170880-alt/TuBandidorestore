@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿/*
+ * 
+ * 
+ * using Microsoft.AspNetCore.Authorization;
 using SUVAN.BackOffice.Service.Administrativo;
 using Microsoft.AspNetCore.Mvc;
 using SUVAN.BackOffice.Service.Configuracion;
@@ -89,3 +92,6 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
     }
 }
+
+
+*/

@@ -40,6 +40,7 @@ public partial class Zona
     public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
 
     //public virtual Plantum IdPlantaNavigation { get; set; } = null!;
+    public virtual ICollection<Region> Regiones { get; set; } = new List<Region>();
     public virtual ICollection<Plantum> Plantas { get; set; } = new List<Plantum>();
 
     public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();

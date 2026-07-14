@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿/*
+ * 
+ * using Microsoft.EntityFrameworkCore;
 using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel;
@@ -195,3 +197,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
     }
 }
+
+
+*/

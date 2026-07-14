@@ -30,7 +30,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                                        IdTaller = t.IdTaller,
                                        NombreTaller = t.NombreTaller,
                                        NombreZona = t.ZonaIdzonaNavigation.NombreZona,
-                                       NombreDeposito = t.IdDepositoNavigation.DepositoNombre,
+                                       //NombreDeposito = t.IdDepositoNavigation.DepositoNombre,
                                        Domicilio = t.Domicilio,
                                        Telefono = t.Telefono,
                                    }).ToListAsync();
@@ -46,7 +46,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     Nombre = m.Nombre,
                     Puesto = m.Puesto,
                     NombreTaller = m.IdTallerNavigation.NombreTaller,
-                    NombreDeposito = m.IdDepositoNavigation.DepositoNombre
+                    // 1407 evitar conflictos con depostios disponibles NombreDeposito = m.IdDepositoNavigation.DepositoNombre
 
             }).ToListAsync();
 

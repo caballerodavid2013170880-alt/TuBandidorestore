@@ -31,7 +31,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <exception cref="Exception"></exception>
         Task<bool> AgregarTaller(TallerViewModel model);
 
-        List<TallerViewModel.DepositosViewModel> ObtenerDeposito(int zonaId);
+        // 1407 evitar conflictos con depostios disponibles: List<TallerViewModel.DepositosViewModel> ObtenerDeposito(int zonaId);
 
         /// <summary>
         /// Elimina un taller en la base de datos.

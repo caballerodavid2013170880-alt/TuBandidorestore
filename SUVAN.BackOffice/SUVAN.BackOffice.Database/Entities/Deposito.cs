@@ -37,7 +37,7 @@ public partial class Deposito
 
     public ulong? Activo { get; set; }
     //DCC
-    public virtual Zona Id { get; set; } = null!;
+    //public virtual Zona Id { get; set; } = null!;
     public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
 
     //public virtual ICollection<Depto> Deptos { get; set; } = new List<Depto>();

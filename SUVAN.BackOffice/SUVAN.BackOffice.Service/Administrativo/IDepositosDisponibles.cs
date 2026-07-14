@@ -1,4 +1,7 @@
-﻿using SUVAN.BackOffice.Database.Entities;
+﻿/*
+ * 
+ * 
+ * using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
@@ -52,3 +55,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
         List<DepositosDisponiblesViewModel.ZonasViewModel> ObtenerZona(int IdEmpresa);
     }
 }
+
+
+*/

@@ -28,7 +28,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
             return talleres;
         }
-
+        
         /// <summary>
         /// Obtiene el ViewModel del taller específico.
         /// </summary>
@@ -51,19 +51,19 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     IdDeposito = d.IdDeposito,
                 })
                 .FirstOrDefaultAsync();
-
+            
             var zonas = await (from z in context.Zonas where z.IdEmpresa == IdEmpresa
-                             select new TallerViewModel.ZonasViewModel() {
-                                 ZonaId = z.IdZona,
-                                 ZonaNombre = z.NombreZona,
-                                 Depositos = context.Depositosdisponibles
-                                 .Where(d => d.ZonaId == z.IdZona)
-                                 .Select(d => new TallerViewModel.DepositosViewModel
+                             select new TallerViewModel.ZonasViewModel() {/*
+                                 //1407 Evita conflictos con DepositosdisponiblesZonaId = z.IdZona,
+                                 //1407 Evita conflictos con DepositosdisponiblesZonaNombre = z.NombreZona//,
+                                 //1407 Evita conflictos con Depositosdisponibles Depositos = context.Depositosdisponibles
+                                 //.Where(d => d.ZonaId == z.IdZona)
+                                 //1407 Evita conflictos con Depositosdisponibles.Select(d => new TallerViewModel.DepositosViewModel
                                  {
-                                    DepositoId = d.IdDeposito,
-                                    NombreDeposito = d.DepositoNombre
+                                     //1407 Evita conflictos con DepositosdisponiblesDepositoId = d.IdDeposito,
+                                     //1407 Evita conflictos con DepositosdisponiblesNombreDeposito = d.DepositoNombre
                                  }).ToList()
-                             }).ToListAsync();
+                             */}).ToListAsync();
 
             if (taller != null)
             {
@@ -112,7 +112,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
             taller.Telefono = model.Telefono;
             taller.Email = model.Email;
             taller.ZonaIdzona = model.ZonaIdzona;
-            taller.IdDeposito = model.IdDeposito;
+            // 1407 evitar conflictos con depostios disponibles: taller.IdDeposito = model.IdDeposito;
 
             if (model.IdTaller > 0)
             {
@@ -159,9 +159,9 @@ namespace SUVAN.BackOffice.Service.Administrativo
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
         }
-
+        /*
         public List<TallerViewModel.DepositosViewModel> ObtenerDeposito(int zonaId)
-        {
+        {// 1407 evitar conflictos con depostios disponibles:
             var deposito = context.Depositosdisponibles
                 .Where(t => t.ZonaId == zonaId)
                 .Select(t => new TallerViewModel.DepositosViewModel
@@ -171,6 +171,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 }).ToList();
 
             return deposito;
-        }
+            
+        }*/
     }
 }

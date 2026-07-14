@@ -79,7 +79,7 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Deposito> Depositos { get; set; }
 
-    public virtual DbSet<Depositosdisponible> Depositosdisponibles { get; set; }
+    //public virtual DbSet<Depositosdisponible> Depositosdisponibles { get; set; }
 
     public virtual DbSet<Depto> Deptos { get; set; }
 
@@ -2536,11 +2536,11 @@ public partial class SuvanDbContext : DbContext
                 .IsFixedLength()
                 .HasColumnName("vale");
 
-            entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.Mantenimientos)
+           /* entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.Mantenimientos)
                 .HasForeignKey(d => d.IdDeposito)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_mantenimiento_deposito");
-
+           */
             entity.HasOne(d => d.IdMecanicoNavigation).WithMany(p => p.Mantenimientos)
                 .HasForeignKey(d => d.IdMecanico)
                 .HasConstraintName("fk_mantenimiento_mecanico");
@@ -2661,12 +2661,12 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(50)
                 .IsFixedLength()
                 .HasColumnName("puesto");
-
+            /*
             entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.Mecanicos)
                 .HasForeignKey(d => d.IdDeposito)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_mecanico_deposito");
-
+            */
             entity.HasOne(d => d.IdTallerNavigation).WithMany(p => p.Mecanicos)
                 .HasForeignKey(d => d.IdTaller)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -3797,12 +3797,12 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => d.ConductorIdconductor)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_siniestro_conductor");
-
+            /*
             entity.HasOne(d => d.DepositoIdIdDepositoNavigation).WithMany(p => p.Siniestros)
                 .HasForeignKey(d => d.DepositoIdIdDeposito)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_siniestro_deposito");
-
+            */
             entity.HasOne(d => d.FallaAuxilioIdIdfallaNavigation).WithMany(p => p.Siniestros)
                 .HasForeignKey(d => d.FallaAuxilioIdIdfalla)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -3866,12 +3866,12 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("telefono");
             entity.Property(e => e.ValorUnitario).HasColumnName("valor_unitario");
             entity.Property(e => e.ZonaIdzona).HasColumnName("zona_idzona");
-
+            /*
             entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.Tallers)
                 .HasForeignKey(d => d.IdDeposito)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_taller_deposito");
-
+            */
             entity.HasOne(d => d.ZonaIdzonaNavigation).WithMany(p => p.Tallers)
                 .HasForeignKey(d => d.ZonaIdzona)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -5138,11 +5138,11 @@ public partial class SuvanDbContext : DbContext
                 .HasColumnName("vigencia_tarjeta_circulacion");
             entity.Property(e => e.VolumenMaximo).HasColumnName("volumen_maximo");
             entity.Property(e => e.VolumenMinimo).HasColumnName("volumen_minimo");
-
+            /*
             entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdDeposito)
                 .HasConstraintName("fk_vehiculo_detalle_deposito");
-
+            */
             entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => d.IdMarca)
                 .HasConstraintName("fk_vehiculo_detalle_marca");

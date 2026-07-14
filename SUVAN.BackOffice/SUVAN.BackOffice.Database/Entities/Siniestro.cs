@@ -51,7 +51,7 @@ public partial class Siniestro
 
     public virtual Conductor ConductorIdconductorNavigation { get; set; } = null!;
 
-    public virtual Depositosdisponible DepositoIdIdDepositoNavigation { get; set; } = null!;
+    //public virtual Depositosdisponible DepositoIdIdDepositoNavigation { get; set; } = null!;
 
     public virtual FallaAuxilioVial FallaAuxilioIdIdfallaNavigation { get; set; } = null!;
 
