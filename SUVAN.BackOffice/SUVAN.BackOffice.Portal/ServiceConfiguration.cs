@@ -12,7 +12,6 @@ using SUVAN.BackOffice.Service.MensajeriaService;
 using SUVAN.BackOffice.Service.Pago;
 using SUVAN.BackOffice.Service.Administrativo;
 using SUVAN.BackOffice.Portal.Controllers;
-using SUVAN.BackOffice.Service.Logistica;
 
 namespace SUVAN.BackOffice.Portal
 {

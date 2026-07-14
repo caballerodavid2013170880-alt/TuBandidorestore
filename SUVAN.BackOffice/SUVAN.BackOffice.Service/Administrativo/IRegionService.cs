@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 //Nuevo
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public interface IRegionService
     {

@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
-using SUVAN.BackOffice.Service.Logistica;
+using SUVAN.BackOffice.Service.Administrativo;
 using System.Security.Claims;
 namespace SUVAN.BackOffice.Portal.Controllers.Logistica
 {

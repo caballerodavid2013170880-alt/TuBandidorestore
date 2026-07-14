@@ -36,16 +36,20 @@ public partial class Deposito
     public string? Cp { get; set; }
 
     public ulong? Activo { get; set; }
-
+    //DCC
+    public virtual Zona Id { get; set; } = null!;
     public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
 
-    public virtual ICollection<Depto> Deptos { get; set; } = new List<Depto>();
+    //public virtual ICollection<Depto> Deptos { get; set; } = new List<Depto>();
 
-    public virtual Region Id { get; set; } = null!;
+    public virtual ICollection<Region> Regiones { get; set; } = new List<Region>();
+    public virtual ICollection<Plantum> Plantas { get; set; } = new List<Plantum>();
+    public virtual ICollection<Zona> Zonas { get; set; } = new List<Zona>();
+    //public virtual Region Id { get; set; } = null!;
 
     public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
 
-    public virtual Plantum IdPlantaNavigation { get; set; } = null!;
+    //public virtual Plantum IdPlantaNavigation { get; set; } = null!;
 
     public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
 

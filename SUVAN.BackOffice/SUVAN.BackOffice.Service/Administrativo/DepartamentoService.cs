@@ -5,7 +5,7 @@ using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public class DeptoService : IDeptoService
     {
@@ -16,36 +16,37 @@ namespace SUVAN.BackOffice.Service.Logistica
         }
         /// <summary>
         /// Obtiene el listado de departamentos de la empresa indicada,
-        /// incluyendo la navegación a <see cref="Deposito"/> para mostrar
-        /// el nombre del depósito en la tabla de la vista <c>Deptos.cshtml</c>.
+        /// incluyendo la navegaci�n a <see cref="Deposito"/> para mostrar
+        /// el nombre del dep�sito en la tabla de la vista <c>Deptos.cshtml</c>.
         /// </summary>
         /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado.Actúa como filtro de seguridad sobre la consulta.
+        /// Identificador de la empresa del usuario autenticado.Act�a como filtro de seguridad sobre la consulta.
         /// </param>
         /// <returns>
         /// Lista de <see cref="Depto"/> con <c>IdDepositoNavigation</c> cargada
-        /// mediante eager loading, orden por nombre de depósito y luego por nombre de departamento.
+        /// mediante eager loading, orden por nombre de dep�sito y luego por nombre de departamento.
         /// </returns>
         public async Task<List<Depto>> GetDepto(int idEmpresa)
         {
             var deptos = await context.Deptos
-                .Include(d => d.IdDepositoNavigation) // Para mostrar NombreDeposito en la tabla
+                .Include(d => d.Id) // Para mostrar NombreDeposito en la tabla
+                .Include(d => d.IdEmpresaNavigation)
                 .Where(d => d.IdEmpresa == idEmpresa)
-                .OrderBy(d => d.IdDepositoNavigation.NombreDeposito)
+                .OrderBy(d => d.Id.NombreDeposito)
                 .ThenBy(d => d.NombreDepto)
                 .ToListAsync();
             return deptos;
         }
         /// <summary>
-        /// Construye el ViewModel para el formulario de alta o edición de un departamento.
-        /// Al Agregar solo carga las regiones. Al Editar pre-carga los cuatro selectores con los datos del departamento respetando la jerarquía de seguridad.
+        /// Construye el ViewModel para el formulario de alta o edici�n de un departamento.
+        /// Al Agregar solo carga las regiones. Al Editar pre-carga los cuatro selectores con los datos del departamento respetando la jerarqu�a de seguridad.
         /// </summary>
         /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado.Determina qué regiones, plantas, zonas y depósitos se muestran.
+        /// Identificador de la empresa del usuario autenticado.Determina qu� regiones, plantas, zonas y dep�sitos se muestran.
         /// </param>
         /// <param name="idDepto">
         /// Identificador del departamento a editar.
-        /// Pasar <c>0</c> para modo alta (ViewModel vacío con solo regiones).
+        /// Pasar <c>0</c> para modo alta (ViewModel vac�o con solo regiones).
         /// </param>
         /// <returns>
         /// <see cref="DeptoViewModel"/> poblado con las listas y datos necesarios.
@@ -59,13 +60,13 @@ namespace SUVAN.BackOffice.Service.Logistica
             var regiones = await context.Regions
                 .Where(r => r.IdEmpresa == idEmpresa)
                 .OrderBy(r => r.NombreRegion)
-                .Select(r => new DeptoViewModel.RegionItemViewModel
+                .Select(r => new DeptoViewModel.CatalogItemViewModel
                 {
-                    IdRegion = r.IdRegion,
+                    Id = r.IdRegion,
                     Nombre = r.NombreRegion
                 })
                 .ToListAsync();
-            // Construir JSON jerárquico para la cascada en el cliente (modo alta)
+            // Construir JSON jer�rquico para la cascada en el cliente (modo alta)
             string? cascadeJson = null;
             if (idDepto == 0)
             {
@@ -84,20 +85,20 @@ namespace SUVAN.BackOffice.Service.Logistica
                     .OrderBy(d => d.NombreDeposito)
                     .Select(d => new { d.IdDeposito, d.NombreDeposito, d.IdZona, d.IdPlanta, d.IdRegion })
                     .ToListAsync();
-                // Armar jerarquía anidada: Región → Planta → Zona → Depósito
+                // Armar jerarqu�a anidada: Regi�n ? Planta ? Zona ? Dep�sito
                 var hierarchy = regiones.Select(r => new
                 {
-                    r.IdRegion,
+                    r.Id,
                     r.Nombre,
-                    Plantas = plantas.Where(p => p.IdRegion == r.IdRegion).Select(p => new
+                    Plantas = plantas.Where(p => p.IdRegion == r.Id).Select(p => new
                     {
                         p.IdPlanta,
                         Nombre = p.NombrePlanta,
-                        Zonas = zonas.Where(z => z.IdRegion == r.IdRegion && z.IdPlanta == p.IdPlanta).Select(z => new
+                        Zonas = zonas.Where(z => z.IdRegion == r.Id && z.IdPlanta == p.IdPlanta).Select(z => new
                         {
                             z.IdZona,
                             Nombre = z.NombreZona,
-                            Depositos = depositos.Where(d => d.IdRegion == r.IdRegion && d.IdPlanta == p.IdPlanta && d.IdZona == z.IdZona).Select(d => new
+                            Depositos = depositos.Where(d => d.IdRegion == r.Id && d.IdPlanta == p.IdPlanta && d.IdZona == z.IdZona).Select(d => new
                             {
                                 d.IdDeposito,
                                 Nombre = d.NombreDeposito
@@ -117,12 +118,12 @@ namespace SUVAN.BackOffice.Service.Logistica
             // Al Editar: carga datos del departamento y pre-llena los cuatro selectores
             if (idDepto > 0)
             {
-                // Validación de seguridad: el departamento debe pertenecer a la empresa del usuario
+                // Validaci�n de seguridad: el departamento debe pertenecer a la empresa del usuario
                 var depto = await context.Deptos
                     .FirstOrDefaultAsync(d => d.IdDepto == idDepto && d.IdEmpresa == idEmpresa);
                 if (depto == null)
                     throw new Exception("El departamento no pertenece a su empresa o no existe.");
-                // Asignación de campos del departamento al ViewModel
+                // Asignaci�n de campos del departamento al ViewModel
                 vRet.IdDepto = depto.IdDepto;
                 vRet.IdEmpresa = depto.IdEmpresa;
                 vRet.IdRegion = depto.IdRegion;
@@ -132,38 +133,38 @@ namespace SUVAN.BackOffice.Service.Logistica
                 vRet.NombreDepto = depto.NombreDepto;
                 vRet.Responsable = depto.Responsable;
                 vRet.Activo = depto.Activo ?? 0;
-                // Pre-carga plantas de la región guardada (jerarquía empresa + región)
+                // Pre-carga plantas de la regi�n guardada (jerarqu�a empresa + regi�n)
                 vRet.Plantas = await context.Planta
                     .Where(p => p.IdEmpresa == idEmpresa && p.IdRegion == depto.IdRegion)
                     .OrderBy(p => p.NombrePlanta)
-                    .Select(p => new DeptoViewModel.PlantaItemViewModel
+                    .Select(p => new DeptoViewModel.CatalogItemViewModel
                     {
-                        IdPlanta = p.IdPlanta,
+                        Id = p.IdPlanta,
                         Nombre = p.NombrePlanta
                     })
                     .ToListAsync();
-                // Pre-carga zonas de la planta guardada (jerarquía empresa + región + planta)
+                // Pre-carga zonas de la planta guardada (jerarqu�a empresa + regi�n + planta)
                 vRet.Zonas = await context.Zonas
                     .Where(z => z.IdEmpresa == idEmpresa
                              && z.IdRegion == depto.IdRegion
                              && z.IdPlanta == depto.IdPlanta)
                     .OrderBy(z => z.NombreZona)
-                    .Select(z => new DeptoViewModel.ZonaItemViewModel
+                    .Select(z => new DeptoViewModel.CatalogItemViewModel
                     {
-                        IdZona = z.IdZona,
+                        Id = z.IdZona,
                         Nombre = z.NombreZona
                     })
                     .ToListAsync();
-                // Pre-carga depósitos de la zona guardada (jerarquía empresa + región + planta + zona)
+                // Pre-carga dep�sitos de la zona guardada (jerarqu�a empresa + regi�n + planta + zona)
                 vRet.Depositos = await context.Depositos
                     .Where(d => d.IdEmpresa == idEmpresa
                              && d.IdRegion == depto.IdRegion
                              && d.IdPlanta == depto.IdPlanta
                              && d.IdZona == depto.IdZona)
                     .OrderBy(d => d.NombreDeposito)
-                    .Select(d => new DeptoViewModel.DepositoItemViewModel
+                    .Select(d => new DeptoViewModel.CatalogItemViewModel
                     {
-                        IdDeposito = d.IdDeposito,
+                        Id = d.IdDeposito,
                         Nombre = d.NombreDeposito
                     })
                     .ToListAsync();
@@ -171,38 +172,38 @@ namespace SUVAN.BackOffice.Service.Logistica
             return vRet;
         }
         /// <summary>
-        /// Agrega o actualiza un departamento en la base de datos.Valida la jerarquía completa: Empresa → Región → Planta → Zona → Depósito.
+        /// Agrega o actualiza un departamento en la base de datos.Valida la jerarqu�a completa: Empresa ? Regi�n ? Planta ? Zona ? Dep�sito.
         /// Al agregar genera el <c>IdDepto</c> como MAX global + 1.
         /// </summary>
         /// <param name="model">ViewModel con los datos capturados en el formulario.</param>
         /// <param name="idEmpresa">
-        /// Identificador de la empresa del usuario autenticado. Se utiliza para validar cada nivel jerárquico y sobrescribir la empresa en la entidad.
+        /// Identificador de la empresa del usuario autenticado. Se utiliza para validar cada nivel jer�rquico y sobrescribir la empresa en la entidad.
         /// </param>
-        /// <returns><c>true</c> si la operación fue exitosa.</returns>
-        /// <exception cref="Exception">Si alguna validación de seguridad o de negocio falla.</exception>
+        /// <returns><c>true</c> si la operaci�n fue exitosa.</returns>
+        /// <exception cref="Exception">Si alguna validaci�n de seguridad o de negocio falla.</exception>
         public async Task<bool> AgregarDepto(DeptoViewModel model, int idEmpresa)
         {
-            // 1. Validar que la región pertenece a la empresa del usuario
+            // 1. Validar que la regi�n pertenece a la empresa del usuario
             bool regionValida = await context.Regions
                 .AnyAsync(r => r.IdRegion == model.IdRegion && r.IdEmpresa == idEmpresa);
             if (!regionValida)
-                throw new Exception("La región seleccionada no pertenece a su empresa.");
-            // 2. Validar que la planta pertenece a la región y empresa
+                throw new Exception("La regi�n seleccionada no pertenece a su empresa.");
+            // 2. Validar que la planta pertenece a la regi�n y empresa
             bool plantaValida = await context.Planta
                 .AnyAsync(p => p.IdPlanta == model.IdPlanta
                             && p.IdRegion == model.IdRegion
                             && p.IdEmpresa == idEmpresa);
             if (!plantaValida)
-                throw new Exception("La planta seleccionada no pertenece a la región y empresa indicadas.");
-            // 3. Validar que la zona pertenece a la región, planta y empresa
+                throw new Exception("La planta seleccionada no pertenece a la regi�n y empresa indicadas.");
+            // 3. Validar que la zona pertenece a la regi�n, planta y empresa
             bool zonaValida = await context.Zonas
                 .AnyAsync(z => z.IdZona == model.IdZona
                             && z.IdRegion == model.IdRegion
                             && z.IdPlanta == model.IdPlanta
                             && z.IdEmpresa == idEmpresa);
             if (!zonaValida)
-                throw new Exception("La zona seleccionada no pertenece a la planta, región y empresa indicadas.");
-            // 4. Validar que el depósito pertenece a la región, planta, zona y empresa
+                throw new Exception("La zona seleccionada no pertenece a la planta, regi�n y empresa indicadas.");
+            // 4. Validar que el dep�sito pertenece a la regi�n, planta, zona y empresa
             bool depositoValido = await context.Depositos
                 .AnyAsync(d => d.IdDeposito == model.IdDeposito
                             && d.IdRegion == model.IdRegion
@@ -210,7 +211,7 @@ namespace SUVAN.BackOffice.Service.Logistica
                             && d.IdZona == model.IdZona
                             && d.IdEmpresa == idEmpresa);
             if (!depositoValido)
-                throw new Exception("El depósito seleccionado no pertenece a la zona, planta, región y empresa indicadas.");
+                throw new Exception("El dep�sito seleccionado no pertenece a la zona, planta, regi�n y empresa indicadas.");
             Depto depto;
             if (model.IdDepto > 0)
             {
@@ -230,7 +231,7 @@ namespace SUVAN.BackOffice.Service.Logistica
                     .FirstOrDefaultAsync();
                 depto.IdDepto = (lastId ?? 0) + 1;
             }
-            // 5. Validar nombre duplicado en el mismo depósito y empresa (excluyendo el registro actual en edición)
+            // 5. Validar nombre duplicado en el mismo dep�sito y empresa (excluyendo el registro actual en edici�n)
             bool nombreDuplicado = await context.Deptos
                 .AnyAsync(d =>
                     d.NombreDepto!.Trim().ToLower() == model.NombreDepto!.Trim().ToLower() &&
@@ -238,8 +239,8 @@ namespace SUVAN.BackOffice.Service.Logistica
                     d.IdEmpresa == idEmpresa &&
                     d.IdDepto != model.IdDepto);
             if (nombreDuplicado)
-                throw new Exception("Ya existe un Departamento con el mismo nombre en este Depósito.");
-            // Asignación de valores a la entidad
+                throw new Exception("Ya existe un Departamento con el mismo nombre en este Dep�sito.");
+            // Asignaci�n de valores a la entidad
             depto.IdEmpresa = idEmpresa;
             depto.IdRegion = model.IdRegion;
             depto.IdPlanta = model.IdPlanta;
@@ -262,63 +263,63 @@ namespace SUVAN.BackOffice.Service.Logistica
             return true;
         }
 
-        // ──────────────────────────────────────────────────────────────────
+        // ------------------------------------------------------------------
         //  Endpoints de cascada para los selectores AJAX
-        // ──────────────────────────────────────────────────────────────────
+        // ------------------------------------------------------------------
         /// <summary>
-        /// Obtiene plantas filtradas por empresa y región.Consumido como endpoint AJAX para la cascada Región → Planta.
+        /// Obtiene plantas filtradas por empresa y regi�n.Consumido como endpoint AJAX para la cascada Regi�n ? Planta.
         /// </summary>
         /// <param name="idEmpresa">Identificador de la empresa del usuario autenticado.</param>
-        /// <param name="idRegion">Identificador de la región seleccionada.</param>
+        /// <param name="idRegion">Identificador de la regi�n seleccionada.</param>
         /// <returns>
-        /// Lista de <see cref="DeptoViewModel.PlantaItemViewModel"/> ordenada por nombre.
+        /// Lista de <see cref="DeptoViewModel.CatalogItemViewModel"/> ordenada por nombre.
         /// </returns>
-        public async Task<List<DeptoViewModel.PlantaItemViewModel>> GetPlantasPorRegion(int idEmpresa, int idRegion)
+        public async Task<List<DeptoViewModel.CatalogItemViewModel>> GetPlantasPorRegion(int idEmpresa, int idRegion)
         {
             return await context.Planta
                 .Where(p => p.IdEmpresa == idEmpresa && p.IdRegion == idRegion)
                 .OrderBy(p => p.NombrePlanta)
-                .Select(p => new DeptoViewModel.PlantaItemViewModel
+                .Select(p => new DeptoViewModel.CatalogItemViewModel
                 {
-                    IdPlanta = p.IdPlanta,
+                    Id = p.IdPlanta,
                     Nombre = p.NombrePlanta
                 })
                 .ToListAsync();
         }
         /// <summary>
-        /// Obtiene zonas filtradas por empresa, región y planta.Consumido como endpoint AJAX para la cascada Planta → Zona.
+        /// Obtiene zonas filtradas por empresa, regi�n y planta.Consumido como endpoint AJAX para la cascada Planta ? Zona.
         /// </summary>
         /// <param name="idEmpresa">Identificador de la empresa del usuario autenticado.</param>
-        /// <param name="idRegion">Identificador de la región seleccionada.</param>
+        /// <param name="idRegion">Identificador de la regi�n seleccionada.</param>
         /// <param name="idPlanta">Identificador de la planta seleccionada.</param>
         /// <returns>
-        /// Lista de <see cref="DeptoViewModel.ZonaItemViewModel"/> ordenada por nombre.
+        /// Lista de <see cref="DeptoViewModel.CatalogItemViewModel"/> ordenada por nombre.
         /// </returns>
-        public async Task<List<DeptoViewModel.ZonaItemViewModel>> GetZonasPorPlanta(int idEmpresa, int idRegion, int idPlanta)
+        public async Task<List<DeptoViewModel.CatalogItemViewModel>> GetZonasPorPlanta(int idEmpresa, int idRegion, int idPlanta)
         {
             return await context.Zonas
                 .Where(z => z.IdEmpresa == idEmpresa
                          && z.IdRegion == idRegion
                          && z.IdPlanta == idPlanta)
                 .OrderBy(z => z.NombreZona)
-                .Select(z => new DeptoViewModel.ZonaItemViewModel
+                .Select(z => new DeptoViewModel.CatalogItemViewModel
                 {
-                    IdZona = z.IdZona,
+                    Id = z.IdZona,
                     Nombre = z.NombreZona
                 })
                 .ToListAsync();
         }
         /// <summary>
-        /// Obtiene depósitos filtrados por empresa, región, planta y zona.Consumido como endpoint AJAX para la cascada Zona → Depósito.
+        /// Obtiene dep�sitos filtrados por empresa, regi�n, planta y zona.Consumido como endpoint AJAX para la cascada Zona ? Dep�sito.
         /// </summary>
         /// <param name="idEmpresa">Identificador de la empresa del usuario autenticado.</param>
-        /// <param name="idRegion">Identificador de la región seleccionada.</param>
+        /// <param name="idRegion">Identificador de la regi�n seleccionada.</param>
         /// <param name="idPlanta">Identificador de la planta seleccionada.</param>
         /// <param name="idZona">Identificador de la zona seleccionada.</param>
         /// <returns>
-        /// Lista de <see cref="DeptoViewModel.DepositoItemViewModel"/> ordenada por nombre.
+        /// Lista de <see cref="DeptoViewModel.CatalogItemViewModel"/> ordenada por nombre.
         /// </returns>
-        public async Task<List<DeptoViewModel.DepositoItemViewModel>> GetDepositosPorZona(int idEmpresa, int idRegion, int idPlanta, int idZona)
+        public async Task<List<DeptoViewModel.CatalogItemViewModel>> GetDepositosPorZona(int idEmpresa, int idRegion, int idPlanta, int idZona)
         {
             return await context.Depositos
                 .Where(d => d.IdEmpresa == idEmpresa
@@ -326,12 +327,21 @@ namespace SUVAN.BackOffice.Service.Logistica
                          && d.IdPlanta == idPlanta
                          && d.IdZona == idZona)
                 .OrderBy(d => d.NombreDeposito)
-                .Select(d => new DeptoViewModel.DepositoItemViewModel
+                .Select(d => new DeptoViewModel.CatalogItemViewModel
                 {
-                    IdDeposito = d.IdDeposito,
+                    Id = d.IdDeposito,
                     Nombre = d.NombreDeposito
                 })
                 .ToListAsync();
         }
     }
 }
+
+
+
+
+
+
+
+
+

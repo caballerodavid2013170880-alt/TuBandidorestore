@@ -5,7 +5,7 @@ using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public class PlantaService : IPlantaService
     {
@@ -63,9 +63,9 @@ namespace SUVAN.BackOffice.Service.Logistica
             var regiones = await context.Regions
                 .Where(r => r.IdEmpresa == idEmpresa)
                 .OrderBy(r => r.NombreRegion)
-                .Select(r => new PlantaViewModel.RegionItemViewModel
+                .Select(r => new PlantaViewModel.CatalogItemViewModel
                 {
-                    IdRegion = r.IdRegion,
+                    Id = r.IdRegion,
                     Nombre = r.NombreRegion
                 })
                 .ToListAsync();

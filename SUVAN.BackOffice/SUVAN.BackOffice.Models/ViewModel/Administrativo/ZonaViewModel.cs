@@ -41,9 +41,10 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public DateTime FechaApertura { get; set; } = DateTime.Now;
 
         [ValidateNever]
-        public List<RegionModel> ListadoRegiones { get; set; } = new();
+        public List<CatalogItemViewModel> Regiones { get; set; } = new();
         [ValidateNever]
-        public List<RegionModel> ListadoPlantas { get; set; } = new();
+        public List<CatalogItemViewModel> Plantas { get; set; } = new();
+
 
         public bool ActivoBool
         {
@@ -52,29 +53,36 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         }
         public string IdNombre => $"{ZonaId} - {ZonaNombre}";
 
-        //Esta clase solo se usa si se listan empresas dentro de esteviewmodel
-        //public class EmpresaViewModel
-        //{
-        //    public int EmpresaId { get; set; }
-        //    public string? NombreCorto { get; set; }
-        //    public string IdNombre => $"{EmpresaId} - {NombreCorto}";
-        //}
-
-        //public class RegionModel
-        //{
-        //    public int Id { get; set; }
-        //    public string Nombre { get; set; }
-        //}
-
-
-
-        //public class DepositosViewModel
-        //{
-        //    public int DepositoId { get; set; }
-
-        //    public string NombreDeposito { get; set; } = null!;
-
-        //    public string DepositoNombreId => $"{DepositoId} - {NombreDeposito}";
-        //}
+        public class CatalogItemViewModel
+        {
+            public int Id { get; set; }
+            public string? Nombre { get; set; }
+        }
     }
+
+    //Esta clase solo se usa si se listan empresas dentro de esteviewmodel
+    //public class EmpresaViewModel
+    //{
+    //    public int EmpresaId { get; set; }
+    //    public string? NombreCorto { get; set; }
+    //    public string IdNombre => $"{EmpresaId} - {NombreCorto}";
+    //}
+
+    //public class RegionModel
+    //{
+    //    public int Id { get; set; }
+    //    public string Nombre { get; set; }
+    //}
+
+
+
+    //public class DepositosViewModel
+    //{
+    //    public int DepositoId { get; set; }
+
+    //    public string NombreDeposito { get; set; } = null!;
+
+    //    public string DepositoNombreId => $"{DepositoId} - {NombreDeposito}";
+    //}
 }
+

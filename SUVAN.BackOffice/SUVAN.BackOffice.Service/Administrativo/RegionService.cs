@@ -5,7 +5,7 @@ using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
   public class RegionesService : IRegionService
   {

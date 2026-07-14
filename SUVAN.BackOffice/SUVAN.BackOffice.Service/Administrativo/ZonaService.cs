@@ -39,9 +39,9 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
 
             //caraga de regiones de la empresa actual
-            vRet.ListadoRegiones = await context.Regions
+            vRet.Regiones = await context.Regions
                 .Where(x => x.IdEmpresa == IdEmpresa && (x.Activo ?? 0) != 0)
-                .Select(x => new RegionModel
+                .Select(x => new ZonaViewModel.CatalogItemViewModel
                 {
                     Id = x.IdRegion,
                     Nombre = x.NombreRegion
@@ -71,8 +71,8 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 vRet.IdRegion = zona.IdRegion;
                 vRet.IdPlanta = zona.IdPlanta;
 
-                vRet.ListadoPlantas = await context.Planta.Where(x => x.IdRegion == zona.IdRegion && x.IdEmpresa == IdEmpresa)
-                    .Select(x => new RegionModel
+                vRet.Plantas = await context.Planta.Where(x => x.IdRegion == zona.IdRegion && x.IdEmpresa == IdEmpresa)
+                 .Select(x => new ZonaViewModel.CatalogItemViewModel
                     {
                         Id = x.IdPlanta,
                         Nombre = x.NombrePlanta
@@ -193,11 +193,12 @@ namespace SUVAN.BackOffice.Service.Administrativo
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
         }
-        public async Task<List<RegionModel>> ObtenerPlantasPorRegion(int idEmpresa, int IdRegion)
+
+        public async Task<List<ZonaViewModel.CatalogItemViewModel>> ObtenerPlantasPorRegion(int idEmpresa, int IdRegion)
         {
             return await context.Planta
                 .Where(x => x.IdEmpresa == idEmpresa && x.IdRegion == IdRegion)
-                .Select(x => new RegionModel
+                .Select(x => new ZonaViewModel.CatalogItemViewModel
                 {
                     Id = x.IdPlanta,
                     Nombre = x.NombrePlanta

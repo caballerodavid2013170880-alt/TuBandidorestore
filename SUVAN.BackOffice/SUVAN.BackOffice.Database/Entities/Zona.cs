@@ -31,7 +31,7 @@ public partial class Zona
 
     public virtual ICollection<CombCarga> CombCargas { get; set; } = new List<CombCarga>();
 
-    public virtual ICollection<Depositosdisponible> Depositosdisponibles { get; set; } = new List<Depositosdisponible>();
+    public virtual ICollection<Deposito> Depositos { get; set; } = new List<Deposito>();
 
     public virtual ICollection<Depto> Deptos { get; set; } = new List<Depto>();
 
@@ -39,7 +39,8 @@ public partial class Zona
 
     public virtual Empresa IdEmpresaNavigation { get; set; } = null!;
 
-    public virtual Plantum IdPlantaNavigation { get; set; } = null!;
+    //public virtual Plantum IdPlantaNavigation { get; set; } = null!;
+    public virtual ICollection<Plantum> Plantas { get; set; } = new List<Plantum>();
 
     public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
 

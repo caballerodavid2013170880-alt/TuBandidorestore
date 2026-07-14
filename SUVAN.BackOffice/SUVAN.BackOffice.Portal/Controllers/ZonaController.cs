@@ -42,8 +42,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 {
                     //si el modelo es invalido recarga catalogos para que no salgan vacios
                     var recargar = await zonaService.GetZonaViewModel(model.ZonaId, IdEmpresa);
-                    model.ListadoRegiones = recargar.ListadoRegiones;
-                    model.ListadoPlantas = recargar.ListadoPlantas;
+                    model.Regiones = recargar.Regiones;
+                    model.Plantas = recargar.Plantas;
                     return View(model);
                 }
             //}
@@ -59,8 +59,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 }
 
                 var reload = await zonaService.GetZonaViewModel(model.ZonaId, IdEmpresa);
-                model.ListadoRegiones = reload.ListadoRegiones;
-                model.ListadoPlantas = reload.ListadoPlantas;
+                model.Regiones = reload.Regiones;
+                model.Plantas = reload.Plantas;
 
                 return View(model);
             }
@@ -70,8 +70,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
                 //recrgar en caso de excepcion 
                 var recargar = await zonaService.GetZonaViewModel(model.ZonaId, User.GetEmpresaId());
-                model.ListadoRegiones = recargar.ListadoRegiones;
-                model.ListadoPlantas = recargar.ListadoPlantas;
+                model.Regiones = recargar.Regiones;
+                model.Plantas = recargar.Plantas;
 
                 return View(model);
             }

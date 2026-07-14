@@ -1,7 +1,7 @@
 ﻿using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public interface IManoObraService
     {

@@ -1446,7 +1446,7 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(30)
                 .IsFixedLength()
                 .HasColumnName("tel");
-
+            /*
             entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Depositos)
                 .HasForeignKey(d => d.IdEmpresa)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -1461,8 +1461,9 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => new { d.IdEmpresa, d.IdRegion })
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_deposito_region");
+            */ //1307
         });
-
+        /*
         modelBuilder.Entity<Depositosdisponible>(entity =>
         {
             entity.HasKey(e => e.IdDeposito).HasName("PRIMARY");
@@ -1529,7 +1530,7 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => d.ZonaId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_deposito_zona");
-        });
+        });*/
 
         modelBuilder.Entity<Depto>(entity =>
         {
@@ -1565,7 +1566,7 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(70)
                 .IsFixedLength()
                 .HasColumnName("responsable");
-
+            /* Relación x código
             entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.Deptos)
                 .HasForeignKey(d => d.IdDeposito)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -1590,6 +1591,7 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => new { d.IdEmpresa, d.IdRegion })
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_deptos_region");
+            */ //1307
         });
 
         modelBuilder.Entity<DetPrev>(entity =>
@@ -5478,12 +5480,12 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => d.IdEmpresa)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_zona_empresa");
-
+            /*
             entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.Zonas)
                 .HasForeignKey(d => d.IdPlanta)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_zona_planta");
-
+            */
             entity.HasOne(d => d.Id).WithMany(p => p.Zonas)
                 .HasForeignKey(d => new { d.IdEmpresa, d.IdRegion })
                 .OnDelete(DeleteBehavior.ClientSetNull)

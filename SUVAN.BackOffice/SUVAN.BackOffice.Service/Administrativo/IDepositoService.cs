@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public interface IDepositoService
     {
@@ -26,14 +26,14 @@ namespace SUVAN.BackOffice.Service.Logistica
         /// <returns>Lista de depositos.</returns>
         Task<List<Deposito>> GetDepositos(int id_empresa);
 
-        //se agregan los metodos de Región Plantas y zonas para btener esos catálogos y mostrarlos en el combo box
-        Task <List<RegionModel>> GetRegions(int id_empresa);
-        Task <List<RegionModel>> GetPlantas(int id_empresa);
-        Task <List<RegionModel>> GetZonas(int id_empresa);
+        //se agregan los metodos de Regi�n Plantas y zonas para btener esos cat�logos y mostrarlos en el combo box
+        Task<List<DepositoViewModel.CatalogItemViewModel>> GetRegions(int id_empresa);
+        Task<List<DepositoViewModel.CatalogItemViewModel>> GetPlantas(int id_empresa);
+        Task<List<DepositoViewModel.CatalogItemViewModel>> GetZonas(int id_empresa);
 
-        //se agregan los metodos para obtener filtrados por región planta y zona (filtrado en cascada)
-        Task <List<RegionModel>> GetPlantasByRegion (int id_empresa, int id_region);
-        Task <List<RegionModel>> GetZonasByPlanta (int id_empresa, int id_planta);
+        //se agregan los metodos para obtener filtrados por regi�n planta y zona (filtrado en cascada)
+        Task<List<DepositoViewModel.CatalogItemViewModel>> GetPlantasByRegion(int id_empresa, int id_region);
+        Task<List<DepositoViewModel.CatalogItemViewModel>> GetZonasByPlanta(int id_empresa, int id_planta);
 
 
         /// <summary>

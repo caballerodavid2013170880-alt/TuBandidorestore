@@ -41,6 +41,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
         Task<bool> EliminarZona(int IdZona);
 
-        Task<List<RegionModel>> ObtenerPlantasPorRegion(int idEmpresa, int idRegion);
+        Task<List<ZonaViewModel.CatalogItemViewModel>> ObtenerPlantasPorRegion(int idEmpresa, int idRegion);
+
     }
 }

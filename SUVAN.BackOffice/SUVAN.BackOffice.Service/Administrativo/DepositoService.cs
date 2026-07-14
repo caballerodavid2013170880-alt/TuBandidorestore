@@ -5,7 +5,7 @@ using SUVAN.BackOffice.Models.Facturacion;
 using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
 
-namespace SUVAN.BackOffice.Service.Logistica
+namespace SUVAN.BackOffice.Service.Administrativo
 {
     public class DepositosService : IDepositoService
     {
@@ -41,15 +41,15 @@ namespace SUVAN.BackOffice.Service.Logistica
         //}
 
         /// <summary>
-        /// Obtiene el ViewModel para el depósito específico.
+        /// Obtiene el ViewModel para el dep�sito espec�fico.
         /// </summary>
-        /// <param name="nombre">Nombre del depósito.</param>
+        /// <param name="nombre">Nombre del dep�sito.</param>
         /// <param name="id_empresa">Identificador de la empresa.</param>
-        ///  <param name="id_region">Identificador de la región.</param>
+        ///  <param name="id_region">Identificador de la regi�n.</param>
         ///  <param name="id_planta">Identificador de la planta.</param>
         ///  <param name="id_zona">Identificador de la zona.</param>
-        /// <param name="id_deposito">Identificador del depósito.</param>
-        /// <returns>ViewModel para el depósito específico.</returns>
+        /// <param name="id_deposito">Identificador del dep�sito.</param>
+        /// <returns>ViewModel para el dep�sito espec�fico.</returns>
         public async Task<DepositoViewModel> GetDepositoViewModel(int id_empresa, int id_deposito)
         {
             DepositoViewModel vRet = new DepositoViewModel();
@@ -83,10 +83,10 @@ namespace SUVAN.BackOffice.Service.Logistica
 
         }
         /// <summary>
-        /// Agrega o actualiza un depósito en la base de datos.
+        /// Agrega o actualiza un dep�sito en la base de datos.
         /// </summary>
-        /// <param name="model">ViewModel con los datos del depósito.</param>
-        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+        /// <param name="model">ViewModel con los datos del dep�sito.</param>
+        /// <returns>True si la operaci�n fue exitosa, de lo contrario, lanza una excepci�n.</returns>
         /// <exception cref="Exception"></exception>
         public async Task<bool> AgregarDeposito(DepositoViewModel model)
         {
@@ -116,12 +116,12 @@ namespace SUVAN.BackOffice.Service.Logistica
 
             // validate if exist one deposit with the same name in the same empresa
             var depositoExistente = await context.Depositos.FirstOrDefaultAsync(x => x.NombreDeposito!.ToLower() == model.NombreDeposito!.ToLower()
-            && x.IdEmpresa == model.IdEmpresa 
+            && x.IdEmpresa == model.IdEmpresa
             && x.IdDeposito != model.IdDeposito
             && x.Activo.GetValueOrDefault() == 1);//validacion de los que estan activos
 
             if (depositoExistente is not null)
-                throw new Exception("Ya existe un depósito con el mismo nombre en la empresa");
+                throw new Exception("Ya existe un dep�sito con el mismo nombre en la empresa");
 
 
             deposito.NombreDeposito = model.NombreDeposito;
@@ -138,16 +138,16 @@ namespace SUVAN.BackOffice.Service.Logistica
             deposito.Rfc = model.Rfc;
             deposito.Cp = model.Cp;
             //forzar el valor de locfor a ser la primera letra en mayuscula
-            deposito.LocFor = model.LocFor?.Trim().ToUpper().Substring(0,1);
+            deposito.LocFor = model.LocFor?.Trim().ToUpper().Substring(0, 1);
 
             //asignacion del borrado 
             //se traduce el bool del ViewModel al ulong del Entity
-            deposito.Activo = model.Activo ? (ulong)1 : (ulong)0;
+            deposito.Activo = model.Activo;
 
             if (model.IdDeposito > 0)
             {
                 //Notifica al contexto que este objeto ya fue modificado 
-                context.Entry(deposito).State=EntityState.Modified;
+                context.Entry(deposito).State = EntityState.Modified;
                 await context.SaveChangesAsync();
             }
             else
@@ -161,46 +161,49 @@ namespace SUVAN.BackOffice.Service.Logistica
 
 
 
-        public async Task<List<RegionModel>> GetRegions(int id_empresa)
+        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetRegions(int id_empresa)
         {
             return await context.Regions
                 .Where(x => x.IdEmpresa == id_empresa)
-                .Select(x => new RegionModel {
+                .Select(x => new DepositoViewModel.CatalogItemViewModel
+                {
                     Id = x.IdRegion,
                     Nombre = x.NombreRegion
-            }).ToListAsync();
+                }).ToListAsync();
         }
 
-        public async Task<List<RegionModel>> GetPlantas(int id_empresa)
+        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetPlantas(int id_empresa)
         {
             return await context.Planta
                 .Where(x => x.IdEmpresa == id_empresa)
-                .Select(x => new RegionModel {
+                .Select(x => new DepositoViewModel.CatalogItemViewModel
+                {
                     Id = x.IdPlanta,
                     Nombre = x.NombrePlanta
-            }).ToListAsync();
+                }).ToListAsync();
         }
 
-        public async Task<List<RegionModel>> GetZonas(int id_empresa)
+        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetZonas(int id_empresa)
         {
             return await context.Zonas
                 .Where(x => x.IdEmpresa == id_empresa)
-                .Select(x => new RegionModel {
+                .Select(x => new DepositoViewModel.CatalogItemViewModel
+                {
                     Id = x.IdZona,
                     Nombre = x.NombreZona
-                }).ToListAsync();            
+                }).ToListAsync();
         }
-              
+
         //NUEVOS METODOS PARA COMBOS EN CASCADA
 
         /// <summary>
-        /// Obtiene las plantas disponibles para una región específica.
+        /// Obtiene las plantas disponibles para una regi�n espec�fica.
         /// <summary>
-        public async Task<List<RegionModel>> GetPlantasByRegion(int id_empresa, int id_region)
+        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetPlantasByRegion(int id_empresa, int id_region)
         {
             return await context.Planta
                 .Where(x => x.IdEmpresa == id_empresa && x.IdRegion == (short)id_region)
-                .Select(x => new RegionModel
+                .Select(x => new DepositoViewModel.CatalogItemViewModel
                 {
                     Id = x.IdPlanta,
                     Nombre = x.NombrePlanta
@@ -208,13 +211,13 @@ namespace SUVAN.BackOffice.Service.Logistica
         }
 
         /// <summary>
-        /// Obtiene las zonas disponibles para una planta específica.
+        /// Obtiene las zonas disponibles para una planta espec�fica.
         /// <summary>
-        public async Task<List<RegionModel>> GetZonasByPlanta(int id_empresa, int id_planta)
+        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetZonasByPlanta(int id_empresa, int id_planta)
         {
             return await context.Zonas
                 .Where(x => x.IdEmpresa == id_empresa && x.IdPlanta == id_planta)
-                .Select(x => new RegionModel
+                .Select(x => new DepositoViewModel.CatalogItemViewModel
                 {
                     Id = x.IdZona,
                     Nombre = x.NombreZona
@@ -222,3 +225,6 @@ namespace SUVAN.BackOffice.Service.Logistica
         }
     }
 }
+
+
+

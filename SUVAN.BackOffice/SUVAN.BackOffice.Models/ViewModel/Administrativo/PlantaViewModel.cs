@@ -14,6 +14,11 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
     /// </summary>
     public class PlantaViewModel
     {
+        public class CatalogItemViewModel
+        {
+            public int Id { get; set; }
+            public string? Nombre { get; set; }
+        }
         /// <summary>
         /// Identificador único de la planta.
         /// Valor 0 indica que se trata de una nueva planta (insert).
@@ -59,20 +64,10 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
         /// Lista de regiones disponibles para el selector del formulario.
         /// Filtradas por la empresa del usuario autenticado (jerarquía empresa → región).
         /// </summary>
-       public List<RegionItemViewModel> Regiones { get; set; } = new();
+        public List<CatalogItemViewModel> Regiones { get; set; } = new();
         /// <summary>
-        /// Submodelo que representa un ítem del selector de Región.
+        /// Submodelo genérico que representa un ítem del selector.
         /// </summary>
-        public class RegionItemViewModel
-        {
-            /// <summary>
-            /// Identificador de la región.
-            /// </summary>
-            public int IdRegion { get; set; }
-            /// <summary>
-            /// Nombre visible de la región en el selector.
-            /// </summary>
-            public string? Nombre { get; set; }
-        }
+        
     }
 }

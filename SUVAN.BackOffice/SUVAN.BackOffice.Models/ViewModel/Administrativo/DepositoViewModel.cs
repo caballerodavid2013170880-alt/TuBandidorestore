@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
 {
     //Clases "espejo" para evitar cargar las entidades de la bd aqui
-    public class RegionModel
-    {
-        public int Id { get; set; }
-        public string Nombre { get; set; }
-    }
 
-    public class DepositoViewModel
+        public class DepositoViewModel
     {
+        public class CatalogItemViewModel
+        {
+            public int Id { get; set; }
+            public string? Nombre { get; set; }
+        }
         [Required(ErrorMessage = "La región es obligatoria")]
         [Range (1, double.MaxValue,ErrorMessage ="Debes seleccionar una región")]
         public int IdRegion { get; set; }
@@ -58,14 +58,19 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
 
         [Required(ErrorMessage = "El Código Postal es requerido")]
         public string Cp { get; set; }
-        public bool Activo { get; set; } = true;
+        public ulong Activo { get; set; }
+        public bool ActivoBool
+        {
+            get => Activo != 0;
+            set => Activo = value? (ulong)1 : (ulong)0;
+        }
 
         [ValidateNever]
-        public List<RegionModel> ListadoRegiones { get; set; }
+        public List<CatalogItemViewModel> Regiones { get; set; } = new();
         [ValidateNever]
-        public List<RegionModel> ListadoPlantas { get; set; }
+        public List<CatalogItemViewModel> Plantas { get; set; } = new();
         [ValidateNever]
-        public List<RegionModel> ListadoZonas { get; set; }
+        public List<CatalogItemViewModel> Zonas { get; set; } = new();
 
 
     }

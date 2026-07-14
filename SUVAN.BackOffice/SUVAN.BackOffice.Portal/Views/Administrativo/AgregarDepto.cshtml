@@ -78,8 +78,8 @@
                                         <option value="">-- Seleccione una Región --</option>
                                         @foreach (var region in Model.Regiones)
                                         {
-                                            <option value="@region.IdRegion"
-                                                    selected="@(region.IdRegion == Model.IdRegion ? "selected" : null)">
+                                            <option value="@region.Id"
+                                                    selected="@(region.Id == Model.IdRegion ? "selected" : null)">
                                                 @region.Nombre
                                             </option>
                                         }
@@ -95,7 +95,7 @@
                                         <option value="0">-- Seleccione una Región --</option>
                                         @foreach (var region in Model.Regiones)
                                         {
-                                            <option value="@region.IdRegion">@region.Nombre</option>
+                                            <option value="@region.Id">@region.Nombre</option>
                                         }
                                     </select>
                                 }
@@ -117,8 +117,8 @@
                                         <option value="">-- Seleccione una Planta --</option>
                                         @foreach (var planta in Model.Plantas)
                                         {
-                                            <option value="@planta.IdPlanta"
-                                                    selected="@(planta.IdPlanta == Model.IdPlanta ? "selected" : null)">
+                                            <option value="@planta.Id"
+                                                    selected="@(planta.Id == Model.IdPlanta ? "selected" : null)">
                                                 @planta.Nombre
                                             </option>
                                         }
@@ -155,8 +155,8 @@
                                         <option value="">-- Seleccione una Zona --</option>
                                         @foreach (var zona in Model.Zonas)
                                         {
-                                            <option value="@zona.IdZona"
-                                                    selected="@(zona.IdZona == Model.IdZona ? "selected" : null)">
+                                            <option value="@zona.Id"
+                                                    selected="@(zona.Id == Model.IdZona ? "selected" : null)">
                                                 @zona.Nombre
                                             </option>
                                         }
@@ -189,8 +189,8 @@
                                         <option value="">-- Seleccione un Depósito --</option>
                                         @foreach (var dep in Model.Depositos)
                                         {
-                                            <option value="@dep.IdDeposito"
-                                                    selected="@(dep.IdDeposito == Model.IdDeposito ? "selected" : null)">
+                                            <option value="@dep.Id"
+                                                    selected="@(dep.Id == Model.IdDeposito ? "selected" : null)">
                                                 @dep.Nombre
                                             </option>
                                         }
@@ -284,5 +284,5 @@
 @section scripts {
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
-    <script src="~/js/logistica/departamentos/add.js" asp-append-version="true"></script>
+    <script src="~/js/administrativo/departamentos/add.js" asp-append-version="true"></script>
 }
