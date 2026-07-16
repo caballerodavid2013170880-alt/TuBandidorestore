@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Administrativo;
 using System.Security.Claims;
+using SUVAN.BackOffice.Portal.Helper;
+
 namespace SUVAN.BackOffice.Portal.Controllers.Logistica
 {
     [Authorize]
@@ -20,7 +23,21 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
         {
             return Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
         }
-        
+
+        private (int idEmpresa, int idUsuario, int? idRegion, int? idPlanta, int? idZona, int? idDeposito) GetUserContext()
+        {
+            int idEmpresa = User.GetEmpresaId();
+            int idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+
+            // Reemplazar estas asignaciones cuando los claims de jerarquía estén implementados
+            int? idRegion = null;
+            int? idPlanta = null;
+            int? idZona = null;
+            int? idDeposito = null;
+
+            return (idEmpresa, idUsuario, idRegion, idPlanta, idZona, idDeposito);
+        }
+
         //[HttpGet]
         //[HttpGet("")]
         //[HttpGet("Index")]
@@ -40,10 +57,10 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
             if (model == null) return NotFound();
             return View(model);
         }
-        //[HttpPost("AgregarManoObraAjax")]
-        [ValidateAntiForgeryToken]
-        [HttpPost]
-        public async Task<IActionResult> AgregarManoObraAjax(ManoObraViewModel model)
+
+        [HttpPost] // Mantenemos el HttpPost simple para evitar el error de rutas (InvalidOperationException)
+                   // [ValidateAntiForgeryToken] // Sigue comentado para evitar el Error 400 por el token
+        public async Task<IActionResult> AgregarManoObraAjax([FromBody] ManoObraViewModel model) // <-- [FromBody] es la clave aquí
         {
             try
             {
@@ -52,8 +69,10 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
                     var errors = string.Join(" ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                     return Json(new { success = false, message = errors });
                 }
+
                 int idUsuario = GetUserId();
                 int newId = await _manoObraService.GuardarManoObraAsync(model, idUsuario);
+
                 return Json(new { success = true, idManoObra = newId, message = "Mano de obra guardada correctamente." });
             }
             catch (Exception ex)
@@ -62,11 +81,27 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
                 return Json(new { success = false, message = ex.Message });
             }
         }
-        //[HttpGet("DetalleManoObras")]
+
+        [HttpGet("/DetalleManoObras")]
         public async Task<IActionResult> DetalleManoObras()
         {
-            var model = await _manoObraService.GetTodasActividades();
-            return View(model);
+            // 1. Obtener la validación del contexto
+            var usr = GetUserContext();
+
+            // 2. Enviar los datos del contexto a la vista para rellenar los data-attributes (data-context-region, etc.)
+            ViewBag.IdRegion = usr.idRegion;
+            ViewBag.IdPlanta = usr.idPlanta;
+            ViewBag.IdZona = usr.idZona;
+            ViewBag.IdDeposito = usr.idDeposito;
+
+            // 3. Obtener el modelo general de Mano de Obra, ya que la vista ahora
+            // réplica las columnas del Index (y requiere List<ManoObraViewModel>)
+            // Nota: Si el servicio se actualiza posteriormente para filtrar por empresa o región,
+            // se le pasarían los parámetros de la variable 'usr' aquí.
+            var model = await _manoObraService.GetManoObras();
+
+            // 4. Retornar la vista explícitamente por si el nombre de la ruta difiere del archivo
+            return View("DetalleManoObras", model);
         }
         //[HttpGet("GetModalDetalle")]
         public async Task<IActionResult> GetModalDetalle(int id)

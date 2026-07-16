@@ -8,6 +8,13 @@
 @{
     var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.ManoObra);
     if (permisosPagina == null) { return; }
+
+    // Implementación de validación #GetContext# (Región, Planta, Zona, Depósito)
+    // Se espera que el controlador asigne estas variables mediante ViewBag extraídas de GetUserContext()
+    var idRegion = ViewBag.IdRegion as int?;
+    var idPlanta = ViewBag.IdPlanta as int?;
+    var idZona = ViewBag.IdZona as int?;
+    var idDeposito = ViewBag.IdDeposito as int?;
 }
 <div id="kt_app_toolbar" class="app-toolbar">
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
@@ -25,11 +32,12 @@
     </div>
 </div>
 <div id="kt_app_content" class="app-content flex-column-fluid">
-    <div id="kt_app_content_container" class="app-container container-fluid">
-        <div class="d-flex align-items-center mb-8 overflow-auto">
-            <a href="@Url.Action("Index", "ManoObra")" class="btn btn-primary me-3">Servicios (Mano de obra)</a>
-            <a href="@Url.Action("DetalleManoObras", "ManoObra")" class="btn btn-light btn-active-primary">Detalle de Mano de Obra</a>
-        </div>
+    <!-- El contenedor context-data almacena la validación #GetContext# para uso en JS si es necesario -->
+    <div id="kt_app_content_container" class="app-container container-fluid"
+         data-context-region="@idRegion" data-context-planta="@idPlanta" data-context-zona="@idZona" data-context-deposito="@idDeposito">
+
+        <!-- PESTAÑAS ELIMINADAS SEGÚN REQUERIMIENTO -->
+
         <div class="card">
             <div class="card-header border-0 pt-6 d-flex flex-column">
                 <div class="row g-4 w-100 mb-4">
