@@ -175,7 +175,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 var result = await zonaService.AgregarZona(model, usr.idEmpresa);
 
                 if (result)
-                    return Json(new { success = true, message = model.ZonaId == 0 ? "Zona registrada correctamente." : "Zona actualizada correctamente." });
+                    return Json(new { success = true, message = model.IdZona == 0 ? "Zona registrada correctamente." : "Zona actualizada correctamente." });
 
                 return Json(new { success = false, message = "No se pudo guardar la zona." });
             }
@@ -192,7 +192,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
-                await zonaService.EliminarZona(model.ZonaId);
+                var usr = GetUserContext();
+                await zonaService.EliminarZona(model.IdZona, usr.idEmpresa);
                 return Json(new { success = true, message = "Zona eliminada." });
             }
             catch (Exception ex)
@@ -201,6 +202,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
         }
 
+
+        /*
         [HttpGet]
         public async Task<JsonResult> ObtenerPlantas(int regionId)
         {
@@ -208,6 +211,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
             var plantas = await depositosService.GetPlantasByRegion(usr.idEmpresa, regionId);
             return Json(plantas);
         }
+        */
+
         // ============== Zona FIN ==============
 
         // ============== Depósitos ==============

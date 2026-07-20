@@ -12,7 +12,12 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
     public class ZonaViewModel
     {
-        public int ZonaId { get; set; }
+        public class CatalogItemViewModel
+        {
+            public int Id { get; set; }
+            public string? Nombre { get; set; }
+        }
+        public int IdZona { get; set; }
         public int IdEmpresa { get; set; }
 
         [Required(ErrorMessage = "La Región es obligatoria")]
@@ -36,6 +41,11 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public string Responsable { get; set; } = null!;
 
         public ulong Activo { get; set; }
+        public bool ActivoBool
+        {
+            get => Activo != 0;
+            set => Activo = value ? (ulong)1 : (ulong)0;
+        }
 
         [DataType(DataType.Date)]
         public DateTime FechaApertura { get; set; } = DateTime.Now;
@@ -44,20 +54,10 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public List<CatalogItemViewModel> Regiones { get; set; } = new();
         [ValidateNever]
         public List<CatalogItemViewModel> Plantas { get; set; } = new();
+       
+        //public string IdNombre => $"{ZonaId} - {ZonaNombre}";
 
-
-        public bool ActivoBool
-        {
-            get => Activo != 0;
-            set => Activo = value ? (ulong)1 : (ulong)0;
-        }
-        public string IdNombre => $"{ZonaId} - {ZonaNombre}";
-
-        public class CatalogItemViewModel
-        {
-            public int Id { get; set; }
-            public string? Nombre { get; set; }
-        }
+        
     }
 
     //Esta clase solo se usa si se listan empresas dentro de esteviewmodel

@@ -1,58 +1,42 @@
 ﻿@using SUVAN.BackOffice.Models.ViewModel.Logistica;
-@using SUVAN.BackOffice.Models.ViewModel;
 @using SUVAN.BackOffice.Models.ViewModel.Enums;
 @using SUVAN.BackOffice.Portal.Helper;
 @inject IUsuarioHelper UsuarioHelper
 @{
-    ViewData["Title"] = "Zonas";
+    ViewData["Title"] = "Zona";
 }
-
 @model ZonaViewModel
 @{
     var permisosPagina = await UsuarioHelper.GetPermisosPagina(User, EnumOpcionMenu.Zona);
-    if (permisosPagina == null)
-    {
-        return;
-    }
-    var isAgaregarText = Model.ZonaId == 0 ? "Agregar" : "Editar";
+    if (permisosPagina == null) return;
+    var isAgregarText = Model.IdZona == 0 ? "Agregar" : "Editar";
+    var isEdicion = Model.IdZona > 0;
 }
+
 <!--begin::Toolbar-->
 <div id="kt_app_toolbar" class="app-toolbar ">
-    <!--begin::Toolbar container-->
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
-        <!--begin::Toolbar wrapper-->
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
-            <!--begin::Page title-->
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                <!--begin::Title-->
-                <a href="~/Administrativo/Zonas" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0 ">
-                    <i class="ki-duotone ki-left fs-1 pe-5">
-                    </i>
-                    <span>@isAgaregarText Zona</span>
+                <a href="~/Administrativo/Zonas" class="page-heading d-flex justify-content-center align-center text-dark fw-bold fs-3 m-0">
+                    <i class="ki-duotone ki-left fs-1 pe-5"></i>
+                    <span>@isAgregarText @ViewData["Title"]</span>
                 </a>
-                <!--end::Title-->
-
             </div>
-            <!--end::Page title-->
-
         </div>
-        <!--end::Toolbar wrapper-->
     </div>
-    <!--end::Toolbar container-->
 </div>
 <!--end::Toolbar-->
 <!--begin::Content-->
 <div id="kt_app_content" class="app-content flex-column-fluid">
-    <!--begin::Content container-->
     <div id="kt_app_content_container" class="app-container container-fluid">
-        <!--begin::Card-->
         <div class="card">
-
-            <!--begin::Card body-->
             <div class="card-body py-4">
-                <form class="form w-100" novalidate="novalidate" id="kt_zona_in_form" data-kt-redirect-url="/" asp-controller="Administrativo" asp-action="AgregarZona" method="post">
+                <form class="form w-100" novalidate="novalidate" id="kt_zona_in_form" asp-controller="Administrativo" asp-action="AgregarZona" method="post">
                     @Html.AntiForgeryToken()
-                    <input asp-for="ZonaId" type="hidden" />
+                    <input asp-for="IdZona" type="hidden" />
+                    <input asp-for="IdEmpresa" type="hidden" value="@User.GetEmpresaId()" />
+
                     <div class="fv-row mb-8">
                         <div class="col-sm-12">
                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
@@ -61,124 +45,141 @@
                         </div>
                     </div>
 
-                    
-
+                    <!--begin::Fila 1 — Región y Planta-->
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="fv-row mb-3">
-                                <label asp-for="IdRegion" class="col-form-label text-gray-600 required">Region</label>
-                                <select asp-for="IdRegion" asp-items="@(new SelectList(Model.Regiones, "Id", "Nombre", Model.IdRegion))" class="form-control" disabled="@(Model.ZonaId > 0)">
-                                    <option value="0">Seleccione una Región...</option>
-                                </select>
-                                <span asp-validation-for="IdRegion" class="invalid-feedback"></span>
-
-                                @if (Model.ZonaId > 0)
+                            <div class="fv-row mb-8">
+                                <label asp-for="IdRegion" class="col-form-label text-gray-600 required">Región</label>
+                                @if (isEdicion)
                                 {
-                                    <input type="hidden" name="IdRegion" value="@Model.IdRegion" />
+                                    <select id="selectIdRegion" name="IdRegion_display" class="form-select bg-transparent" disabled>
+                                        <option value="">-- Seleccione una Región --</option>
+                                        @foreach (var region in Model.Regiones)
+                                        {
+                                            <option value="@region.Id" selected="@(region.Id == Model.IdRegion ? "selected" : null)">@region.Nombre</option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdRegion" />
                                 }
-
+                                else
+                                {
+                                    <select id="selectIdRegion" name="IdRegion" class="form-select bg-transparent">
+                                        <option value="0">-- Seleccione una Región --</option>
+                                        @foreach (var region in Model.Regiones)
+                                        {
+                                            <option value="@region.Id">@region.Nombre</option>
+                                        }
+                                    </select>
+                                }
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdRegion"></span></div>
                             </div>
                         </div>
+
                         <div class="col-sm-6">
-                            <div class="fv-row mb-3">
+                            <div class="fv-row mb-8">
                                 <label asp-for="IdPlanta" class="col-form-label text-gray-600 required">Planta</label>
-                                <select asp-for="IdPlanta" asp-items="@(new SelectList(Model.Plantas, "Id", "Nombre", Model.IdPlanta))" class="form-control" disabled="@(Model.ZonaId > 0)">
-                                    <option value="0">Seleccione una Planta...</option>
-                                </select>
-                                <span asp-validation-for="IdPlanta" class="invalid-feedback"></span>
-
-                                @if (Model.ZonaId > 0)
+                                @if (isEdicion)
                                 {
-                                    <input type="hidden" id="IdPlantaHidden" name="IdPlanta" value="@Model.IdPlanta" />
+                                    <select id="selectIdPlanta" name="IdPlanta_display" class="form-select bg-transparent" disabled>
+                                        <option value="">-- Seleccione una Planta --</option>
+                                        @foreach (var planta in Model.Plantas)
+                                        {
+                                            <option value="@planta.Id" selected="@(planta.Id == Model.IdPlanta ? "selected" : null)">@planta.Nombre</option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdPlanta" />
                                 }
-
+                                else
+                                {
+                                    <select id="selectIdPlanta" name="IdPlanta" class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Primero seleccione una Región --</option>
+                                    </select>
+                                }
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="IdPlanta"></span></div>
                             </div>
                         </div>
                     </div>
 
-
-
+                    <!--begin::Fila 2 — Datos de Zona-->
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="fv-row mb-3">
+                            <div class="fv-row mb-8">
                                 <label asp-for="ZonaNombre" class="col-form-label text-gray-600 required">Nombre de la Zona</label>
-                                <input asp-for="ZonaNombre" class="form-control bg-transparent" placeholder="Nombre de la Zona" />
-                                <span asp-validation-for="ZonaNombre" class="invalid-feedback"></span>
+                                <input asp-for="ZonaNombre" class="form-control bg-transparent" placeholder="Nombre de la Zona" maxlength="80" />
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="ZonaNombre"></span></div>
                             </div>
                         </div>
                         <div class="col-sm-6">
-                            <div class="fv-row mb-3">
+                            <div class="fv-row mb-8">
                                 <label asp-for="Rfc" class="col-form-label text-gray-600 required">RFC</label>
-                                <input asp-for="Rfc" class="form-control bg-transparent" placeholder="RFC" />
-                                <span asp-validation-for="Rfc" class="invalid-feedback"></span>
+                                <input asp-for="Rfc" class="form-control bg-transparent" placeholder="RFC" maxlength="13" />
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="Rfc"></span></div>
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-sm-6">
-                            <div class="fv-row mb-3">
+                            <div class="fv-row mb-8">
                                 <label asp-for="Domicilio" class="col-form-label text-gray-600 required">Domicilio</label>
-                                <input asp-for="Domicilio" class="form-control bg-transparent" placeholder="Domicilio" />
-                                <span asp-validation-for="Domicilio" class="invalid-feedback"></span>
+                                <input asp-for="Domicilio" class="form-control bg-transparent" placeholder="Domicilio" maxlength="250" />
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="Domicilio"></span></div>
                             </div>
                         </div>
                         <div class="col-sm-3">
-                            <div class="fv-row mb-3">
+                            <div class="fv-row mb-8">
                                 <label asp-for="Telefono1" class="col-form-label text-gray-600 required">Teléfono 1</label>
-                                <input asp-for="Telefono1" class="form-control bg-transparent" placeholder="Telefono 1" maxlength="10" />
-                                <span asp-validation-for="Telefono1" class="invalid-feedback"></span>
+                                <input asp-for="Telefono1" class="form-control bg-transparent" placeholder="Teléfono a 10 dígitos" maxlength="10" />
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="Telefono1"></span></div>
                             </div>
                         </div>
                         <div class="col-sm-3">
-                            <div class="fv-row mb-3">
-                                <label asp-for="Telefono2" class="col-form-label text-gray-600 required">Teléfono 2</label>
-                                <input asp-for="Telefono2" class="form-control bg-transparent" placeholder="Telefono 2" maxlength="10" />
-                                <span asp-validation-for="Telefono2" class="invalid-feedback"></span>
+                            <div class="fv-row mb-8">
+                                <label asp-for="Telefono2" class="col-form-label text-gray-600">Teléfono 2</label>
+                                <input asp-for="Telefono2" class="form-control bg-transparent" placeholder="Opcional" maxlength="10" />
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="Telefono2"></span></div>
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
-                        <div class="col-sm-4">
-                            <div class="fv-row mb-3">
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-8">
                                 <label asp-for="Responsable" class="col-form-label text-gray-600 required">Nombre del Responsable</label>
-                                <input asp-for="Responsable" class="form-control bg-transparent" placeholder="Nombre del Responsable" />
-                                <span asp-validation-for="Responsable" class="invalid-feedback"></span>
+                                <input asp-for="Responsable" class="form-control bg-transparent" placeholder="Responsable" maxlength="60" />
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="Responsable"></span></div>
                             </div>
                         </div>
-                        <div class="col-sm-3">
-                            <div class="fv-row mb-3">
+                        <div class="col-sm-4">
+                            <div class="fv-row mb-8">
                                 <label asp-for="FechaApertura" class="col-form-label text-gray-600 required">Fecha de Apertura</label>
-                                <input type="text" asp-for="FechaApertura" class="form-control bg-transparent" id="FechaApertura" readonly value="@Model.FechaApertura.ToString("dd/MM/yyyy")" />                                <span asp-validation-for="FechaApertura" class="invalid-feedback"></span>
+                                <input type="text" asp-for="FechaApertura" class="form-control bg-transparent" id="FechaApertura" readonly value="@Model.FechaApertura.ToString("dd/MM/yyyy")" />
+                                <div class="fv-plugins-message-container invalid-feedback"><span asp-validation-for="FechaApertura"></span></div>
                             </div>
                         </div>
                         <div class="col-sm-2 d-flex align-items-end">
-                            <div class="form-check mb-3">
+                            <div class="form-check mb-8">
                                 <input asp-for="ActivoBool" class="form-check-input" />
                                 <label asp-for="ActivoBool" class="form-check-label">Activo</label>
                             </div>
                         </div>
                     </div>
 
-                    <div class="text-end">
-                        <button type="submit" id="kt_zona_in_submit" class="btn btn-primary btn-sm">
+                    <!--begin::Submit-->
+                    <div class="mb-10 text-end">
+                        <button type="submit" id="kt_zona_in_submit" class="btn btn-primary">
                             <span class="indicator-label">Guardar</span>
-                            <span class="indicator-progress">
-                                Por favor espere...
-                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
-                            </span>
+                            <span class="indicator-progress">Por favor espere... <span class="spinner-border spinner-border-sm align-middle ms-2"></span></span>
                         </button>
                     </div>
                 </form>
             </div>
-            <!--end::Card body-->
         </div>
-        <!--end::Card-->
     </div>
-    <!--end::Content container-->
 </div>
-<!--end::Content-->
+
 @section scripts {
-    <script src="~/js/administrativo/zona/add.js" asp-append-version="true"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
+    <script src="~/js/administrativo/zona/add.js" asp-append-version="true"></script>
 }

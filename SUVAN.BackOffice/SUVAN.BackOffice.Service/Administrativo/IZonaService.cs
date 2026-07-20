@@ -11,7 +11,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
 {
     public interface IZonaService
     {
-        /// <summary>
+        /*/// <summary>
         /// Obtiene el listado de las Zonas desde la base de datos.
         /// </summary>
         /// <returns>Lista de Zonas.</returns>
@@ -42,6 +42,27 @@ namespace SUVAN.BackOffice.Service.Administrativo
         Task<bool> EliminarZona(int IdZona);
 
         Task<List<ZonaViewModel.CatalogItemViewModel>> ObtenerPlantasPorRegion(int idEmpresa, int idRegion);
+        */
 
+        //Remake Cat Zona
+        /// <summary>
+        /// Obtiene el listado de Zonas de la empresa indicada, incluyendo navegación a Región y Planta.
+        /// </summary>
+        Task<List<Zona>> GetZona(int idEmpresa);
+
+        /// <summary>
+        /// Construye el ViewModel para el formulario de alta o edición de una zona.
+        /// </summary>
+        Task<ZonaViewModel> GetZonaViewModel(int idEmpresa, int idZona);
+
+        /// <summary>
+        /// Agrega o actualiza una zona, validando jerarquía Región -> Planta.
+        /// </summary>
+        Task<bool> AgregarZona(ZonaViewModel model, int idEmpresa);
+
+        /// <summary>
+        /// Elimina lógicamente o físicamente una zona.
+        /// </summary>
+        Task<bool> EliminarZona(int IdZona, int idEmpresa);
     }
 }
