@@ -279,27 +279,57 @@ namespace SUVAN.BackOffice.Portal.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Procesa la persistencia (alta o actualización) del registro de departamento.
+        /// Retorna a la vista principal con un TempData en caso de éxito.
+        /// </summary>
+        /// <param name="model">Modelo de datos capturado en la vista de Departamento.</param>
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AgregarDepto(DeptoViewModel model)
         {
             try
             {
-                if (!ModelState.IsValid)
-                    return Json(new { success = false, message = "Datos inválidos o incompletos." });
-
                 var usr = GetUserContext();
+
+                if (!ModelState.IsValid)
+                {
+                    // Si el modelo es inválido, recargar las listas para volver a mostrar el formulario
+                    var recargar = await deptoService.GetDeptoViewModel(usr.idEmpresa, model.IdDepto);
+                    model.Regiones = recargar.Regiones;
+                    model.Plantas = recargar.Plantas;
+                    model.Zonas = recargar.Zonas;
+                    model.Depositos = recargar.Depositos;
+                    return View(model);
+                }
+
                 var result = await deptoService.AgregarDepto(model, usr.idEmpresa);
 
                 if (result)
-                    return Json(new { success = true, message = model.IdDepto == 0 ? "Departamento registrado correctamente." : "Departamento actualizado correctamente." });
+                {
+                    // Almacenar el mensaje de éxito para que table.js lo lea y dispare el SweetAlert
+                    TempData["Mensaje"] = model.IdDepto == 0
+                        ? "Departamento registrado correctamente."
+                        : "Departamento actualizado correctamente.";
 
-                return Json(new { success = false, message = "No se pudo guardar el departamento." });
+                    return RedirectToAction("Departamentos", "Administrativo");
+                }
+
+                return View(model);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al guardar depto");
-                return Json(new { success = false, message = ex.Message });
+                ModelState.AddModelError(string.Empty, ex.Message);
+
+                var usr = GetUserContext();
+                var recargar = await deptoService.GetDeptoViewModel(usr.idEmpresa, model.IdDepto);
+                model.Regiones = recargar.Regiones;
+                model.Plantas = recargar.Plantas;
+                model.Zonas = recargar.Zonas;
+                model.Depositos = recargar.Depositos;
+
+                return View(model);
             }
         }
 

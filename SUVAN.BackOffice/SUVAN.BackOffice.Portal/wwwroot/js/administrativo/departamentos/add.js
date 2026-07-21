@@ -81,7 +81,8 @@ var KTDepto = function () {
                         clearSelect(selPlanta);
                         addOption(selPlanta, '0', '-- Seleccione una Planta --');
                         data.forEach(function (p) {
-                            addOption(selPlanta, p.idPlanta || p.IdPlanta, p.nombre || p.Nombre);
+                            // CORRECCIÓN: Usar p.id y p.nombre estandarizados por CatalogItemViewModel
+                            addOption(selPlanta, p.id || p.Id, p.nombre || p.Nombre);
                         });
                         selPlanta.disabled = false;
                     } else {
@@ -109,7 +110,8 @@ var KTDepto = function () {
                         clearSelect(selZona);
                         addOption(selZona, '0', '-- Seleccione una Zona --');
                         data.forEach(function (z) {
-                            addOption(selZona, z.idZona || z.IdZona, z.nombre || z.Nombre);
+                            // CORRECCIÓN: Usar z.id y z.nombre estandarizados
+                            addOption(selZona, z.id || z.Id, z.nombre || z.Nombre);
                         });
                         selZona.disabled = false;
                     } else {
@@ -137,7 +139,8 @@ var KTDepto = function () {
                         clearSelect(selDeposito);
                         addOption(selDeposito, '0', '-- Seleccione un Depósito --');
                         data.forEach(function (d) {
-                            addOption(selDeposito, d.idDeposito || d.IdDeposito, d.nombre || d.Nombre);
+                            // CORRECCIÓN: Usar d.id y d.nombre estandarizados
+                            addOption(selDeposito, d.id || d.Id, d.nombre || d.Nombre);
                         });
                         selDeposito.disabled = false;
                     } else {
