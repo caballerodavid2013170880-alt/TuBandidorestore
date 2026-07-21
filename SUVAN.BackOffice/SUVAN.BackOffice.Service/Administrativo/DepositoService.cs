@@ -16,7 +16,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
             this.context = context;
         }
 
-
         /// <summary>
         /// Obtiene el listado de empresas desde la base de datos.
         /// </summary>
@@ -34,15 +33,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
             return depositos!;
         }
-
-
-        ////Filtrado para no mostrar los borrados
-        //public async Task<List<Deposito>> GetDepositos(int id_empresa)
-        //{
-        //    return await context.Depositos
-        //        .Where(x => x.IdEmpresa == id_empresa && x.Activo == 1)
-        //        .ToListAsync();
-        //}
 
         /// <summary>
         /// Obtiene el ViewModel para el dep�sito espec�fico.
@@ -74,7 +64,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 ActivoBool = true // Activo por defecto al crear
             };
 
-            // Al Editar: carga datos del depósito y pre-llena los selectores
+            // Al Editar: carga datos del depósito y prellena los selectores
             if (idDeposito > 0)
             {
                 var deposito = await context.Depositos
@@ -132,15 +122,15 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <exception cref="Exception"></exception>
         public async Task<bool> AgregarDeposito(DepositoViewModel model, int idEmpresa)
         {
-            // 1. Validar que la región pertenece a la empresa del usuario
+            // Validar que la región pertenece a la empresa del usuario
             bool regionValida = await context.Regions.AnyAsync(r => r.IdRegion == model.IdRegion && r.IdEmpresa == idEmpresa);
             if (!regionValida) throw new Exception("La región seleccionada no pertenece a su empresa.");
 
-            // 2. Validar que la planta pertenece a la región y empresa
+            // Validar que la planta pertenece a la región y empresa
             bool plantaValida = await context.Planta.AnyAsync(p => p.IdPlanta == model.IdPlanta && p.IdRegion == model.IdRegion && p.IdEmpresa == idEmpresa);
             if (!plantaValida) throw new Exception("La planta seleccionada no pertenece a la región y empresa indicadas.");
 
-            // 3. Validar que la zona pertenece a la región, planta y empresa
+            // Validar que la zona pertenece a la región, planta y empresa
             bool zonaValida = await context.Zonas.AnyAsync(z => z.IdZona == model.IdZona && z.IdPlanta == model.IdPlanta && z.IdRegion == model.IdRegion && z.IdEmpresa == idEmpresa);
             if (!zonaValida) throw new Exception("La zona seleccionada no pertenece a la planta, región y empresa indicadas.");
 
@@ -160,7 +150,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 deposito.IdDeposito = (lastId ?? 0) + 1;
             }
 
-            // 4. Validar nombre duplicado en la misma zona
+            // Validar nombre duplicado en la misma zona
             bool nombreDuplicado = await context.Depositos.AnyAsync(d =>
                 d.NombreDeposito!.Trim().ToLower() == model.NombreDeposito!.Trim().ToLower() &&
                 d.IdZona == model.IdZona && d.IdEmpresa == idEmpresa &&
@@ -198,73 +188,3 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     }
                 }
             }
-
-/*
-
-public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetRegions(int id_empresa)
-        {
-            return await context.Regions
-                .Where(x => x.IdEmpresa == id_empresa)
-                .Select(x => new DepositoViewModel.CatalogItemViewModel
-                {
-                    Id = x.IdRegion,
-                    Nombre = x.NombreRegion
-                }).ToListAsync();
-        }
-
-        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetPlantas(int id_empresa)
-        {
-            return await context.Planta
-                .Where(x => x.IdEmpresa == id_empresa)
-                .Select(x => new DepositoViewModel.CatalogItemViewModel
-                {
-                    Id = x.IdPlanta,
-                    Nombre = x.NombrePlanta
-                }).ToListAsync();
-        }
-
-        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetZonas(int id_empresa)
-        {
-            return await context.Zonas
-                .Where(x => x.IdEmpresa == id_empresa)
-                .Select(x => new DepositoViewModel.CatalogItemViewModel
-                {
-                    Id = x.IdZona,
-                    Nombre = x.NombreZona
-                }).ToListAsync();
-        }
-
-        //NUEVOS METODOS PARA COMBOS EN CASCADA
-
-        /// <summary>
-        /// Obtiene las plantas disponibles para una regi�n espec�fica.
-        /// <summary>
-        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetPlantasByRegion(int id_empresa, int id_region)
-        {
-            return await context.Planta
-                .Where(x => x.IdEmpresa == id_empresa && x.IdRegion == (short)id_region)
-                .Select(x => new DepositoViewModel.CatalogItemViewModel
-                {
-                    Id = x.IdPlanta,
-                    Nombre = x.NombrePlanta
-                }).ToListAsync();
-        }
-
-        /// <summary>
-        /// Obtiene las zonas disponibles para una planta espec�fica.
-        /// <summary>
-        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetZonasByPlanta(int id_empresa, int id_planta)
-        {
-            return await context.Zonas
-                .Where(x => x.IdEmpresa == id_empresa && x.IdPlanta == id_planta)
-                .Select(x => new DepositoViewModel.CatalogItemViewModel
-                {
-                    Id = x.IdZona,
-                    Nombre = x.NombreZona
-                }).ToListAsync();
-        }
-    }
-}
-*/
-
-

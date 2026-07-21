@@ -39,8 +39,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return plantas;
         }
 
-        // Metodo entidades relacionadas POST 2do Scaffold 260526
-
         /// <summary>
         /// Construye el ViewModel para el formulario de alta o edición de una planta.
         /// Regiones del selector se filtran por empresa del usuario,respetando la jerarquía empresa → región.
@@ -75,7 +73,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 IdEmpresa = idEmpresa,
                 ActivoBool = true    // Por defecto activo al crear
             };
-            // Modo edición: cargar datos de la planta existente
+            // edición: cargar datos de la planta existente
             if (idPlanta > 0)
             {
                 // Validación de seguridad: la planta debe pertenecer a la empresa del usuario
@@ -93,8 +91,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return vRet;
         }
 
-
-        // Metodo entidades relacionadas POST 2do Scaffold 260526
         /// <summary>
         /// Agrega o actualiza una planta en la base de datos.
         /// Realiza las siguientes validaciones antes de persistir:
@@ -130,7 +126,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
             }
             else
             {
-                // Modo alta — crear nueva instancia
+                // alta — crear nueva instancia
                 planta = new Plantum();
             }
             // Validar nombre duplicado en la misma región y empresa
@@ -162,6 +158,5 @@ namespace SUVAN.BackOffice.Service.Administrativo
             }
             return true;
         }
-        // Metodo entidades relacionadas POST 2do Scaffold 260526
     }
 }

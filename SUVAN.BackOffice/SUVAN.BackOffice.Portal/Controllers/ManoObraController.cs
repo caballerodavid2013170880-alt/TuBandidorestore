@@ -58,9 +58,8 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
             return View(model);
         }
 
-        [HttpPost] // Mantenemos el HttpPost simple para evitar el error de rutas (InvalidOperationException)
-                   // [ValidateAntiForgeryToken] // Sigue comentado para evitar el Error 400 por el token
-        public async Task<IActionResult> AgregarManoObraAjax([FromBody] ManoObraViewModel model) // <-- [FromBody] es la clave aquí
+        [HttpPost] // HttpPost simple para evitar el error de rutas (InvalidOperationException)
+        public async Task<IActionResult> AgregarManoObraAjax([FromBody] ManoObraViewModel model)
         {
             try
             {
@@ -85,22 +84,21 @@ namespace SUVAN.BackOffice.Portal.Controllers.Logistica
         [HttpGet("/DetalleManoObras")]
         public async Task<IActionResult> DetalleManoObras()
         {
-            // 1. Obtener la validación del contexto
+            // Obtener la validación del contexto
             var usr = GetUserContext();
 
-            // 2. Enviar los datos del contexto a la vista para rellenar los data-attributes (data-context-region, etc.)
+            // Enviar los datos del contexto a la vista para rellenar los data-attributes (data-context-region, etc.)
             ViewBag.IdRegion = usr.idRegion;
             ViewBag.IdPlanta = usr.idPlanta;
             ViewBag.IdZona = usr.idZona;
             ViewBag.IdDeposito = usr.idDeposito;
 
-            // 3. Obtener el modelo general de Mano de Obra, ya que la vista ahora
-            // réplica las columnas del Index (y requiere List<ManoObraViewModel>)
+            // Obtener el modelo general de Mano de Obra
             // Nota: Si el servicio se actualiza posteriormente para filtrar por empresa o región,
             // se le pasarían los parámetros de la variable 'usr' aquí.
             var model = await _manoObraService.GetManoObras();
 
-            // 4. Retornar la vista explícitamente por si el nombre de la ruta difiere del archivo
+            // Retornar la vista explícitamente por si el nombre de la ruta difiere del archivo
             return View("DetalleManoObras", model);
         }
         //[HttpGet("GetModalDetalle")]

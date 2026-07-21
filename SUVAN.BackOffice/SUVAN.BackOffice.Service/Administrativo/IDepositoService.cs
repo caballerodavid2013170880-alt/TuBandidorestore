@@ -25,16 +25,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// </summary>
         /// <returns>Lista de depositos.</returns>
         Task<List<Deposito>> GetDepositos(int id_empresa);
-        /*
-        //se agregan los metodos de Regi�n Plantas y zonas para btener esos cat�logos y mostrarlos en el combo box
-        Task<List<DepositoViewModel.CatalogItemViewModel>> GetRegions(int id_empresa);
-        Task<List<DepositoViewModel.CatalogItemViewModel>> GetPlantas(int id_empresa);
-        Task<List<DepositoViewModel.CatalogItemViewModel>> GetZonas(int id_empresa);
-
-        //se agregan los metodos para obtener filtrados por regi�n planta y zona (filtrado en cascada)
-        Task<List<DepositoViewModel.CatalogItemViewModel>> GetPlantasByRegion(int id_empresa, int id_region);
-        Task<List<DepositoViewModel.CatalogItemViewModel>> GetZonasByPlanta(int id_empresa, int id_planta);
-        */
 
         /// <summary>
         /// Obtiene el ViewModel para el depósito específico.
@@ -47,10 +37,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <returns>ViewModel para el depósito específico.</returns>
         /// 
         Task<DepositoViewModel> GetDepositoViewModel(int idEmpresa, int idDeposito);
-
-        //agregado para usar eliminado logico
-        //Task<bool> EliminarDeposito(int idEmpresa, int idDeposito);
-
 
     }
 }

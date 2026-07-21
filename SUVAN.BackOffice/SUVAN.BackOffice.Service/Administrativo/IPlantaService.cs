@@ -9,35 +9,6 @@ using System.Threading.Tasks;
 
 namespace SUVAN.BackOffice.Service.Administrativo
 {
-    /*
-    public interface IPlantaService
-    {
-        /// <summary>
-        /// Agrega o actualiza una planta en la base de datos.
-        /// </summary>
-        /// <param name="model">ViewModel con los datos de la planta.</param>
-        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
-        Task<bool> AgregarPlanta(PlantumViewModel model);
-
-        /// <summary>
-        /// Obtiene el listado de Plantas desde la base de datos.
-        /// </summary>
-        /// <param name="id_empresa">Identificador de la empresa.</param>
-        /// <returns>Lista de Plantas.</returns>
-        Task<List<PlantumViewModel>> GetPlantas(int id_empresa); // Cambio de Plantum a PlantaViewModel para nombre region
-        /// <summary>
-        /// Obtiene el ViewModel para la planta específica.
-        /// </summary>
-        /// <param name="id_empresa">Identificador de la empresa.</param>
-        /// <param name="id_region">Identificador de la región.</param>
-        /// <param name="id_planta">Identificador de la planta.</param>
-        /// <returns>ViewModel para la planta específica.</returns>
-        Task<PlantumViewModel> GetPlantaViewModel(int id_empresa, int id_region, int id_planta);
-
-    }
-
-    */
-    //Nuevos
     public interface IPlantaService
     {
         /// <summary>
@@ -47,7 +18,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// </summary>
         /// <param name="idEmpresa">
         /// Identificador de la empresa del usuario autenticado.
-        /// Se utiliza como filtro de seguridad para restringir los resultados.
         /// </param>
         /// <returns>
         /// Lista de entidades <see cref="Plantum"/> con la propiedad de navegación

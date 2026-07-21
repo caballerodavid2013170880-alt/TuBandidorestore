@@ -2,7 +2,6 @@
 /**
  * @fileoverview Módulo del formulario de alta/edición de Departamento.
  * Cascada de selectores Región → Planta → Zona → Depósito usando datos
- * JSON embebidos en la página (patrón del módulo Taller).
  * @module KTDepto
  */
 var KTDepto = function () {
@@ -81,7 +80,7 @@ var KTDepto = function () {
                         clearSelect(selPlanta);
                         addOption(selPlanta, '0', '-- Seleccione una Planta --');
                         data.forEach(function (p) {
-                            // CORRECCIÓN: Usar p.id y p.nombre estandarizados por CatalogItemViewModel
+                            // Usar p.id y p.nombre estandarizados por CatalogItemViewModel
                             addOption(selPlanta, p.id || p.Id, p.nombre || p.Nombre);
                         });
                         selPlanta.disabled = false;
@@ -139,7 +138,6 @@ var KTDepto = function () {
                         clearSelect(selDeposito);
                         addOption(selDeposito, '0', '-- Seleccione un Depósito --');
                         data.forEach(function (d) {
-                            // CORRECCIÓN: Usar d.id y d.nombre estandarizados
                             addOption(selDeposito, d.id || d.Id, d.nombre || d.Nombre);
                         });
                         selDeposito.disabled = false;
@@ -222,7 +220,6 @@ var KTDepto = function () {
             selZona = document.getElementById('selectIdZona');
             selDeposito = document.getElementById('selectIdDeposito');
 
-            // Se elimina initCascadeData() para procesarlo completamente por los Endpoints AJAX ya definidos
             initCascadeListeners();
             initValidation();
             initSubmit();

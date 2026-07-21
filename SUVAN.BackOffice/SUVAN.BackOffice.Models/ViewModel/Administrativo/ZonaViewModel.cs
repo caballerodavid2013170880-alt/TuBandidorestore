@@ -55,34 +55,9 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         [ValidateNever]
         public List<CatalogItemViewModel> Plantas { get; set; } = new();
        
-        //public string IdNombre => $"{ZonaId} - {ZonaNombre}";
 
         
     }
 
-    //Esta clase solo se usa si se listan empresas dentro de esteviewmodel
-    //public class EmpresaViewModel
-    //{
-    //    public int EmpresaId { get; set; }
-    //    public string? NombreCorto { get; set; }
-    //    public string IdNombre => $"{EmpresaId} - {NombreCorto}";
-    //}
-
-    //public class RegionModel
-    //{
-    //    public int Id { get; set; }
-    //    public string Nombre { get; set; }
-    //}
-
-
-
-    //public class DepositosViewModel
-    //{
-    //    public int DepositoId { get; set; }
-
-    //    public string NombreDeposito { get; set; } = null!;
-
-    //    public string DepositoNombreId => $"{DepositoId} - {NombreDeposito}";
-    //}
 }
 

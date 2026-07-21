@@ -75,7 +75,7 @@ var KTZonaTable = function () {
                         const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
                         const zonaId = parseInt(d.getAttribute('data-kt-zona-delete-item'));
 
-                        // Utilizamos fetch nativo para enviar un FormData al endpoint EliminarZona
+                        // fetch nativo para enviar un FormData al endpoint EliminarZona
                         var formData = new FormData();
                         formData.append("IdZona", zonaId);
                         if (token) formData.append("__RequestVerificationToken", token);

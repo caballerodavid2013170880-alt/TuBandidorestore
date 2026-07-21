@@ -141,19 +141,19 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <exception cref="Exception">Si alguna validaci�n de seguridad o de negocio falla.</exception>
         public async Task<bool> AgregarDepto(DeptoViewModel model, int idEmpresa)
         {
-            // 1. Validar que la regi�n pertenece a la empresa del usuario
+            // 1. Validar que la región pertenece a la empresa del usuario
             bool regionValida = await context.Regions
                 .AnyAsync(r => r.IdRegion == model.IdRegion && r.IdEmpresa == idEmpresa);
             if (!regionValida)
                 throw new Exception("La regi�n seleccionada no pertenece a su empresa.");
-            // 2. Validar que la planta pertenece a la regi�n y empresa
+            // 2. Validar que la planta pertenece a la región y empresa
             bool plantaValida = await context.Planta
                 .AnyAsync(p => p.IdPlanta == model.IdPlanta
                             && p.IdRegion == model.IdRegion
                             && p.IdEmpresa == idEmpresa);
             if (!plantaValida)
                 throw new Exception("La planta seleccionada no pertenece a la regi�n y empresa indicadas.");
-            // 3. Validar que la zona pertenece a la regi�n, planta y empresa
+            // 3. Validar que la zona pertenece a la región, planta y empresa
             bool zonaValida = await context.Zonas
                 .AnyAsync(z => z.IdZona == model.IdZona
                             && z.IdRegion == model.IdRegion
@@ -161,7 +161,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                             && z.IdEmpresa == idEmpresa);
             if (!zonaValida)
                 throw new Exception("La zona seleccionada no pertenece a la planta, regi�n y empresa indicadas.");
-            // 4. Validar que el dep�sito pertenece a la regi�n, planta, zona y empresa
+            // 4. Validar que el dep�sito pertenece a la región, planta, zona y empresa
             bool depositoValido = await context.Depositos
                 .AnyAsync(d => d.IdDeposito == model.IdDeposito
                             && d.IdRegion == model.IdRegion
@@ -189,7 +189,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     .FirstOrDefaultAsync();
                 depto.IdDepto = (lastId ?? 0) + 1;
             }
-            // 5. Validar nombre duplicado en el mismo dep�sito y empresa (excluyendo el registro actual en edici�n)
+            // 5. Validar nombre duplicado en el mismo depósito y empresa (excluyendo el registro actual en edición)
             bool nombreDuplicado = await context.Deptos
                 .AnyAsync(d =>
                     d.NombreDepto!.Trim().ToLower() == model.NombreDepto!.Trim().ToLower() &&

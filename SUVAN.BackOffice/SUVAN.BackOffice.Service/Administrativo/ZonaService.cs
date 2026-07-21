@@ -174,18 +174,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
             await context.SaveChangesAsync();
             return true;
         }   
-        
-        /*
-        public async Task<List<ZonaViewModel.CatalogItemViewModel>> ObtenerPlantasPorRegion(int idEmpresa, int IdRegion)
-        {
-            return await context.Planta
-                .Where(x => x.IdEmpresa == idEmpresa && x.IdRegion == IdRegion)
-                .Select(x => new ZonaViewModel.CatalogItemViewModel
-                {
-                    Id = x.IdPlanta,
-                    Nombre = x.NombrePlanta
-                }).ToListAsync();
-        }
-        */
+
     }
 }
