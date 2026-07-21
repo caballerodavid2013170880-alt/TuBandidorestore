@@ -74,7 +74,7 @@ var KTDepto = function () {
 
             if (!idRegion || idRegion === 0) return;
 
-            fetch('/Configuracion/GetPlantasPorRegion?idRegion=' + idRegion)
+            fetch('/Administrativo/GetPlantasPorRegion?idRegion=' + idRegion)
                 .then(function (response) { return response.json(); })
                 .then(function (data) {
                     if (data && data.length > 0) {
@@ -102,7 +102,7 @@ var KTDepto = function () {
 
             if (!idPlanta || idPlanta === 0 || !idRegion) return;
 
-            fetch('/Configuracion/GetZonasPorPlanta?idRegion=' + idRegion + '&idPlanta=' + idPlanta)
+            fetch('/Administrativo/GetZonasPorPlanta?idRegion=' + idRegion + '&idPlanta=' + idPlanta)
                 .then(function (response) { return response.json(); })
                 .then(function (data) {
                     if (data && data.length > 0) {
@@ -130,7 +130,7 @@ var KTDepto = function () {
 
             if (!idZona || idZona === 0 || !idPlanta) return;
 
-            fetch('/Configuracion/GetDepositosPorZona?idRegion=' + idRegion + '&idPlanta=' + idPlanta + '&idZona=' + idZona)
+            fetch('/Administrativo/GetDepositosPorZona?idRegion=' + idRegion + '&idPlanta=' + idPlanta + '&idZona=' + idZona)
                 .then(function (response) { return response.json(); })
                 .then(function (data) {
                     if (data && data.length > 0) {

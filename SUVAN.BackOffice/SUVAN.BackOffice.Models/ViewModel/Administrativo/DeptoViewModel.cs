@@ -110,15 +110,6 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
         /// Al Editar se pre-carga desde el servidor con los depósitos de la zona guardada.
         /// </summary>
         public List<CatalogItemViewModel> Depositos { get; set; } = new();
-        /// <summary>
-        /// JSON serializado con la jerarquía completa Región → Planta → Zona → Depósito
-        /// para la carga en cascada de los selectores en el cliente.
-        /// Solo se usa en modo alta; en modo edición es null.
-        /// </summary>
-        public string? CascadeJson { get; set; }
-        // ──────────────────────────────────────────────────────────────────
-        //  Submodelo de ítem para cada selector
-        // ──────────────────────────────────────────────────────────────────
         
     }
 }

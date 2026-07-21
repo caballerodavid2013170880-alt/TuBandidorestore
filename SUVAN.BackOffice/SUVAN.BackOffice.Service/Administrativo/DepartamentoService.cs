@@ -66,54 +66,12 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     Nombre = r.NombreRegion
                 })
                 .ToListAsync();
-            // Construir JSON jer�rquico para la cascada en el cliente (modo alta)
-            string? cascadeJson = null;
-            if (idDepto == 0)
-            {
-                var plantas = await context.Planta
-                    .Where(p => p.IdEmpresa == idEmpresa)
-                    .OrderBy(p => p.NombrePlanta)
-                    .Select(p => new { p.IdPlanta, p.NombrePlanta, p.IdRegion })
-                    .ToListAsync();
-                var zonas = await context.Zonas
-                    .Where(z => z.IdEmpresa == idEmpresa)
-                    .OrderBy(z => z.NombreZona)
-                    .Select(z => new { z.IdZona, z.NombreZona, z.IdPlanta, z.IdRegion })
-                    .ToListAsync();
-                var depositos = await context.Depositos
-                    .Where(d => d.IdEmpresa == idEmpresa)
-                    .OrderBy(d => d.NombreDeposito)
-                    .Select(d => new { d.IdDeposito, d.NombreDeposito, d.IdZona, d.IdPlanta, d.IdRegion })
-                    .ToListAsync();
-                // Armar jerarquia anidada: Regi�n ? Planta ? Zona ? Dep�sito
-                var hierarchy = regiones.Select(r => new
-                {
-                    r.Id,
-                    r.Nombre,
-                    Plantas = plantas.Where(p => p.IdRegion == r.Id).Select(p => new
-                    {
-                        p.IdPlanta,
-                        Nombre = p.NombrePlanta,
-                        Zonas = zonas.Where(z => z.IdRegion == r.Id && z.IdPlanta == p.IdPlanta).Select(z => new
-                        {
-                            z.IdZona,
-                            Nombre = z.NombreZona,
-                            Depositos = depositos.Where(d => d.IdRegion == r.Id && d.IdPlanta == p.IdPlanta && d.IdZona == z.IdZona).Select(d => new
-                            {
-                                d.IdDeposito,
-                                Nombre = d.NombreDeposito
-                            }).ToList()
-                        }).ToList()
-                    }).ToList()
-                }).ToList();
-                cascadeJson = System.Text.Json.JsonSerializer.Serialize(hierarchy);
-            }
+            
             var vRet = new DeptoViewModel
             {
                 Regiones = regiones,
                 IdEmpresa = idEmpresa,
-                ActivoBool = true,   // Activo por defecto al crear
-                CascadeJson = cascadeJson
+                ActivoBool = true  // Activo por defecto al crear
             };
             // Al Editar: carga datos del departamento y pre-llena los cuatro selectores
             if (idDepto > 0)
@@ -211,7 +169,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                             && d.IdZona == model.IdZona
                             && d.IdEmpresa == idEmpresa);
             if (!depositoValido)
-                throw new Exception("El dep�sito seleccionado no pertenece a la zona, planta, regi�n y empresa indicadas.");
+                throw new Exception("El deposito seleccionado no pertenece a la zona, planta, regi�n y empresa indicadas.");
             Depto depto;
             if (model.IdDepto > 0)
             {

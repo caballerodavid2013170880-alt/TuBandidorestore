@@ -20,12 +20,16 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <summary>
         /// Obtiene el listado de empresas desde la base de datos.
         /// </summary>
-        /// <param name="id_empresa">Identificador de la empresa.</param>
+        /// <param name="idEmpresa">Identificador de la empresa.</param>
         /// <returns>Lista de empresas.</returns>
-        public async Task<List<Deposito>> GetDepositos(int id_empresa)
+        public async Task<List<Deposito>> GetDepositos(int idEmpresa)
         {
             var depositos = await context.Depositos
-                .Where(x => x.IdEmpresa == id_empresa && x.Activo.GetValueOrDefault() == 1)
+                .Include(d => d.IdZonaNavigation)
+                .Include(d => d.IdEmpresaNavigation)
+                .Where(d => d.IdEmpresa == idEmpresa)
+                .OrderBy(d => d.IdZonaNavigation.NombreZona)
+                .ThenBy(d => d.NombreDeposito)
                 .ToListAsync();
 
             return depositos!;
@@ -50,33 +54,71 @@ namespace SUVAN.BackOffice.Service.Administrativo
         ///  <param name="id_zona">Identificador de la zona.</param>
         /// <param name="id_deposito">Identificador del dep�sito.</param>
         /// <returns>ViewModel para el dep�sito espec�fico.</returns>
-        public async Task<DepositoViewModel> GetDepositoViewModel(int id_empresa, int id_deposito)
+        public async Task<DepositoViewModel> GetDepositoViewModel(int idEmpresa, int idDeposito)
         {
-            DepositoViewModel vRet = new DepositoViewModel();
-            var deposito = await context.Depositos.FirstOrDefaultAsync(x => x.IdEmpresa == id_empresa && x.IdDeposito == id_deposito);
-
-            if (deposito == null)
-                return vRet;
-            else
-            {
-                vRet = new DepositoViewModel
+            // Carga de regiones disponibles para la empresa
+            var regiones = await context.Regions
+                .Where(r => r.IdEmpresa == idEmpresa)
+                .OrderBy(r => r.NombreRegion)
+                .Select(r => new DepositoViewModel.CatalogItemViewModel
                 {
-                    IdEmpresa = deposito.IdEmpresa,
-                    IdRegion = deposito.IdRegion,
-                    IdPlanta = deposito.IdPlanta,
-                    IdZona = deposito.IdZona,
-                    IdDeposito = deposito.IdDeposito,
-                    NombreDeposito = deposito.NombreDeposito,
-                    Direc = deposito.Direc,
-                    Ciudad = deposito.Ciudad,
-                    Respon = deposito.Respon,
-                    Tel = deposito.Tel,
-                    LocFor = deposito.LocFor,
-                    RPerson = deposito.RPerson,
-                    NomCorto = deposito.NomCorto,
-                    Rfc = deposito.Rfc,
-                    Cp = deposito.Cp
-                };
+                    Id = r.IdRegion,
+                    Nombre = r.NombreRegion
+                })
+                .ToListAsync();
+
+            var vRet = new DepositoViewModel
+            {
+                Regiones = regiones,
+                IdEmpresa = idEmpresa,
+                ActivoBool = true // Activo por defecto al crear
+            };
+
+            // Al Editar: carga datos del depósito y pre-llena los selectores
+            if (idDeposito > 0)
+            {
+                var deposito = await context.Depositos
+                    .FirstOrDefaultAsync(d => d.IdDeposito == idDeposito && d.IdEmpresa == idEmpresa);
+
+                if (deposito == null)
+                    throw new Exception("El depósito no pertenece a su empresa o no existe.");
+
+                vRet.IdDeposito = deposito.IdDeposito;
+                vRet.IdEmpresa = deposito.IdEmpresa;
+                vRet.IdRegion = deposito.IdRegion;
+                vRet.IdPlanta = deposito.IdPlanta;
+                vRet.IdZona = deposito.IdZona;
+                vRet.NombreDeposito = deposito.NombreDeposito;
+                vRet.Direc = deposito.Direc;
+                vRet.Ciudad = deposito.Ciudad;
+                vRet.Respon = deposito.Respon;
+                vRet.Tel = deposito.Tel;
+                vRet.LocFor = deposito.LocFor;
+                vRet.RPerson = deposito.RPerson;
+                vRet.NomCorto = deposito.NomCorto;
+                vRet.Rfc = deposito.Rfc;
+                vRet.Cp = deposito.Cp;
+                vRet.Activo = deposito.Activo ?? 0;
+
+                vRet.Plantas = await context.Planta
+                    .Where(p => p.IdEmpresa == idEmpresa && p.IdRegion == deposito.IdRegion)
+                    .OrderBy(p => p.NombrePlanta)
+                    .Select(p => new DepositoViewModel.CatalogItemViewModel
+                    {
+                        Id = p.IdPlanta,
+                        Nombre = p.NombrePlanta
+                    })
+                    .ToListAsync();
+
+                vRet.Zonas = await context.Zonas
+                    .Where(z => z.IdEmpresa == idEmpresa && z.IdRegion == deposito.IdRegion && z.IdPlanta == deposito.IdPlanta)
+                    .OrderBy(z => z.NombreZona)
+                    .Select(z => new DepositoViewModel.CatalogItemViewModel
+                    {
+                        Id = z.IdZona,
+                        Nombre = z.NombreZona
+                    })
+                    .ToListAsync();
             }
 
             return vRet;
@@ -88,80 +130,78 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <param name="model">ViewModel con los datos del dep�sito.</param>
         /// <returns>True si la operaci�n fue exitosa, de lo contrario, lanza una excepci�n.</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> AgregarDeposito(DepositoViewModel model)
+        public async Task<bool> AgregarDeposito(DepositoViewModel model, int idEmpresa)
         {
+            // 1. Validar que la región pertenece a la empresa del usuario
+            bool regionValida = await context.Regions.AnyAsync(r => r.IdRegion == model.IdRegion && r.IdEmpresa == idEmpresa);
+            if (!regionValida) throw new Exception("La región seleccionada no pertenece a su empresa.");
+
+            // 2. Validar que la planta pertenece a la región y empresa
+            bool plantaValida = await context.Planta.AnyAsync(p => p.IdPlanta == model.IdPlanta && p.IdRegion == model.IdRegion && p.IdEmpresa == idEmpresa);
+            if (!plantaValida) throw new Exception("La planta seleccionada no pertenece a la región y empresa indicadas.");
+
+            // 3. Validar que la zona pertenece a la región, planta y empresa
+            bool zonaValida = await context.Zonas.AnyAsync(z => z.IdZona == model.IdZona && z.IdPlanta == model.IdPlanta && z.IdRegion == model.IdRegion && z.IdEmpresa == idEmpresa);
+            if (!zonaValida) throw new Exception("La zona seleccionada no pertenece a la planta, región y empresa indicadas.");
+
             Deposito deposito;
-
-
             if (model.IdDeposito > 0)
             {
-                deposito = await context.Depositos.FirstOrDefaultAsync(x => x.IdEmpresa == model.IdEmpresa && x.IdDeposito == model.IdDeposito);
-
-                if (deposito == null)
-                    throw new Exception("No se encontro el deposito. ");
+                deposito = await context.Depositos.FirstOrDefaultAsync(d => d.IdDeposito == model.IdDeposito && d.IdEmpresa == idEmpresa);
+                if (deposito == null) throw new Exception("El depósito no pertenece a su empresa o no existe.");
             }
             else
             {
                 deposito = new Deposito();
-                deposito.IdEmpresa = model.IdEmpresa;
-
-                //// se agrega el identity manualmente que no esta en la bd
-                //var vLastRow = await context.Depositos.OrderBy(x => x.IdEmpresa).LastOrDefaultAsync(x => x.IdEmpresa == model.id_empresa);
-                //deposito.IdDeposi = (short)((vLastRow != null ? vLastRow.IdDeposi : 0) + 1);
-
-                // se agrega el identity manualmente que no esta en la bd
-                //var vLastRow = await context.Depositos.OrderByDescending(x => x.IdDeposito).FirstOrDefaultAsync();
-                //deposito.IdDeposito = (short)((vLastRow != null ? vLastRow.IdDeposito : 0) + 1);
+                var lastId = await context.Depositos
+                    .OrderByDescending(d => d.IdDeposito)
+                    .Select(d => (int?)d.IdDeposito)
+                    .FirstOrDefaultAsync();
+                deposito.IdDeposito = (lastId ?? 0) + 1;
             }
 
-            // validate if exist one deposit with the same name in the same empresa
-            var depositoExistente = await context.Depositos.FirstOrDefaultAsync(x => x.NombreDeposito!.ToLower() == model.NombreDeposito!.ToLower()
-            && x.IdEmpresa == model.IdEmpresa
-            && x.IdDeposito != model.IdDeposito
-            && x.Activo.GetValueOrDefault() == 1);//validacion de los que estan activos
+            // 4. Validar nombre duplicado en la misma zona
+            bool nombreDuplicado = await context.Depositos.AnyAsync(d =>
+                d.NombreDeposito!.Trim().ToLower() == model.NombreDeposito!.Trim().ToLower() &&
+                d.IdZona == model.IdZona && d.IdEmpresa == idEmpresa &&
+                d.IdDeposito != model.IdDeposito);
 
-            if (depositoExistente is not null)
-                throw new Exception("Ya existe un dep�sito con el mismo nombre en la empresa");
+            if (nombreDuplicado) throw new Exception("Ya existe un depósito con el mismo nombre en esta zona.");
 
-
-            deposito.NombreDeposito = model.NombreDeposito;
+            deposito.IdEmpresa = idEmpresa;
             deposito.IdRegion = model.IdRegion;
             deposito.IdPlanta = model.IdPlanta;
             deposito.IdZona = model.IdZona;
+            deposito.NombreDeposito = model.NombreDeposito;
             deposito.Direc = model.Direc;
             deposito.Ciudad = model.Ciudad;
             deposito.Respon = model.Respon;
             deposito.Tel = model.Tel;
-            deposito.LocFor = model.LocFor;
+            deposito.LocFor = model.LocFor?.Trim().ToUpper().Substring(0, 1);
             deposito.RPerson = model.RPerson;
             deposito.NomCorto = model.NomCorto;
             deposito.Rfc = model.Rfc;
             deposito.Cp = model.Cp;
-            //forzar el valor de locfor a ser la primera letra en mayuscula
-            deposito.LocFor = model.LocFor?.Trim().ToUpper().Substring(0, 1);
-
-            //asignacion del borrado 
-            //se traduce el bool del ViewModel al ulong del Entity
             deposito.Activo = model.Activo;
 
             if (model.IdDeposito > 0)
             {
-                //Notifica al contexto que este objeto ya fue modificado 
-                context.Entry(deposito).State = EntityState.Modified;
                 await context.SaveChangesAsync();
             }
             else
             {
                 context.Depositos.Add(deposito);
                 await context.SaveChangesAsync();
-
             }
+
             return true;
-        }
+                    }
+                }
+            }
 
+/*
 
-
-        public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetRegions(int id_empresa)
+public async Task<List<DepositoViewModel.CatalogItemViewModel>> GetRegions(int id_empresa)
         {
             return await context.Regions
                 .Where(x => x.IdEmpresa == id_empresa)
@@ -225,6 +265,6 @@ namespace SUVAN.BackOffice.Service.Administrativo
         }
     }
 }
-
+*/
 
 

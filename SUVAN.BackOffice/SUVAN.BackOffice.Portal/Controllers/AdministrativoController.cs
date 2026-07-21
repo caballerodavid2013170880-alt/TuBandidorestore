@@ -211,7 +211,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             var plantas = await depositosService.GetPlantasByRegion(usr.idEmpresa, regionId);
             return Json(plantas);
         }
-        */
+        */ //Descartado por alineacion de catalogos jerarquia 2007
 
         // ============== Zona FIN ==============
 
@@ -227,18 +227,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> AgregarDeposito(int id)
         {
             var usr = GetUserContext();
-            var agregarModel = await depositosService.GetDepositoViewModel(usr.idEmpresa, id);
-
-            var regiones = await depositosService.GetRegions(usr.idEmpresa);
-            agregarModel.Regiones = regiones.Select(r => new DepositoViewModel.CatalogItemViewModel { Id = r.Id, Nombre = r.Nombre }).ToList();
-            
-            var plantas = await depositosService.GetPlantas(usr.idEmpresa);
-            agregarModel.Plantas = plantas.Select(p => new DepositoViewModel.CatalogItemViewModel { Id = p.Id, Nombre = p.Nombre }).ToList();
-            
-            var zonas = await depositosService.GetZonas(usr.idEmpresa);
-            agregarModel.Zonas = zonas.Select(z => new DepositoViewModel.CatalogItemViewModel { Id = z.Id, Nombre = z.Nombre }).ToList();
-
-            return View(agregarModel);
+            var model = await depositosService.GetDepositoViewModel(usr.idEmpresa, id);
+            return View(model);
         }
 
         [HttpPost]
@@ -250,7 +240,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 if (!ModelState.IsValid)
                     return Json(new { success = false, message = "Datos inválidos o incompletos." });
 
-                var result = await depositosService.AgregarDeposito(model);
+                var usr = GetUserContext();
+                var result = await depositosService.AgregarDeposito(model, usr.idEmpresa);
 
                 if (result)
                     return Json(new { success = true, message = model.IdDeposito == 0 ? "Depósito registrado correctamente." : "Depósito actualizado correctamente." });
@@ -263,7 +254,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
-
+        /*
         [HttpGet]
         public async Task<JsonResult> ObtenerZonas(int plantaId)
         {
@@ -271,7 +262,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             var zonas = await depositosService.GetZonasByPlanta(usr.idEmpresa, plantaId);
             return Json(zonas);
         }
-
+        */  //Descartado por alineacion de catalogos jerarquia 2007
         // ============== Departamentos ==============
         [HttpGet]
         public async Task<IActionResult> Departamentos()

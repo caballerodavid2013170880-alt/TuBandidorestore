@@ -51,19 +51,12 @@
                     <!--Campos ocultos: IdDepto e IdEmpresa-->
                     <input asp-for="IdDepto" type="hidden" />
                     <input asp-for="IdEmpresa" type="hidden" value="@User.GetEmpresaId()" />
-                    @if (!isEdicion && Model.CascadeJson != null)
-                    {
-                        <input type="hidden" id="CascadeJson" value='@Html.Raw(Model.CascadeJson)' />
-                    }
-                    <!--begin::Validation summary-->
-                    <div class="fv-row mb-8">
-                        <div class="col-sm-12">
-                            <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                <div asp-validation-summary="All"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <!--end::Validation summary-->
+                    <!--begin::Card body-->
+                    <div class="card-body py-4">
+                        <!--TempData: leído por table.js para mostrar SweetAlert de confirmación-->
+                        <input type="hidden" id="mensajeTempData" value="@TempData["Mensaje"]" />
+                        @Html.AntiForgeryToken()
+                        <!--begin::Table-->
                     <!--begin::Fila 1 — Región y Planta-->
                     <div class="row">
                         <!--begin::Selector de Región-->
