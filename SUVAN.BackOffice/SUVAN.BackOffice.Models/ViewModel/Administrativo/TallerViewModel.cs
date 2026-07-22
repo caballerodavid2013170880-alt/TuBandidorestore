@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using static SUVAN.BackOffice.Models.ViewModel.Logistica.DepositosDisponiblesViewModel;
+using System.Threading.Tasks
 
 namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 {
