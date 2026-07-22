@@ -114,6 +114,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
         CargasTransitorias = 122,
         Logística= 123,
         ConsultaPrev = 124,
-        OrdEmbarque = 125
+        OrdEmbarque = 125,
+        Llantas = 126
     }
 }

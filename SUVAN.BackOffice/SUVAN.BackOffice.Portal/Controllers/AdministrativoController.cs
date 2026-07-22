@@ -340,5 +340,3 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
     }
 }
-
-
