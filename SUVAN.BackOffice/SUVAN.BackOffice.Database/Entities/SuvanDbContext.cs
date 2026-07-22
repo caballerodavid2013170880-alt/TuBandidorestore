@@ -13,13 +13,18 @@ public partial class SuvanDbContext : DbContext
     private readonly IConfiguration configuration;
 
     public SuvanDbContext()
+
     {
+
     }
 
     public SuvanDbContext(DbContextOptions<SuvanDbContext> options, IConfiguration configuration)
-          : base(options)
+
+    : base(options)
+
     {
-        this.configuration = configuration;
+
+    this.configuration = configuration;
 
     }
 
@@ -84,8 +89,6 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Deposito> Depositos { get; set; }
 
-    public virtual DbSet<Depositosdisponible> Depositosdisponibles { get; set; }
-
     public virtual DbSet<Depto> Deptos { get; set; }
 
     public virtual DbSet<DetPrev> DetPrevs { get; set; }
@@ -128,6 +131,28 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<LiquidacionDetalle> LiquidacionDetalles { get; set; }
 
+    public virtual DbSet<LlantaAsignacion> LlantaAsignacions { get; set; }
+
+    public virtual DbSet<LlantaConclusionInspeccion> LlantaConclusionInspeccions { get; set; }
+
+    public virtual DbSet<LlantaEstado> LlantaEstados { get; set; }
+
+    public virtual DbSet<LlantaEstadoInspeccion> LlantaEstadoInspeccions { get; set; }
+
+    public virtual DbSet<LlantaEstadoRenovado> LlantaEstadoRenovados { get; set; }
+
+    public virtual DbSet<LlantaInspeccion> LlantaInspeccions { get; set; }
+
+    public virtual DbSet<LlantaMotivoRetiro> LlantaMotivoRetiros { get; set; }
+
+    public virtual DbSet<LlantaRenovado> LlantaRenovados { get; set; }
+
+    public virtual DbSet<LlantaTipoAsignacion> LlantaTipoAsignacions { get; set; }
+
+    public virtual DbSet<LlantaTipoInspeccion> LlantaTipoInspeccions { get; set; }
+
+    public virtual DbSet<Llantum> Llanta { get; set; }
+
     public virtual DbSet<Logcancelacionviaje> Logcancelacionviajes { get; set; }
 
     public virtual DbSet<Logerrorfactura> Logerrorfacturas { get; set; }
@@ -162,7 +187,6 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Modelo> Modelos { get; set; }
     public virtual DbSet<ModelRutaConfiguracion> ModelRutaConfiguracions { get; set; }
-
 
     public virtual DbSet<Monedero> Monederos { get; set; }
 
@@ -301,8 +325,10 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Zona> Zonas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-=> optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
+    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+    => optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
+
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -1475,69 +1501,6 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_deposito_region");
         });
 
-        modelBuilder.Entity<Depositosdisponible>(entity =>
-        {
-            entity.HasKey(e => e.IdDeposito).HasName("PRIMARY");
-
-            entity
-                .ToTable("depositosdisponibles")
-                .HasCharSet("utf8mb3")
-                .UseCollation("utf8mb3_general_ci");
-
-            entity.HasIndex(e => e.ZonaId, "fk_deposito_zona");
-
-            entity.HasIndex(e => e.IdEmpresa, "fk_depositosdisponibles_empresa");
-
-            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
-            entity.Property(e => e.Activo).HasColumnName("activo");
-            entity.Property(e => e.Ciudad)
-                .HasMaxLength(50)
-                .IsFixedLength()
-                .HasColumnName("ciudad");
-            entity.Property(e => e.Cp)
-                .HasMaxLength(5)
-                .IsFixedLength()
-                .HasColumnName("cp");
-            entity.Property(e => e.DepositoNombre)
-                .HasMaxLength(100)
-                .HasColumnName("deposito_nombre");
-            entity.Property(e => e.Dirección)
-                .HasMaxLength(70)
-                .IsFixedLength()
-                .HasColumnName("dirección");
-            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
-            entity.Property(e => e.LocFor)
-                .HasMaxLength(1)
-                .IsFixedLength()
-                .HasColumnName("loc_for");
-            entity.Property(e => e.NombreCorto)
-                .HasMaxLength(10)
-                .IsFixedLength()
-                .HasColumnName("nombre_corto");
-            entity.Property(e => e.RPerson)
-                .HasMaxLength(100)
-                .IsFixedLength()
-                .HasColumnName("r_person");
-            entity.Property(e => e.Responsable)
-                .HasMaxLength(50)
-                .IsFixedLength()
-                .HasColumnName("responsable");
-            entity.Property(e => e.Rfc)
-                .HasMaxLength(15)
-                .IsFixedLength()
-                .HasColumnName("rfc");
-            entity.Property(e => e.Teléfono)
-                .HasMaxLength(30)
-                .IsFixedLength()
-                .HasColumnName("teléfono");
-            entity.Property(e => e.ZonaId).HasColumnName("zona_id");
-
-            entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Depositosdisponibles)
-                .HasForeignKey(d => d.IdEmpresa)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_depositosdisponibles_empresa");
-        });
-
         modelBuilder.Entity<Depto>(entity =>
         {
             entity.HasKey(e => e.IdDepto).HasName("PRIMARY");
@@ -2266,6 +2229,459 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_liquidacion_liquidacion_cabecera");
         });
 
+        modelBuilder.Entity<LlantaAsignacion>(entity =>
+        {
+            entity.HasKey(e => e.IdLlantaAsignacion).HasName("PRIMARY");
+
+            entity.ToTable("llanta_asignacion");
+
+            entity.HasIndex(e => e.Activa, "idx_llanta_asignacion_activa");
+
+            entity.HasIndex(e => e.FechaAsignacion, "idx_llanta_asignacion_fecha");
+
+            entity.HasIndex(e => e.IdLlanta, "idx_llanta_asignacion_id_llanta");
+
+            entity.HasIndex(e => e.IdMotivoRetiro, "idx_llanta_asignacion_id_motivo_retiro");
+
+            entity.HasIndex(e => e.IdTipoAsignacion, "idx_llanta_asignacion_id_tipo");
+
+            entity.HasIndex(e => e.IdVehiculo, "idx_llanta_asignacion_id_vehiculo");
+
+            entity.HasIndex(e => e.IdVehiculoEje, "idx_llanta_asignacion_id_vehiculo_eje");
+
+            entity.Property(e => e.IdLlantaAsignacion).HasColumnName("id_llanta_asignacion");
+            entity.Property(e => e.Activa)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("activa");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.EliminadoPor).HasColumnName("eliminado_por");
+            entity.Property(e => e.FechaAsignacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_asignacion");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaEliminacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_eliminacion");
+            entity.Property(e => e.FechaModificacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.FechaRetiro)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_retiro");
+            entity.Property(e => e.IdLlanta).HasColumnName("id_llanta");
+            entity.Property(e => e.IdMotivoRetiro).HasColumnName("id_motivo_retiro");
+            entity.Property(e => e.IdTipoAsignacion).HasColumnName("id_tipo_asignacion");
+            entity.Property(e => e.IdVehiculo).HasColumnName("id_vehiculo");
+            entity.Property(e => e.IdVehiculoEje).HasColumnName("id_vehiculo_eje");
+            entity.Property(e => e.KmVehiculoAsignacion).HasColumnName("km_vehiculo_asignacion");
+            entity.Property(e => e.KmVehiculoRetiro).HasColumnName("km_vehiculo_retiro");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.NumeroPosicion).HasColumnName("numero_posicion");
+            entity.Property(e => e.ObservacionesAsignacion)
+                .HasMaxLength(500)
+                .HasColumnName("observaciones_asignacion");
+            entity.Property(e => e.ObservacionesRetiro)
+                .HasMaxLength(500)
+                .HasColumnName("observaciones_retiro");
+
+            entity.HasOne(d => d.IdLlantaNavigation).WithMany(p => p.LlantaAsignacions)
+                .HasForeignKey(d => d.IdLlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_asignacion_llanta");
+
+            entity.HasOne(d => d.IdMotivoRetiroNavigation).WithMany(p => p.LlantaAsignacions)
+                .HasForeignKey(d => d.IdMotivoRetiro)
+                .HasConstraintName("fk_llanta_asignacion_motivo_retiro");
+
+            entity.HasOne(d => d.IdTipoAsignacionNavigation).WithMany(p => p.LlantaAsignacions)
+                .HasForeignKey(d => d.IdTipoAsignacion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_asignacion_tipo");
+
+            entity.HasOne(d => d.IdVehiculoNavigation).WithMany(p => p.LlantaAsignacions)
+                .HasForeignKey(d => d.IdVehiculo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_asignacion_vehiculo");
+
+            entity.HasOne(d => d.IdVehiculoEjeNavigation).WithMany(p => p.LlantaAsignacions)
+                .HasForeignKey(d => d.IdVehiculoEje)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_asignacion_vehiculo_eje");
+        });
+
+        modelBuilder.Entity<LlantaConclusionInspeccion>(entity =>
+        {
+            entity.HasKey(e => e.IdConclusionInspeccion).HasName("PRIMARY");
+
+            entity.ToTable("llanta_conclusion_inspeccion");
+
+            entity.HasIndex(e => e.Nombre, "uk_llanta_conclusion_inspeccion_nombre").IsUnique();
+
+            entity.Property(e => e.IdConclusionInspeccion).HasColumnName("id_conclusion_inspeccion");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(200)
+                .HasColumnName("descripcion");
+            entity.Property(e => e.EsActivo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<LlantaEstado>(entity =>
+        {
+            entity.HasKey(e => e.IdEstadoLlanta).HasName("PRIMARY");
+
+            entity.ToTable("llanta_estado");
+
+            entity.HasIndex(e => e.Nombre, "uk_llanta_estado_nombre").IsUnique();
+
+            entity.Property(e => e.IdEstadoLlanta).HasColumnName("id_estado_llanta");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(200)
+                .HasColumnName("descripcion");
+            entity.Property(e => e.EsActivo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<LlantaEstadoInspeccion>(entity =>
+        {
+            entity.HasKey(e => e.IdEstadoInspeccion).HasName("PRIMARY");
+
+            entity.ToTable("llanta_estado_inspeccion");
+
+            entity.HasIndex(e => e.Nombre, "uk_llanta_estado_inspeccion_nombre").IsUnique();
+
+            entity.Property(e => e.IdEstadoInspeccion).HasColumnName("id_estado_inspeccion");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(200)
+                .HasColumnName("descripcion");
+            entity.Property(e => e.EsActivo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<LlantaEstadoRenovado>(entity =>
+        {
+            entity.HasKey(e => e.IdEstadoRenovado).HasName("PRIMARY");
+
+            entity.ToTable("llanta_estado_renovado");
+
+            entity.HasIndex(e => e.Nombre, "uk_llanta_estado_renovado_nombre").IsUnique();
+
+            entity.Property(e => e.IdEstadoRenovado).HasColumnName("id_estado_renovado");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(200)
+                .HasColumnName("descripcion");
+            entity.Property(e => e.EsActivo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<LlantaInspeccion>(entity =>
+        {
+            entity.HasKey(e => e.IdLlantaInspeccion).HasName("PRIMARY");
+
+            entity.ToTable("llanta_inspeccion");
+
+            entity.HasIndex(e => e.FechaInspeccion, "idx_llanta_inspeccion_fecha");
+
+            entity.HasIndex(e => e.IdLlantaAsignacion, "idx_llanta_inspeccion_id_asignacion");
+
+            entity.HasIndex(e => e.IdConclusionInspeccion, "idx_llanta_inspeccion_id_conclusion");
+
+            entity.HasIndex(e => e.IdEstadoInspeccion, "idx_llanta_inspeccion_id_estado");
+
+            entity.HasIndex(e => e.IdLlanta, "idx_llanta_inspeccion_id_llanta");
+
+            entity.HasIndex(e => e.IdTipoInspeccion, "idx_llanta_inspeccion_id_tipo");
+
+            entity.HasIndex(e => e.RequiereAccion, "idx_llanta_inspeccion_requiere_accion");
+
+            entity.Property(e => e.IdLlantaInspeccion).HasColumnName("id_llanta_inspeccion");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.EliminadoPor).HasColumnName("eliminado_por");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaEliminacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_eliminacion");
+            entity.Property(e => e.FechaInspeccion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_inspeccion");
+            entity.Property(e => e.FechaModificacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.IdConclusionInspeccion).HasColumnName("id_conclusion_inspeccion");
+            entity.Property(e => e.IdEstadoInspeccion).HasColumnName("id_estado_inspeccion");
+            entity.Property(e => e.IdLlanta).HasColumnName("id_llanta");
+            entity.Property(e => e.IdLlantaAsignacion).HasColumnName("id_llanta_asignacion");
+            entity.Property(e => e.IdTipoInspeccion).HasColumnName("id_tipo_inspeccion");
+            entity.Property(e => e.KilometrajeLlanta).HasColumnName("kilometraje_llanta");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.Observaciones)
+                .HasMaxLength(1000)
+                .HasColumnName("observaciones");
+            entity.Property(e => e.PresionPsi)
+                .HasPrecision(5, 2)
+                .HasColumnName("presion_psi");
+            entity.Property(e => e.ProfundidadMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_mm");
+            entity.Property(e => e.RequiereAccion).HasColumnName("requiere_accion");
+
+            entity.HasOne(d => d.IdConclusionInspeccionNavigation).WithMany(p => p.LlantaInspeccions)
+                .HasForeignKey(d => d.IdConclusionInspeccion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_inspeccion_conclusion");
+
+            entity.HasOne(d => d.IdEstadoInspeccionNavigation).WithMany(p => p.LlantaInspeccions)
+                .HasForeignKey(d => d.IdEstadoInspeccion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_inspeccion_estado");
+
+            entity.HasOne(d => d.IdLlantaNavigation).WithMany(p => p.LlantaInspeccions)
+                .HasForeignKey(d => d.IdLlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_inspeccion_llanta");
+
+            entity.HasOne(d => d.IdLlantaAsignacionNavigation).WithMany(p => p.LlantaInspeccions)
+                .HasForeignKey(d => d.IdLlantaAsignacion)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_llanta_inspeccion_asignacion");
+
+            entity.HasOne(d => d.IdTipoInspeccionNavigation).WithMany(p => p.LlantaInspeccions)
+                .HasForeignKey(d => d.IdTipoInspeccion)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_inspeccion_tipo");
+        });
+
+        modelBuilder.Entity<LlantaMotivoRetiro>(entity =>
+        {
+            entity.HasKey(e => e.IdMotivoRetiro).HasName("PRIMARY");
+
+            entity.ToTable("llanta_motivo_retiro");
+
+            entity.HasIndex(e => e.Nombre, "uk_llanta_motivo_retiro_nombre").IsUnique();
+
+            entity.Property(e => e.IdMotivoRetiro).HasColumnName("id_motivo_retiro");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(200)
+                .HasColumnName("descripcion");
+            entity.Property(e => e.EsActivo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<LlantaRenovado>(entity =>
+        {
+            entity.HasKey(e => e.IdLlantaRenovado).HasName("PRIMARY");
+
+            entity.ToTable("llanta_renovado");
+
+            entity.HasIndex(e => e.FechaEnvio, "idx_llanta_renovado_fecha_envio");
+
+            entity.HasIndex(e => e.IdEstadoRenovado, "idx_llanta_renovado_id_estado");
+
+            entity.HasIndex(e => e.IdLlanta, "idx_llanta_renovado_id_llanta");
+
+            entity.HasIndex(e => new { e.IdLlanta, e.NumeroRenovado }, "uk_llanta_renovado_numero").IsUnique();
+
+            entity.Property(e => e.IdLlantaRenovado).HasColumnName("id_llanta_renovado");
+            entity.Property(e => e.CostoRenovado)
+                .HasPrecision(12, 2)
+                .HasColumnName("costo_renovado");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.EliminadoPor).HasColumnName("eliminado_por");
+            entity.Property(e => e.EsInterno).HasColumnName("es_interno");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaEliminacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_eliminacion");
+            entity.Property(e => e.FechaEnvio)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_envio");
+            entity.Property(e => e.FechaLiberacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_liberacion");
+            entity.Property(e => e.FechaModificacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.FechaRecepcion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_recepcion");
+            entity.Property(e => e.GarantiaHasta).HasColumnName("garantia_hasta");
+            entity.Property(e => e.IdEstadoRenovado).HasColumnName("id_estado_renovado");
+            entity.Property(e => e.IdLlanta).HasColumnName("id_llanta");
+            entity.Property(e => e.KilometrajeRenovado).HasColumnName("kilometraje_renovado");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.NumeroRenovado).HasColumnName("numero_renovado");
+            entity.Property(e => e.Observaciones)
+                .HasMaxLength(1000)
+                .HasColumnName("observaciones");
+            entity.Property(e => e.ProfundidadFinalMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_final_mm");
+            entity.Property(e => e.ProfundidadInicialMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_inicial_mm");
+            entity.Property(e => e.Referencia)
+                .HasMaxLength(100)
+                .HasColumnName("referencia");
+
+            entity.HasOne(d => d.IdEstadoRenovadoNavigation).WithMany(p => p.LlantaRenovados)
+                .HasForeignKey(d => d.IdEstadoRenovado)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_renovado_estado");
+
+            entity.HasOne(d => d.IdLlantaNavigation).WithMany(p => p.LlantaRenovados)
+                .HasForeignKey(d => d.IdLlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_renovado_llanta");
+        });
+
+        modelBuilder.Entity<LlantaTipoAsignacion>(entity =>
+        {
+            entity.HasKey(e => e.IdTipoAsignacion).HasName("PRIMARY");
+
+            entity.ToTable("llanta_tipo_asignacion");
+
+            entity.HasIndex(e => e.Nombre, "uk_llanta_tipo_asignacion_nombre").IsUnique();
+
+            entity.Property(e => e.IdTipoAsignacion).HasColumnName("id_tipo_asignacion");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(200)
+                .HasColumnName("descripcion");
+            entity.Property(e => e.EsActivo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<LlantaTipoInspeccion>(entity =>
+        {
+            entity.HasKey(e => e.IdTipoInspeccion).HasName("PRIMARY");
+
+            entity.ToTable("llanta_tipo_inspeccion");
+
+            entity.HasIndex(e => e.Nombre, "uk_llanta_tipo_inspeccion_nombre").IsUnique();
+
+            entity.Property(e => e.IdTipoInspeccion).HasColumnName("id_tipo_inspeccion");
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(200)
+                .HasColumnName("descripcion");
+            entity.Property(e => e.EsActivo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<Llantum>(entity =>
+        {
+            entity.HasKey(e => e.IdLlanta).HasName("PRIMARY");
+
+            entity.ToTable("llanta");
+
+            entity.HasIndex(e => e.Eliminado, "idx_llanta_eliminado");
+
+            entity.HasIndex(e => e.IdDeposito, "idx_llanta_id_deposito");
+
+            entity.HasIndex(e => e.IdEstadoLlanta, "idx_llanta_id_estado");
+
+            entity.HasIndex(e => e.CodigoLlanta, "uk_llanta_codigo").IsUnique();
+
+            entity.HasIndex(e => e.NumeroSerieDot, "uk_llanta_numero_serie_dot").IsUnique();
+
+            entity.Property(e => e.IdLlanta).HasColumnName("id_llanta");
+            entity.Property(e => e.CodigoLlanta)
+                .HasMaxLength(30)
+                .HasColumnName("codigo_llanta");
+            entity.Property(e => e.CostoAdquisicion)
+                .HasPrecision(18, 2)
+                .HasColumnName("costo_adquisicion");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.Eliminado).HasColumnName("eliminado");
+            entity.Property(e => e.EliminadoPor).HasColumnName("eliminado_por");
+            entity.Property(e => e.FechaAdquisicion).HasColumnName("fecha_adquisicion");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaEliminacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_eliminacion");
+            entity.Property(e => e.FechaFabricacion).HasColumnName("fecha_fabricacion");
+            entity.Property(e => e.FechaModificacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
+            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
+            entity.Property(e => e.IdEstadoLlanta).HasColumnName("id_estado_llanta");
+            entity.Property(e => e.IdModeloLlanta).HasColumnName("id_modelo_llanta");
+            entity.Property(e => e.IdPlanta).HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion).HasColumnName("id_region");
+            entity.Property(e => e.IdZona).HasColumnName("id_zona");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.MotivoEliminacion)
+                .HasMaxLength(250)
+                .HasColumnName("motivo_eliminacion");
+            entity.Property(e => e.NumeroSerieDot)
+                .HasMaxLength(30)
+                .HasColumnName("numero_serie_dot");
+            entity.Property(e => e.Observaciones)
+                .HasMaxLength(500)
+                .HasColumnName("observaciones");
+            entity.Property(e => e.PresionMaximaPsi)
+                .HasPrecision(5, 2)
+                .HasColumnName("presion_maxima_psi");
+            entity.Property(e => e.PresionMinimaPsi)
+                .HasPrecision(5, 2)
+                .HasColumnName("presion_minima_psi");
+            entity.Property(e => e.ProfundidadOriginalMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_original_mm");
+            entity.Property(e => e.VidaUtilEstimadaKm).HasColumnName("vida_util_estimada_km");
+
+            entity.HasOne(d => d.IdEstadoLlantaNavigation).WithMany(p => p.Llanta)
+                .HasForeignKey(d => d.IdEstadoLlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_llanta_estado");
+        });
+
         modelBuilder.Entity<Logcancelacionviaje>(entity =>
         {
             entity.HasKey(e => e.Idlogcancelacionviajes).HasName("PRIMARY");
@@ -2844,13 +3260,14 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<ModelsStoredsProcedures.ModelRutaConfiguracion>(entity =>
 
-        {
+         {
 
-        entity.HasNoKey();
+            entity.HasNoKey();
 
-        entity.ToView(null);
+            entity.ToView(null);
 
         });
+
 
         modelBuilder.Entity<Monedero>(entity =>
         {
@@ -4318,6 +4735,15 @@ public partial class SuvanDbContext : DbContext
                 .HasMaxLength(50)
                 .IsFixedLength()
                 .HasColumnName("descripcion");
+            entity.Property(e => e.EsActivo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_activo");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(50)
+                .HasColumnName("nombre");
+            entity.Property(e => e.NumeroEje).HasColumnName("numero_eje");
+            entity.Property(e => e.NumeroPosiciones).HasColumnName("numero_posiciones");
         });
 
         modelBuilder.Entity<TipoMantenimiento>(entity =>
