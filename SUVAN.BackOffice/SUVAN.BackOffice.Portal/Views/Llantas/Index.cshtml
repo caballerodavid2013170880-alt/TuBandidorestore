@@ -29,9 +29,12 @@
             <!--end::Page title-->
             <!--begin::Actions-->
             <div class="d-flex align-items-center gap-2 gap-lg-3">
-                <button type="button" class="btn btn-flex btn-outline btn-color-gray-700 btn-active-color-primary bg-body h-40px fs-7 fw-bold" disabled>
-                    Agregar Llanta
-                </button>
+                @if (permisosPagina.Agregar)
+                {
+                    <a asp-controller="Llantas" asp-action="Crear" class="btn btn-flex btn-primary h-40px fs-7 fw-bold">
+                        Nueva llanta
+                    </a>
+                }
             </div>
             <!--end::Actions-->
         </div>
@@ -43,6 +46,7 @@
 
 <!--begin::Content-->
 <div id="kt_app_content" class="app-content flex-column-fluid">
+    <input type="hidden" id="mensajeTempData" value="@TempData["Mensaje"]" />
     <!--begin::Content container-->
     <div id="kt_app_content_container" class="app-container container-fluid">
         <!--begin::Card-->
@@ -113,7 +117,7 @@
 </div>
 <!--end::Content-->
 
-@section scripts {
+@section Scripts {
     <script src="~/js/administrativo/llantas/table.js" asp-append-version="true"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>

@@ -1,9 +1,13 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using SUVAN.BackOffice.Portal.Helper;
 using SUVAN.BackOffice.Service.Administrativo;
+using System.Security.Claims;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
+    [Authorize]
     [Route("ModuloAdministrativo/Llantas")]
     public class LlantasController : Controller
     {
@@ -21,6 +25,40 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             var llantas = await llantaService.GetLlantas(User.GetEmpresaId());
             return View(llantas);
+        }
+
+        [HttpGet("~/llantas/crear")]
+        public async Task<IActionResult> Crear()
+        {
+            var model = await llantaService.GetCrearViewModel(User.GetEmpresaId(), User.GetNombreEmpresa());
+            return View(model);
+        }
+
+        [HttpPost("~/llantas/crear")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Crear(LlantaCrearViewModel model)
+        {
+            try
+            {
+                var idEmpresa = User.GetEmpresaId();
+                var idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+
+                if (!ModelState.IsValid)
+                {
+                    var recargar = await llantaService.GetCrearViewModel(idEmpresa, User.GetNombreEmpresa(), model);
+                    return View(recargar);
+                }
+
+                await llantaService.CrearLlanta(model, idEmpresa, idUsuario);
+                TempData["Mensaje"] = "Llanta registrada correctamente.";
+                return RedirectToAction("Index", "Llantas");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                var recargar = await llantaService.GetCrearViewModel(User.GetEmpresaId(), User.GetNombreEmpresa(), model);
+                return View(recargar);
+            }
         }
     }
 }

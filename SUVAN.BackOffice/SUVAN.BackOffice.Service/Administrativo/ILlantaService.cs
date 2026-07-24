@@ -5,5 +5,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
     public interface ILlantaService
     {
         Task<List<LlantaViewModel>> GetLlantas(int idEmpresa);
+        Task<LlantaCrearViewModel> GetCrearViewModel(int idEmpresa, string nombreEmpresa, LlantaCrearViewModel? model = null);
+        Task<bool> CrearLlanta(LlantaCrearViewModel model, int idEmpresa, int idUsuario);
     }
 }

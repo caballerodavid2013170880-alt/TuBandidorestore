@@ -31,8 +31,6 @@ public partial class Empresa
 
     public virtual ICollection<Deposito> Depositos { get; set; } = new List<Deposito>();
 
-    public virtual ICollection<Depositosdisponible> Depositosdisponibles { get; set; } = new List<Depositosdisponible>();
-
     public virtual ICollection<Depto> Deptos { get; set; } = new List<Depto>();
 
     public virtual Regimenfiscalreceptor? IdregimenfiscalNavigation { get; set; }

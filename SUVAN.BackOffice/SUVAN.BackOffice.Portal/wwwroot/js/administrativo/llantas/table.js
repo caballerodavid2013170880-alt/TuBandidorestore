@@ -20,6 +20,24 @@ var KTDatatablesLlantas = function () {
         });
     };
 
+    var handleSuccessMessage = function () {
+        const mensaje = document.querySelector("#mensajeTempData");
+
+        if (!mensaje || !mensaje.value) {
+            return;
+        }
+
+        Swal.fire({
+            text: mensaje.value,
+            icon: "success",
+            buttonsStyling: false,
+            confirmButtonText: "Aceptar",
+            customClass: {
+                confirmButton: "btn btn-primary"
+            }
+        });
+    };
+
     return {
         init: function () {
             table = document.querySelector("#kt_table_llantas");
@@ -30,6 +48,7 @@ var KTDatatablesLlantas = function () {
 
             initDatatable();
             handleSearchDatatable();
+            handleSuccessMessage();
         }
     };
 }();

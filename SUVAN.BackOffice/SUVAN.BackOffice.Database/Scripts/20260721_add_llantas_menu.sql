@@ -13,6 +13,12 @@ UPDATE menu
 SET ruta = '/ModuloAdministrativo/Llantas'
 WHERE idmenu = @menu_id;
 
+UPDATE permiso
+SET agregar = 1,
+    ejecutar = 1,
+    activo = 1
+WHERE menu_idmenu = @menu_id;
+
 INSERT INTO permiso (
     perfil_idperfil,
     menu_idmenu,
@@ -26,7 +32,7 @@ INSERT INTO permiso (
 SELECT
     p.perfil_idperfil,
     @menu_id,
-    0,
+    1,
     0,
     0,
     1,
