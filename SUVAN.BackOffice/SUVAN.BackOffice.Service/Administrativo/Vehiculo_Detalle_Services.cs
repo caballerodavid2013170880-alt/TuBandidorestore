@@ -374,5 +374,60 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return resultado;
         }
 
+
+        //endpoints de cascada de Jerarquia Region -> Planta -> Zona -> Deposito
+        public async Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetRegionesPorEmpresa(int idEmpresa)
+        {
+            return await context.Regions
+                .Where(r => r.IdEmpresa == idEmpresa)
+                .OrderBy(r => r.NombreRegion)
+                .Select(r => new VehiculoDetalleViewModel.CatalogItemViewModel
+                {
+                    Id = r.IdRegion,
+                    Nombre = r.NombreRegion
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetPlantasPorRegion(int idEmpresa, int idRegion)
+        {
+            return await context.Planta
+                .Where(p => p.IdEmpresa == idEmpresa && p.IdRegion == idRegion)
+                .OrderBy(p => p.NombrePlanta)
+                .Select(p => new VehiculoDetalleViewModel.CatalogItemViewModel
+                {
+                    Id = p.IdPlanta,
+                    Nombre = p.NombrePlanta
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetZonasPorPlanta(int idEmpresa, int idRegion, int idPlanta)
+        {
+            return await context.Zonas
+                .Where(z => z.IdEmpresa == idEmpresa && z.IdRegion == idRegion && z.IdPlanta == idPlanta)
+                .OrderBy(z => z.NombreZona)
+                .Select(z => new VehiculoDetalleViewModel.CatalogItemViewModel
+                {
+                    Id = z.IdZona,
+                    Nombre = z.NombreZona
+                })
+                .ToListAsync();
+        }
+
+
+        public async Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetDepositosPorZona(int idEmpresa, int idRegion, int idPlanta, int idZona)
+        {
+            return await context.Depositos
+                .Where(d => d.IdEmpresa == idEmpresa && d.IdRegion == idRegion && d.IdPlanta == idPlanta && d.IdZona == idZona)
+                .OrderBy(d => d.NombreDeposito)
+                .Select(d => new VehiculoDetalleViewModel.CatalogItemViewModel
+                {
+                    Id = d.IdDeposito,
+                    Nombre = d.NombreDeposito
+                })
+                .ToListAsync();
+        }
+
     }
 }

@@ -20,9 +20,20 @@
     </div>
     <div class="card-body py-2">
         <div class="row">
-            <div class="col-sm-3 mb-2">
+            <!--1.Región-->
+            <div class="col-sm-3 mb-3">
                 <div class="fv-row mb-2">
-                    <label asp-for="IdZona" class="col-form-label text-gray-600 required">Zona</label>
+                    <label asp-for="IdRegion" class="col-form-label text-gray-600 required">Región</label>
+                    <select id="selectIdRegion" name="IdRegion" class="form-select form-select-sm bg-transparent">
+                        <option value="">Seleccione una región</option>
+                        
+                    </select>
+                    <span asp-validation-for="IdRegion" class="invalid-feedback d-block"></span>
+                </div>
+            </div>
+            @* <div class="col-sm-3 mb-3">
+                <div class="fv-row mb-2">
+                    <label asp-for="IdRegion" class="col-form-label text-gray-600 required">Región</label>
                     <div class="input-group input-group-sm">
                         <input type="text" value="@Model.NombreZona" class="form-control form-control-sm bg-transparent bg-light text-muted" placeholder="Zona" data-catalog-for="IdZona" readonly disabled />
                         <span class="input-group-text" style="cursor:pointer;">
@@ -32,8 +43,46 @@
                     <input asp-for="IdZona" type="hidden" id="IdZona" name="IdZona" />
                     <span asp-validation-for="IdZona" class="invalid-feedback d-block"></span>
                 </div>
+            </div> *@
+
+            <!-- 2. Planta-->
+            <div class="col-sm-3 mb-3">
+                <div class="fv-row mb-2">
+                    <label asp-for="IdPlanta" class="col-form-label text-gray-600 required">Planta</label>
+                    <select id="selectIdPlanta" name="IdPlanta" class="form-select form-select-sm bg-transparent">
+                        <option value="">Seleccione una planta</option>
+
+                    </select>
+                    <span asp-validation-for="IdPlanta" class="invalid-feedback d-block"></span>
+                </div>
             </div>
-            <div class="col-sm-3 mb-2">
+
+            <!-- 3.Zona-->
+            <div class="col-sm-3 mb-3">
+                <div class="fv-row mb-2">
+                    <label asp-for="IdZona" class="col-form-label text-gray-600 required">Zona</label>
+                    <select id="selectIdZona" name="IdZona" class="form-select form-select-sm bg-transparent">
+                        <option value="">Seleccione una Zona</option>
+
+                    </select>
+                    <span asp-validation-for="IdZona" class="invalid-feedback d-block"></span>
+                </div>
+            </div>
+
+
+            <!-- 4.Deposito-->
+            <div class="col-sm-3 mb-3">
+                <div class="fv-row mb-2">
+                    <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Deposito</label>
+                    <select id="selectIdDeposito" name="IdDeposito" class="form-select form-select-sm bg-transparent">
+                        <option value="">Seleccione un Depósito</option>
+
+                    </select>
+                    <span asp-validation-for="IdDeposito" class="invalid-feedback d-block"></span>
+                </div>
+            </div>
+
+            @* <div class="col-sm-3 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Depósito</label>
                     <div class="input-group input-group-sm">
@@ -45,7 +94,13 @@
                     <input asp-for="IdDeposito" type="hidden" id="IdDeposito" name="IdDeposito" />
                     <span asp-validation-for="IdDeposito" class="invalid-feedback d-block"></span>
                 </div>
-            </div>
+            </div> *@
+
+
+
+
+
+
             <div class="col-sm-2 mb-2">
                 <div class="fv-row mb-2">
                     <label asp-for="CopiaFactura" class="col-form-label text-gray-600 required d-block">Copia de Factura</label>

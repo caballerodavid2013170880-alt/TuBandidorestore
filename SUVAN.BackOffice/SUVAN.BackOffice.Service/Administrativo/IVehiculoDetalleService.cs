@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Models.ViewModel.Administrativo;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
@@ -39,6 +40,12 @@ namespace SUVAN.BackOffice.Service.Administrativo
         Task<List<VehiculoDetalleViewModel>> ObtenerDetalleModal(int idVehiculoDetalle);
 
         Task<List<VehiculoEspecificacionesViewModel>> ObtenerEspecifiPorMarcaModelo(int IdMarca, int IdModelo);
+
+        //Metodos para la cascada de Jerarquia Region -> Planta -> Zona -> Deposito
+        Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetRegionesPorEmpresa(int idEmpresa);
+        Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetPlantasPorRegion(int idEmpresa, int idRegion);
+        Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetZonasPorPlanta(int idEmpresa, int idRegion,int idPlanta);
+        Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetDepositosPorZona(int idEmpresa, int idRegion, int idPlanta, int idZona);
     }
 
 }

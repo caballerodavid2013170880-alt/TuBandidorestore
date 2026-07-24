@@ -22,6 +22,10 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public string? NombreTipoV { get; set; } = null!;
         public short? IdMarca { get; set; }
         public string? DescripcionMarca { get; set; }
+        public int? IdRegion { get; set; }
+        public string? NombreRegion { get; set; }
+        public int? IdPlanta { get; set; }
+        public string? NombrePlanta { get; set; }
         public int? IdZona { get; set; }
         public string? NombreZona { get; set; }
         public int? IdDeposito { get; set; }
@@ -93,11 +97,17 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public List<CausaBajaViewModel> CausaBaja { get; set; } = new();
 
-        public List<ZonaViewModel> Zonas { get; set; } = new();
+        //public List<ZonaViewModel> Zonas { get; set; } = new();
 
         public List<VehiViewModel> Vehiculos { get; set; } = new();
 
         public List<ModeloDetalleViewModel> Detalle { get; set; } = new();
+        
+        //lista de catalogos para cascada
+        public List<CatalogItemViewModel> Regiones { get; set; } = new();
+        public List<CatalogItemViewModel> Plantas { get; set; } = new();
+        public List<CatalogItemViewModel> Zonas { get; set; }=new();
+        public List<CatalogItemViewModel> Depositos { get; set; } = new();
 
         public class VehiViewModel {
 
@@ -204,6 +214,13 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public string? NumeroMotor { get; set; } = null!;
 
             public DateTime? FechaCompra { get; set; }
+        }
+
+        // Clase para representar CatalogItemViewModel
+        public class CatalogItemViewModel
+        {
+            public int Id { get; set; }
+            public string Nombre { get; set; } = null!;
         }
 
     }

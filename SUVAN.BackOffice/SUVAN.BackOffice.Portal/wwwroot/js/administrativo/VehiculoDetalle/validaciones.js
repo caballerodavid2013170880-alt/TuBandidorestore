@@ -565,6 +565,129 @@
         });
     };
 
+
+    //funcion cascada
+    const handleCascadaSelects = () => {
+        
+        const selectRegion = document.getElementById('selectIdRegion');
+        const selectPlanta = document.getElementById('selectIdPlanta');
+        const selectZona = document.getElementById('selectIdZona');
+        const selectDeposito = document.getElementById('selectIdDeposito');
+
+        //carga regiones al iniciar la pagina
+        if (selectRegion) {
+            fetch('/VehiculoDetalle/GetRegiones', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                selectRegion.innerHTML = '<option value="0">Selecciona una Región</option>';
+                data.forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.nombre
+                    selectRegion.appendChild(option);
+                });
+            })
+            .catch (error =>console.error('Error al cargar Regiones',error));
+        }
+
+        //Evento region -> carga plantas
+        if (selectRegion && selectPlanta) {
+            selectRegion.addEventListener('change', function () {
+                const idRegion = this.value;
+
+                // limpia y resetea r selects dependientes
+                selectPlanta.innerHTML = '<option value="0">Selecciona una Planta</option>';
+                selectPlanta.value = '0';
+                if (selectZona) {
+                    selectZona.innerHTML = '<option value="0">Selecciona una Zona</option>';
+                }
+                if (selectDeposito) {
+                    selectDeposito.innerHTML = '<option value="0">Selecciona un Depósito</option>';
+                    selectDeposito.value = '0';
+                }
+
+
+
+                if (idRegion && idRegion !== '0') {
+                    fetch(`/VehiculoDetalle/GetPlantasPorRegion?idRegion=${idRegion}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.id;
+                                option.textContent = item.nombre;
+                                selectPlanta.appendChild(option);
+                            });
+                        })
+                        .catch(error => console.error('Error al cargar plantas:', error));
+                }
+            });
+        }
+
+        //evento planta -> carga zonas
+        if (selectPlanta && selectZona) {
+            selectPlanta.addEventListener('change', function () {
+                const idPlanta = this.value;
+                const idRegion = selectRegion ? selectRegion.value : 0;
+
+                selectZona.innerHTML = '<option value="0">Selecciona una Zona</option>';
+                selectZona.value = '0';
+                if (selectDeposito) {
+                    selectDeposito.innerHTML = '<option value="0">Selecciona un Depósito</option>';
+                    selectDeposito.value = '0';
+                }
+
+                if (idPlanta && idPlanta !== '0') {
+                    fetch(`/VehiculoDetalle/GetZonasPorPlanta?idRegion=${idRegion}&idPlanta=${idPlanta}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.id;
+                                option.textContent = item.nombre;
+                                selectZona.appendChild(option);
+                            });
+
+                        })
+                        .catch(error => console.error('Error al cargar zonas:', error));
+                }
+            });
+        }
+
+        //evento zona -> carga depositos
+        if (selectZona && selectDeposito) {
+            selectZona.addEventListener('change', function () {
+                const idZona = this.value;
+                const idRegion = selectRegion ? selectRegion.value : 0;
+                const idPlanta = selectPlanta ? selectPlanta.value : 0;
+
+                selectDeposito.innerHTML = '<option value="0">Selecciona un Depósito</option>';
+                selectDeposito.value = '0';
+
+                if (idZona && idZona !== '0') {
+                    fetch(`/VehiculoDetalle/GetDepositosPorZona?idRegion=${idRegion}&idPlanta=${idPlanta}&idZona=${idZona}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.forEach(item => {
+                                const option = document.createElement('option');
+                                option.value = item.id;
+                                option.textContent = item.nombre;
+                                selectDeposito.appendChild(option);
+                            });
+                        })
+                        .catch(error => console.error('Error al cargar depósitos:', error));
+                }
+            });
+        }
+    };
+
+    
+
     function flatpickrFecha(campo) {
         const visible = document.getElementById(campo + 'Visible');
         const hidden = document.getElementById(campo);
@@ -622,6 +745,7 @@
             initAutoNumeric();
             handleValidation();
             handleNextTabValidation();
+            handleCascadaSelects();
             handleSubmitValidation();
         }
     };
