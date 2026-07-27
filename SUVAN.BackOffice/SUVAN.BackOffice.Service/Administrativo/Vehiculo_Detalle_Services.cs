@@ -163,14 +163,32 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 vehiculo = new VehiculoDetalle();
             }
 
+
+
+            //comentada seccion de validacion de VIN por error al guardado 
+
+            //// Valida si el Detalle Vehiculo teien el mismo Carroceria/VIN en la misma empresa
+            //var vehiculoExistente = await context.VehiculoDetalles.FirstOrDefaultAsync(x =>
+            //    x.Carroceria!.Trim().ToLower() == model.Carroceria!.Trim().ToLower() &&
+            //    // 1407 / //1407 Evita conflictos con Depositosdisponibles x.IdDepositoNavigation.IdEmpresa == IdEmpresa &&
+            //    x.IdVehiculoDetalle != model.IdVehiculoDetalle);
+
+            //if (vehiculoExistente is not null)
+            //    throw new Exception("Ya existe un Vehiculo con el mismo VIN");
+
+
             // Valida si el Detalle Vehiculo teien el mismo Carroceria/VIN en la misma empresa
-            var vehiculoExistente = await context.VehiculoDetalles.FirstOrDefaultAsync(x =>
-                x.Carroceria!.Trim().ToLower() == model.Carroceria!.Trim().ToLower() &&
-                // 1407 / //1407 Evita conflictos con Depositosdisponibles x.IdDepositoNavigation.IdEmpresa == IdEmpresa &&
-                x.IdVehiculoDetalle != model.IdVehiculoDetalle);
+            var vehiculoExistente = await context.VehiculoDetalles
+                .Include(x => x.IdDepositoNavigation)//se incluye la relacion para validar empresa
+                .FirstOrDefaultAsync(x =>
+                    x.Carroceria != null &&
+                    model.Carroceria != null &&
+                    x.Carroceria.Trim().ToLower() == model.Carroceria.Trim().ToLower() &&
+                    x.IdVehiculoDetalle != model.IdVehiculoDetalle);
 
             if (vehiculoExistente is not null)
                 throw new Exception("Ya existe un Vehiculo con el mismo VIN");
+
 
             vehiculo.IdVehiculo = model.IdVehiculo;
             vehiculo.IdTipoVehiculo = model.IdTipoVehiculo;
@@ -214,11 +232,17 @@ namespace SUVAN.BackOffice.Service.Administrativo
             vehiculo.PesoMaximo = model.PesoMaximo;
             vehiculo.VolumenMinimo = model.VolumenMinimo;
             vehiculo.VolumenMaximo = model.VolumenMaximo;
-            vehiculo.TipoLicenciaRequerida = model.TipoLicenciaRequerida;
+            //Validacion a 3 caracteres en tipo de licencia
+            vehiculo.TipoLicenciaRequerida = !string.IsNullOrEmpty( model.TipoLicenciaRequerida) && model.TipoLicenciaRequerida.Length > 3
+                ? model.TipoLicenciaRequerida.Substring(0,3)
+                : model.TipoLicenciaRequerida;
             vehiculo.PermisoCargaAceite = model.PermisoCargaAceite;
             vehiculo.VigenciaPermisoAceite = model.VigenciaPermisoAceite;
             vehiculo.VigenciaTarjetaCirculacion = model.VigenciaTarjetaCirculacion;
-            vehiculo.UsuarioCaptura = Usuario;
+            // Validación para limitar la longitud del nombre de usuario a 20 caracteres
+            vehiculo.UsuarioCaptura = !String.IsNullOrEmpty(Usuario) && Usuario.Length > 20
+                ? Usuario.Substring(0, 20)
+                :Usuario;
 
             if (model.IdVehiculoDetalle > 0)
             {

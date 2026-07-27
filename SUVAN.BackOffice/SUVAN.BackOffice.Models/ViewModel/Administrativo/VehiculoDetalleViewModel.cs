@@ -81,6 +81,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public float? VolumenMaximo { get; set; }
 
         // Licencia y permisos
+        [StringLength(3, ErrorMessage ="El tipo de licencia no puede superar los 3 caracteres.")]
         public string? TipoLicenciaRequerida { get; set; } = null!;
         public ulong? PermisoCargaAceite { get; set; }
         public DateTime? VigenciaPermisoAceite { get; set; }
