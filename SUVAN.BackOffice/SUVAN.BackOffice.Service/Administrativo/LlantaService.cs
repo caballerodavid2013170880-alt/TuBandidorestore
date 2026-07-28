@@ -144,6 +144,41 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return vRet;
         }
 
+        public async Task<LlantaCrearViewModel?> GetEditarViewModel(ulong idLlanta, int idEmpresa, string nombreEmpresa)
+        {
+            var llanta = await context.Llanta
+                .AsNoTracking()
+                .Include(x => x.IdModeloLlantaNavigation)
+                .FirstOrDefaultAsync(x => x.IdLlanta == idLlanta
+                                       && !x.Eliminado
+                                       && x.IdEmpresa == (uint)idEmpresa);
+
+            if (llanta == null)
+            {
+                return null;
+            }
+
+            var model = new LlantaCrearViewModel
+            {
+                IdLlanta = llanta.IdLlanta,
+                CodigoLlanta = llanta.CodigoLlanta,
+                NumeroSerieDot = llanta.NumeroSerieDot,
+                IdMarcaLlanta = (int)llanta.IdModeloLlantaNavigation.IdMarcaLlanta,
+                IdModeloLlanta = (int)llanta.IdModeloLlanta,
+                IdEstadoLlanta = llanta.IdEstadoLlanta,
+                IdRegion = (int)(llanta.IdRegion ?? 0),
+                IdPlanta = (int)(llanta.IdPlanta ?? 0),
+                IdZona = (int)(llanta.IdZona ?? 0),
+                IdDeposito = (int)(llanta.IdDeposito ?? 0),
+                FechaFabricacion = llanta.FechaFabricacion.HasValue ? llanta.FechaFabricacion.Value.ToDateTime(TimeOnly.MinValue) : null,
+                CostoAdquisicion = llanta.CostoAdquisicion,
+                FechaAdquisicion = llanta.FechaAdquisicion.HasValue ? llanta.FechaAdquisicion.Value.ToDateTime(TimeOnly.MinValue) : null,
+                Observaciones = llanta.Observaciones
+            };
+
+            return await GetCrearViewModel(idEmpresa, nombreEmpresa, model);
+        }
+
         public async Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetModelosPorMarca(int idMarcaLlanta)
         {
             return await context.LlantaModelos
@@ -182,16 +217,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         {
             ValidarDatosCaptura(model);
 
-            bool codigoDuplicado = await context.Llanta
-                .AnyAsync(x => !x.Eliminado && x.CodigoLlanta.Trim().ToLower() == model.CodigoLlanta.Trim().ToLower());
-            if (codigoDuplicado)
-                throw new Exception("Ya existe una llanta con el mismo código.");
-
-            bool serieDuplicada = await context.Llanta
-                .AnyAsync(x => !x.Eliminado && x.NumeroSerieDot.Trim().ToLower() == model.NumeroSerieDot.Trim().ToLower());
-            if (serieDuplicada)
-                throw new Exception("Ya existe una llanta con el mismo número de serie / DOT.");
-
+            await ValidarDuplicados(model);
             await ValidarJerarquia(model, idEmpresa);
             await ValidarCatalogos(model);
 
@@ -221,6 +247,43 @@ namespace SUVAN.BackOffice.Service.Administrativo
             };
 
             context.Llanta.Add(llanta);
+            await context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ActualizarLlanta(LlantaCrearViewModel model, int idEmpresa, int idUsuario)
+        {
+            if (model.IdLlanta == 0)
+                throw new Exception("No se encontró la llanta a editar.");
+
+            ValidarDatosCaptura(model);
+            await ValidarDuplicados(model);
+            await ValidarJerarquia(model, idEmpresa);
+            await ValidarCatalogos(model);
+
+            var llanta = await context.Llanta
+                .FirstOrDefaultAsync(x => x.IdLlanta == model.IdLlanta
+                                       && !x.Eliminado
+                                       && x.IdEmpresa == (uint)idEmpresa);
+
+            if (llanta == null)
+                throw new Exception("No se encontró la llanta o no pertenece a su empresa.");
+
+            llanta.CodigoLlanta = model.CodigoLlanta.Trim();
+            llanta.NumeroSerieDot = model.NumeroSerieDot.Trim();
+            llanta.IdModeloLlanta = (uint)model.IdModeloLlanta;
+            llanta.IdEstadoLlanta = (ushort)model.IdEstadoLlanta;
+            llanta.IdRegion = (uint)model.IdRegion;
+            llanta.IdPlanta = (uint)model.IdPlanta;
+            llanta.IdZona = (uint)model.IdZona;
+            llanta.IdDeposito = (uint)model.IdDeposito;
+            llanta.FechaFabricacion = model.FechaFabricacion.HasValue ? DateOnly.FromDateTime(model.FechaFabricacion.Value) : null;
+            llanta.CostoAdquisicion = model.CostoAdquisicion;
+            llanta.FechaAdquisicion = DateOnly.FromDateTime(model.FechaAdquisicion!.Value);
+            llanta.Observaciones = string.IsNullOrWhiteSpace(model.Observaciones) ? null : model.Observaciones.Trim();
+            llanta.FechaModificacion = DateTime.Now;
+            llanta.ModificadoPor = (uint)idUsuario;
+
             await context.SaveChangesAsync();
             return true;
         }
@@ -260,6 +323,26 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
             if (model.FechaFabricacion.HasValue && model.FechaAdquisicion.HasValue && model.FechaFabricacion.Value.Date > model.FechaAdquisicion.Value.Date)
                 throw new Exception("La fecha de fabricación no puede ser posterior a la fecha de adquisición.");
+        }
+
+        private async Task ValidarDuplicados(LlantaCrearViewModel model)
+        {
+            var codigo = model.CodigoLlanta.Trim().ToLower();
+            var serie = model.NumeroSerieDot.Trim().ToLower();
+
+            bool codigoDuplicado = await context.Llanta
+                .AnyAsync(x => !x.Eliminado
+                            && x.IdLlanta != model.IdLlanta
+                            && x.CodigoLlanta.Trim().ToLower() == codigo);
+            if (codigoDuplicado)
+                throw new Exception("Ya existe una llanta con el mismo código.");
+
+            bool serieDuplicada = await context.Llanta
+                .AnyAsync(x => !x.Eliminado
+                            && x.IdLlanta != model.IdLlanta
+                            && x.NumeroSerieDot.Trim().ToLower() == serie);
+            if (serieDuplicada)
+                throw new Exception("Ya existe una llanta con el mismo número de serie / DOT.");
         }
 
         private async Task ValidarCatalogos(LlantaCrearViewModel model)

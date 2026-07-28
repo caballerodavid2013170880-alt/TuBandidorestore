@@ -61,6 +61,48 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
         }
 
+        [HttpGet("~/llantas/editar/{id}")]
+        public async Task<IActionResult> Editar(ulong id)
+        {
+            var model = await llantaService.GetEditarViewModel(id, User.GetEmpresaId(), User.GetNombreEmpresa());
+            if (model == null)
+            {
+                TempData["Mensaje"] = "No se encontró la llanta solicitada.";
+                return RedirectToAction("Index", "Llantas");
+            }
+
+            return View("Crear", model);
+        }
+
+        [HttpPost("~/llantas/editar/{id}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Editar(ulong id, LlantaCrearViewModel model)
+        {
+            try
+            {
+                var idEmpresa = User.GetEmpresaId();
+                var idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                model.IdLlanta = id;
+
+                if (!ModelState.IsValid)
+                {
+                    var recargar = await llantaService.GetCrearViewModel(idEmpresa, User.GetNombreEmpresa(), model);
+                    return View("Crear", recargar);
+                }
+
+                await llantaService.ActualizarLlanta(model, idEmpresa, idUsuario);
+                TempData["Mensaje"] = "Llanta actualizada correctamente.";
+                return RedirectToAction("Index", "Llantas");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, ex.Message);
+                model.IdLlanta = id;
+                var recargar = await llantaService.GetCrearViewModel(User.GetEmpresaId(), User.GetNombreEmpresa(), model);
+                return View("Crear", recargar);
+            }
+        }
+
         [HttpGet("~/llantas/modelos-por-marca")]
         public async Task<IActionResult> GetModelosPorMarca(int idMarcaLlanta)
         {

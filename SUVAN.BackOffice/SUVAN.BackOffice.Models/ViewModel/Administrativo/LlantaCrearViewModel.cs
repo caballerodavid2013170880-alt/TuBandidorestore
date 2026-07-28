@@ -23,6 +23,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
             public int? VidaUtilEstimadaKm { get; set; }
         }
 
+        public ulong IdLlanta { get; set; }
         public int IdEmpresa { get; set; }
         public string NombreEmpresa { get; set; } = string.Empty;
 
