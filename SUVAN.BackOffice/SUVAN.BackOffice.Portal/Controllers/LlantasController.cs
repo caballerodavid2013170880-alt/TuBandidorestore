@@ -60,5 +60,19 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 return View(recargar);
             }
         }
+
+        [HttpGet("~/llantas/modelos-por-marca")]
+        public async Task<IActionResult> GetModelosPorMarca(int idMarcaLlanta)
+        {
+            var modelos = await llantaService.GetModelosPorMarca(idMarcaLlanta);
+            return Json(modelos);
+        }
+
+        [HttpGet("~/llantas/detalle-modelo")]
+        public async Task<IActionResult> GetDetalleModelo(int idModeloLlanta)
+        {
+            var detalle = await llantaService.GetDetalleModelo(idModeloLlanta);
+            return Json(detalle);
+        }
     }
 }

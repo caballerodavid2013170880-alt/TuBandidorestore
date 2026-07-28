@@ -35,6 +35,8 @@ namespace SUVAN.BackOffice.Service.Administrativo
                         IdLlanta = llanta.IdLlanta,
                         CodigoLlanta = llanta.CodigoLlanta,
                         NumeroSerieDot = llanta.NumeroSerieDot,
+                        Marca = llanta.IdModeloLlantaNavigation.IdMarcaLlantaNavigation.Nombre,
+                        Modelo = llanta.IdModeloLlantaNavigation.Nombre,
                         Estado = llanta.IdEstadoLlantaNavigation.Nombre,
                         Deposito = deposito != null ? deposito.NombreDeposito : null,                        
                         FechaAdquisicion = llanta.FechaAdquisicion,
@@ -48,6 +50,11 @@ namespace SUVAN.BackOffice.Service.Administrativo
             var vRet = model ?? new LlantaCrearViewModel();
             vRet.IdEmpresa = idEmpresa;
             vRet.NombreEmpresa = nombreEmpresa;
+
+            if (vRet.IdEstadoLlanta <= 0)
+            {
+                vRet.IdEstadoLlanta = 1;
+            }
 
             vRet.Regiones = await context.Regions
                 .AsNoTracking()
@@ -102,7 +109,73 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     .ToListAsync();
             }
 
+            vRet.Marcas = await context.LlantaMarcas
+                .AsNoTracking()
+                .Where(m => m.Activo == true)
+                .OrderBy(m => m.Nombre)
+                .Select(m => new LlantaCrearViewModel.CatalogItemViewModel
+                {
+                    Id = (int)m.IdMarcaLlanta,
+                    Nombre = m.Nombre
+                })
+                .ToListAsync();
+
+            if (vRet.IdMarcaLlanta > 0)
+            {
+                vRet.Modelos = await GetModelosPorMarca(vRet.IdMarcaLlanta);
+            }
+
+            vRet.EstadosLlanta = await context.LlantaEstados
+                .AsNoTracking()
+                .Where(e => e.EsActivo == true)
+                .OrderBy(e => e.IdEstadoLlanta)
+                .Select(e => new LlantaCrearViewModel.CatalogItemViewModel
+                {
+                    Id = e.IdEstadoLlanta,
+                    Nombre = e.Nombre
+                })
+                .ToListAsync();
+
+            if (vRet.IdModeloLlanta > 0)
+            {
+                vRet.ModeloDetalle = await GetDetalleModelo(vRet.IdModeloLlanta);
+            }
+
             return vRet;
+        }
+
+        public async Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetModelosPorMarca(int idMarcaLlanta)
+        {
+            return await context.LlantaModelos
+                .AsNoTracking()
+                .Where(m => m.Activo == true && m.IdMarcaLlanta == (uint)idMarcaLlanta)
+                .OrderBy(m => m.Nombre)
+                .ThenBy(m => m.Medida)
+                .Select(m => new LlantaCrearViewModel.CatalogItemViewModel
+                {
+                    Id = (int)m.IdModeloLlanta,
+                    Nombre = string.IsNullOrWhiteSpace(m.Medida) ? m.Nombre : $"{m.Nombre} - {m.Medida}"
+                })
+                .ToListAsync();
+        }
+
+        public async Task<LlantaCrearViewModel.ModeloDetalleViewModel?> GetDetalleModelo(int idModeloLlanta)
+        {
+            return await context.LlantaModelos
+                .AsNoTracking()
+                .Where(m => m.Activo == true && m.IdModeloLlanta == (uint)idModeloLlanta)
+                .Select(m => new LlantaCrearViewModel.ModeloDetalleViewModel
+                {
+                    IdModeloLlanta = (int)m.IdModeloLlanta,
+                    Marca = m.IdMarcaLlantaNavigation.Nombre,
+                    Modelo = m.Nombre,
+                    Medida = m.Medida,
+                    PresionMinimaPsi = m.PresionMinimaPsi,
+                    PresionMaximaPsi = m.PresionMaximaPsi,
+                    ProfundidadOriginalMm = m.ProfundidadOriginalMm,
+                    VidaUtilEstimadaKm = m.VidaUtilEstimadaKm.HasValue ? (int)m.VidaUtilEstimadaKm.Value : null
+                })
+                .FirstOrDefaultAsync();
         }
 
         public async Task<bool> CrearLlanta(LlantaCrearViewModel model, int idEmpresa, int idUsuario)
@@ -120,16 +193,14 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 throw new Exception("Ya existe una llanta con el mismo número de serie / DOT.");
 
             await ValidarJerarquia(model, idEmpresa);
-
-            var estadoEnDeposito = await context.LlantaEstados
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.Nombre.ToLower() == "en depósito" || x.Nombre.ToLower() == "en deposito");
+            await ValidarCatalogos(model);
 
             var llanta = new Llantum
             {
                 CodigoLlanta = model.CodigoLlanta.Trim(),
                 NumeroSerieDot = model.NumeroSerieDot.Trim(),
-                IdEstadoLlanta = estadoEnDeposito?.IdEstadoLlanta ?? (ushort)1,
+                IdModeloLlanta = (uint)model.IdModeloLlanta,
+                IdEstadoLlanta = (ushort)model.IdEstadoLlanta,
                 IdEmpresa = (uint)idEmpresa,
                 IdRegion = (uint)model.IdRegion,
                 IdPlanta = (uint)model.IdPlanta,
@@ -162,20 +233,14 @@ namespace SUVAN.BackOffice.Service.Administrativo
             if (string.IsNullOrWhiteSpace(model.NumeroSerieDot) || model.NumeroSerieDot.Length > 30)
                 throw new Exception("El número de serie / DOT es obligatorio y no debe exceder 30 caracteres.");
 
-            if (model.PresionMinimaPsi.HasValue && model.PresionMinimaPsi < 0)
-                throw new Exception("La presión mínima no puede ser negativa.");
+            if (model.IdMarcaLlanta <= 0)
+                throw new Exception("La marca es obligatoria.");
 
-            if (model.PresionMaximaPsi.HasValue && model.PresionMaximaPsi < 0)
-                throw new Exception("La presión máxima no puede ser negativa.");
+            if (model.IdModeloLlanta <= 0)
+                throw new Exception("El modelo es obligatorio.");
 
-            if (model.PresionMinimaPsi.HasValue && model.PresionMaximaPsi.HasValue && model.PresionMaximaPsi < model.PresionMinimaPsi)
-                throw new Exception("La presión máxima no puede ser menor que la presión mínima.");
-
-            if (model.ProfundidadOriginalMm.HasValue && model.ProfundidadOriginalMm < 0)
-                throw new Exception("La profundidad original no puede ser negativa.");
-
-            if (model.VidaUtilEstimadaKm.HasValue && model.VidaUtilEstimadaKm < 0)
-                throw new Exception("La vida útil estimada no puede ser negativa.");
+            if (model.IdEstadoLlanta <= 0)
+                throw new Exception("El estado de la llanta es obligatorio.");
 
             if (!model.CostoAdquisicion.HasValue || model.CostoAdquisicion < 0)
                 throw new Exception("El costo de adquisición es obligatorio y no puede ser negativo.");
@@ -192,6 +257,32 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
             if (model.FechaAdquisicion.HasValue && model.FechaAdquisicion.Value.Date > hoy)
                 throw new Exception("La fecha de adquisición no puede ser posterior a la fecha actual.");
+
+            if (model.FechaFabricacion.HasValue && model.FechaAdquisicion.HasValue && model.FechaFabricacion.Value.Date > model.FechaAdquisicion.Value.Date)
+                throw new Exception("La fecha de fabricación no puede ser posterior a la fecha de adquisición.");
+        }
+
+        private async Task ValidarCatalogos(LlantaCrearViewModel model)
+        {
+            bool marcaValida = await context.LlantaMarcas
+                .AnyAsync(m => m.IdMarcaLlanta == (uint)model.IdMarcaLlanta && m.Activo == true);
+            if (!marcaValida)
+                throw new Exception("La marca seleccionada no existe o no está activa.");
+
+            bool modeloValido = await context.LlantaModelos
+                .AnyAsync(m => m.IdModeloLlanta == (uint)model.IdModeloLlanta
+                            && m.IdMarcaLlanta == (uint)model.IdMarcaLlanta
+                            && m.Activo == true);
+            if (!modeloValido)
+                throw new Exception("El modelo seleccionado no pertenece a la marca o no está activo.");
+
+            bool estadoValido = await context.LlantaEstados
+                .AnyAsync(e => e.IdEstadoLlanta == (ushort)model.IdEstadoLlanta && e.EsActivo == true);
+            if (!estadoValido)
+                throw new Exception("El estado seleccionado no existe o no está activo.");
+
+            if (model.IdEstadoLlanta == 1 && model.IdDeposito <= 0)
+                throw new Exception("Debes seleccionar un depósito para una llanta en depósito.");
         }
 
         private async Task ValidarJerarquia(LlantaCrearViewModel model, int idEmpresa)

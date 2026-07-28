@@ -11,6 +11,18 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
             public string? Nombre { get; set; }
         }
 
+        public class ModeloDetalleViewModel
+        {
+            public int IdModeloLlanta { get; set; }
+            public string? Marca { get; set; }
+            public string? Modelo { get; set; }
+            public string? Medida { get; set; }
+            public decimal? PresionMinimaPsi { get; set; }
+            public decimal? PresionMaximaPsi { get; set; }
+            public decimal? ProfundidadOriginalMm { get; set; }
+            public int? VidaUtilEstimadaKm { get; set; }
+        }
+
         public int IdEmpresa { get; set; }
         public string NombreEmpresa { get; set; } = string.Empty;
 
@@ -21,6 +33,15 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
         [Required(ErrorMessage = "El número de serie / DOT es obligatorio")]
         [StringLength(30, ErrorMessage = "El número de serie / DOT no debe exceder 30 caracteres")]
         public string NumeroSerieDot { get; set; } = string.Empty;
+
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una marca")]
+        public int IdMarcaLlanta { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar un modelo")]
+        public int IdModeloLlanta { get; set; }
+
+        [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar un estado")]
+        public int IdEstadoLlanta { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar una región")]
         public int IdRegion { get; set; }
@@ -34,19 +55,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
         [Range(1, int.MaxValue, ErrorMessage = "Debes seleccionar un depósito")]
         public int IdDeposito { get; set; }
 
-        [Range(0, 999.99, ErrorMessage = "La presión mínima no puede ser negativa")]
-        public decimal? PresionMinimaPsi { get; set; }
-
-        [Range(0, 999.99, ErrorMessage = "La presión máxima no puede ser negativa")]
-        public decimal? PresionMaximaPsi { get; set; }
-
         public DateTime? FechaFabricacion { get; set; }
-
-        [Range(0, double.MaxValue, ErrorMessage = "La profundidad original no puede ser negativa")]
-        public decimal? ProfundidadOriginalMm { get; set; }
-
-        [Range(0, int.MaxValue, ErrorMessage = "La vida útil estimada no puede ser negativa")]
-        public int? VidaUtilEstimadaKm { get; set; }
 
         [Required(ErrorMessage = "El costo de adquisición es obligatorio")]
         [Range(0, double.MaxValue, ErrorMessage = "El costo de adquisición no puede ser negativo")]
@@ -69,5 +78,17 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
 
         [ValidateNever]
         public List<CatalogItemViewModel> Depositos { get; set; } = new();
+
+        [ValidateNever]
+        public List<CatalogItemViewModel> Marcas { get; set; } = new();
+
+        [ValidateNever]
+        public List<CatalogItemViewModel> Modelos { get; set; } = new();
+
+        [ValidateNever]
+        public List<CatalogItemViewModel> EstadosLlanta { get; set; } = new();
+
+        [ValidateNever]
+        public ModeloDetalleViewModel? ModeloDetalle { get; set; }
     }
 }

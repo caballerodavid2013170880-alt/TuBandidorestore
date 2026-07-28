@@ -1,22 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using SUVAN.BackOffice.Models.StoredsProcedures;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using static SUVAN.BackOffice.Models.StoredsProcedures.ModelsStoredsProcedures;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class SuvanDbContext : DbContext
 {
-    private readonly IConfiguration configuration;
-
-    public SuvanDbContext(DbContextOptions<SuvanDbContext> options, IConfiguration configuration)
-          : base(options)
+    public SuvanDbContext(DbContextOptions<SuvanDbContext> options)
+        : base(options)
     {
-        this.configuration = configuration;
-
     }
 
     public virtual DbSet<Admin> Admins { get; set; }
@@ -79,8 +71,6 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Deposito> Depositos { get; set; }
 
-    public virtual DbSet<Depositosdisponible> Depositosdisponibles { get; set; }
-
     public virtual DbSet<Depto> Deptos { get; set; }
 
     public virtual DbSet<DetPrev> DetPrevs { get; set; }
@@ -134,6 +124,10 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<LlantaEstadoRenovado> LlantaEstadoRenovados { get; set; }
 
     public virtual DbSet<LlantaInspeccion> LlantaInspeccions { get; set; }
+
+    public virtual DbSet<LlantaMarca> LlantaMarcas { get; set; }
+
+    public virtual DbSet<LlantaModelo> LlantaModelos { get; set; }
 
     public virtual DbSet<LlantaMotivoRetiro> LlantaMotivoRetiros { get; set; }
 
@@ -314,10 +308,6 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Viajeredondo> Viajeredondos { get; set; }
 
     public virtual DbSet<Zona> Zonas { get; set; }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-    => optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -1491,69 +1481,6 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_deposito_region");
         });
 
-        modelBuilder.Entity<Depositosdisponible>(entity =>
-        {
-            entity.HasKey(e => e.IdDeposito).HasName("PRIMARY");
-
-            entity
-                .ToTable("depositosdisponibles")
-                .HasCharSet("utf8mb3")
-                .UseCollation("utf8mb3_general_ci");
-
-            entity.HasIndex(e => e.ZonaId, "fk_deposito_zona");
-
-            entity.HasIndex(e => e.IdEmpresa, "fk_depositosdisponibles_empresa");
-
-            entity.Property(e => e.IdDeposito).HasColumnName("id_deposito");
-            entity.Property(e => e.Activo).HasColumnName("activo");
-            entity.Property(e => e.Ciudad)
-                .HasMaxLength(50)
-                .IsFixedLength()
-                .HasColumnName("ciudad");
-            entity.Property(e => e.Cp)
-                .HasMaxLength(5)
-                .IsFixedLength()
-                .HasColumnName("cp");
-            entity.Property(e => e.DepositoNombre)
-                .HasMaxLength(100)
-                .HasColumnName("deposito_nombre");
-            entity.Property(e => e.Dirección)
-                .HasMaxLength(70)
-                .IsFixedLength()
-                .HasColumnName("dirección");
-            entity.Property(e => e.IdEmpresa).HasColumnName("id_empresa");
-            entity.Property(e => e.LocFor)
-                .HasMaxLength(1)
-                .IsFixedLength()
-                .HasColumnName("loc_for");
-            entity.Property(e => e.NombreCorto)
-                .HasMaxLength(10)
-                .IsFixedLength()
-                .HasColumnName("nombre_corto");
-            entity.Property(e => e.RPerson)
-                .HasMaxLength(100)
-                .IsFixedLength()
-                .HasColumnName("r_person");
-            entity.Property(e => e.Responsable)
-                .HasMaxLength(50)
-                .IsFixedLength()
-                .HasColumnName("responsable");
-            entity.Property(e => e.Rfc)
-                .HasMaxLength(15)
-                .IsFixedLength()
-                .HasColumnName("rfc");
-            entity.Property(e => e.Teléfono)
-                .HasMaxLength(30)
-                .IsFixedLength()
-                .HasColumnName("teléfono");
-            entity.Property(e => e.ZonaId).HasColumnName("zona_id");
-
-            entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.Depositosdisponibles)
-                .HasForeignKey(d => d.IdEmpresa)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_depositosdisponibles_empresa");
-        });
-
         modelBuilder.Entity<Depto>(entity =>
         {
             entity.HasKey(e => e.IdDepto).HasName("PRIMARY");
@@ -2530,6 +2457,83 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_llanta_inspeccion_tipo");
         });
 
+        modelBuilder.Entity<LlantaMarca>(entity =>
+        {
+            entity.HasKey(e => e.IdMarcaLlanta).HasName("PRIMARY");
+
+            entity.ToTable("llanta_marca");
+
+            entity.HasIndex(e => e.Nombre, "uk_llanta_marca_nombre").IsUnique();
+
+            entity.Property(e => e.IdMarcaLlanta).HasColumnName("id_marca_llanta");
+            entity.Property(e => e.Activo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("activo");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaModificacion)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<LlantaModelo>(entity =>
+        {
+            entity.HasKey(e => e.IdModeloLlanta).HasName("PRIMARY");
+
+            entity.ToTable("llanta_modelo");
+
+            entity.HasIndex(e => e.IdMarcaLlanta, "ix_llanta_modelo_marca");
+
+            entity.HasIndex(e => new { e.IdMarcaLlanta, e.Nombre, e.Medida }, "uk_llanta_modelo").IsUnique();
+
+            entity.Property(e => e.IdModeloLlanta).HasColumnName("id_modelo_llanta");
+            entity.Property(e => e.Activo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("activo");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaModificacion)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.IdMarcaLlanta).HasColumnName("id_marca_llanta");
+            entity.Property(e => e.Medida)
+                .HasMaxLength(50)
+                .HasColumnName("medida");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(150)
+                .HasColumnName("nombre");
+            entity.Property(e => e.PresionMaximaPsi)
+                .HasPrecision(5, 2)
+                .HasColumnName("presion_maxima_psi");
+            entity.Property(e => e.PresionMinimaPsi)
+                .HasPrecision(5, 2)
+                .HasColumnName("presion_minima_psi");
+            entity.Property(e => e.ProfundidadOriginalMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_original_mm");
+            entity.Property(e => e.VidaUtilEstimadaKm).HasColumnName("vida_util_estimada_km");
+
+            entity.HasOne(d => d.IdMarcaLlantaNavigation).WithMany(p => p.LlantaModelos)
+                .HasForeignKey(d => d.IdMarcaLlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_modelo_marca");
+        });
+
         modelBuilder.Entity<LlantaMotivoRetiro>(entity =>
         {
             entity.HasKey(e => e.IdMotivoRetiro).HasName("PRIMARY");
@@ -2675,6 +2679,8 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasIndex(e => e.IdEstadoLlanta, "idx_llanta_id_estado");
 
+            entity.HasIndex(e => e.IdModeloLlanta, "idx_llanta_id_modelo");
+
             entity.HasIndex(e => e.CodigoLlanta, "uk_llanta_codigo").IsUnique();
 
             entity.HasIndex(e => e.NumeroSerieDot, "uk_llanta_numero_serie_dot").IsUnique();
@@ -2718,21 +2724,16 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.Observaciones)
                 .HasMaxLength(500)
                 .HasColumnName("observaciones");
-            entity.Property(e => e.PresionMaximaPsi)
-                .HasPrecision(5, 2)
-                .HasColumnName("presion_maxima_psi");
-            entity.Property(e => e.PresionMinimaPsi)
-                .HasPrecision(5, 2)
-                .HasColumnName("presion_minima_psi");
-            entity.Property(e => e.ProfundidadOriginalMm)
-                .HasPrecision(5, 2)
-                .HasColumnName("profundidad_original_mm");
-            entity.Property(e => e.VidaUtilEstimadaKm).HasColumnName("vida_util_estimada_km");
 
             entity.HasOne(d => d.IdEstadoLlantaNavigation).WithMany(p => p.Llanta)
                 .HasForeignKey(d => d.IdEstadoLlanta)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_llanta_llanta_estado");
+
+            entity.HasOne(d => d.IdModeloLlantaNavigation).WithMany(p => p.Llanta)
+                .HasForeignKey(d => d.IdModeloLlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_llanta_modelo");
         });
 
         modelBuilder.Entity<Logcancelacionviaje>(entity =>

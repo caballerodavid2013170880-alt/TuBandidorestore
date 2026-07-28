@@ -32,7 +32,7 @@
                 @if (permisosPagina.Agregar)
                 {
                     <a asp-controller="Llantas" asp-action="Crear" class="btn btn-flex btn-primary h-40px fs-7 fw-bold">
-                        Nueva llanta
+                        Crear llanta
                     </a>
                 }
             </div>
@@ -74,10 +74,10 @@
                         <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
                             <th class="min-w-125px">Código</th>
                             <th class="min-w-125px">Serie DOT</th>
+                            <th class="min-w-125px">Marca</th>
+                            <th class="min-w-125px">Modelo</th>
                             <th class="min-w-125px">Estado</th>
                             <th class="min-w-125px">Depósito</th>
-                            <th class="min-w-125px">Presión PSI</th>
-                            <th class="min-w-125px">Profundidad</th>
                             <th class="min-w-125px">Fecha adquisición</th>
                             <th class="min-w-125px">Costo</th>
                         </tr>
@@ -88,19 +88,10 @@
                             <tr>
                                 <td>@llanta.CodigoLlanta</td>
                                 <td>@llanta.NumeroSerieDot</td>
+                                <td>@(llanta.Marca ?? "-")</td>
+                                <td>@(llanta.Modelo ?? "-")</td>
                                 <td>@llanta.Estado</td>
                                 <td>@(llanta.Deposito ?? "-")</td>
-                                <td>
-                                    @if (llanta.PresionMinimaPsi.HasValue || llanta.PresionMaximaPsi.HasValue)
-                                    {
-                                        @($"{llanta.PresionMinimaPsi?.ToString("0.##") ?? "-"} - {llanta.PresionMaximaPsi?.ToString("0.##") ?? "-"}")
-                                    }
-                                    else
-                                    {
-                                        @("-")
-                                    }
-                                </td>
-                                <td>@(llanta.ProfundidadOriginalMm?.ToString("0.##") ?? "-") mm</td>
                                 <td>@(llanta.FechaAdquisicion?.ToString("dd/MM/yyyy") ?? "-")</td>
                                 <td>@(llanta.CostoAdquisicion?.ToString("C") ?? "-")</td>
                             </tr>

@@ -1,7 +1,7 @@
 @model SUVAN.BackOffice.Models.ViewModel.Administrativo.LlantaCrearViewModel
 
 @{
-    ViewData["Title"] = "Nueva llanta";
+    ViewData["Title"] = "Crear llanta";
 }
 
 <!--begin::Toolbar-->
@@ -9,7 +9,7 @@
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
         <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
             <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
-                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Nueva llanta</h1>
+                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Crear llanta</h1>
                 <ul class="breadcrumb breadcrumb-separatorless fw-semibold fs-7 my-0">
                     <li class="breadcrumb-item text-muted">
                         <a asp-controller="Llantas" asp-action="Index" class="text-muted text-hover-primary">Llantas</a>
@@ -17,7 +17,7 @@
                     <li class="breadcrumb-item">
                         <span class="bullet bg-gray-400 w-5px h-2px"></span>
                     </li>
-                    <li class="breadcrumb-item text-muted">Nueva llanta</li>
+                    <li class="breadcrumb-item text-muted">Crear llanta</li>
                 </ul>
             </div>
         </div>
@@ -103,40 +103,79 @@
                                 <input asp-for="NumeroSerieDot" class="form-control form-control-solid" maxlength="30" autocomplete="off" />
                                 <span asp-validation-for="NumeroSerieDot" class="text-danger"></span>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="separator separator-dashed my-8"></div>
-
-                    
-
-                    <div class="mb-10">
-                        <h3 class="fw-bold text-dark fs-5 mb-6">Información técnica</h3>
-                        <div class="row g-6">
                             <div class="col-md-4">
-                                <label asp-for="PresionMinimaPsi" class="form-label">Presión mínima PSI</label>
-                                <input asp-for="PresionMinimaPsi" type="number" min="0" step="0.01" class="form-control form-control-solid" />
-                                <span asp-validation-for="PresionMinimaPsi" class="text-danger"></span>
+                                <label asp-for="IdMarcaLlanta" class="required form-label">Marca</label>
+                                <select asp-for="IdMarcaLlanta" id="IdMarcaLlanta" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione una marca">
+                                    <option value="">Seleccione una marca</option>
+                                    @foreach (var marca in Model.Marcas)
+                                    {
+                                        <option value="@marca.Id">@marca.Nombre</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="IdMarcaLlanta" class="text-danger"></span>
                             </div>
                             <div class="col-md-4">
-                                <label asp-for="PresionMaximaPsi" class="form-label">Presión máxima PSI</label>
-                                <input asp-for="PresionMaximaPsi" type="number" min="0" step="0.01" class="form-control form-control-solid" />
-                                <span asp-validation-for="PresionMaximaPsi" class="text-danger"></span>
+                                <label asp-for="IdModeloLlanta" class="required form-label">Modelo</label>
+                                <select asp-for="IdModeloLlanta" id="IdModeloLlanta" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un modelo" disabled="@(Model.IdMarcaLlanta <= 0)">
+                                    <option value="">Seleccione un modelo</option>
+                                    @foreach (var modelo in Model.Modelos)
+                                    {
+                                        <option value="@modelo.Id">@modelo.Nombre</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="IdModeloLlanta" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="IdEstadoLlanta" class="required form-label">Estado de la llanta</label>
+                                <select asp-for="IdEstadoLlanta" id="IdEstadoLlanta" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un estado">
+                                    <option value="">Seleccione un estado</option>
+                                    @foreach (var estado in Model.EstadosLlanta)
+                                    {
+                                        <option value="@estado.Id">@($"{estado.Id} - {estado.Nombre}")</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="IdEstadoLlanta" class="text-danger"></span>
                             </div>
                             <div class="col-md-4">
                                 <label asp-for="FechaFabricacion" class="form-label">Fecha de fabricación</label>
                                 <input asp-for="FechaFabricacion" type="date" class="form-control form-control-solid" />
                                 <span asp-validation-for="FechaFabricacion" class="text-danger"></span>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed my-8"></div>
+
+                    <div id="modeloDetalleContainer" class="mb-10 @(Model.ModeloDetalle == null ? "d-none" : string.Empty)">
+                        <h3 class="fw-bold text-dark fs-5 mb-6">Información del modelo</h3>
+                        <div class="row g-6">
                             <div class="col-md-4">
-                                <label asp-for="ProfundidadOriginalMm" class="form-label">Profundidad original en milímetros</label>
-                                <input asp-for="ProfundidadOriginalMm" type="number" min="0" step="0.01" class="form-control form-control-solid" />
-                                <span asp-validation-for="ProfundidadOriginalMm" class="text-danger"></span>
+                                <label class="form-label">Marca</label>
+                                <input id="ModeloDetalleMarca" type="text" class="form-control form-control-solid" value="@Model.ModeloDetalle?.Marca" readonly />
                             </div>
                             <div class="col-md-4">
-                                <label asp-for="VidaUtilEstimadaKm" class="form-label">Vida útil estimada en kilómetros</label>
-                                <input asp-for="VidaUtilEstimadaKm" type="number" min="0" step="1" class="form-control form-control-solid" />
-                                <span asp-validation-for="VidaUtilEstimadaKm" class="text-danger"></span>
+                                <label class="form-label">Modelo</label>
+                                <input id="ModeloDetalleNombre" type="text" class="form-control form-control-solid" value="@Model.ModeloDetalle?.Modelo" readonly />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">Medida</label>
+                                <input id="ModeloDetalleMedida" type="text" class="form-control form-control-solid" value="@Model.ModeloDetalle?.Medida" readonly />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Presión mínima PSI</label>
+                                <input id="ModeloDetallePresionMinima" type="text" class="form-control form-control-solid" value="@Model.ModeloDetalle?.PresionMinimaPsi?.ToString("0.##")" readonly />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Presión máxima PSI</label>
+                                <input id="ModeloDetallePresionMaxima" type="text" class="form-control form-control-solid" value="@Model.ModeloDetalle?.PresionMaximaPsi?.ToString("0.##")" readonly />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Profundidad original mm</label>
+                                <input id="ModeloDetalleProfundidad" type="text" class="form-control form-control-solid" value="@Model.ModeloDetalle?.ProfundidadOriginalMm?.ToString("0.##")" readonly />
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Vida útil estimada km</label>
+                                <input id="ModeloDetalleVidaUtil" type="text" class="form-control form-control-solid" value="@Model.ModeloDetalle?.VidaUtilEstimadaKm" readonly />
                             </div>
                         </div>
                     </div>
@@ -186,7 +225,9 @@
         window.SUVAN.Llantas = {
             getPlantasUrl: '@Url.Action("GetPlantasPorRegion", "Administrativo")',
             getZonasUrl: '@Url.Action("GetZonasPorPlanta", "Administrativo")',
-            getDepositosUrl: '@Url.Action("GetDepositosPorZona", "Administrativo")'
+            getDepositosUrl: '@Url.Action("GetDepositosPorZona", "Administrativo")',
+            getModelosPorMarcaUrl: '@Url.Action("GetModelosPorMarca", "Llantas")',
+            getDetalleModeloUrl: '@Url.Action("GetDetalleModelo", "Llantas")'
         };
     </script>
     <script src="~/js/administrativo/llantas/add.js" asp-append-version="true"></script>
