@@ -25,15 +25,7 @@ public partial class Llantum
 
     public uint? IdDeposito { get; set; }
 
-    public decimal? PresionMinimaPsi { get; set; }
-
-    public decimal? PresionMaximaPsi { get; set; }
-
     public DateOnly? FechaFabricacion { get; set; }
-
-    public decimal? ProfundidadOriginalMm { get; set; }
-
-    public uint? VidaUtilEstimadaKm { get; set; }
 
     public decimal? CostoAdquisicion { get; set; }
 
@@ -58,6 +50,8 @@ public partial class Llantum
     public uint? ModificadoPor { get; set; }
 
     public virtual LlantaEstado IdEstadoLlantaNavigation { get; set; } = null!;
+
+    public virtual LlantaModelo IdModeloLlantaNavigation { get; set; } = null!;
 
     public virtual ICollection<LlantaAsignacion> LlantaAsignacions { get; set; } = new List<LlantaAsignacion>();
 

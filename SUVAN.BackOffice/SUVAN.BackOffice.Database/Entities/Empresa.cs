@@ -55,6 +55,8 @@ public partial class Empresa
 
     public virtual ICollection<TarIave> TarIaves { get; set; } = new List<TarIave>();
 
+    public virtual ICollection<UsuarioJerarquium> UsuarioJerarquia { get; set; } = new List<UsuarioJerarquium>();
+
     public virtual ICollection<Variableempresa> Variableempresas { get; set; } = new List<Variableempresa>();
 
     public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
