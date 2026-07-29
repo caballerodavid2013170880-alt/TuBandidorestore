@@ -86,11 +86,12 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> NavegacionVehiculoDetalle(VehiculoDetalleViewModel model, int IdEmpresa)
+        public async Task<IActionResult> NavegacionVehiculoDetalle(VehiculoDetalleViewModel model)
         {
             try
             {
-                IdEmpresa = User.GetEmpresaId();
+                model.IdEmpresa = User.GetEmpresaId();
+                //IdEmpresa = User.GetEmpresaId();
                 var Usuario = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
 
                 if (!ModelState.IsValid)
@@ -100,7 +101,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     return View(model);
                 }
 
-                var result = await vehiculoService.AgregarVehiculoDetalle(model, IdEmpresa, Usuario);
+                var result = await vehiculoService.AgregarVehiculoDetalle(model, model.IdEmpresa ?? 0, Usuario);
 
                 if (result)
                 {

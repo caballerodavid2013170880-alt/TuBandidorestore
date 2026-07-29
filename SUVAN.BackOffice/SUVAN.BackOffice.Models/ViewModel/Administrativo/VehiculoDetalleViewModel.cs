@@ -22,6 +22,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public string? NombreTipoV { get; set; } = null!;
         public short? IdMarca { get; set; }
         public string? DescripcionMarca { get; set; }
+        public int? IdEmpresa { get; set; }
+        public string? NombreEmpresa { get; set; }
         public int? IdRegion { get; set; }
         public string? NombreRegion { get; set; }
         public int? IdPlanta { get; set; }
