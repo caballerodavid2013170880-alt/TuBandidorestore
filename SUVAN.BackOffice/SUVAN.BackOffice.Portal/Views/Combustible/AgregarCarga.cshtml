@@ -112,6 +112,20 @@
                         </div>
                     </div>
 
+
+                    <div class="mb-7">
+                        <label class="required fw-semibold fs-6 mb-2">Tipo de Combustible</label>
+                        <select name="IdComb" class="form-select form-select-solid" required>
+                            <option value="">Seleccione...</option>
+                            @foreach (var tipo in ViewBag.TiposCombustible)
+                            {
+                                <option value="@tipo.IdComb">@tipo.Nombre</option>
+                            }
+                        </select>
+                    </div>
+
+
+
                     <div class="row g-9">
                         <div class="col-md-3 fv-row">
                             <label class="required form-label fw-bold text-dark fs-7">Importe ($)</label>

@@ -24,5 +24,9 @@ namespace SUVAN.BackOffice.Service.Logistica
         Task<List<CombCarga>> GetCargasTransitorias(int id_empresa, int id_deposito);
         Task<int?> GetIdVehiculoByEconomico(string numeroEconomico, int id_empresa);
         Task<bool> SaveCargasBD(List<CombCarga> cargas);
+
+
+        // Metodo catalogo tipo de combustible
+        Task<List<TipoCom>> GetTiposCombustible();
     }
 }

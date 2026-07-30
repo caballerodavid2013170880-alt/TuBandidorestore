@@ -15,7 +15,7 @@ public partial class CombCarga
 
     public string FolioNota { get; set; } = null!;
 
-    public int Idfactura { get; set; }
+    public int? Idfactura { get; set; }
 
     public double Importe { get; set; }
 
@@ -49,7 +49,7 @@ public partial class CombCarga
 
     public int Idempresa { get; set; }
 
-    public int IdDepto { get; set; }
+    public int? IdDepto { get; set; }
 
     public int? Idusuario { get; set; }
 

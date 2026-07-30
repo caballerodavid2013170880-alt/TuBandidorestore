@@ -44,7 +44,7 @@ namespace SUVAN.BackOffice.Service.Logistica
         public async Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetZonasByPlanta(int id_empresa, int id_planta)
         {
             return await context.Zonas
-                .Where(x => x.IdEmpresa == id_empresa && x.IdRegion == id_planta)
+                .Where(x => x.IdEmpresa == id_empresa && x.IdPlanta == id_planta)
                 .Select(x => new VehiculoDetalleViewModel.CatalogItemViewModel {
                     Id = x.IdZona,
                     Nombre = x.NombreZona
@@ -112,6 +112,12 @@ namespace SUVAN.BackOffice.Service.Logistica
             }
             return true;
 
+        }
+
+
+        public async Task<List<TipoCom>> GetTiposCombustible()
+        {
+            return await context.TipoComs.ToListAsync();
         }
     }
 }

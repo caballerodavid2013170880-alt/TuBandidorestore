@@ -16,7 +16,7 @@ var KTCargasTransitoriasList = function () {
 
         cmbRegion.addEventListener('change', async function () {
             limpiarCombo(cmbPlanta, 'Seleccione una Planta...');
-            limpiarCombo(cmbZona, 'Seleccione una Zonaa...');
+            limpiarCombo(cmbZona, 'Seleccione una Zona...');
             limpiarCombo(cmbDeposito, 'Seleccione un Deposito...');
             destruirGrid();
 

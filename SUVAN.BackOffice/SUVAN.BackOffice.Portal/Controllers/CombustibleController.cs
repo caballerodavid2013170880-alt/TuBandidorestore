@@ -85,7 +85,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     idCarga = c.IdCarga,
                     vehiculoEconomico = c.IdVehiculoNavigation?.Numeroeconomico ?? "",
                     fecha = c.Fecha.ToString("yyyy/MM/dd"),
-                    hora = c.Hora.ToString("HH:MM"),
+                    hora = c.Hora.ToString("HH:mm"),
                     folioNota = c.FolioNota,
                     importe = c.Importe,
                     litros = c.Litros,
@@ -128,6 +128,22 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 nuevaCarga.Idusuario = User.GetUserId();
                 nuevaCarga.Fecharegistro = DateTime.Now;
 
+                nuevaCarga.Idfactura = (nuevaCarga.Idfactura <= 0) ? null : nuevaCarga.Idfactura;
+
+                nuevaCarga.IdDepto = (nuevaCarga.IdDepto <= 0) ? null : nuevaCarga.IdDepto;
+
+                //nuevaCarga.Espec =string.IsNullOrEmpty(nuevaCarga.Espec) ? "" : nuevaCarga.Espec;
+
+                //Corrección evita error de llave forane en factura 
+                if (nuevaCarga.Idfactura <= 0)
+                {
+                    nuevaCarga.Idfactura = null;
+
+                }
+
+                //Asignacion de un valor por defecto a espec para evitar errores de null en la base de datos
+                nuevaCarga.Espec = string.IsNullOrEmpty(nuevaCarga.Espec) ? "" : nuevaCarga.Espec;
+
                 // Recuperamos el valor del checkbox de traspasar
                 nuevaCarga.Traspasar = (sbyte)(Request.Form["Traspasar"] == "1" ? 1 : 0);
 
@@ -145,6 +161,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                         // Si el vehículo no existe, rompemos el flujo y avisamos al usuario
                         ViewBag.Error = $"El vehículo económico '{numEconomico}' no existe en el sistema.";
                         ViewBag.Regiones = await cargasService.GetRegions(User.GetEmpresaId());
+                        ViewBag.TiposCombustible = await cargasService.GetTiposCombustible();
                         return View("AgregarCarga");
                     }
                 }
@@ -152,6 +169,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 {
                     ViewBag.Error = "El número de vehículo económico es requerido.";
                     ViewBag.Regiones = await cargasService.GetRegions(User.GetEmpresaId());
+                    ViewBag.TiposCombustible = await cargasService.GetTiposCombustible();
                     return View("AgregarCarga");
                 }
 
@@ -168,6 +186,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 {
                     ViewBag.Error = "Ocurrió un error en las reglas de negocio al guardar la carga.";
                     ViewBag.Regiones = await cargasService.GetRegions(User.GetEmpresaId());
+                    ViewBag.TiposCombustible = await cargasService.GetTiposCombustible();
                     return View("AgregarCarga");
                 }
             }
@@ -176,6 +195,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 _logger.LogError($"Error al guardar carga manual: {ex.Message}");
                 ViewBag.Error = "Error al procesar la carga: " + ex.Message;
                 ViewBag.Regiones = await cargasService.GetRegions(User.GetEmpresaId());
+                ViewBag.TiposCombustible = await cargasService.GetTiposCombustible();
                 return View("AgregarCarga");
             }
         }
@@ -190,6 +210,8 @@ namespace SUVAN.BackOffice.Portal.Controllers
             var idEmpresa = User.GetEmpresaId();
             // Cargamos las regiones en el ViewBag para alimentar el primer combo en cascada del formulario manual
             ViewBag.Regiones = await cargasService.GetRegions(idEmpresa);
+            //Carga los tipos de combustible
+            ViewBag.TiposCombustible = await cargasService.GetTiposCombustible();
             return View();
         }
     }
