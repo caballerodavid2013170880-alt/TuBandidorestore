@@ -150,6 +150,29 @@
 
                     <div class="separator separator-dashed my-8"></div>
 
+                    <div>
+                        <h3 class="fw-bold text-dark fs-5 mb-6">Adquisición</h3>
+                        <div class="row g-6">
+                            <div class="col-md-4">
+                                <label asp-for="CostoAdquisicion" class="required form-label">Costo de adquisición</label>
+                                <input asp-for="CostoAdquisicion" type="number" min="0" step="0.01" class="form-control form-control-solid" />
+                                <span asp-validation-for="CostoAdquisicion" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4">
+                                <label asp-for="FechaAdquisicion" class="required form-label">Fecha de adquisición</label>
+                                <input asp-for="FechaAdquisicion" type="date" class="form-control form-control-solid" />
+                                <span asp-validation-for="FechaAdquisicion" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-12">
+                                <label asp-for="Observaciones" class="form-label">Observaciones</label>
+                                <textarea asp-for="Observaciones" class="form-control form-control-solid" rows="4" maxlength="500"></textarea>
+                                <span asp-validation-for="Observaciones" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="separator separator-dashed my-8"></div>
+
                     <div id="modeloDetalleContainer" class="mb-10 @(Model.ModeloDetalle == null ? "d-none" : string.Empty)">
                         <h3 class="fw-bold text-dark fs-5 mb-6">Información del modelo</h3>
                         <div class="row g-6">
@@ -180,29 +203,6 @@
                             <div class="col-md-3">
                                 <label class="form-label">Vida útil estimada km</label>
                                 <input id="ModeloDetalleVidaUtil" type="text" class="form-control form-control-solid" value="@Model.ModeloDetalle?.VidaUtilEstimadaKm" readonly />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="separator separator-dashed my-8"></div>
-
-                    <div>
-                        <h3 class="fw-bold text-dark fs-5 mb-6">Adquisición</h3>
-                        <div class="row g-6">
-                            <div class="col-md-4">
-                                <label asp-for="CostoAdquisicion" class="required form-label">Costo de adquisición</label>
-                                <input asp-for="CostoAdquisicion" type="number" min="0" step="0.01" class="form-control form-control-solid" />
-                                <span asp-validation-for="CostoAdquisicion" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-4">
-                                <label asp-for="FechaAdquisicion" class="required form-label">Fecha de adquisición</label>
-                                <input asp-for="FechaAdquisicion" type="date" class="form-control form-control-solid" />
-                                <span asp-validation-for="FechaAdquisicion" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-12">
-                                <label asp-for="Observaciones" class="form-label">Observaciones</label>
-                                <textarea asp-for="Observaciones" class="form-control form-control-solid" rows="4" maxlength="500"></textarea>
-                                <span asp-validation-for="Observaciones" class="text-danger"></span>
                             </div>
                         </div>
                     </div>

@@ -288,6 +288,27 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return true;
         }
 
+        public async Task<bool> EliminarLlanta(ulong idLlanta, int idEmpresa, int idUsuario)
+        {
+            var llanta = await context.Llanta
+                .FirstOrDefaultAsync(x => x.IdLlanta == idLlanta
+                                       && !x.Eliminado
+                                       && x.IdEmpresa == (uint)idEmpresa);
+
+            if (llanta == null)
+                throw new Exception("No se encontró la llanta o no pertenece a su empresa.");
+
+            llanta.Eliminado = true;
+            llanta.FechaEliminacion = DateTime.Now;
+            llanta.EliminadoPor = (uint)idUsuario;
+            llanta.MotivoEliminacion = "Eliminación lógica desde BackOffice.";
+            llanta.FechaModificacion = DateTime.Now;
+            llanta.ModificadoPor = (uint)idUsuario;
+
+            await context.SaveChangesAsync();
+            return true;
+        }
+
         private static void ValidarDatosCaptura(LlantaCrearViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.CodigoLlanta) || model.CodigoLlanta.Length > 30)

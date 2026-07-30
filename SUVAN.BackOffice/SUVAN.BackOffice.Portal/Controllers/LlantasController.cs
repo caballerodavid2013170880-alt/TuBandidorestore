@@ -103,6 +103,24 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
         }
 
+        [HttpPost("~/llantas/eliminar")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Eliminar(ulong id)
+        {
+            try
+            {
+                var idEmpresa = User.GetEmpresaId();
+                var idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+
+                await llantaService.EliminarLlanta(id, idEmpresa, idUsuario);
+                return Json(new { success = true, message = "Llanta eliminada correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         [HttpGet("~/llantas/modelos-por-marca")]
         public async Task<IActionResult> GetModelosPorMarca(int idMarcaLlanta)
         {

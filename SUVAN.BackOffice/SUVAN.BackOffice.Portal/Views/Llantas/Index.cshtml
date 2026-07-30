@@ -80,7 +80,7 @@
                             <th class="min-w-125px">Depósito</th>
                             <th class="min-w-125px">Fecha adquisición</th>
                             <th class="min-w-125px">Costo</th>
-                            @if (permisosPagina.Editar)
+                            @if (permisosPagina.Editar || permisosPagina.Eliminar)
                             {
                                 <th class="text-end min-w-100px">Acciones</th>
                             }
@@ -98,12 +98,26 @@
                                 <td>@(llanta.Deposito ?? "-")</td>
                                 <td>@(llanta.FechaAdquisicion?.ToString("dd/MM/yyyy") ?? "-")</td>
                                 <td>@(llanta.CostoAdquisicion?.ToString("C") ?? "-")</td>
-                                @if (permisosPagina.Editar)
+                                @if (permisosPagina.Editar || permisosPagina.Eliminar)
                                 {
                                     <td class="text-end">
-                                        <a asp-controller="Llantas" asp-action="Editar" asp-route-id="@llanta.IdLlanta" class="btn btn-icon btn-light btn-active-light-primary btn-sm" title="Editar">
-                                            <i class="ki-outline ki-pencil fs-3"></i>
-                                        </a>
+                                        @if (permisosPagina.Editar)
+                                        {
+                                            <a asp-controller="Llantas" asp-action="Editar" asp-route-id="@llanta.IdLlanta" class="btn btn-icon btn-light btn-active-light-primary btn-sm" title="Editar">
+                                                <i class="ki-outline ki-pencil fs-3"></i>
+                                            </a>
+                                        }
+                                        @if (permisosPagina.Eliminar)
+                                        {
+                                            <button type="button"
+                                                    class="btn btn-icon btn-light btn-active-light-danger btn-sm"
+                                                    data-kt-llantas-table-filter="delete_row"
+                                                    data-kt-llanta-delete-item="@llanta.IdLlanta"
+                                                    data-kt-llanta-delete-name="@llanta.CodigoLlanta"
+                                                    title="Eliminar">
+                                                <i class="ki-outline ki-trash fs-3"></i>
+                                            </button>
+                                        }
                                     </td>
                                 }
                             </tr>
