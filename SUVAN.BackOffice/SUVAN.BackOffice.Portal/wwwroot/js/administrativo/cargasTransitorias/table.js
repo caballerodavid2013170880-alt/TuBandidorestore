@@ -73,7 +73,7 @@ var KTCargasTransitoriasList = function () {
         const datos = await response.json();
 
         if (datos.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="5" class="text-center text-muted py-10">No se encontraron cargas transitorias en este depósito.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-10">No se encontraron cargas transitorias en este depósito.</td></tr>`;
             return;
         }
 
@@ -83,44 +83,49 @@ var KTCargasTransitoriasList = function () {
             tr.setAttribute('data-id-carga', c.idCarga);
 
             // Únicamente los 5 datos solicitados
-            tr.innerHTML = `
-                <td><input type="date" class="form-control form-control-sm txt-fecha w-150px" value="${c.fecha}" /></td>
-                <td><input type="number" class="form-control form-control-sm txt-importe w-125px text-end" value="${c.importe}" step="0.01" /></td>
-                <td><input type="number" class="form-control form-control-sm txt-litros w-125px text-end" value="${c.litros}" step="0.01" /></td>
-                <td><input type="number" class="form-control form-control-sm txt-km-actual w-125px text-end" value="${c.kmActual}" /></td>
-                <td><input type="number" class="form-control form-control-sm txt-costo-lt w-125px text-end" value="${c.costoXLt}" step="0.01" disabled /></td>
+            tr.innerHTML = `                
+                <td>${c.vehiculoEconomico}</td>
+                <td>${c.marca}</td>
+                <td>${c.modelo}</td>
+                <td>${c.placas}</td>
+                <td>${c.fecha}</td>
+                <td>$${c.importe.toFixed(2)}</td>
+                <td class="text-end">${c.litros}</td>
+                <td class="text-end">$${c.costoXLt.toFixed(2)}</td>
+                <td class="text-end">${c.kmActual}</td>
+                
             `;
             tbody.appendChild(tr);
         });
 
-        // Inicializamos DataTable con la configuración de 5 columnas exactas
+        // Inicializamos DataTable con la configuración de 9 columnas 
         datatable = $(table).DataTable({
             "info": false,
             'order': [],
             "pageLength": 10,
             "lengthChange": false,
             'columnDefs': [
-                { orderable: false, targets: [0, 1, 2, 3, 4] } // Deshabilita ordenamiento en los inputs
+                { orderable: false, targets: [0, 1, 2, 3, 4, 5, 6, 7, 8] } // Deshabilita ordenamiento en los inputs
             ]
         });
 
         if (txtBuscar) txtBuscar.disabled = false;
-        initEventosCalculo();
+        //initEventosCalculo();
     };
 
     // 3. Recalcular Costo x Litro dinámicamente si editan Importe o Litros
-    var initEventosCalculo = function () {
-        table.querySelectorAll('.txt-importe, .txt-litros').forEach(input => {
-            input.addEventListener('input', function () {
-                const fila = this.closest('tr');
-                const importe = parseFloat(fila.querySelector('.txt-importe').value) || 0;
-                const litros = parseFloat(fila.querySelector('.txt-litros').value) || 0;
+    // var initEventosCalculo = function () {
+    //     table.querySelectorAll('.txt-importe, .txt-litros').forEach(input => {
+    //         input.addEventListener('input', function () {
+    //             const fila = this.closest('tr');
+    //             const importe = parseFloat(fila.querySelector('.txt-importe').value) || 0;
+    //             const litros = parseFloat(fila.querySelector('.txt-litros').value) || 0;
 
-                const costoLtInput = fila.querySelector('.txt-costo-lt');
-                costoLtInput.value = litros > 0 && importe > 0 ? (importe / litros).toFixed(2) : "0.00";
-            });
-        });
-    };
+    //             const costoLtInput = fila.querySelector('.txt-costo-lt');
+    //             costoLtInput.value = litros > 0 && importe > 0 ? (importe / litros).toFixed(2) : "0.00";
+    //         });
+    //     });
+    // };
 
     // Auxiliares para manipulación de combos
     var handleSearchDatatable = () => {

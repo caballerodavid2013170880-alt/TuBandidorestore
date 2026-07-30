@@ -84,17 +84,20 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 {
                     idCarga = c.IdCarga,
                     vehiculoEconomico = c.IdVehiculoNavigation?.Numeroeconomico ?? "",
+                    marca = c.IdVehiculoNavigation?.Marca ?? "",
+                    modelo = c.IdVehiculoNavigation?.Modelo ?? "",
+                    placas = c.IdVehiculoNavigation?.Placas ?? "",
                     fecha = c.Fecha.ToString("yyyy/MM/dd"),
-                    hora = c.Hora.ToString("HH:mm"),
-                    folioNota = c.FolioNota,
                     importe = c.Importe,
+                    //hora = c.Hora.ToString("HH:mm"),
                     litros = c.Litros,
-                    kmAnterior = c.KmAnterior,
-                    kmActual = c.KmActual,
-                    kmRecorridos = c.KmRecorridos,
-                    rendimiento = c.Rendimiento,
                     costoXLt = c.CostoXLt,
-                    traspasar = c.Traspasar
+                    kmActual = c.KmActual,
+                    //folioNota = c.FolioNota,                
+                    //kmAnterior = c.KmAnterior,
+                    //kmRecorridos = c.KmRecorridos,
+                    //rendimiento = c.Rendimiento,
+                    //traspasar = c.Traspasar
                 });
             }
             return Json(resultado);

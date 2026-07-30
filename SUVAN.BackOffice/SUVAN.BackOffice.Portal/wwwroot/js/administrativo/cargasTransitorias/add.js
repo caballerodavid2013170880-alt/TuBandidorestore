@@ -106,6 +106,35 @@
             handleValidation();
             handleSubmitValidation();
 
+
+            //logica calulo de km recorridos 
+            const inputKmAnterior = form.querySelector('[name="KmAnterior"]');
+            const inputKmActual = form.querySelector('[name="KmActual"]');
+            const inputKmRecorridos = form.querySelector('[name="KmRecorridos"]');
+
+            function calcularKmRecorridos() {
+                const kmAnterior = parseFloat(inputKmAnterior.value) || 0;
+                const kmActual = parseFloat(inputKmActual.value) || 0;
+
+                if (kmActual >= kmAnterior) {
+                    const recorridos = kmActual - kmAnterior;
+                    inputKmRecorridos.value = recorridos;
+                } else {
+                    inputKmRecorridos.value = 0;
+                }
+
+                //revalidacion d ecampo calculado si FormValidation lo requiere 
+                if (validator) {
+                    validator.revalidateField('KmRecorridos');
+                }
+            }
+
+            if (inputKmAnterior && inputKmActual && inputKmRecorridos) {
+                inputKmAnterior.addEventListener('input', calcularKmRecorridos);
+                inputKmActual.addEventListener('input', calcularKmRecorridos);
+            }
+
+
             // LÓGICA DE COMBOS EN CASCADA
             // Región a Planta
             $(form.querySelector('[name="IdRegion"]')).on('change', function () {
