@@ -107,31 +107,55 @@
             handleSubmitValidation();
 
 
-            //logica calulo de km recorridos 
+            //logica calulos y campos automaticos como km recorridos y rendimiento 
             const inputKmAnterior = form.querySelector('[name="KmAnterior"]');
             const inputKmActual = form.querySelector('[name="KmActual"]');
             const inputKmRecorridos = form.querySelector('[name="KmRecorridos"]');
+            const inputImporte = form.querySelector('[name="Importe"]');
+            const inputLitros = form.querySelector('[name="Litros"]');
+            const inputRendimiento = form.querySelector('[name="Rendimiento"]');
+            const inputCostoLt = form.querySelector('[name="CostoXLt"]');
 
-            function calcularKmRecorridos() {
+            function calcularvalores() {
                 const kmAnterior = parseFloat(inputKmAnterior.value) || 0;
                 const kmActual = parseFloat(inputKmActual.value) || 0;
+                const importe = parseFloat(inputImporte.value) || 0;
+                const litros = parseFloat(inputLitros.value) || 0;
 
+
+                //calcular km recorridos
+                let kmRecorridos = 0;
                 if (kmActual >= kmAnterior) {
-                    const recorridos = kmActual - kmAnterior;
-                    inputKmRecorridos.value = recorridos;
+                    kmRecorridos = kmActual - kmAnterior;
+                    inputKmRecorridos.value = kmRecorridos;
                 } else {
                     inputKmRecorridos.value = 0;
+                }
+
+
+                //calcula rendimiento (km x lt = kms recorridos / litros)
+                if (inputRendimiento) {
+                    if (litros > 0 && kmRecorridos > 0) {
+                        const rendimiento = kmRecorridos / litros;
+                        inputRendimiento.value = rendimiento.toFixed(2); //redondea a 2 decimales
+                    } else {
+                        inputRendimiento.value = "0.00";
+                    }
                 }
 
                 //revalidacion d ecampo calculado si FormValidation lo requiere 
                 if (validator) {
                     validator.revalidateField('KmRecorridos');
+                    if (inputRendimiento) validator.revalidateField('Rendimiento');
                 }
             }
 
-            if (inputKmAnterior && inputKmActual && inputKmRecorridos) {
-                inputKmAnterior.addEventListener('input', calcularKmRecorridos);
-                inputKmActual.addEventListener('input', calcularKmRecorridos);
+            //listeners de eventos para recalcular al escribir en los campos base
+            if (inputKmAnterior && inputKmActual && inputImporte && inputLitros) {
+                inputKmAnterior.addEventListener('input', calcularvalores);
+                inputKmActual.addEventListener('input', calcularvalores);
+                inputImporte.addEventListener('input', calcularvalores);
+                inputLitros.addEventListener('input', calcularvalores);
             }
 
 
