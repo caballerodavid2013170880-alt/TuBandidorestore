@@ -1,8 +1,8 @@
-SET @menu_id := 126;
+SET @menu_id := 127;
 SET @catalogos_id := 90;
 
 INSERT INTO menu (idmenu, menu_idpadre, titulo, fecharegistro, activo, icono, ruta)
-SELECT @menu_id, @catalogos_id, 'Llantas', NOW(), 1, 'ki-outline ki-car-2', '/ModuloAdministrativo/Llantas'
+SELECT @menu_id, @catalogos_id, 'Marcas de llantas', NOW(), 1, 'ki-outline ki-award', '/llantasmarca'
 WHERE NOT EXISTS (
     SELECT 1
     FROM menu
@@ -10,7 +10,7 @@ WHERE NOT EXISTS (
 );
 
 UPDATE menu
-SET ruta = '/ModuloAdministrativo/Llantas'
+SET ruta = '/llantasmarca'
 WHERE idmenu = @menu_id;
 
 UPDATE permiso

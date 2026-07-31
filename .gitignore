@@ -403,3 +403,8 @@ FodyWeavers.xsd
 *.sln.iml
 /.vs/VSWorkspaceState.json
 /SUVAN.BackOffice/SUVAN.BackOffice.Portal/wwwroot/assets/img/6/1
+SUVAN.BackOffice/.config/dotnet-tools.json
+SUVAN.BackOffice/global.json
+SUVAN.BackOffice/SUVAN.BackOffice.Portal/Program.cs
+SUVAN.BackOffice/SUVAN.BackOffice.Portal/Program.cs
+SUVAN.BackOffice/SUVAN.BackOffice.Portal/Program.cs
