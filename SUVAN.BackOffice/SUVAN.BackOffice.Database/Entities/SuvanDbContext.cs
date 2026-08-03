@@ -1500,18 +1500,6 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdDepto).HasName("PRIMARY");
 
-            entity.ToTable("deptos");
-
-            entity.HasIndex(e => e.IdDeposito, "fk_deptos_deposito");
-
-            entity.HasIndex(e => e.IdPlanta, "fk_deptos_planta");
-
-            entity.HasIndex(e => new { e.IdEmpresa, e.IdRegion }, "fk_deptos_region");
-
-            entity.HasIndex(e => e.IdZona, "fk_deptos_zona");
-
-            entity.HasIndex(e => e.IdDepto, "id_depto");
-
             entity.Property(e => e.IdDepto).HasColumnName("id_depto");
             entity.Property(e => e.Activo)
                 .HasDefaultValueSql("b'1'")

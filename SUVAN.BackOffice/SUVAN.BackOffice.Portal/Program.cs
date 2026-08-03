@@ -10,11 +10,18 @@ using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var keysPath = Path.Combine(
+    builder.Environment.ContentRootPath,
+    ".keys"
+);
+
+Directory.CreateDirectory(keysPath);
+
 builder.Services.AddDataProtection()
-    .PersistKeysToFileSystem(new DirectoryInfo(@"C:\keys"))
+    .PersistKeysToFileSystem(new DirectoryInfo(keysPath))
     .SetApplicationName("AppSuvanWeb");
 
-// Configuración de la cultura global
+// Configuraciï¿½n de la cultura global
 //var cultureInfo = new CultureInfo("es-MX");
 //cultureInfo.DateTimeFormat.ShortDatePattern = "dd/MM/yyyy";
 //cultureInfo.DateTimeFormat.LongTimePattern = "dd/MM/yyyy hh:mm:ss";
@@ -72,7 +79,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 builder.Services.AddAntiforgery(options =>
 {
-  options.HeaderName = "X-CSRF-TOKEN"; // Opcional, define un encabezado específico
+  options.HeaderName = "X-CSRF-TOKEN"; // Opcional, define un encabezado especï¿½fico
 });
 
 
@@ -95,7 +102,7 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
   app.UseExceptionHandler("/Seguridad/Error");
-  // Configurar una página de error personalizada para el código de estado 404.
+  // Configurar una pï¿½gina de error personalizada para el cï¿½digo de estado 404.
   app.UseStatusCodePagesWithReExecute("/Seguridad/Error", "?statusCode={0}");
 
   // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
