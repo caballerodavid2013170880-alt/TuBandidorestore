@@ -42,7 +42,6 @@
                 <form class="form w-100" novalidate="novalidate" id="kt_llantamarca_in_form" action="@Url.Action(accionFormulario, "LlantasMarca", esEdicion ? new { id = Model.IdMarcaLlanta } : null)" method="post">
                     @Html.AntiForgeryToken()
                     <input asp-for="IdMarcaLlanta" type="hidden" />
-
                     <div class="fv-row mb-8">
                         <div class="col-sm-12">
                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
