@@ -14,6 +14,7 @@ using SUVAN.BackOffice.Service.Administrativo;
 using SUVAN.BackOffice.Portal.Controllers;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using SUVAN.BackOffice.Service.Logistica;
+using System.Net.Security;
 
 namespace SUVAN.BackOffice.Portal
 {
@@ -86,6 +87,8 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<IManoObraService, ManoObraService>();
             //Cargas Transitorias
             services.AddTransient<ICargasTransitoriasService, CargasTransitoriasService>();
+            //Cargas Por Periodo
+            services.AddTransient<ICargaPeriodoService, CargaPeriodoService>();
 
         }
 

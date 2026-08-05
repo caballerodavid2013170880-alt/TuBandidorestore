@@ -1,7 +1,7 @@
 "use strict";
 
-var KTCargasTransitoriasList = function () {
-    var table = document.getElementById('kt_table_cargas_transitorias');
+var KTCargasPeriodoList = function () {
+    var table = document.getElementById('kt_table_cargas_periodo');
     var datatable;
     var txtBuscar = document.getElementById('txtBuscarGrid');
 
@@ -22,7 +22,7 @@ var KTCargasTransitoriasList = function () {
 
             if (!this.value) return;
 
-            const response = await fetch(`/Combustible/GetPlantas?regionId=${this.value}`);
+            const response = await fetch(`/CargaPeriodo/GetPlantas?regionId=${this.value}`);
             const plantas = await response.json();
             llenarCombo(cmbPlanta, plantas);
             cmbPlanta.disabled = false;
@@ -30,12 +30,12 @@ var KTCargasTransitoriasList = function () {
 
         cmbPlanta.addEventListener('change', async function () {
             limpiarCombo(cmbZona, 'Seleccione una Zona...');
-            limpiarCombo(cmbDeposito, 'Seleccione un Deposito...');
+            limpiarCombo(cmbDeposito, 'Seleccione un Depósito...');
             destruirGrid();
 
             if (!this.value) return;
 
-            const response = await fetch(`/Combustible/GetZonas?plantaId=${this.value}`);
+            const response = await fetch(`/CargaPeriodo/GetZonas?plantaId=${this.value}`);
             const zonas = await response.json();
             llenarCombo(cmbZona, zonas);
             cmbZona.disabled = false;
@@ -47,7 +47,7 @@ var KTCargasTransitoriasList = function () {
 
             if (!this.value) return;
 
-            const response = await fetch(`/Combustible/GetDepositos?zonaId=${this.value}`);
+            const response = await fetch(`/CargaPeriodo/GetDepositos?zonaId=${this.value}`);
             const depositos = await response.json();
             llenarCombo(cmbDeposito, depositos);
             cmbDeposito.disabled = false;
@@ -56,6 +56,7 @@ var KTCargasTransitoriasList = function () {
         cmbDeposito.addEventListener('change', function () {
             if (this.value) {
                 cargarDatosGrid(this.value);
+                cargarEstadisticas(this.value);
             } else {
                 destruirGrid();
             }
@@ -67,45 +68,48 @@ var KTCargasTransitoriasList = function () {
         destruirGrid();
 
         const tbody = document.getElementById('tbodyCargas');
-        tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10"><span class="spinner-border text-primary"></span> Cargando información...</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="14" class="text-center py-10"><span class="spinner-border text-primary"></span> Cargando información...</td></tr>`;
 
-        const response = await fetch(`/Combustible/GetCargas?idDeposito=${idDeposito}`);
+        const response = await fetch(`/CargaPeriodo/GetCargasPeriodo?idDeposito=${idDeposito}`);
         const datos = await response.json();
 
         if (datos.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="9" class="text-center text-muted py-10">No se encontraron cargas transitorias en este depósito.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="14" class="text-center text-muted py-10">No se encontraron cargas en este depósito para el periodo.</td></tr>`;
             return;
         }
 
         tbody.innerHTML = '';
         datos.forEach(c => {
             const tr = document.createElement('tr');
-            tr.setAttribute('data-id-carga', c.idCarga);
-
-            // Únicamente los 5 datos solicitados
+            //datos solicitados
             tr.innerHTML = `                
-                <td>${c.vehiculoEconomico}</td>
+                <td class="fw-bold">${c.vehiculoEconomico}</td>
                 <td>${c.marca}</td>
                 <td>${c.modelo}</td>
                 <td>${c.placas}</td>
                 <td>${c.fecha}</td>
-                <td>$${c.importe.toFixed(2)}</td>
-                <td class="text-end">${c.litros}</td>
+                <td class="text-end">${c.kmAnt.toFixed(2)}</td>
+                <td class="text-end">${c.kmAct.toFixed(2)}.</td>
+                <td class="text-end text-primary fw-bold">${c.kmRec.toFixed(2)}</td>
+                <td class="text-center">#${c.nota}</td>
+                <td class="text-end">${c.litros.toFixed(2)} Lts.</td>                                
                 <td class="text-end">$${c.costoXLt.toFixed(2)}</td>
-                <td class="text-end">${c.kmActual}</td>
+                <td class="text-end">$${c.importe.toFixed(2)}</td>
+                <td class="text-end">${c.rendimiento.toFixed(2)} KmXLt</td>                
+                <td>${c.combustible}</td>
                 
             `;
             tbody.appendChild(tr);
         });
 
-        // Inicializamos DataTable con la configuración de 9 columnas 
+        // Inicializamos DataTable con la configuración de 14 columnas 
         datatable = $(table).DataTable({
             "info": false,
             'order': [],
             "pageLength": 10,
             "lengthChange": false,
             'columnDefs': [
-                { orderable: false, targets: [0, 1, 2, 3, 4, 5, 6, 7, 8] } // Deshabilita ordenamiento en los inputs
+                { orderable: false, targets: '_all' } // Deshabilita ordenamiento en los inputs
             ]
         });
 
@@ -113,19 +117,23 @@ var KTCargasTransitoriasList = function () {
         //initEventosCalculo();
     };
 
-    // 3. Recalcular Costo x Litro dinámicamente si editan Importe o Litros
-    // var initEventosCalculo = function () {
-    //     table.querySelectorAll('.txt-importe, .txt-litros').forEach(input => {
-    //         input.addEventListener('input', function () {
-    //             const fila = this.closest('tr');
-    //             const importe = parseFloat(fila.querySelector('.txt-importe').value) || 0;
-    //             const litros = parseFloat(fila.querySelector('.txt-litros').value) || 0;
+    // 3. Carga de Estadísticas del periodo (Panel Inferior)
+    var cargarEstadisticas = async function (idDeposito) {
+        try {
+            const response = await fetch(`/CargaPeriodo/GetEstadisticas?idDeposito=${idDeposito}`);
+            const stats = await response.json();
 
-    //             const costoLtInput = fila.querySelector('.txt-costo-lt');
-    //             costoLtInput.value = litros > 0 && importe > 0 ? (importe / litros).toFixed(2) : "0.00";
-    //         });
-    //     });
-    // };
+            document.getElementById('lblCargasTotales').innerText = stats.cargasTotales;
+            document.getElementById('lblConsumoLitros').innerText = stats.consumoLitros;
+            document.getElementById('lblImporteTotal').innerText = `$${stats.importeTotal}`;
+            document.getElementById('lblKmsTotales').innerText = stats.kmsRecorridosTotales;
+            document.getElementById('lblKmPorLitro').innerText = stats.kilometrosLitro;
+            document.getElementById('lblCostoPorKm').innerText = `$${stats.costoXKmRecorrido}`;
+        } catch (error) {
+            console.error('Error al cargar estadísticas:', error);
+        }
+    };
+    
 
     // Auxiliares para manipulación de combos
     var handleSearchDatatable = () => {
@@ -153,7 +161,16 @@ var KTCargasTransitoriasList = function () {
         if ($.fn.DataTable.isDataTable(table)) {
             $(table).DataTable().destroy();
         }
-        document.getElementById('tbodyCargas').innerHTML = `<tr><td colspan="5" class="text-center text-muted py-10">Seleccione un depósito para consultar las cargas transitorias.</td></tr>`;
+        document.getElementById('tbodyCargas').innerHTML = `<tr><td colspan="14" class="text-center text-muted py-10">Seleccione un deposito para consultar las cargas del periodo.</td></tr>`;
+
+        //resetear estadísticas
+        document.getElementById('lblCargasTotales').innerText = '0';
+        document.getElementById('lblConsumoLitros').innerText = '0';
+        document.getElementById('lblImporteTotal').innerText = '$0.00';
+        document.getElementById('lblKmsTotales').innerText = '0.00';
+        document.getElementById('lblKmPorLitro').innerText = '0.00';
+        document.getElementById('lblCostoPorKm').innerText = '$0.00';
+
         if (txtBuscar) {
             txtBuscar.disabled = true;
             txtBuscar.value = '';
@@ -170,6 +187,5 @@ var KTCargasTransitoriasList = function () {
 }();
 
 KTUtil.onDOMContentLoaded(function () {
-    KTCargasTransitoriasList.init();
+    KTCargasPeriodoList.init();
 });
-
