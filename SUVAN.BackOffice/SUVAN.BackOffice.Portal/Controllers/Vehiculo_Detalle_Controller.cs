@@ -1,21 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using SUVAN.BackOffice.Models.ViewModel.Logistica;
-using SUVAN.BackOffice.Service.Administrativo;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading.Tasks;
-using SUVAN.BackOffice.Portal.Models;
-using SUVAN.BackOffice.Database.Entities;
-using SUVAN.BackOffice.Portal.Helper;
-using SUVAN.BackOffice.Service.Configuracion;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
+using SUVAN.BackOffice.Database.Entities;
 using SUVAN.BackOffice.Models.ViewModel.Configuracion;
+using SUVAN.BackOffice.Models.ViewModel.Logistica;
+using SUVAN.BackOffice.Portal.Helper;
+using SUVAN.BackOffice.Portal.Models;
+using SUVAN.BackOffice.Service.Administrativo;
+using SUVAN.BackOffice.Service.Configuracion;
+using System;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using static SUVAN.BackOffice.Models.ViewModel.Logistica.VehiculoDetalleViewModel;
 
 namespace SUVAN.BackOffice.Portal.Controllers
 {
+    [Authorize]
     public class VehiculoDetalleController : Controller
     {
         private readonly ILogger<VehiculoDetalleController> _logger;
@@ -84,11 +86,12 @@ namespace SUVAN.BackOffice.Portal.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> NavegacionVehiculoDetalle(VehiculoDetalleViewModel model, int IdEmpresa)
+        public async Task<IActionResult> NavegacionVehiculoDetalle(VehiculoDetalleViewModel model)
         {
             try
             {
-                IdEmpresa = User.GetEmpresaId();
+                model.IdEmpresa = User.GetEmpresaId();
+                //IdEmpresa = User.GetEmpresaId();
                 var Usuario = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Name)!.Value;
 
                 if (!ModelState.IsValid)
@@ -98,7 +101,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     return View(model);
                 }
 
-                var result = await vehiculoService.AgregarVehiculoDetalle(model, IdEmpresa, Usuario);
+                var result = await vehiculoService.AgregarVehiculoDetalle(model, model.IdEmpresa ?? 0, Usuario);
 
                 if (result)
                 {
@@ -144,6 +147,57 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             var detalle = await vehiculoService.ObtenerEspecifiPorMarcaModelo(IdMarca, IdModelo);
             return Json(detalle);
+        }
+
+
+        /// <summary>
+        /// Obtiene variables de contextode sesion del usuario para la validación de datos
+        /// </summary>
+        private (int idEmpresa,int idUsuario, int? idRegion, int? idPlanta, int? idZona, int? idDeposito) GetUserContext() 
+        {
+            int idEmpresa = User.GetEmpresaId();
+            int idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+
+            int? idRegion = null;
+            int? idPlanta = null;
+            int? idZona = null;
+            int? idDeposito = null;
+
+            return (idEmpresa, idUsuario, idRegion, idPlanta, idZona, idDeposito);
+        }
+
+        //metodos para la cascada de Jerarquia Region -> Planta -> Zona -> Deposito
+        [HttpPost]
+        public async Task<IActionResult> GetRegiones()
+        {
+            var usr = GetUserContext();
+            var regiones = await vehiculoService.GetRegionesPorEmpresa(usr.idEmpresa);
+            return Json(regiones);
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> GetPlantasPorRegion(int idRegion)
+        {
+            var usr = GetUserContext();
+            var plantas = await vehiculoService.GetPlantasPorRegion(usr.idEmpresa, idRegion);
+            return Json(plantas);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetZonasPorPlanta(int idRegion,int idPlanta)
+        {
+            var usr = GetUserContext();
+            var zonas = await vehiculoService.GetZonasPorPlanta(usr.idEmpresa, idRegion, idPlanta);
+            return Json(zonas);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDepositosPorZona(int idRegion, int idPlanta, int idZona)
+        {
+            var usr = GetUserContext(); ;
+            var depositos = await vehiculoService.GetDepositosPorZona(usr.idEmpresa, idRegion, idPlanta, idZona);
+            return Json(depositos);
         }
     }
 }

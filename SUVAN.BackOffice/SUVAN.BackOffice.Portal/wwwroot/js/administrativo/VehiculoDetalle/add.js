@@ -371,6 +371,77 @@
     };
 }();
 
+
+//Inicializacion de la logica de cascada para los select de region, planta, zona y deposito
+function inicializarUbicacionCascada() {
+    cargarRegiones();
+
+    $(document).off('change', '#selectIdRegion').on('change', '#selectIdRegion', function () {
+        const idRegion = $(this).val();
+        $('#selectIdPlanta').html('<option value="">Seleccione una planta</option>').prop('disabled', !idRegion);
+        $('#selectIdZona').html('<option value="">Seleccione una Zona</option>').prop('disabled', true);
+        $('#selectIdDeposito').html('<option value="">Seleccione un Depósito</option>').prop('disabled', true);
+
+        if (idRegion) {
+            $.get(`/VehiculoDetalle/GetPlantasPorRegion?idRegion=${idRegion}`, function (data) {
+                let opciones = '<option value="">Seleccione una planta</option>';
+                data.forEach(item => {
+                    opciones += `<option value="${item.idPlanta}">${item.nombrePlanta}</option>`;
+                });
+                $('#selectIdPlanta').html(opciones).prop('disabled', false);
+            });
+        }
+    });
+
+    $(document).off('change', '#selectIdPlanta').on('change', '#selectIdPlanta', function () {
+        const idRegion = $('#selectIdRegion').val();
+        const idPlanta = $(this).val();
+        $('#selectIdZona').html('<option value="">Seleccione una Zona</option>').prop('disabled', !idPlanta);
+        $('#selectIdDeposito').html('<option value="">Seleccione un Depósito</option>').prop('disabled', true);
+
+        if (idPlanta) {
+            $.get(`/VehiculoDetalle/GetZonasPorPlanta?idRegion=${idRegion}&idPlanta=${idPlanta}`, function (data) {
+                let opciones = '<option value="">Seleccione una Zona</option>';
+                data.forEach(item => {
+                    opciones += `<option value="${item.idZona}">${item.nombreZona}</option>`;
+                });
+                $('#selectIdZona').html(opciones).prop('disabled', false);
+            });
+        }
+    });
+
+    $(document).off('change', '#selectIdZona').on('change', '#selectIdZona', function () {
+        const idRegion = $('#selectIdRegion').val();
+        const idPlanta = $('#selectIdPlanta').val();
+        const idZona = $(this).val();
+        $('#selectIdDeposito').html('<option value="">Seleccione un Depósito</option>').prop('disabled', !idZona);
+
+        if (idZona) {
+            $.get(`/VehiculoDetalle/GetDepositosPorZona?idRegion=${idRegion}&idPlanta=${idPlanta}&idZona=${idZona}`, function (data) {
+                let opciones = '<option value="">Seleccione un Depósito</option>';
+                data.forEach(item => {
+                    opciones += `<option value="${item.idDeposito}">${item.nombreDeposito}</option>`;
+                });
+                $('#selectIdDeposito').html(opciones).prop('disabled', false);
+            });
+        }
+    });
+}
+
+function cargarRegiones() {
+    $.post('/VehiculoDetalle/GetRegiones', function (data) {
+        let opciones = '<option value="">Seleccione una región</option>';
+        data.forEach(item => {
+            opciones += `<option value="${item.idRegion}">${item.nombreRegion}</option>`;
+        });
+        $('#selectIdRegion').html(opciones);
+    });
+}
+
+
+
+//ejecucion general al cargar el DOM
 KTUtil.onDOMContentLoaded(function () {
     KTDetalle.init();
+    inicializarUbicacionCascada();
 });
