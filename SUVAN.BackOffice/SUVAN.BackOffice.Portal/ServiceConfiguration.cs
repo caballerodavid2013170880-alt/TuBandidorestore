@@ -85,10 +85,15 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<IPreventivoService, PreventivoService>();
             // Mano de Obra
             services.AddTransient<IManoObraService, ManoObraService>();
+
             //Cargas Transitorias
             services.AddTransient<ICargasTransitoriasService, CargasTransitoriasService>();
             //Cargas Por Periodo
             services.AddTransient<ICargaPeriodoService, CargaPeriodoService>();
+            
+            // Llantas
+            services.AddTransient<ILlantaService, LlantaService>();
+            services.AddTransient<ILlantaMarcaService, LlantaMarcaService>();
 
         }
 

@@ -40,4 +40,6 @@ public partial class Depto
     public virtual ICollection<TarCom> TarComs { get; set; } = new List<TarCom>();
 
     public virtual ICollection<TarIave> TarIaves { get; set; } = new List<TarIave>();
+
+    public virtual ICollection<UsuarioJerarquium> UsuarioJerarquia { get; set; } = new List<UsuarioJerarquium>();
 }

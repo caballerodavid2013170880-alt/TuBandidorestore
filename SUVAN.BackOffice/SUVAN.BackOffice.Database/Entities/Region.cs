@@ -31,6 +31,8 @@ public partial class Region
 
     public virtual ICollection<TarIave> TarIaves { get; set; } = new List<TarIave>();
 
+    public virtual ICollection<UsuarioJerarquium> UsuarioJerarquia { get; set; } = new List<UsuarioJerarquium>();
+
     public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
 
     public virtual ICollection<Zona> Zonas { get; set; } = new List<Zona>();

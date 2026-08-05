@@ -9,26 +9,16 @@ namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class SuvanDbContext : DbContext
 {
-
     private readonly IConfiguration configuration;
-
     public SuvanDbContext()
-
     {
-
     }
 
     public SuvanDbContext(DbContextOptions<SuvanDbContext> options, IConfiguration configuration)
-
-    : base(options)
-
+        : base(options)
     {
-
-    this.configuration = configuration;
-
+        this.configuration = configuration;
     }
-
-
     public virtual DbSet<Admin> Admins { get; set; }
 
     public virtual DbSet<AdminEmpresa> AdminEmpresas { get; set; }
@@ -143,6 +133,10 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<LlantaInspeccion> LlantaInspeccions { get; set; }
 
+    public virtual DbSet<LlantaMarca> LlantaMarcas { get; set; }
+
+    public virtual DbSet<LlantaModelo> LlantaModelos { get; set; }
+
     public virtual DbSet<LlantaMotivoRetiro> LlantaMotivoRetiros { get; set; }
 
     public virtual DbSet<LlantaRenovado> LlantaRenovados { get; set; }
@@ -185,8 +179,9 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Mfaportal> Mfaportals { get; set; }
 
-    public virtual DbSet<Modelo> Modelos { get; set; }
     public virtual DbSet<ModelRutaConfiguracion> ModelRutaConfiguracions { get; set; }
+
+    public virtual DbSet<Modelo> Modelos { get; set; }
 
     public virtual DbSet<Monedero> Monederos { get; set; }
 
@@ -302,6 +297,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
+    public virtual DbSet<UsuarioJerarquium> UsuarioJerarquia { get; set; }
+
     public virtual DbSet<Variable> Variables { get; set; }
 
     public virtual DbSet<Variableempresa> Variableempresas { get; set; }
@@ -325,10 +322,8 @@ public partial class SuvanDbContext : DbContext
     public virtual DbSet<Zona> Zonas { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    //#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-    => optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
-
-
+// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+=> optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -1505,18 +1500,6 @@ public partial class SuvanDbContext : DbContext
         {
             entity.HasKey(e => e.IdDepto).HasName("PRIMARY");
 
-            entity.ToTable("deptos");
-
-            entity.HasIndex(e => e.IdDeposito, "fk_deptos_deposito");
-
-            entity.HasIndex(e => e.IdPlanta, "fk_deptos_planta");
-
-            entity.HasIndex(e => new { e.IdEmpresa, e.IdRegion }, "fk_deptos_region");
-
-            entity.HasIndex(e => e.IdZona, "fk_deptos_zona");
-
-            entity.HasIndex(e => e.IdDepto, "id_depto");
-
             entity.Property(e => e.IdDepto).HasColumnName("id_depto");
             entity.Property(e => e.Activo)
                 .HasDefaultValueSql("b'1'")
@@ -2477,6 +2460,83 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_llanta_inspeccion_tipo");
         });
 
+        modelBuilder.Entity<LlantaMarca>(entity =>
+        {
+            entity.HasKey(e => e.IdMarcaLlanta).HasName("PRIMARY");
+
+            entity.ToTable("llanta_marca");
+
+            entity.HasIndex(e => e.Nombre, "uk_llanta_marca_nombre").IsUnique();
+
+            entity.Property(e => e.IdMarcaLlanta).HasColumnName("id_marca_llanta");
+            entity.Property(e => e.Activo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("activo");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaModificacion)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .HasColumnName("nombre");
+        });
+
+        modelBuilder.Entity<LlantaModelo>(entity =>
+        {
+            entity.HasKey(e => e.IdModeloLlanta).HasName("PRIMARY");
+
+            entity.ToTable("llanta_modelo");
+
+            entity.HasIndex(e => e.IdMarcaLlanta, "ix_llanta_modelo_marca");
+
+            entity.HasIndex(e => new { e.IdMarcaLlanta, e.Nombre, e.Medida }, "uk_llanta_modelo").IsUnique();
+
+            entity.Property(e => e.IdModeloLlanta).HasColumnName("id_modelo_llanta");
+            entity.Property(e => e.Activo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("activo");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaModificacion)
+                .ValueGeneratedOnAddOrUpdate()
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.IdMarcaLlanta).HasColumnName("id_marca_llanta");
+            entity.Property(e => e.Medida)
+                .HasMaxLength(50)
+                .HasColumnName("medida");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(150)
+                .HasColumnName("nombre");
+            entity.Property(e => e.PresionMaximaPsi)
+                .HasPrecision(5, 2)
+                .HasColumnName("presion_maxima_psi");
+            entity.Property(e => e.PresionMinimaPsi)
+                .HasPrecision(5, 2)
+                .HasColumnName("presion_minima_psi");
+            entity.Property(e => e.ProfundidadOriginalMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_original_mm");
+            entity.Property(e => e.VidaUtilEstimadaKm).HasColumnName("vida_util_estimada_km");
+
+            entity.HasOne(d => d.IdMarcaLlantaNavigation).WithMany(p => p.LlantaModelos)
+                .HasForeignKey(d => d.IdMarcaLlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_modelo_marca");
+        });
+
         modelBuilder.Entity<LlantaMotivoRetiro>(entity =>
         {
             entity.HasKey(e => e.IdMotivoRetiro).HasName("PRIMARY");
@@ -2622,6 +2682,8 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasIndex(e => e.IdEstadoLlanta, "idx_llanta_id_estado");
 
+            entity.HasIndex(e => e.IdModeloLlanta, "idx_llanta_id_modelo");
+
             entity.HasIndex(e => e.CodigoLlanta, "uk_llanta_codigo").IsUnique();
 
             entity.HasIndex(e => e.NumeroSerieDot, "uk_llanta_numero_serie_dot").IsUnique();
@@ -2665,21 +2727,16 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.Observaciones)
                 .HasMaxLength(500)
                 .HasColumnName("observaciones");
-            entity.Property(e => e.PresionMaximaPsi)
-                .HasPrecision(5, 2)
-                .HasColumnName("presion_maxima_psi");
-            entity.Property(e => e.PresionMinimaPsi)
-                .HasPrecision(5, 2)
-                .HasColumnName("presion_minima_psi");
-            entity.Property(e => e.ProfundidadOriginalMm)
-                .HasPrecision(5, 2)
-                .HasColumnName("profundidad_original_mm");
-            entity.Property(e => e.VidaUtilEstimadaKm).HasColumnName("vida_util_estimada_km");
 
             entity.HasOne(d => d.IdEstadoLlantaNavigation).WithMany(p => p.Llanta)
                 .HasForeignKey(d => d.IdEstadoLlanta)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_llanta_llanta_estado");
+
+            entity.HasOne(d => d.IdModeloLlantaNavigation).WithMany(p => p.Llanta)
+                .HasForeignKey(d => d.IdModeloLlanta)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_llanta_modelo");
         });
 
         modelBuilder.Entity<Logcancelacionviaje>(entity =>
@@ -3260,7 +3317,7 @@ public partial class SuvanDbContext : DbContext
 
         modelBuilder.Entity<ModelsStoredsProcedures.ModelRutaConfiguracion>(entity =>
 
-         {
+        {
 
             entity.HasNoKey();
 
@@ -5293,6 +5350,103 @@ public partial class SuvanDbContext : DbContext
             entity.HasOne(d => d.CodigopaisIdcodigopaisNavigation).WithMany(p => p.Usuarios)
                 .HasForeignKey(d => d.CodigopaisIdcodigopais)
                 .HasConstraintName("fk_usuario_codigopais1");
+        });
+
+        modelBuilder.Entity<UsuarioJerarquium>(entity =>
+        {
+            entity.HasKey(e => e.IdUsuarioJerarquia).HasName("PRIMARY");
+
+            entity
+                .ToTable("usuario_jerarquia", tb => tb.HasComment("Tabla de asignación jerárquica unificada para todos los usuarios del sistema SUVAN"))
+                .UseCollation("utf8mb4_unicode_ci");
+
+            entity.HasIndex(e => e.IdDeposito, "idx_uj_deposito");
+
+            entity.HasIndex(e => e.IdDepto, "idx_uj_deptos");
+
+            entity.HasIndex(e => e.IdEmpresa, "idx_uj_empresa");
+
+            entity.HasIndex(e => e.IdPlanta, "idx_uj_planta");
+
+            entity.HasIndex(e => e.IdRegion, "idx_uj_region");
+
+            entity.HasIndex(e => new { e.TipoUsuario, e.IdUsuario }, "idx_uj_usuario");
+
+            entity.HasIndex(e => e.IdZona, "idx_uj_zona");
+
+            entity.Property(e => e.IdUsuarioJerarquia)
+                .HasComment("Identificador único del registro de jerarquía de usuario")
+                .HasColumnName("id_usuario_jerarquia");
+            entity.Property(e => e.Activo)
+                .HasDefaultValueSql("b'1'")
+                .HasComment("Estatus del registro (1=Activo, 0=Inactivo)")
+                .HasColumnType("bit(1)")
+                .HasColumnName("activo");
+            entity.Property(e => e.EsPrincipal)
+                .HasDefaultValueSql("b'1'")
+                .HasComment("Indica si es la jerarquía activa por defecto para el usuario (1=Sí, 0=No)")
+                .HasColumnType("bit(1)")
+                .HasColumnName("es_principal");
+            entity.Property(e => e.FechaRegistro)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasComment("Fecha de registro de la jerarquía")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_registro");
+            entity.Property(e => e.IdDeposito)
+                .HasComment("Identificador del depósito asignado (opcional)")
+                .HasColumnName("id_deposito");
+            entity.Property(e => e.IdDepto)
+                .HasComment("Identificador del departamento asignado (opcional)")
+                .HasColumnName("id_depto");
+            entity.Property(e => e.IdEmpresa)
+                .HasComment("Identificador de la empresa asignada")
+                .HasColumnName("id_empresa");
+            entity.Property(e => e.IdPlanta)
+                .HasComment("Identificador de la planta asignada (opcional)")
+                .HasColumnName("id_planta");
+            entity.Property(e => e.IdRegion)
+                .HasComment("Identificador de la región asignada (opcional)")
+                .HasColumnName("id_region");
+            entity.Property(e => e.IdUsuario)
+                .HasComment("Identificador del usuario en su tabla correspondiente (Idadmin, Idusuario, Idconductor, IdMecanico)")
+                .HasColumnName("id_usuario");
+            entity.Property(e => e.IdZona)
+                .HasComment("Identificador de la zona asignada (opcional)")
+                .HasColumnName("id_zona");
+            entity.Property(e => e.TipoUsuario)
+                .HasMaxLength(20)
+                .HasComment("Tipo de usuario: Admin, Usuario, Conductor, Mecanico")
+                .HasColumnName("tipo_usuario");
+
+            entity.HasOne(d => d.IdDepositoNavigation).WithMany(p => p.UsuarioJerarquia)
+                .HasForeignKey(d => d.IdDeposito)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_uj_deposito");
+
+            entity.HasOne(d => d.IdDeptoNavigation).WithMany(p => p.UsuarioJerarquia)
+                .HasForeignKey(d => d.IdDepto)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_uj_deptos");
+
+            entity.HasOne(d => d.IdEmpresaNavigation).WithMany(p => p.UsuarioJerarquia)
+                .HasForeignKey(d => d.IdEmpresa)
+                .HasConstraintName("fk_uj_empresa");
+
+            entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.UsuarioJerarquia)
+                .HasForeignKey(d => d.IdPlanta)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_uj_planta");
+
+            entity.HasOne(d => d.IdRegionNavigation).WithMany(p => p.UsuarioJerarquia)
+                .HasPrincipalKey(p => p.IdRegion)
+                .HasForeignKey(d => d.IdRegion)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_uj_region");
+
+            entity.HasOne(d => d.IdZonaNavigation).WithMany(p => p.UsuarioJerarquia)
+                .HasForeignKey(d => d.IdZona)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("fk_uj_zona");
         });
 
         modelBuilder.Entity<Variable>(entity =>
