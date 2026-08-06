@@ -116,6 +116,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Enums
         ConsultaPrev = 124,
         OrdEmbarque = 125,
         Llantas = 126,
-        LlantasMarca = 128
+        LlantasMarca = 128,
+        LlantasModelo = 129
     }
 }
