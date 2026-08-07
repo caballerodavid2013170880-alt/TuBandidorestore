@@ -1,24 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using SUVAN.BackOffice.Models.StoredsProcedures;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using static SUVAN.BackOffice.Models.StoredsProcedures.ModelsStoredsProcedures;
+using Microsoft.EntityFrameworkCore;
 
 namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class SuvanDbContext : DbContext
 {
-    private readonly IConfiguration configuration;
-    public SuvanDbContext()
+    public SuvanDbContext(DbContextOptions<SuvanDbContext> options)
+        : base(options)
     {
     }
 
-    public SuvanDbContext(DbContextOptions<SuvanDbContext> options, IConfiguration configuration)
-        : base(options)
-    {
-        this.configuration = configuration;
-    }
     public virtual DbSet<Admin> Admins { get; set; }
 
     public virtual DbSet<AdminEmpresa> AdminEmpresas { get; set; }
@@ -179,8 +171,6 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Mfaportal> Mfaportals { get; set; }
 
-    public virtual DbSet<ModelRutaConfiguracion> ModelRutaConfiguracions { get; set; }
-
     public virtual DbSet<Modelo> Modelos { get; set; }
 
     public virtual DbSet<Monedero> Monederos { get; set; }
@@ -309,6 +299,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<VehiculoDetalle> VehiculoDetalles { get; set; }
 
+    public virtual DbSet<VehiculoEje> VehiculoEjes { get; set; }
+
     public virtual DbSet<VehiculoEspecificacione> VehiculoEspecificaciones { get; set; }
 
     public virtual DbSet<VehiculoEspecificacionesImg> VehiculoEspecificacionesImgs { get; set; }
@@ -321,9 +313,6 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Zona> Zonas { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-// #warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-=> optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -765,7 +754,6 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasOne(d => d.IdDeptoNavigation).WithMany(p => p.CombCargas)
                 .HasForeignKey(d => d.IdDepto)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_cargas_depto");
 
             entity.HasOne(d => d.IdPlantaNavigation).WithMany(p => p.CombCargas)
@@ -790,7 +778,6 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasOne(d => d.IdfacturaNavigation).WithMany(p => p.CombCargas)
                 .HasForeignKey(d => d.Idfactura)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_cargas_factura");
 
             entity.HasOne(d => d.IdusuarioNavigation).WithMany(p => p.CombCargas)
@@ -1499,6 +1486,18 @@ public partial class SuvanDbContext : DbContext
         modelBuilder.Entity<Depto>(entity =>
         {
             entity.HasKey(e => e.IdDepto).HasName("PRIMARY");
+
+            entity.ToTable("deptos");
+
+            entity.HasIndex(e => e.IdDeposito, "fk_deptos_deposito");
+
+            entity.HasIndex(e => e.IdPlanta, "fk_deptos_planta");
+
+            entity.HasIndex(e => new { e.IdEmpresa, e.IdRegion }, "fk_deptos_region");
+
+            entity.HasIndex(e => e.IdZona, "fk_deptos_zona");
+
+            entity.HasIndex(e => e.IdDepto, "id_depto");
 
             entity.Property(e => e.IdDepto).HasColumnName("id_depto");
             entity.Property(e => e.Activo)
@@ -2289,11 +2288,6 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => d.IdVehiculo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_llanta_asignacion_vehiculo");
-
-            entity.HasOne(d => d.IdVehiculoEjeNavigation).WithMany(p => p.LlantaAsignacions)
-                .HasForeignKey(d => d.IdVehiculoEje)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("fk_llanta_asignacion_vehiculo_eje");
         });
 
         modelBuilder.Entity<LlantaConclusionInspeccion>(entity =>
@@ -3314,17 +3308,6 @@ public partial class SuvanDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_modelo_tipo_v");
         });
-
-        modelBuilder.Entity<ModelsStoredsProcedures.ModelRutaConfiguracion>(entity =>
-
-        {
-
-            entity.HasNoKey();
-
-            entity.ToView(null);
-
-        });
-
 
         modelBuilder.Entity<Monedero>(entity =>
         {
@@ -4785,9 +4768,7 @@ public partial class SuvanDbContext : DbContext
                 .HasCharSet("utf8mb3")
                 .UseCollation("utf8mb3_general_ci");
 
-            entity.Property(e => e.IdTipoEje)
-                .ValueGeneratedNever()
-                .HasColumnName("Id_tipo_eje");
+            entity.Property(e => e.IdTipoEje).HasColumnName("Id_tipo_eje");
             entity.Property(e => e.Descripcion)
                 .HasMaxLength(50)
                 .IsFixedLength()
@@ -5774,6 +5755,51 @@ public partial class SuvanDbContext : DbContext
             entity.HasOne(d => d.Id).WithMany(p => p.VehiculoDetalles)
                 .HasForeignKey(d => new { d.IdEmpresa, d.IdRegion })
                 .HasConstraintName("fk_vehiculo_detalle_region");
+        });
+
+        modelBuilder.Entity<VehiculoEje>(entity =>
+        {
+            entity.HasKey(e => e.IdVehiculoEje).HasName("PRIMARY");
+
+            entity.ToTable("vehiculo_eje");
+
+            entity.HasIndex(e => e.IdTipoEje, "ix_vehiculo_eje_tipo");
+
+            entity.HasIndex(e => e.IdVehiculo, "ix_vehiculo_eje_vehiculo");
+
+            entity.HasIndex(e => new { e.IdVehiculo, e.NumeroEje }, "uq_vehiculo_eje_numero").IsUnique();
+
+            entity.Property(e => e.IdVehiculoEje).HasColumnName("id_vehiculo_eje");
+            entity.Property(e => e.Activo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("activo");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.EliminadoPor).HasColumnName("eliminado_por");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaEliminacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_eliminacion");
+            entity.Property(e => e.FechaModificacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.IdTipoEje).HasColumnName("id_tipo_eje");
+            entity.Property(e => e.IdVehiculo).HasColumnName("id_vehiculo");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.NumeroEje).HasColumnName("numero_eje");
+
+            entity.HasOne(d => d.IdTipoEjeNavigation).WithMany(p => p.VehiculoEjes)
+                .HasForeignKey(d => d.IdTipoEje)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_eje_tipo");
+
+            entity.HasOne(d => d.IdVehiculoNavigation).WithMany(p => p.VehiculoEjes)
+                .HasForeignKey(d => d.IdVehiculo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_vehiculo_eje_vehiculo");
         });
 
         modelBuilder.Entity<VehiculoEspecificacione>(entity =>

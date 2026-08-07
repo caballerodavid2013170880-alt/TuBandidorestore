@@ -15,7 +15,7 @@ public partial class CombCarga
 
     public string FolioNota { get; set; } = null!;
 
-    public int Idfactura { get; set; }
+    public int? Idfactura { get; set; }
 
     public double Importe { get; set; }
 
@@ -49,7 +49,7 @@ public partial class CombCarga
 
     public int Idempresa { get; set; }
 
-    public int IdDepto { get; set; }
+    public int? IdDepto { get; set; }
 
     public int? Idusuario { get; set; }
 
@@ -61,7 +61,7 @@ public partial class CombCarga
 
     public virtual Deposito IdDepositoNavigation { get; set; } = null!;
 
-    public virtual Depto IdDeptoNavigation { get; set; } = null!;
+    public virtual Depto? IdDeptoNavigation { get; set; }
 
     public virtual Plantum IdPlantaNavigation { get; set; } = null!;
 
@@ -71,7 +71,7 @@ public partial class CombCarga
 
     public virtual Empresa IdempresaNavigation { get; set; } = null!;
 
-    public virtual Factura IdfacturaNavigation { get; set; } = null!;
+    public virtual Factura? IdfacturaNavigation { get; set; }
 
     public virtual Usuario? IdusuarioNavigation { get; set; }
 }

@@ -17,7 +17,7 @@ public partial class TipoEje
 
     public ushort NumeroEje { get; set; }
 
-    public virtual ICollection<LlantaAsignacion> LlantaAsignacions { get; set; } = new List<LlantaAsignacion>();
-
     public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
+
+    public virtual ICollection<VehiculoEje> VehiculoEjes { get; set; } = new List<VehiculoEje>();
 }

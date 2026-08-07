@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace SUVAN.BackOffice.Database.Entities;
@@ -50,8 +50,6 @@ public partial class LlantaAsignacion
     public virtual LlantaMotivoRetiro? IdMotivoRetiroNavigation { get; set; }
 
     public virtual LlantaTipoAsignacion IdTipoAsignacionNavigation { get; set; } = null!;
-
-    public virtual TipoEje IdVehiculoEjeNavigation { get; set; } = null!;
 
     public virtual Vehiculo IdVehiculoNavigation { get; set; } = null!;
 
