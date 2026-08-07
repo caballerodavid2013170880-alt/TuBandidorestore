@@ -421,6 +421,25 @@ namespace SUVAN.BackOffice.Service.Administrativo
             };
         }
 
+        public async Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetVehiculosParaAsignacion(int idEmpresa)
+        {
+            return await context.Vehiculos
+                .AsNoTracking()
+                //.Where(x => x.EmpresaIdempresa == idEmpresa && x.Activo == 1)
+                .OrderBy(x => x.Numeroeconomico)
+                .ThenBy(x => x.Placas)
+                .Select(x => new LlantaCrearViewModel.CatalogItemViewModel
+                {
+                    Id = x.IdVehiculo,
+                    Nombre = string.IsNullOrWhiteSpace(x.Numeroeconomico)
+                        ? x.Placas
+                        : string.IsNullOrWhiteSpace(x.Placas)
+                            ? x.Numeroeconomico
+                            : $"{x.Numeroeconomico} - {x.Placas}"
+                })
+                .ToListAsync();
+        }
+
         private static void ValidarDatosCaptura(LlantaCrearViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.CodigoLlanta) || model.CodigoLlanta.Length > 30)

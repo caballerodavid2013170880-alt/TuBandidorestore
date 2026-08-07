@@ -1,3 +1,6 @@
+@using SUVAN.BackOffice.Models.ViewModel.Administrativo;
+@model LlantaAsignacionViewModel
+
 @{
     ViewData["Title"] = "Asignación de llantas";
 }
@@ -29,10 +32,22 @@
         <div class="card">
             <!--begin::Card header-->
             <div class="card-header border-0 pt-6">
-                <div class="card-title">
-                    <div class="d-flex align-items-center position-relative my-1">
-                        <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
-                        <input type="text" id="llanta-asignacion-vehiculo-busqueda" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar vehículo" />
+                <div class="card-title w-100">
+                    <div class="d-flex flex-column flex-lg-row align-items-lg-center gap-3 w-100">
+                        <div class="w-100 w-lg-450px">
+                            <label for="llanta-asignacion-vehiculo" class="form-label fw-semibold text-gray-700">Vehículo</label>
+                            <select id="llanta-asignacion-vehiculo" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un vehículo">
+                                <option value="">Seleccione un vehículo</option>
+                                @foreach (var vehiculo in Model.Vehiculos)
+                                {
+                                    <option value="@vehiculo.Id">@vehiculo.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                        <div id="llanta-asignacion-loading" class="d-none align-items-center text-muted mt-lg-8">
+                            <span class="spinner-border spinner-border-sm me-2"></span>
+                            Cargando configuración
+                        </div>
                     </div>
                 </div>
             </div>
@@ -40,9 +55,28 @@
 
             <!--begin::Card body-->
             <div class="card-body py-4">
+                <div id="llanta-asignacion-alerta" class="alert alert-danger d-none"></div>
+                <div id="llanta-asignacion-resumen" class="row g-5 mb-6 d-none">
+                    <div class="col-12 col-md-3">
+                        <div class="fw-semibold text-muted">Número económico</div>
+                        <div id="llanta-asignacion-numero-economico" class="fw-bold text-gray-800">-</div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="fw-semibold text-muted">Placas</div>
+                        <div id="llanta-asignacion-placas" class="fw-bold text-gray-800">-</div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="fw-semibold text-muted">Unidad</div>
+                        <div id="llanta-asignacion-unidad" class="fw-bold text-gray-800">-</div>
+                    </div>
+                    <div class="col-12 col-md-3">
+                        <div class="fw-semibold text-muted">Kilometraje</div>
+                        <div id="llanta-asignacion-kilometraje" class="fw-bold text-gray-800">-</div>
+                    </div>
+                </div>
                 <div class="row g-6">
                     <div class="col-12 col-xl-8">
-                        <div class="border border-dashed border-gray-300 rounded p-10 text-center text-muted">
+                        <div id="llanta-asignacion-diagrama" class="border border-dashed border-gray-300 rounded p-10 text-center text-muted">
                             <i class="ki-outline ki-truck fs-2tx mb-4"></i>
                             <div class="fw-semibold fs-6">Selecciona un vehículo para consultar sus ejes y posiciones.</div>
                         </div>
@@ -64,6 +98,13 @@
 <!--end::Content-->
 
 @section Scripts {
+    <script>
+        window.SUVAN = window.SUVAN || {};
+        window.SUVAN.LlantaAsignacion = {
+            configuracionUrlTemplate: '@Url.Action("GetConfiguracionVehiculo", "Llantas", new { idVehiculo = "__ID__" })'
+        };
+    </script>
+    <script src="~/js/administrativo/llantaasignacion/index.js" asp-append-version="true"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>
 }
