@@ -309,6 +309,118 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return true;
         }
 
+        public async Task<LlantaConfiguracionVehiculoViewModel> GetConfiguracionVehiculoLlantas(int idVehiculo, int idEmpresa)
+        {
+            var vehiculo = await context.Vehiculos
+                .AsNoTracking()
+                .Where(x => x.IdVehiculo == idVehiculo && x.EmpresaIdempresa == idEmpresa)
+                .Select(x => new
+                {
+                    x.IdVehiculo,
+                    x.Numeroeconomico,
+                    x.Placas,
+                    x.Marca,
+                    x.Modelo,
+                    KilometrajeActual = x.VehiculoDetalles
+                        .OrderByDescending(d => d.IdVehiculoDetalle)
+                        .Select(d => d.KilometrajeAcumulado)
+                        .FirstOrDefault()
+                })
+                .FirstOrDefaultAsync();
+
+            if (vehiculo == null)
+                throw new Exception("No se encontró el vehículo o no pertenece a su empresa.");
+
+            var ejes = await context.VehiculoEjes
+                .AsNoTracking()
+                .Where(x => x.IdVehiculo == idVehiculo && x.Activo == true)
+                .OrderBy(x => x.NumeroEje)
+                .Select(x => new
+                {
+                    x.IdVehiculoEje,
+                    x.NumeroEje,
+                    x.IdTipoEje,
+                    NombreTipoEje = x.IdTipoEjeNavigation.Nombre,
+                    DescripcionTipoEje = x.IdTipoEjeNavigation.Descripcion,
+                    x.IdTipoEjeNavigation.NumeroPosiciones
+                })
+                .ToListAsync();
+
+            var asignacionesActivas = await context.LlantaAsignacions
+                .AsNoTracking()
+                .Where(x => x.IdVehiculo == idVehiculo && x.Activa == true)
+                .Select(x => new
+                {
+                    x.IdLlantaAsignacion,
+                    x.IdVehiculoEje,
+                    x.NumeroPosicion,
+                    x.IdLlanta,
+                    x.IdLlantaNavigation.CodigoLlanta,
+                    x.IdLlantaNavigation.NumeroSerieDot,
+                    Marca = x.IdLlantaNavigation.IdModeloLlantaNavigation.IdMarcaLlantaNavigation.Nombre,
+                    Modelo = x.IdLlantaNavigation.IdModeloLlantaNavigation.Nombre,
+                    x.IdLlantaNavigation.IdEstadoLlanta,
+                    EstadoLlanta = x.IdLlantaNavigation.IdEstadoLlantaNavigation.Nombre,
+                    x.FechaAsignacion,
+                    x.KmVehiculoAsignacion
+                })
+                .ToListAsync();
+
+            var asignacionesPorPosicion = asignacionesActivas
+                .GroupBy(x => new { x.IdVehiculoEje, x.NumeroPosicion })
+                .ToDictionary(x => x.Key, x => x.OrderByDescending(a => a.FechaAsignacion).First());
+
+            return new LlantaConfiguracionVehiculoViewModel
+            {
+                IdVehiculo = vehiculo.IdVehiculo,
+                NumeroEconomico = vehiculo.Numeroeconomico,
+                Placas = vehiculo.Placas,
+                Marca = vehiculo.Marca,
+                Modelo = vehiculo.Modelo,
+                KilometrajeActual = vehiculo.KilometrajeActual,
+                Ejes = ejes.Select(eje => new LlantaConfiguracionEjeViewModel
+                {
+                    IdVehiculoEje = eje.IdVehiculoEje,
+                    NumeroEje = eje.NumeroEje,
+                    IdTipoEje = eje.IdTipoEje,
+                    NombreTipoEje = eje.NombreTipoEje,
+                    DescripcionTipoEje = eje.DescripcionTipoEje,
+                    NumeroPosiciones = eje.NumeroPosiciones,
+                    Posiciones = Enumerable.Range(1, eje.NumeroPosiciones)
+                        .Select(numeroPosicion =>
+                        {
+                            var posicion = (ushort)numeroPosicion;
+                            asignacionesPorPosicion.TryGetValue(
+                                new { eje.IdVehiculoEje, NumeroPosicion = posicion },
+                                out var asignacion);
+
+                            return new LlantaConfiguracionPosicionViewModel
+                            {
+                                NumeroPosicion = posicion,
+                                Ocupada = asignacion != null,
+                                Asignacion = asignacion == null
+                                    ? null
+                                    : new LlantaConfiguracionAsignacionViewModel
+                                    {
+                                        IdLlantaAsignacion = asignacion.IdLlantaAsignacion,
+                                        IdLlanta = asignacion.IdLlanta,
+                                        CodigoLlanta = asignacion.CodigoLlanta,
+                                        NumeroSerieDot = asignacion.NumeroSerieDot,
+                                        Marca = asignacion.Marca,
+                                        Modelo = asignacion.Modelo,
+                                        IdEstadoLlanta = asignacion.IdEstadoLlanta,
+                                        EstadoLlanta = asignacion.EstadoLlanta,
+                                        FechaAsignacion = asignacion.FechaAsignacion,
+                                        KmVehiculoAsignacion = asignacion.KmVehiculoAsignacion
+                                    }
+                            };
+                        })
+                        .ToList()
+                })
+                .ToList()
+            };
+        }
+
         private static void ValidarDatosCaptura(LlantaCrearViewModel model)
         {
             if (string.IsNullOrWhiteSpace(model.CodigoLlanta) || model.CodigoLlanta.Length > 30)

@@ -10,6 +10,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         Task<bool> CrearLlanta(LlantaCrearViewModel model, int idEmpresa, int idUsuario);
         Task<bool> ActualizarLlanta(LlantaCrearViewModel model, int idEmpresa, int idUsuario);
         Task<bool> EliminarLlanta(ulong idLlanta, int idEmpresa, int idUsuario);
+        Task<LlantaConfiguracionVehiculoViewModel> GetConfiguracionVehiculoLlantas(int idVehiculo, int idEmpresa);
         Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetModelosPorMarca(int idMarcaLlanta);
         Task<LlantaCrearViewModel.ModeloDetalleViewModel?> GetDetalleModelo(int idModeloLlanta);
     }
