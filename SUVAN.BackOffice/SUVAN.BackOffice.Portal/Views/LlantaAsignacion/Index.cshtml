@@ -1,0 +1,69 @@
+@{
+    ViewData["Title"] = "Asignación de llantas";
+}
+
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <!--begin::Toolbar wrapper-->
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <!--begin::Page title-->
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <!--begin::Title-->
+                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Asignación de llantas</h1>
+                <!--end::Title-->
+            </div>
+            <!--end::Page title-->
+        </div>
+        <!--end::Toolbar wrapper-->
+    </div>
+    <!--end::Toolbar container-->
+</div>
+<!--end::Toolbar-->
+
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <!--begin::Content container-->
+    <div id="kt_app_content_container" class="app-container container-fluid">
+        <!--begin::Card-->
+        <div class="card">
+            <!--begin::Card header-->
+            <div class="card-header border-0 pt-6">
+                <div class="card-title">
+                    <div class="d-flex align-items-center position-relative my-1">
+                        <i class="ki-outline ki-magnifier fs-3 position-absolute ms-5"></i>
+                        <input type="text" id="llanta-asignacion-vehiculo-busqueda" class="form-control form-control-solid w-450px ps-13" placeholder="Buscar vehículo" />
+                    </div>
+                </div>
+            </div>
+            <!--end::Card header-->
+
+            <!--begin::Card body-->
+            <div class="card-body py-4">
+                <div class="row g-6">
+                    <div class="col-12 col-xl-8">
+                        <div class="border border-dashed border-gray-300 rounded p-10 text-center text-muted">
+                            <i class="ki-outline ki-truck fs-2tx mb-4"></i>
+                            <div class="fw-semibold fs-6">Selecciona un vehículo para consultar sus ejes y posiciones.</div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-xl-4">
+                        <div class="border border-dashed border-gray-300 rounded p-6 h-100">
+                            <div class="fw-bold text-gray-800 mb-2">Detalle de posición</div>
+                            <div class="text-muted">Sin posición seleccionada.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--end::Card body-->
+        </div>
+        <!--end::Card-->
+    </div>
+    <!--end::Content container-->
+</div>
+<!--end::Content-->
+
+@section Scripts {
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>
+}
