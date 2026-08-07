@@ -30,4 +30,6 @@ public partial class VehiculoEje
     public virtual TipoEje IdTipoEjeNavigation { get; set; } = null!;
 
     public virtual Vehiculo IdVehiculoNavigation { get; set; } = null!;
+
+    public virtual ICollection<LlantaAsignacion> LlantaAsignacions { get; set; } = new List<LlantaAsignacion>();
 }

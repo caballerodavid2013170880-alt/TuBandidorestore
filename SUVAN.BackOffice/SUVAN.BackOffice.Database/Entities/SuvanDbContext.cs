@@ -2288,6 +2288,11 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => d.IdVehiculo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_llanta_asignacion_vehiculo");
+
+            entity.HasOne(d => d.IdVehiculoEjeNavigation).WithMany(p => p.LlantaAsignacions)
+                .HasForeignKey(d => d.IdVehiculoEje)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_llanta_asignacion_vehiculo_eje");
         });
 
         modelBuilder.Entity<LlantaConclusionInspeccion>(entity =>
