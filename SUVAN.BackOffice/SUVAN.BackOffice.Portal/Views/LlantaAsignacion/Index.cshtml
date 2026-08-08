@@ -5,6 +5,8 @@
     ViewData["Title"] = "Asignación de llantas";
 }
 
+<link href="~/css/administrativo/llantaasignacion/index.css" rel="stylesheet" type="text/css" asp-append-version="true" />
+
 <!--begin::Toolbar-->
 <div id="kt_app_toolbar" class="app-toolbar ">
     <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
@@ -76,13 +78,13 @@
                 </div>
                 <div class="row g-6">
                     <div class="col-12 col-xl-8">
-                        <div id="llanta-asignacion-diagrama" class="border border-dashed border-gray-300 rounded p-10 text-center text-muted">
+                        <div id="llanta-asignacion-diagrama" class="llanta-asignacion-diagrama border border-dashed border-gray-300 rounded p-10 text-center text-muted">
                             <i class="ki-outline ki-truck fs-2tx mb-4"></i>
                             <div class="fw-semibold fs-6">Selecciona un vehículo para consultar sus ejes y posiciones.</div>
                         </div>
                     </div>
                     <div class="col-12 col-xl-4">
-                        <div class="border border-dashed border-gray-300 rounded p-6 h-100">
+                        <div id="llanta-asignacion-detalle" class="border border-dashed border-gray-300 rounded p-6 h-100">
                             <div class="fw-bold text-gray-800 mb-2">Detalle de posición</div>
                             <div class="text-muted">Sin posición seleccionada.</div>
                         </div>
@@ -101,7 +103,7 @@
     <script>
         window.SUVAN = window.SUVAN || {};
         window.SUVAN.LlantaAsignacion = {
-            configuracionUrlTemplate: '@Url.Action("GetConfiguracionVehiculo", "Llantas", new { idVehiculo = "__ID__" })'
+            configuracionUrlTemplate: '@Url.Content("~/llantas/vehiculo/__ID__/configuracion")'
         };
     </script>
     <script src="~/js/administrativo/llantaasignacion/index.js" asp-append-version="true"></script>
