@@ -7,9 +7,16 @@ var SuvanLlantaAsignacion = function () {
     var loading;
     var diagrama;
     var detalle;
+    var modalInstalacionElement;
+    var modalInstalacion;
+    var formInstalacion;
+    var selectLlantaInstalacion;
+    var submitInstalacion;
+    var alertaInstalacion;
     var config;
     var configuracionActual;
     var configuracionRequestId = 0;
+    var posicionInstalacionActual;
 
     var getValue = function (source, pascalName, camelName) {
         if (!source) {
@@ -125,6 +132,22 @@ var SuvanLlantaAsignacion = function () {
         });
     };
 
+    var postForm = function (url, formData) {
+        return fetch(url, {
+            method: "POST",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            },
+            body: formData
+        }).then(function (response) {
+            if (!response.ok) {
+                throw new Error("No fue posible guardar la instalación.");
+            }
+
+            return response.json();
+        });
+    };
+
     var setLoading = function (isLoading) {
         if (!loading) {
             return;
@@ -147,6 +170,22 @@ var SuvanLlantaAsignacion = function () {
         if (alerta) {
             alerta.classList.add("d-none");
             alerta.textContent = "";
+        }
+    };
+
+    var showModalAlert = function (message) {
+        if (!alertaInstalacion) {
+            return;
+        }
+
+        alertaInstalacion.textContent = message || "No fue posible guardar la instalación.";
+        alertaInstalacion.classList.remove("d-none");
+    };
+
+    var hideModalAlert = function () {
+        if (alertaInstalacion) {
+            alertaInstalacion.classList.add("d-none");
+            alertaInstalacion.textContent = "";
         }
     };
 
@@ -235,6 +274,81 @@ var SuvanLlantaAsignacion = function () {
             '<div class="fw-bold text-gray-800">' + escapeHtml(formatNumber(getValue(asignacion, "KmVehiculoAsignacion", "kmVehiculoAsignacion"))) + '</div>',
             '</div>'
         ].join("");
+    };
+
+    var setSelectOptions = function (select, placeholder, items) {
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML = "";
+        select.appendChild(new Option(placeholder, ""));
+
+        items.forEach(function (item) {
+            select.appendChild(new Option(getValue(item, "Nombre", "nombre"), getValue(item, "Id", "id")));
+        });
+
+        if (window.jQuery) {
+            window.jQuery(select).val("").trigger("change.select2");
+        }
+    };
+
+    var setSubmitInstalacionLoading = function (isLoading) {
+        if (!submitInstalacion) {
+            return;
+        }
+
+        submitInstalacion.disabled = isLoading;
+        submitInstalacion.setAttribute("data-kt-indicator", isLoading ? "on" : "off");
+    };
+
+    var abrirModalInstalacion = async function (eje, posicion) {
+        if (!modalInstalacion || !formInstalacion) {
+            return;
+        }
+
+        var idVehiculo = getValue(configuracionActual, "IdVehiculo", "idVehiculo");
+        var idVehiculoEje = getValue(eje, "IdVehiculoEje", "idVehiculoEje");
+        var numeroEje = getValue(eje, "NumeroEje", "numeroEje");
+        var numeroPosicion = getValue(posicion, "NumeroPosicion", "numeroPosicion");
+        var kilometraje = getValue(configuracionActual, "KilometrajeActual", "kilometrajeActual");
+        var today = new Date().toISOString().slice(0, 10);
+
+        posicionInstalacionActual = {
+            idVehiculo: idVehiculo,
+            idVehiculoEje: idVehiculoEje,
+            numeroPosicion: numeroPosicion
+        };
+
+        formInstalacion.reset();
+        hideModalAlert();
+        setSelectOptions(selectLlantaInstalacion, "Cargando llantas disponibles...", []);
+
+        document.getElementById("llanta-instalacion-id-vehiculo").value = idVehiculo;
+        document.getElementById("llanta-instalacion-id-vehiculo-eje").value = idVehiculoEje;
+        document.getElementById("llanta-instalacion-numero-posicion").value = numeroPosicion;
+        document.getElementById("llanta-instalacion-posicion").textContent = "Eje " + numeroEje + " - Posición " + numeroPosicion;
+        document.getElementById("llanta-instalacion-fecha").value = today;
+        document.getElementById("llanta-instalacion-km").value = kilometraje !== null && kilometraje !== undefined ? Math.trunc(Number(kilometraje)) : "";
+
+        modalInstalacion.show();
+
+        try {
+            var result = await getJson(config.llantasDisponiblesUrl);
+
+            if (!result.success) {
+                throw new Error(result.message || "No fue posible cargar las llantas disponibles.");
+            }
+
+            setSelectOptions(selectLlantaInstalacion, "Seleccione una llanta", result.data || []);
+
+            if (!result.data || !result.data.length) {
+                showModalAlert("No hay llantas disponibles para instalar.");
+            }
+        } catch (error) {
+            setSelectOptions(selectLlantaInstalacion, "No fue posible cargar llantas", []);
+            showModalAlert(error.message);
+        }
     };
 
     var renderDiagrama = function (ejes) {
@@ -345,6 +459,14 @@ var SuvanLlantaAsignacion = function () {
                 width: "100%",
                 placeholder: selectorVehiculo.getAttribute("data-placeholder") || "Seleccione"
             });
+
+            if (selectLlantaInstalacion) {
+                window.jQuery(selectLlantaInstalacion).select2({
+                    width: "100%",
+                    dropdownParent: window.jQuery(modalInstalacionElement),
+                    placeholder: selectLlantaInstalacion.getAttribute("data-placeholder") || "Seleccione"
+                });
+            }
         }
     };
 
@@ -402,6 +524,8 @@ var SuvanLlantaAsignacion = function () {
                 var eje = ejes[parseInt(button.getAttribute("data-eje-index"), 10)];
                 var posiciones = getValue(eje, "Posiciones", "posiciones") || [];
                 var posicion = posiciones[parseInt(button.getAttribute("data-posicion-index"), 10)];
+                var asignacion = getValue(posicion, "Asignacion", "asignacion");
+                var ocupada = getValue(posicion, "Ocupada", "ocupada") === true;
 
                 diagrama.querySelectorAll(".llanta-posicion").forEach(function (item) {
                     item.classList.remove("active");
@@ -409,6 +533,58 @@ var SuvanLlantaAsignacion = function () {
                 button.classList.add("active");
 
                 renderDetallePosicion(eje, posicion);
+
+                if (!ocupada && !asignacion) {
+                    abrirModalInstalacion(eje, posicion);
+                }
+            });
+        }
+
+        if (formInstalacion) {
+            formInstalacion.addEventListener("submit", function (event) {
+                event.preventDefault();
+                hideModalAlert();
+
+                if (!posicionInstalacionActual) {
+                    showModalAlert("Selecciona una posición libre.");
+                    return;
+                }
+
+                if (!selectLlantaInstalacion.value) {
+                    showModalAlert("Selecciona una llanta disponible.");
+                    return;
+                }
+
+                var fecha = document.getElementById("llanta-instalacion-fecha").value;
+                var kilometraje = document.getElementById("llanta-instalacion-km").value;
+
+                if (!fecha) {
+                    showModalAlert("Captura la fecha de instalación.");
+                    return;
+                }
+
+                if (kilometraje === "" || Number(kilometraje) < 0) {
+                    showModalAlert("Captura un kilometraje válido.");
+                    return;
+                }
+
+                setSubmitInstalacionLoading(true);
+
+                postForm(config.instalarUrl, new FormData(formInstalacion))
+                    .then(function (result) {
+                        if (!result.success) {
+                            throw new Error(result.message || "No fue posible instalar la llanta.");
+                        }
+
+                        modalInstalacion.hide();
+                        return cargarConfiguracion(posicionInstalacionActual.idVehiculo);
+                    })
+                    .catch(function (error) {
+                        showModalAlert(error.message);
+                    })
+                    .finally(function () {
+                        setSubmitInstalacionLoading(false);
+                    });
             });
         }
     };
@@ -420,6 +596,11 @@ var SuvanLlantaAsignacion = function () {
         loading = document.getElementById("llanta-asignacion-loading");
         diagrama = document.getElementById("llanta-asignacion-diagrama");
         detalle = document.getElementById("llanta-asignacion-detalle");
+        modalInstalacionElement = document.getElementById("llanta-instalacion-modal");
+        formInstalacion = document.getElementById("llanta-instalacion-form");
+        selectLlantaInstalacion = document.getElementById("llanta-instalacion-id-llanta");
+        submitInstalacion = document.getElementById("llanta-instalacion-submit");
+        alertaInstalacion = document.getElementById("llanta-instalacion-alerta");
         config = window.SUVAN && window.SUVAN.LlantaAsignacion ? window.SUVAN.LlantaAsignacion : {};
 
         if (!selectorVehiculo || !config.configuracionUrlTemplate) {
@@ -427,6 +608,10 @@ var SuvanLlantaAsignacion = function () {
         }
 
         try {
+            if (modalInstalacionElement && window.bootstrap) {
+                modalInstalacion = new bootstrap.Modal(modalInstalacionElement);
+            }
+
             initSelectVehiculo();
             bindEvents();
         } catch (error) {

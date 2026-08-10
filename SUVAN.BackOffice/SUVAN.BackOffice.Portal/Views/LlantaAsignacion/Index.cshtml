@@ -99,11 +99,74 @@
 </div>
 <!--end::Content-->
 
+<div class="modal fade" id="llanta-instalacion-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="llanta-instalacion-form" autocomplete="off">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="IdVehiculo" id="llanta-instalacion-id-vehiculo" />
+                <input type="hidden" name="IdVehiculoEje" id="llanta-instalacion-id-vehiculo-eje" />
+                <input type="hidden" name="NumeroPosicion" id="llanta-instalacion-numero-posicion" />
+
+                <div class="modal-header">
+                    <div>
+                        <h3 class="modal-title">Instalar llanta</h3>
+                        <div id="llanta-instalacion-posicion" class="text-muted fw-semibold"></div>
+                    </div>
+                    <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="ki-outline ki-cross fs-2"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div id="llanta-instalacion-alerta" class="alert alert-danger d-none"></div>
+
+                    <div class="mb-5">
+                        <label for="llanta-instalacion-id-llanta" class="required form-label">Llanta disponible</label>
+                        <select id="llanta-instalacion-id-llanta" name="IdLlanta" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione una llanta">
+                            <option value="">Seleccione una llanta</option>
+                        </select>
+                    </div>
+
+                    <div class="row g-5">
+                        <div class="col-md-6">
+                            <label for="llanta-instalacion-fecha" class="required form-label">Fecha de instalación</label>
+                            <input id="llanta-instalacion-fecha" name="FechaAsignacion" type="date" class="form-control form-control-solid" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="llanta-instalacion-km" class="required form-label">Kilometraje</label>
+                            <input id="llanta-instalacion-km" name="KmVehiculoAsignacion" type="number" min="0" step="1" class="form-control form-control-solid" />
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="llanta-instalacion-observaciones" class="form-label">Observaciones</label>
+                        <textarea id="llanta-instalacion-observaciones" name="ObservacionesAsignacion" class="form-control form-control-solid" rows="3" maxlength="500"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="llanta-instalacion-submit" class="btn btn-primary">
+                        <span class="indicator-label">Instalar</span>
+                        <span class="indicator-progress">
+                            Guardando...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         window.SUVAN = window.SUVAN || {};
         window.SUVAN.LlantaAsignacion = {
-            configuracionUrlTemplate: '@Url.Content("~/llantas/vehiculo/__ID__/configuracion")'
+            configuracionUrlTemplate: '@Url.Content("~/llantas/vehiculo/__ID__/configuracion")',
+            llantasDisponiblesUrl: '@Url.Content("~/llantasasignacion/llantas-disponibles")',
+            instalarUrl: '@Url.Content("~/llantasasignacion/instalar")'
         };
     </script>
     <script src="~/js/administrativo/llantaasignacion/index.js" asp-append-version="true"></script>

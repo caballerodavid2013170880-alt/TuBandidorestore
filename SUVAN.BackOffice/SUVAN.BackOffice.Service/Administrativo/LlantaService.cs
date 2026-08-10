@@ -6,6 +6,8 @@ namespace SUVAN.BackOffice.Service.Administrativo
 {
     public class LlantaService : ILlantaService
     {
+        private const ushort TipoAsignacionInicial = 1;
+
         private readonly SuvanDbContext context;
 
         public LlantaService(SuvanDbContext context)
@@ -438,6 +440,221 @@ namespace SUVAN.BackOffice.Service.Administrativo
                             : $"{x.Numeroeconomico} - {x.Placas}"
                 })
                 .ToListAsync();
+        }
+
+        public async Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetLlantasDisponiblesParaInstalacion(int idEmpresa)
+        {
+            var estadosInstalables = await context.LlantaEstados
+                .AsNoTracking()
+                .Where(x => x.EsActivo == true)
+                .Select(x => new { x.IdEstadoLlanta, x.Nombre })
+                .ToListAsync();
+
+            var idsEstadosInstalables = estadosInstalables
+                .Where(x =>
+                {
+                    var nombre = NormalizarTexto(x.Nombre);
+                    return !nombre.Contains("instalada")
+                        && !nombre.Contains("inspeccion")
+                        && !nombre.Contains("reparacion")
+                        && !nombre.Contains("renovado")
+                        && !nombre.Contains("fuera")
+                        && !nombre.Contains("baja");
+                })
+                .Select(x => x.IdEstadoLlanta)
+                .ToList();
+
+            return await context.Llanta
+                .AsNoTracking()
+                .Where(x => !x.Eliminado
+                         && x.IdEmpresa == (uint)idEmpresa
+                         && idsEstadosInstalables.Contains(x.IdEstadoLlanta)
+                         && !context.LlantaAsignacions.Any(a => a.IdLlanta == x.IdLlanta && a.Activa == true))
+                .OrderBy(x => x.CodigoLlanta)
+                .Select(x => new LlantaCrearViewModel.CatalogItemViewModel
+                {
+                    Id = (int)x.IdLlanta,
+                    Nombre = x.CodigoLlanta + " - " + x.NumeroSerieDot + " / " + x.IdModeloLlantaNavigation.IdMarcaLlantaNavigation.Nombre + " " + x.IdModeloLlantaNavigation.Nombre
+                })
+                .ToListAsync();
+        }
+
+        public async Task<bool> InstalarLlanta(LlantaInstalacionViewModel model, int idEmpresa, int idUsuario)
+        {
+            if (model.IdVehiculo <= 0)
+                throw new Exception("El vehículo es obligatorio.");
+
+            if (model.IdVehiculoEje <= 0)
+                throw new Exception("El eje es obligatorio.");
+
+            if (model.NumeroPosicion <= 0)
+                throw new Exception("La posición es obligatoria.");
+
+            if (model.IdLlanta == 0)
+                throw new Exception("La llanta es obligatoria.");
+
+            if (model.FechaAsignacion == default)
+                throw new Exception("La fecha de instalación es obligatoria.");
+
+            if (model.ObservacionesAsignacion?.Length > 500)
+                throw new Exception("Las observaciones no deben exceder 500 caracteres.");
+
+            var hoy = DateTime.Today;
+            if (model.FechaAsignacion.Date > hoy)
+                throw new Exception("La fecha de instalación no puede ser posterior a la fecha actual.");
+
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            var vehiculoExiste = await context.Vehiculos
+                .AnyAsync(x => x.IdVehiculo == model.IdVehiculo && x.EmpresaIdempresa == idEmpresa);
+
+            if (!vehiculoExiste)
+                throw new Exception("No se encontró el vehículo o no pertenece a su empresa.");
+
+            var eje = await context.VehiculoEjes
+                .Include(x => x.IdTipoEjeNavigation)
+                .FirstOrDefaultAsync(x => x.IdVehiculoEje == model.IdVehiculoEje
+                                       && x.IdVehiculo == model.IdVehiculo
+                                       && x.Activo == true);
+
+            if (eje == null)
+                throw new Exception("No se encontró el eje o no pertenece al vehículo.");
+
+            if (model.NumeroPosicion > eje.IdTipoEjeNavigation.NumeroPosiciones)
+                throw new Exception("La posición seleccionada no pertenece al eje.");
+
+            var posicionOcupada = await context.LlantaAsignacions
+                .AnyAsync(x => x.IdVehiculoEje == model.IdVehiculoEje
+                            && x.NumeroPosicion == model.NumeroPosicion
+                            && x.Activa == true);
+
+            if (posicionOcupada)
+                throw new Exception("La posición seleccionada ya tiene una llanta instalada.");
+
+            var llanta = await context.Llanta
+                .FirstOrDefaultAsync(x => x.IdLlanta == model.IdLlanta
+                                       && x.IdEmpresa == (uint)idEmpresa
+                                       && !x.Eliminado);
+
+            if (llanta == null)
+                throw new Exception("No se encontró la llanta o no pertenece a su empresa.");
+
+            var llantaConAsignacionActiva = await context.LlantaAsignacions
+                .AnyAsync(x => x.IdLlanta == model.IdLlanta && x.Activa == true);
+
+            if (llantaConAsignacionActiva)
+                throw new Exception("La llanta seleccionada ya tiene una asignación activa.");
+
+            var estadoActualLlanta = await context.LlantaEstados
+                .AsNoTracking()
+                .Where(x => x.IdEstadoLlanta == llanta.IdEstadoLlanta)
+                .Select(x => x.Nombre)
+                .FirstOrDefaultAsync();
+
+            if (!EstadoPermiteInstalacion(estadoActualLlanta))
+                throw new Exception("La llanta seleccionada no está disponible para instalación.");
+
+            var existeTipoAsignacionInicial = await context.LlantaTipoAsignacions
+                .AsNoTracking()
+                .AnyAsync(x => x.IdTipoAsignacion == TipoAsignacionInicial && x.EsActivo == true);
+
+            if (!existeTipoAsignacionInicial)
+                throw new Exception("No se encontró el tipo de asignación inicial activo con id 1.");
+
+            var estadoInstalada = await context.LlantaEstados
+                .AsNoTracking()
+                .Where(x => x.EsActivo == true)
+                .Select(x => new { x.IdEstadoLlanta, x.Nombre })
+                .ToListAsync();
+
+            var idEstadoInstalada = estadoInstalada
+                .FirstOrDefault(x => NormalizarTexto(x.Nombre).Contains("instalada"))?.IdEstadoLlanta;
+
+            if (!idEstadoInstalada.HasValue)
+                throw new Exception("No se encontró el estado de llanta Instalada.");
+
+            var kilometrajesVehiculo = await context.VehiculoDetalles
+                .AsNoTracking()
+                .Where(x => x.IdVehiculo == model.IdVehiculo && x.KilometrajeAcumulado.HasValue)
+                .Select(x => x.KilometrajeAcumulado!.Value)
+                .ToListAsync();
+
+            var kilometrajesAsignacion = await context.LlantaAsignacions
+                .AsNoTracking()
+                .Where(x => x.IdVehiculo == model.IdVehiculo)
+                .Select(x => new { x.KmVehiculoAsignacion, x.KmVehiculoRetiro })
+                .ToListAsync();
+
+            var ultimoKmVehiculo = kilometrajesVehiculo.Any()
+                ? kilometrajesVehiculo.Max()
+                : 0;
+            var ultimoKmAsignacion = kilometrajesAsignacion
+                .SelectMany(x => new[] { (uint?)x.KmVehiculoAsignacion, x.KmVehiculoRetiro })
+                .Where(x => x.HasValue)
+                .Select(x => x!.Value)
+                .DefaultIfEmpty((uint)0)
+                .Max();
+            var ultimoKmValido = Math.Max((decimal)ultimoKmVehiculo, (decimal)ultimoKmAsignacion);
+
+            if (model.KmVehiculoAsignacion < ultimoKmValido)
+                throw new Exception($"El kilometraje no puede ser menor al último kilometraje registrado ({ultimoKmValido:0}).");
+
+            var asignacion = new LlantaAsignacion
+            {
+                IdLlanta = model.IdLlanta,
+                IdVehiculo = model.IdVehiculo,
+                IdVehiculoEje = model.IdVehiculoEje,
+                NumeroPosicion = model.NumeroPosicion,
+                IdTipoAsignacion = TipoAsignacionInicial,
+                FechaAsignacion = model.FechaAsignacion,
+                KmVehiculoAsignacion = model.KmVehiculoAsignacion,
+                FechaRetiro = null,
+                KmVehiculoRetiro = null,
+                IdMotivoRetiro = null,
+                ObservacionesAsignacion = string.IsNullOrWhiteSpace(model.ObservacionesAsignacion) ? null : model.ObservacionesAsignacion.Trim(),
+                ObservacionesRetiro = null,
+                Activa = true,
+                FechaCreacion = DateTime.Now,
+                CreadoPor = (uint)idUsuario,
+                FechaModificacion = null,
+                ModificadoPor = null,
+                FechaEliminacion = null,
+                EliminadoPor = null
+            };
+
+            llanta.IdEstadoLlanta = idEstadoInstalada.Value;
+            llanta.FechaModificacion = DateTime.Now;
+            llanta.ModificadoPor = (uint)idUsuario;
+
+            context.LlantaAsignacions.Add(asignacion);
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return true;
+        }
+
+        private static bool EstadoPermiteInstalacion(string? estado)
+        {
+            var nombre = NormalizarTexto(estado);
+            return !nombre.Contains("instalada")
+                && !nombre.Contains("inspeccion")
+                && !nombre.Contains("reparacion")
+                && !nombre.Contains("renovado")
+                && !nombre.Contains("fuera")
+                && !nombre.Contains("baja");
+        }
+
+        private static string NormalizarTexto(string? value)
+        {
+            return (value ?? string.Empty)
+                .Trim()
+                .ToLowerInvariant()
+                .Replace("á", "a")
+                .Replace("é", "e")
+                .Replace("í", "i")
+                .Replace("ó", "o")
+                .Replace("ú", "u")
+                .Replace("ü", "u");
         }
 
         private static void ValidarDatosCaptura(LlantaCrearViewModel model)

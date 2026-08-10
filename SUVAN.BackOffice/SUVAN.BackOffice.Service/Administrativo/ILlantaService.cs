@@ -12,6 +12,8 @@ namespace SUVAN.BackOffice.Service.Administrativo
         Task<bool> EliminarLlanta(ulong idLlanta, int idEmpresa, int idUsuario);
         Task<LlantaConfiguracionVehiculoViewModel> GetConfiguracionVehiculoLlantas(int idVehiculo, int idEmpresa);
         Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetVehiculosParaAsignacion(int idEmpresa);
+        Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetLlantasDisponiblesParaInstalacion(int idEmpresa);
+        Task<bool> InstalarLlanta(LlantaInstalacionViewModel model, int idEmpresa, int idUsuario);
         Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetModelosPorMarca(int idMarcaLlanta);
         Task<LlantaCrearViewModel.ModeloDetalleViewModel?> GetDetalleModelo(int idModeloLlanta);
     }
