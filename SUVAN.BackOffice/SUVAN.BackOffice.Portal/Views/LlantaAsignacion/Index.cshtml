@@ -160,13 +160,87 @@
     </div>
 </div>
 
+<div class="modal fade" id="llanta-retiro-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="llanta-retiro-form" autocomplete="off">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="IdLlantaAsignacion" id="llanta-retiro-id-asignacion" />
+
+                <div class="modal-header">
+                    <div>
+                        <h3 class="modal-title">Retirar llanta</h3>
+                        <div id="llanta-retiro-posicion" class="text-muted fw-semibold"></div>
+                    </div>
+                    <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="ki-outline ki-cross fs-2"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div id="llanta-retiro-alerta" class="alert alert-danger d-none"></div>
+
+                    <div class="mb-5">
+                        <label class="form-label">Llanta instalada</label>
+                        <input id="llanta-retiro-llanta" type="text" class="form-control form-control-solid" readonly />
+                    </div>
+
+                    <div class="row g-5">
+                        <div class="col-md-6">
+                            <label for="llanta-retiro-fecha" class="required form-label">Fecha de retiro</label>
+                            <input id="llanta-retiro-fecha" name="FechaRetiro" type="date" class="form-control form-control-solid" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="llanta-retiro-km" class="required form-label">Kilometraje</label>
+                            <input id="llanta-retiro-km" name="KmVehiculoRetiro" type="number" min="0" step="1" class="form-control form-control-solid" />
+                        </div>
+                    </div>
+
+                    <div class="row g-5 mt-0">
+                        <div class="col-md-6">
+                            <label for="llanta-retiro-motivo" class="required form-label">Motivo de retiro</label>
+                            <select id="llanta-retiro-motivo" name="IdMotivoRetiro" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un motivo">
+                                <option value="">Seleccione un motivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="llanta-retiro-estado" class="required form-label">Estado destino</label>
+                            <select id="llanta-retiro-estado" name="IdEstadoDestino" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un estado">
+                                <option value="">Seleccione un estado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="llanta-retiro-observaciones" class="form-label">Observaciones</label>
+                        <textarea id="llanta-retiro-observaciones" name="ObservacionesRetiro" class="form-control form-control-solid" rows="3" maxlength="500"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="llanta-retiro-submit" class="btn btn-danger">
+                        <span class="indicator-label">Retirar</span>
+                        <span class="indicator-progress">
+                            Guardando...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     <script>
         window.SUVAN = window.SUVAN || {};
         window.SUVAN.LlantaAsignacion = {
             configuracionUrlTemplate: '@Url.Content("~/llantas/vehiculo/__ID__/configuracion")',
             llantasDisponiblesUrl: '@Url.Content("~/llantasasignacion/llantas-disponibles")',
-            instalarUrl: '@Url.Content("~/llantasasignacion/instalar")'
+            instalarUrl: '@Url.Content("~/llantasasignacion/instalar")',
+            catalogosRetiroUrl: '@Url.Content("~/llantasasignacion/catalogos-retiro")',
+            retirarUrl: '@Url.Content("~/llantasasignacion/retirar")'
         };
     </script>
     <script src="~/js/administrativo/llantaasignacion/index.js" asp-append-version="true"></script>

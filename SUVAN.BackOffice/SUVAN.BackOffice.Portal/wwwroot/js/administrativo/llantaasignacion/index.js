@@ -13,10 +13,18 @@ var SuvanLlantaAsignacion = function () {
     var selectLlantaInstalacion;
     var submitInstalacion;
     var alertaInstalacion;
+    var modalRetiroElement;
+    var modalRetiro;
+    var formRetiro;
+    var selectMotivoRetiro;
+    var selectEstadoRetiro;
+    var submitRetiro;
+    var alertaRetiro;
     var config;
     var configuracionActual;
     var configuracionRequestId = 0;
     var posicionInstalacionActual;
+    var posicionRetiroActual;
 
     var getValue = function (source, pascalName, camelName) {
         if (!source) {
@@ -189,6 +197,22 @@ var SuvanLlantaAsignacion = function () {
         }
     };
 
+    var showRetiroAlert = function (message) {
+        if (!alertaRetiro) {
+            return;
+        }
+
+        alertaRetiro.textContent = message || "No fue posible guardar el retiro.";
+        alertaRetiro.classList.remove("d-none");
+    };
+
+    var hideRetiroAlert = function () {
+        if (alertaRetiro) {
+            alertaRetiro.classList.add("d-none");
+            alertaRetiro.textContent = "";
+        }
+    };
+
     var clearResumen = function () {
         if (resumen) {
             resumen.classList.add("d-none");
@@ -302,6 +326,15 @@ var SuvanLlantaAsignacion = function () {
         submitInstalacion.setAttribute("data-kt-indicator", isLoading ? "on" : "off");
     };
 
+    var setSubmitRetiroLoading = function (isLoading) {
+        if (!submitRetiro) {
+            return;
+        }
+
+        submitRetiro.disabled = isLoading;
+        submitRetiro.setAttribute("data-kt-indicator", isLoading ? "on" : "off");
+    };
+
     var abrirModalInstalacion = async function (eje, posicion) {
         if (!modalInstalacion || !formInstalacion) {
             return;
@@ -348,6 +381,68 @@ var SuvanLlantaAsignacion = function () {
         } catch (error) {
             setSelectOptions(selectLlantaInstalacion, "No fue posible cargar llantas", []);
             showModalAlert(error.message);
+        }
+    };
+
+    var abrirModalRetiro = async function (eje, posicion) {
+        if (!modalRetiro || !formRetiro) {
+            return;
+        }
+
+        var asignacion = getValue(posicion, "Asignacion", "asignacion");
+        if (!asignacion) {
+            return;
+        }
+
+        var idVehiculo = getValue(configuracionActual, "IdVehiculo", "idVehiculo");
+        var numeroEje = getValue(eje, "NumeroEje", "numeroEje");
+        var numeroPosicion = getValue(posicion, "NumeroPosicion", "numeroPosicion");
+        var kilometraje = getValue(configuracionActual, "KilometrajeActual", "kilometrajeActual");
+        var codigoLlanta = getValue(asignacion, "CodigoLlanta", "codigoLlanta") || "-";
+        var serie = getValue(asignacion, "NumeroSerieDot", "numeroSerieDot") || "-";
+        var today = new Date().toISOString().slice(0, 10);
+
+        posicionRetiroActual = {
+            idVehiculo: idVehiculo,
+            idLlantaAsignacion: getValue(asignacion, "IdLlantaAsignacion", "idLlantaAsignacion")
+        };
+
+        formRetiro.reset();
+        hideRetiroAlert();
+        setSelectOptions(selectMotivoRetiro, "Cargando motivos...", []);
+        setSelectOptions(selectEstadoRetiro, "Cargando estados...", []);
+
+        document.getElementById("llanta-retiro-id-asignacion").value = posicionRetiroActual.idLlantaAsignacion;
+        document.getElementById("llanta-retiro-posicion").textContent = "Eje " + numeroEje + " - Posición " + numeroPosicion;
+        document.getElementById("llanta-retiro-llanta").value = codigoLlanta + " - " + serie;
+        document.getElementById("llanta-retiro-fecha").value = today;
+        document.getElementById("llanta-retiro-km").value = kilometraje !== null && kilometraje !== undefined ? Math.trunc(Number(kilometraje)) : "";
+
+        modalRetiro.show();
+
+        try {
+            var result = await getJson(config.catalogosRetiroUrl);
+
+            if (!result.success) {
+                throw new Error(result.message || "No fue posible cargar los catálogos de retiro.");
+            }
+
+            var data = result.data || {};
+            var motivos = getValue(data, "Motivos", "motivos") || [];
+            var estadosDestino = getValue(data, "EstadosDestino", "estadosDestino") || [];
+
+            setSelectOptions(selectMotivoRetiro, "Seleccione un motivo", motivos);
+            setSelectOptions(selectEstadoRetiro, "Seleccione un estado", estadosDestino);
+
+            if (!motivos.length) {
+                showRetiroAlert("No hay motivos de retiro activos.");
+            } else if (!estadosDestino.length) {
+                showRetiroAlert("No hay estados destino activos para retiro.");
+            }
+        } catch (error) {
+            setSelectOptions(selectMotivoRetiro, "No fue posible cargar motivos", []);
+            setSelectOptions(selectEstadoRetiro, "No fue posible cargar estados", []);
+            showRetiroAlert(error.message);
         }
     };
 
@@ -467,6 +562,22 @@ var SuvanLlantaAsignacion = function () {
                     placeholder: selectLlantaInstalacion.getAttribute("data-placeholder") || "Seleccione"
                 });
             }
+
+            if (selectMotivoRetiro) {
+                window.jQuery(selectMotivoRetiro).select2({
+                    width: "100%",
+                    dropdownParent: window.jQuery(modalRetiroElement),
+                    placeholder: selectMotivoRetiro.getAttribute("data-placeholder") || "Seleccione"
+                });
+            }
+
+            if (selectEstadoRetiro) {
+                window.jQuery(selectEstadoRetiro).select2({
+                    width: "100%",
+                    dropdownParent: window.jQuery(modalRetiroElement),
+                    placeholder: selectEstadoRetiro.getAttribute("data-placeholder") || "Seleccione"
+                });
+            }
         }
     };
 
@@ -536,6 +647,8 @@ var SuvanLlantaAsignacion = function () {
 
                 if (!ocupada && !asignacion) {
                     abrirModalInstalacion(eje, posicion);
+                } else {
+                    abrirModalRetiro(eje, posicion);
                 }
             });
         }
@@ -587,6 +700,59 @@ var SuvanLlantaAsignacion = function () {
                     });
             });
         }
+
+        if (formRetiro) {
+            formRetiro.addEventListener("submit", function (event) {
+                event.preventDefault();
+                hideRetiroAlert();
+
+                if (!posicionRetiroActual) {
+                    showRetiroAlert("Selecciona una posición ocupada.");
+                    return;
+                }
+
+                if (!selectMotivoRetiro.value) {
+                    showRetiroAlert("Selecciona un motivo de retiro.");
+                    return;
+                }
+
+                if (!selectEstadoRetiro.value) {
+                    showRetiroAlert("Selecciona un estado destino.");
+                    return;
+                }
+
+                var fecha = document.getElementById("llanta-retiro-fecha").value;
+                var kilometraje = document.getElementById("llanta-retiro-km").value;
+
+                if (!fecha) {
+                    showRetiroAlert("Captura la fecha de retiro.");
+                    return;
+                }
+
+                if (kilometraje === "" || Number(kilometraje) < 0) {
+                    showRetiroAlert("Captura un kilometraje válido.");
+                    return;
+                }
+
+                setSubmitRetiroLoading(true);
+
+                postForm(config.retirarUrl, new FormData(formRetiro))
+                    .then(function (result) {
+                        if (!result.success) {
+                            throw new Error(result.message || "No fue posible retirar la llanta.");
+                        }
+
+                        modalRetiro.hide();
+                        return cargarConfiguracion(posicionRetiroActual.idVehiculo);
+                    })
+                    .catch(function (error) {
+                        showRetiroAlert(error.message);
+                    })
+                    .finally(function () {
+                        setSubmitRetiroLoading(false);
+                    });
+            });
+        }
     };
 
     var init = async function () {
@@ -601,6 +767,12 @@ var SuvanLlantaAsignacion = function () {
         selectLlantaInstalacion = document.getElementById("llanta-instalacion-id-llanta");
         submitInstalacion = document.getElementById("llanta-instalacion-submit");
         alertaInstalacion = document.getElementById("llanta-instalacion-alerta");
+        modalRetiroElement = document.getElementById("llanta-retiro-modal");
+        formRetiro = document.getElementById("llanta-retiro-form");
+        selectMotivoRetiro = document.getElementById("llanta-retiro-motivo");
+        selectEstadoRetiro = document.getElementById("llanta-retiro-estado");
+        submitRetiro = document.getElementById("llanta-retiro-submit");
+        alertaRetiro = document.getElementById("llanta-retiro-alerta");
         config = window.SUVAN && window.SUVAN.LlantaAsignacion ? window.SUVAN.LlantaAsignacion : {};
 
         if (!selectorVehiculo || !config.configuracionUrlTemplate) {
@@ -610,6 +782,10 @@ var SuvanLlantaAsignacion = function () {
         try {
             if (modalInstalacionElement && window.bootstrap) {
                 modalInstalacion = new bootstrap.Modal(modalInstalacionElement);
+            }
+
+            if (modalRetiroElement && window.bootstrap) {
+                modalRetiro = new bootstrap.Modal(modalRetiroElement);
             }
 
             initSelectVehiculo();

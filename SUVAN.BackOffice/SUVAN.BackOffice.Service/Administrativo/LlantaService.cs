@@ -633,6 +633,145 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return true;
         }
 
+        public async Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetMotivosRetiroActivos()
+        {
+            return await context.LlantaMotivoRetiros
+                .AsNoTracking()
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.Nombre)
+                .Select(x => new LlantaCrearViewModel.CatalogItemViewModel
+                {
+                    Id = x.IdMotivoRetiro,
+                    Nombre = x.Nombre
+                })
+                .ToListAsync();
+        }
+
+        public async Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetEstadosDestinoRetiro()
+        {
+            var estados = await context.LlantaEstados
+                .AsNoTracking()
+                .Where(x => x.EsActivo == true)
+                .OrderBy(x => x.IdEstadoLlanta)
+                .Select(x => new { x.IdEstadoLlanta, x.Nombre })
+                .ToListAsync();
+
+            return estados
+                .Where(x => !NormalizarTexto(x.Nombre).Contains("instalada"))
+                .Select(x => new LlantaCrearViewModel.CatalogItemViewModel
+                {
+                    Id = x.IdEstadoLlanta,
+                    Nombre = x.Nombre
+                })
+                .ToList();
+        }
+
+        public async Task<bool> RetirarLlanta(LlantaRetiroViewModel model, int idEmpresa, int idUsuario)
+        {
+            if (model.IdLlantaAsignacion == 0)
+                throw new Exception("La asignación es obligatoria.");
+
+            if (model.FechaRetiro == default)
+                throw new Exception("La fecha de retiro es obligatoria.");
+
+            if (model.IdMotivoRetiro <= 0)
+                throw new Exception("El motivo de retiro es obligatorio.");
+
+            if (model.IdEstadoDestino <= 0)
+                throw new Exception("El estado destino es obligatorio.");
+
+            if (model.ObservacionesRetiro?.Length > 500)
+                throw new Exception("Las observaciones no deben exceder 500 caracteres.");
+
+            if (model.FechaRetiro.Date > DateTime.Today)
+                throw new Exception("La fecha de retiro no puede ser posterior a la fecha actual.");
+
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            var asignacion = await context.LlantaAsignacions
+                .Include(x => x.IdLlantaNavigation)
+                .Include(x => x.IdVehiculoNavigation)
+                .FirstOrDefaultAsync(x => x.IdLlantaAsignacion == model.IdLlantaAsignacion
+                                       && x.Activa == true);
+
+            if (asignacion == null)
+                throw new Exception("No se encontró una asignación activa para retirar.");
+
+            if (asignacion.IdVehiculoNavigation.EmpresaIdempresa != idEmpresa)
+                throw new Exception("La asignación no pertenece a su empresa.");
+
+            if (model.FechaRetiro < asignacion.FechaAsignacion)
+                throw new Exception("La fecha de retiro no puede ser anterior a la fecha de instalación.");
+
+            var motivoValido = await context.LlantaMotivoRetiros
+                .AsNoTracking()
+                .AnyAsync(x => x.IdMotivoRetiro == model.IdMotivoRetiro && x.EsActivo == true);
+
+            if (!motivoValido)
+                throw new Exception("El motivo de retiro no está activo o no existe.");
+
+            var estadoDestino = await context.LlantaEstados
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.IdEstadoLlanta == model.IdEstadoDestino && x.EsActivo == true);
+
+            if (estadoDestino == null)
+                throw new Exception("El estado destino no está activo o no existe.");
+
+            if (NormalizarTexto(estadoDestino.Nombre).Contains("instalada"))
+                throw new Exception("El estado destino no puede ser Instalada para un retiro.");
+
+            var ultimoKmValido = await GetUltimoKilometrajeValido(asignacion.IdVehiculo);
+            if (model.KmVehiculoRetiro < ultimoKmValido)
+                throw new Exception($"El kilometraje no puede ser menor al último kilometraje registrado ({ultimoKmValido:0}).");
+
+            if (model.KmVehiculoRetiro < asignacion.KmVehiculoAsignacion)
+                throw new Exception($"El kilometraje de retiro no puede ser menor al kilometraje de instalación ({asignacion.KmVehiculoAsignacion}).");
+
+            asignacion.FechaRetiro = model.FechaRetiro;
+            asignacion.KmVehiculoRetiro = model.KmVehiculoRetiro;
+            asignacion.IdMotivoRetiro = model.IdMotivoRetiro;
+            asignacion.ObservacionesRetiro = string.IsNullOrWhiteSpace(model.ObservacionesRetiro) ? null : model.ObservacionesRetiro.Trim();
+            asignacion.Activa = false;
+            asignacion.FechaModificacion = DateTime.Now;
+            asignacion.ModificadoPor = (uint)idUsuario;
+
+            asignacion.IdLlantaNavigation.IdEstadoLlanta = model.IdEstadoDestino;
+            asignacion.IdLlantaNavigation.FechaModificacion = DateTime.Now;
+            asignacion.IdLlantaNavigation.ModificadoPor = (uint)idUsuario;
+
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return true;
+        }
+
+        private async Task<decimal> GetUltimoKilometrajeValido(int idVehiculo)
+        {
+            var kilometrajesVehiculo = await context.VehiculoDetalles
+                .AsNoTracking()
+                .Where(x => x.IdVehiculo == idVehiculo && x.KilometrajeAcumulado.HasValue)
+                .Select(x => x.KilometrajeAcumulado!.Value)
+                .ToListAsync();
+
+            var kilometrajesAsignacion = await context.LlantaAsignacions
+                .AsNoTracking()
+                .Where(x => x.IdVehiculo == idVehiculo)
+                .Select(x => new { x.KmVehiculoAsignacion, x.KmVehiculoRetiro })
+                .ToListAsync();
+
+            var ultimoKmVehiculo = kilometrajesVehiculo.Any()
+                ? kilometrajesVehiculo.Max()
+                : 0;
+            var ultimoKmAsignacion = kilometrajesAsignacion
+                .SelectMany(x => new[] { (uint?)x.KmVehiculoAsignacion, x.KmVehiculoRetiro })
+                .Where(x => x.HasValue)
+                .Select(x => x!.Value)
+                .DefaultIfEmpty((uint)0)
+                .Max();
+
+            return Math.Max((decimal)ultimoKmVehiculo, (decimal)ultimoKmAsignacion);
+        }
+
         private static bool EstadoPermiteInstalacion(string? estado)
         {
             var nombre = NormalizarTexto(estado);

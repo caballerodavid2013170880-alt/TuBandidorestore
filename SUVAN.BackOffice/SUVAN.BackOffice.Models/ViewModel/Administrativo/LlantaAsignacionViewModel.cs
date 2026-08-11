@@ -16,4 +16,14 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
         public uint KmVehiculoAsignacion { get; set; }
         public string? ObservacionesAsignacion { get; set; }
     }
+
+    public class LlantaRetiroViewModel
+    {
+        public ulong IdLlantaAsignacion { get; set; }
+        public DateTime FechaRetiro { get; set; }
+        public uint KmVehiculoRetiro { get; set; }
+        public ushort IdMotivoRetiro { get; set; }
+        public ushort IdEstadoDestino { get; set; }
+        public string? ObservacionesRetiro { get; set; }
+    }
 }

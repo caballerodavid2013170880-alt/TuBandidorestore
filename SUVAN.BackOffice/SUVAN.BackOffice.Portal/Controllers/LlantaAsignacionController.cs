@@ -81,5 +81,40 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+        [HttpGet("CatalogosRetiro")]
+        [HttpGet("~/llantaasignacion/catalogos-retiro")]
+        [HttpGet("~/llantasasignacion/catalogos-retiro")]
+        public async Task<IActionResult> GetCatalogosRetiro()
+        {
+            try
+            {
+                var motivos = await llantaService.GetMotivosRetiroActivos();
+                var estadosDestino = await llantaService.GetEstadosDestinoRetiro();
+                return Json(new { success = true, data = new { motivos, estadosDestino } });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpPost("Retirar")]
+        [HttpPost("~/llantaasignacion/retirar")]
+        [HttpPost("~/llantasasignacion/retirar")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Retirar(LlantaRetiroViewModel model)
+        {
+            try
+            {
+                var idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                await llantaService.RetirarLlanta(model, User.GetEmpresaId(), idUsuario);
+                return Json(new { success = true, message = "Llanta retirada correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
