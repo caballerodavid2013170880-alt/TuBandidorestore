@@ -218,10 +218,78 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" id="llanta-retiro-reemplazar" class="btn btn-light-primary me-auto">Reemplazar</button>
+                    <div class="me-auto d-flex gap-2">
+                        <button type="button" id="llanta-retiro-rotar" class="btn btn-light-info">Rotar</button>
+                        <button type="button" id="llanta-retiro-reemplazar" class="btn btn-light-primary">Reemplazar</button>
+                    </div>
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" id="llanta-retiro-submit" class="btn btn-danger">
                         <span class="indicator-label">Retirar</span>
+                        <span class="indicator-progress">
+                            Guardando...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="llanta-rotacion-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="llanta-rotacion-form" autocomplete="off">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="IdLlantaAsignacionOrigen" id="llanta-rotacion-id-asignacion-origen" />
+                <input type="hidden" name="IdVehiculoEjeDestino" id="llanta-rotacion-id-vehiculo-eje-destino" />
+                <input type="hidden" name="NumeroPosicionDestino" id="llanta-rotacion-numero-posicion-destino" />
+
+                <div class="modal-header">
+                    <div>
+                        <h3 class="modal-title">Rotar llanta</h3>
+                        <div id="llanta-rotacion-modo" class="text-muted fw-semibold"></div>
+                    </div>
+                    <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="ki-outline ki-cross fs-2"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div id="llanta-rotacion-alerta" class="alert alert-danger d-none"></div>
+
+                    <div class="row g-5">
+                        <div class="col-md-6">
+                            <label class="form-label">Origen</label>
+                            <input id="llanta-rotacion-origen" type="text" class="form-control form-control-solid" readonly />
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Destino</label>
+                            <input id="llanta-rotacion-destino" type="text" class="form-control form-control-solid" readonly />
+                        </div>
+                    </div>
+
+                    <div class="row g-5 mt-0">
+                        <div class="col-md-6">
+                            <label for="llanta-rotacion-fecha" class="required form-label">Fecha de rotación</label>
+                            <input id="llanta-rotacion-fecha" name="FechaMovimiento" type="date" class="form-control form-control-solid" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="llanta-rotacion-km" class="required form-label">Kilometraje</label>
+                            <input id="llanta-rotacion-km" name="KmVehiculo" type="number" min="0" step="1" class="form-control form-control-solid" />
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="llanta-rotacion-observaciones" class="form-label">Observaciones</label>
+                        <textarea id="llanta-rotacion-observaciones" name="Observaciones" class="form-control form-control-solid" rows="3" maxlength="500"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="llanta-rotacion-submit" class="btn btn-info">
+                        <span class="indicator-label">Rotar</span>
                         <span class="indicator-progress">
                             Guardando...
                             <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -326,7 +394,8 @@
             instalarUrl: '@Url.Content("~/llantasasignacion/instalar")',
             catalogosRetiroUrl: '@Url.Content("~/llantasasignacion/catalogos-retiro")',
             retirarUrl: '@Url.Content("~/llantasasignacion/retirar")',
-            reemplazarUrl: '@Url.Content("~/llantasasignacion/reemplazar")'
+            reemplazarUrl: '@Url.Content("~/llantasasignacion/reemplazar")',
+            rotarUrl: '@Url.Content("~/llantasasignacion/rotar")'
         };
     </script>
     <script src="~/js/administrativo/llantaasignacion/index.js" asp-append-version="true"></script>

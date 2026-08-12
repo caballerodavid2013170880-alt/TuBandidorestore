@@ -18,6 +18,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetEstadosDestinoRetiro();
         Task<bool> RetirarLlanta(LlantaRetiroViewModel model, int idEmpresa, int idUsuario);
         Task<bool> ReemplazarLlanta(LlantaReemplazoViewModel model, int idEmpresa, int idUsuario);
+        Task<bool> RotarLlanta(LlantaRotacionViewModel model, int idEmpresa, int idUsuario);
         Task<List<LlantaCrearViewModel.CatalogItemViewModel>> GetModelosPorMarca(int idMarcaLlanta);
         Task<LlantaCrearViewModel.ModeloDetalleViewModel?> GetDetalleModelo(int idModeloLlanta);
     }

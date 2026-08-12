@@ -192,6 +192,15 @@
     box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.16), 0 16px 30px rgba(15, 23, 42, 0.2);
 }
 
+.llanta-rotacion-seleccion-activa .llanta-wheel {
+    cursor: crosshair;
+}
+
+.llanta-rotacion-seleccion-activa .llanta-wheel.active {
+    border-color: var(--bs-info);
+    box-shadow: 0 0 0 4px rgba(var(--bs-info-rgb), 0.18), 0 16px 30px rgba(15, 23, 42, 0.2);
+}
+
 .llanta-wheel__number {
     position: relative;
     z-index: 1;

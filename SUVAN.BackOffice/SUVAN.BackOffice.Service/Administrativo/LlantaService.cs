@@ -8,6 +8,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
     {
         private const ushort TipoAsignacionInicial = 1;
         private const ushort TipoAsignacionReemplazo = 2;
+        private const ushort TipoAsignacionRotacion = 3;
 
         private readonly SuvanDbContext context;
 
@@ -874,11 +875,186 @@ namespace SUVAN.BackOffice.Service.Administrativo
             llantaEntrante.FechaModificacion = DateTime.Now;
             llantaEntrante.ModificadoPor = (uint)idUsuario;
 
+            await context.SaveChangesAsync();
             context.LlantaAsignacions.Add(asignacionEntrante);
             await context.SaveChangesAsync();
             await transaction.CommitAsync();
 
             return true;
+        }
+
+        public async Task<bool> RotarLlanta(LlantaRotacionViewModel model, int idEmpresa, int idUsuario)
+        {
+            if (model.IdLlantaAsignacionOrigen == 0)
+                throw new Exception("La asignación origen es obligatoria.");
+
+            if (model.IdVehiculoEjeDestino <= 0)
+                throw new Exception("El eje destino es obligatorio.");
+
+            if (model.NumeroPosicionDestino <= 0)
+                throw new Exception("La posición destino es obligatoria.");
+
+            if (model.FechaMovimiento == default)
+                throw new Exception("La fecha de rotación es obligatoria.");
+
+            if (model.Observaciones?.Length > 500)
+                throw new Exception("Las observaciones no deben exceder 500 caracteres.");
+
+            if (model.FechaMovimiento.Date > DateTime.Today)
+                throw new Exception("La fecha de rotación no puede ser posterior a la fecha actual.");
+
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            var asignacionOrigen = await context.LlantaAsignacions
+                .Include(x => x.IdVehiculoNavigation)
+                .FirstOrDefaultAsync(x => x.IdLlantaAsignacion == model.IdLlantaAsignacionOrigen
+                                       && x.Activa == true);
+
+            if (asignacionOrigen == null)
+                throw new Exception("No se encontró una asignación activa para rotar.");
+
+            if (asignacionOrigen.IdVehiculoNavigation.EmpresaIdempresa != idEmpresa)
+                throw new Exception("La asignación no pertenece a su empresa.");
+
+            if (asignacionOrigen.IdVehiculoEje == model.IdVehiculoEjeDestino
+                && asignacionOrigen.NumeroPosicion == model.NumeroPosicionDestino)
+                throw new Exception("La posición destino debe ser distinta a la posición origen.");
+
+            if (model.FechaMovimiento < asignacionOrigen.FechaAsignacion)
+                throw new Exception("La fecha de rotación no puede ser anterior a la fecha de instalación de la llanta origen.");
+
+            var ejeDestino = await context.VehiculoEjes
+                .Include(x => x.IdTipoEjeNavigation)
+                .FirstOrDefaultAsync(x => x.IdVehiculoEje == model.IdVehiculoEjeDestino
+                                       && x.IdVehiculo == asignacionOrigen.IdVehiculo
+                                       && x.Activo == true);
+
+            if (ejeDestino == null)
+                throw new Exception("No se encontró el eje destino o no pertenece al vehículo seleccionado.");
+
+            if (model.NumeroPosicionDestino > ejeDestino.IdTipoEjeNavigation.NumeroPosiciones)
+                throw new Exception("La posición destino no existe para el tipo de eje seleccionado.");
+
+            var existeTipoRotacion = await context.LlantaTipoAsignacions
+                .AsNoTracking()
+                .AnyAsync(x => x.IdTipoAsignacion == TipoAsignacionRotacion && x.EsActivo == true);
+
+            if (!existeTipoRotacion)
+                throw new Exception("No se encontró el tipo de asignación Rotación activo con id 3.");
+
+            var asignacionDestino = await context.LlantaAsignacions
+                .FirstOrDefaultAsync(x => x.IdVehiculo == asignacionOrigen.IdVehiculo
+                                       && x.IdVehiculoEje == model.IdVehiculoEjeDestino
+                                       && x.NumeroPosicion == model.NumeroPosicionDestino
+                                       && x.Activa == true);
+
+            if (asignacionDestino != null && model.FechaMovimiento < asignacionDestino.FechaAsignacion)
+                throw new Exception("La fecha de rotación no puede ser anterior a la fecha de instalación de la llanta destino.");
+
+            var ultimoKmValido = await GetUltimoKilometrajeValido(asignacionOrigen.IdVehiculo);
+            if (model.KmVehiculo < ultimoKmValido)
+                throw new Exception($"El kilometraje no puede ser menor al último kilometraje registrado ({ultimoKmValido:0}).");
+
+            if (model.KmVehiculo < asignacionOrigen.KmVehiculoAsignacion)
+                throw new Exception($"El kilometraje de rotación no puede ser menor al kilometraje de instalación de la llanta origen ({asignacionOrigen.KmVehiculoAsignacion}).");
+
+            if (asignacionDestino != null && model.KmVehiculo < asignacionDestino.KmVehiculoAsignacion)
+                throw new Exception($"El kilometraje de rotación no puede ser menor al kilometraje de instalación de la llanta destino ({asignacionDestino.KmVehiculoAsignacion}).");
+
+            var observaciones = string.IsNullOrWhiteSpace(model.Observaciones) ? null : model.Observaciones.Trim();
+            var fechaAhora = DateTime.Now;
+            var usuario = (uint)idUsuario;
+
+            asignacionOrigen.FechaRetiro = model.FechaMovimiento;
+            asignacionOrigen.KmVehiculoRetiro = model.KmVehiculo;
+            asignacionOrigen.IdMotivoRetiro = null;
+            asignacionOrigen.ObservacionesRetiro = observaciones;
+            asignacionOrigen.Activa = false;
+            asignacionOrigen.FechaModificacion = fechaAhora;
+            asignacionOrigen.ModificadoPor = usuario;
+
+            LlantaAsignacion? nuevaAsignacionDestinoOrigen = null;
+
+            if (asignacionDestino != null)
+            {
+                asignacionDestino.FechaRetiro = model.FechaMovimiento;
+                asignacionDestino.KmVehiculoRetiro = model.KmVehiculo;
+                asignacionDestino.IdMotivoRetiro = null;
+                asignacionDestino.ObservacionesRetiro = observaciones;
+                asignacionDestino.Activa = false;
+                asignacionDestino.FechaModificacion = fechaAhora;
+                asignacionDestino.ModificadoPor = usuario;
+
+                nuevaAsignacionDestinoOrigen = CrearAsignacionRotacion(
+                    asignacionDestino.IdLlanta,
+                    asignacionOrigen.IdVehiculo,
+                    asignacionOrigen.IdVehiculoEje,
+                    asignacionOrigen.NumeroPosicion,
+                    model.FechaMovimiento,
+                    model.KmVehiculo,
+                    observaciones,
+                    fechaAhora,
+                    usuario);
+            }
+
+            var nuevaAsignacionOrigenDestino = CrearAsignacionRotacion(
+                asignacionOrigen.IdLlanta,
+                asignacionOrigen.IdVehiculo,
+                model.IdVehiculoEjeDestino,
+                model.NumeroPosicionDestino,
+                model.FechaMovimiento,
+                model.KmVehiculo,
+                observaciones,
+                fechaAhora,
+                usuario);
+
+            await context.SaveChangesAsync();
+            context.LlantaAsignacions.Add(nuevaAsignacionOrigenDestino);
+
+            if (nuevaAsignacionDestinoOrigen != null)
+            {
+                context.LlantaAsignacions.Add(nuevaAsignacionDestinoOrigen);
+            }
+
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return true;
+        }
+
+        private static LlantaAsignacion CrearAsignacionRotacion(
+            ulong idLlanta,
+            int idVehiculo,
+            int idVehiculoEje,
+            ushort numeroPosicion,
+            DateTime fechaMovimiento,
+            uint kmVehiculo,
+            string? observaciones,
+            DateTime fechaAhora,
+            uint usuario)
+        {
+            return new LlantaAsignacion
+            {
+                IdLlanta = idLlanta,
+                IdVehiculo = idVehiculo,
+                IdVehiculoEje = idVehiculoEje,
+                NumeroPosicion = numeroPosicion,
+                IdTipoAsignacion = TipoAsignacionRotacion,
+                FechaAsignacion = fechaMovimiento,
+                KmVehiculoAsignacion = kmVehiculo,
+                FechaRetiro = null,
+                KmVehiculoRetiro = null,
+                IdMotivoRetiro = null,
+                ObservacionesAsignacion = observaciones,
+                ObservacionesRetiro = null,
+                Activa = true,
+                FechaCreacion = fechaAhora,
+                CreadoPor = usuario,
+                FechaModificacion = null,
+                ModificadoPor = null,
+                FechaEliminacion = null,
+                EliminadoPor = null
+            };
         }
 
         private async Task<decimal> GetUltimoKilometrajeValido(int idVehiculo)

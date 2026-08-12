@@ -21,6 +21,12 @@ var SuvanLlantaAsignacion = function () {
     var submitRetiro;
     var alertaRetiro;
     var botonRetiroReemplazar;
+    var botonRetiroRotar;
+    var modalRotacionElement;
+    var modalRotacion;
+    var formRotacion;
+    var submitRotacion;
+    var alertaRotacion;
     var modalReemplazoElement;
     var modalReemplazo;
     var formReemplazo;
@@ -34,6 +40,8 @@ var SuvanLlantaAsignacion = function () {
     var configuracionRequestId = 0;
     var posicionInstalacionActual;
     var posicionRetiroActual;
+    var posicionRotacionOrigenActual;
+    var posicionRotacionDestinoActual;
     var posicionReemplazoActual;
 
     var getValue = function (source, pascalName, camelName) {
@@ -181,6 +189,8 @@ var SuvanLlantaAsignacion = function () {
         }
 
         alerta.textContent = message || "No fue posible cargar la información.";
+        alerta.classList.remove("alert-info");
+        alerta.classList.add("alert-danger");
         alerta.classList.remove("d-none");
     };
 
@@ -188,7 +198,19 @@ var SuvanLlantaAsignacion = function () {
         if (alerta) {
             alerta.classList.add("d-none");
             alerta.textContent = "";
+            alerta.classList.remove("alert-info");
+            alerta.classList.add("alert-danger");
         }
+    };
+
+    var showInfoAlert = function (message) {
+        if (!alerta) {
+            return;
+        }
+
+        alerta.textContent = message;
+        alerta.classList.remove("d-none", "alert-danger");
+        alerta.classList.add("alert-info");
     };
 
     var showModalAlert = function (message) {
@@ -223,6 +245,22 @@ var SuvanLlantaAsignacion = function () {
         }
     };
 
+    var showRotacionAlert = function (message) {
+        if (!alertaRotacion) {
+            return;
+        }
+
+        alertaRotacion.textContent = message || "No fue posible guardar la rotación.";
+        alertaRotacion.classList.remove("d-none");
+    };
+
+    var hideRotacionAlert = function () {
+        if (alertaRotacion) {
+            alertaRotacion.classList.add("d-none");
+            alertaRotacion.textContent = "";
+        }
+    };
+
     var showReemplazoAlert = function (message) {
         if (!alertaReemplazo) {
             return;
@@ -240,6 +278,10 @@ var SuvanLlantaAsignacion = function () {
     };
 
     var clearResumen = function () {
+        if (typeof cancelarSeleccionDestinoRotacion === "function") {
+            cancelarSeleccionDestinoRotacion();
+        }
+
         if (resumen) {
             resumen.classList.add("d-none");
         }
@@ -359,6 +401,15 @@ var SuvanLlantaAsignacion = function () {
 
         submitRetiro.disabled = isLoading;
         submitRetiro.setAttribute("data-kt-indicator", isLoading ? "on" : "off");
+    };
+
+    var setSubmitRotacionLoading = function (isLoading) {
+        if (!submitRotacion) {
+            return;
+        }
+
+        submitRotacion.disabled = isLoading;
+        submitRotacion.setAttribute("data-kt-indicator", isLoading ? "on" : "off");
     };
 
     var setSubmitReemplazoLoading = function (isLoading) {
@@ -481,6 +532,94 @@ var SuvanLlantaAsignacion = function () {
             setSelectOptions(selectEstadoRetiro, "No fue posible cargar estados", []);
             showRetiroAlert(error.message);
         }
+    };
+
+    var getDescripcionPosicion = function (eje, posicion) {
+        var asignacion = getValue(posicion, "Asignacion", "asignacion");
+        var numeroEje = getValue(eje, "NumeroEje", "numeroEje");
+        var numeroPosicion = getValue(posicion, "NumeroPosicion", "numeroPosicion");
+        var codigoLlanta = asignacion ? getValue(asignacion, "CodigoLlanta", "codigoLlanta") : null;
+        var serie = asignacion ? getValue(asignacion, "NumeroSerieDot", "numeroSerieDot") : null;
+        var etiqueta = "Eje " + numeroEje + " - Posición " + numeroPosicion;
+
+        if (codigoLlanta || serie) {
+            etiqueta += " (" + [codigoLlanta, serie].filter(Boolean).join(" - ") + ")";
+        } else {
+            etiqueta += " (Libre)";
+        }
+
+        return etiqueta;
+    };
+
+    var iniciarSeleccionDestinoRotacion = function () {
+        if (!posicionRetiroActual || !posicionRetiroActual.eje || !posicionRetiroActual.posicion) {
+            showRetiroAlert("Selecciona una posición ocupada.");
+            return;
+        }
+
+        posicionRotacionOrigenActual = {
+            idVehiculo: posicionRetiroActual.idVehiculo,
+            idLlantaAsignacion: posicionRetiroActual.idLlantaAsignacion,
+            eje: posicionRetiroActual.eje,
+            posicion: posicionRetiroActual.posicion
+        };
+        posicionRotacionDestinoActual = null;
+
+        if (modalRetiro) {
+            modalRetiro.hide();
+        }
+
+        showInfoAlert("Selecciona la posición destino para la rotación. Puede ser una posición libre o una posición ocupada para intercambiar llantas.");
+
+        if (diagrama) {
+            diagrama.classList.add("llanta-rotacion-seleccion-activa");
+        }
+    };
+
+    var cancelarSeleccionDestinoRotacion = function () {
+        posicionRotacionOrigenActual = null;
+        posicionRotacionDestinoActual = null;
+
+        if (diagrama) {
+            diagrama.classList.remove("llanta-rotacion-seleccion-activa");
+        }
+    };
+
+    var abrirModalRotacion = function (ejeDestino, posicionDestino) {
+        if (!modalRotacion || !formRotacion || !posicionRotacionOrigenActual) {
+            return;
+        }
+
+        var idVehiculoEjeDestino = getValue(ejeDestino, "IdVehiculoEje", "idVehiculoEje");
+        var numeroPosicionDestino = getValue(posicionDestino, "NumeroPosicion", "numeroPosicion");
+        var asignacionDestino = getValue(posicionDestino, "Asignacion", "asignacion");
+        var kilometraje = getValue(configuracionActual, "KilometrajeActual", "kilometrajeActual");
+        var today = new Date().toISOString().slice(0, 10);
+
+        posicionRotacionDestinoActual = {
+            idVehiculo: posicionRotacionOrigenActual.idVehiculo,
+            idVehiculoEjeDestino: idVehiculoEjeDestino,
+            numeroPosicionDestino: numeroPosicionDestino
+        };
+
+        formRotacion.reset();
+        hideRotacionAlert();
+
+        document.getElementById("llanta-rotacion-id-asignacion-origen").value = posicionRotacionOrigenActual.idLlantaAsignacion;
+        document.getElementById("llanta-rotacion-id-vehiculo-eje-destino").value = idVehiculoEjeDestino;
+        document.getElementById("llanta-rotacion-numero-posicion-destino").value = numeroPosicionDestino;
+        document.getElementById("llanta-rotacion-origen").value = getDescripcionPosicion(posicionRotacionOrigenActual.eje, posicionRotacionOrigenActual.posicion);
+        document.getElementById("llanta-rotacion-destino").value = getDescripcionPosicion(ejeDestino, posicionDestino);
+        document.getElementById("llanta-rotacion-modo").textContent = asignacionDestino ? "Intercambio entre posiciones ocupadas" : "Movimiento hacia posición libre";
+        document.getElementById("llanta-rotacion-fecha").value = today;
+        document.getElementById("llanta-rotacion-km").value = kilometraje !== null && kilometraje !== undefined ? Math.trunc(Number(kilometraje)) : "";
+
+        if (diagrama) {
+            diagrama.classList.remove("llanta-rotacion-seleccion-activa");
+        }
+
+        hideAlert();
+        modalRotacion.show();
     };
 
     var abrirModalReemplazo = async function (eje, posicion) {
@@ -782,6 +921,21 @@ var SuvanLlantaAsignacion = function () {
 
                 renderDetallePosicion(eje, posicion);
 
+                if (posicionRotacionOrigenActual) {
+                    var idVehiculoEjeDestino = getValue(eje, "IdVehiculoEje", "idVehiculoEje");
+                    var numeroPosicionDestino = getValue(posicion, "NumeroPosicion", "numeroPosicion");
+                    var idVehiculoEjeOrigen = getValue(posicionRotacionOrigenActual.eje, "IdVehiculoEje", "idVehiculoEje");
+                    var numeroPosicionOrigen = getValue(posicionRotacionOrigenActual.posicion, "NumeroPosicion", "numeroPosicion");
+
+                    if (idVehiculoEjeDestino === idVehiculoEjeOrigen && numeroPosicionDestino === numeroPosicionOrigen) {
+                        showInfoAlert("Selecciona una posición destino distinta a la posición origen.");
+                        return;
+                    }
+
+                    abrirModalRotacion(eje, posicion);
+                    return;
+                }
+
                 if (!ocupada && !asignacion) {
                     abrirModalInstalacion(eje, posicion);
                 } else {
@@ -906,6 +1060,57 @@ var SuvanLlantaAsignacion = function () {
             });
         }
 
+        if (botonRetiroRotar) {
+            botonRetiroRotar.addEventListener("click", function () {
+                iniciarSeleccionDestinoRotacion();
+            });
+        }
+
+        if (formRotacion) {
+            formRotacion.addEventListener("submit", function (event) {
+                event.preventDefault();
+                hideRotacionAlert();
+
+                if (!posicionRotacionOrigenActual || !posicionRotacionDestinoActual) {
+                    showRotacionAlert("Selecciona una posición origen y una posición destino.");
+                    return;
+                }
+
+                var fecha = document.getElementById("llanta-rotacion-fecha").value;
+                var kilometraje = document.getElementById("llanta-rotacion-km").value;
+
+                if (!fecha) {
+                    showRotacionAlert("Captura la fecha de rotación.");
+                    return;
+                }
+
+                if (kilometraje === "" || Number(kilometraje) < 0) {
+                    showRotacionAlert("Captura un kilometraje válido.");
+                    return;
+                }
+
+                setSubmitRotacionLoading(true);
+
+                postForm(config.rotarUrl, new FormData(formRotacion))
+                    .then(function (result) {
+                        if (!result.success) {
+                            throw new Error(result.message || "No fue posible rotar la llanta.");
+                        }
+
+                        modalRotacion.hide();
+                        var idVehiculo = posicionRotacionDestinoActual.idVehiculo;
+                        cancelarSeleccionDestinoRotacion();
+                        return cargarConfiguracion(idVehiculo);
+                    })
+                    .catch(function (error) {
+                        showRotacionAlert(error.message);
+                    })
+                    .finally(function () {
+                        setSubmitRotacionLoading(false);
+                    });
+            });
+        }
+
         if (formReemplazo) {
             formReemplazo.addEventListener("submit", function (event) {
                 event.preventDefault();
@@ -984,6 +1189,11 @@ var SuvanLlantaAsignacion = function () {
         submitRetiro = document.getElementById("llanta-retiro-submit");
         alertaRetiro = document.getElementById("llanta-retiro-alerta");
         botonRetiroReemplazar = document.getElementById("llanta-retiro-reemplazar");
+        botonRetiroRotar = document.getElementById("llanta-retiro-rotar");
+        modalRotacionElement = document.getElementById("llanta-rotacion-modal");
+        formRotacion = document.getElementById("llanta-rotacion-form");
+        submitRotacion = document.getElementById("llanta-rotacion-submit");
+        alertaRotacion = document.getElementById("llanta-rotacion-alerta");
         modalReemplazoElement = document.getElementById("llanta-reemplazo-modal");
         formReemplazo = document.getElementById("llanta-reemplazo-form");
         selectLlantaReemplazo = document.getElementById("llanta-reemplazo-entrante");
@@ -1006,8 +1216,18 @@ var SuvanLlantaAsignacion = function () {
                 modalRetiro = new bootstrap.Modal(modalRetiroElement);
             }
 
+            if (modalRotacionElement && window.bootstrap) {
+                modalRotacion = new bootstrap.Modal(modalRotacionElement);
+            }
+
             if (modalReemplazoElement && window.bootstrap) {
                 modalReemplazo = new bootstrap.Modal(modalReemplazoElement);
+            }
+
+            if (modalRotacionElement) {
+                modalRotacionElement.addEventListener("hidden.bs.modal", function () {
+                    cancelarSeleccionDestinoRotacion();
+                });
             }
 
             initSelectVehiculo();

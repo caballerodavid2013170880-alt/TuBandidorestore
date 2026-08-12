@@ -134,5 +134,23 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+        [HttpPost("Rotar")]
+        [HttpPost("~/llantaasignacion/rotar")]
+        [HttpPost("~/llantasasignacion/rotar")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Rotar(LlantaRotacionViewModel model)
+        {
+            try
+            {
+                var idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                await llantaService.RotarLlanta(model, User.GetEmpresaId(), idUsuario);
+                return Json(new { success = true, message = "Llanta rotada correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
