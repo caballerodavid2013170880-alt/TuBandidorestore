@@ -116,5 +116,23 @@ namespace SUVAN.BackOffice.Portal.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+        [HttpPost("Reemplazar")]
+        [HttpPost("~/llantaasignacion/reemplazar")]
+        [HttpPost("~/llantasasignacion/reemplazar")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Reemplazar(LlantaReemplazoViewModel model)
+        {
+            try
+            {
+                var idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                await llantaService.ReemplazarLlanta(model, User.GetEmpresaId(), idUsuario);
+                return Json(new { success = true, message = "Llanta reemplazada correctamente." });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }

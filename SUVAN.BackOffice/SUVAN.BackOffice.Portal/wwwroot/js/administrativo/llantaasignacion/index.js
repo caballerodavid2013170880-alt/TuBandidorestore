@@ -20,11 +20,21 @@ var SuvanLlantaAsignacion = function () {
     var selectEstadoRetiro;
     var submitRetiro;
     var alertaRetiro;
+    var botonRetiroReemplazar;
+    var modalReemplazoElement;
+    var modalReemplazo;
+    var formReemplazo;
+    var selectLlantaReemplazo;
+    var selectMotivoReemplazo;
+    var selectEstadoSalienteReemplazo;
+    var submitReemplazo;
+    var alertaReemplazo;
     var config;
     var configuracionActual;
     var configuracionRequestId = 0;
     var posicionInstalacionActual;
     var posicionRetiroActual;
+    var posicionReemplazoActual;
 
     var getValue = function (source, pascalName, camelName) {
         if (!source) {
@@ -213,6 +223,22 @@ var SuvanLlantaAsignacion = function () {
         }
     };
 
+    var showReemplazoAlert = function (message) {
+        if (!alertaReemplazo) {
+            return;
+        }
+
+        alertaReemplazo.textContent = message || "No fue posible guardar el reemplazo.";
+        alertaReemplazo.classList.remove("d-none");
+    };
+
+    var hideReemplazoAlert = function () {
+        if (alertaReemplazo) {
+            alertaReemplazo.classList.add("d-none");
+            alertaReemplazo.textContent = "";
+        }
+    };
+
     var clearResumen = function () {
         if (resumen) {
             resumen.classList.add("d-none");
@@ -335,6 +361,15 @@ var SuvanLlantaAsignacion = function () {
         submitRetiro.setAttribute("data-kt-indicator", isLoading ? "on" : "off");
     };
 
+    var setSubmitReemplazoLoading = function (isLoading) {
+        if (!submitReemplazo) {
+            return;
+        }
+
+        submitReemplazo.disabled = isLoading;
+        submitReemplazo.setAttribute("data-kt-indicator", isLoading ? "on" : "off");
+    };
+
     var abrirModalInstalacion = async function (eje, posicion) {
         if (!modalInstalacion || !formInstalacion) {
             return;
@@ -404,7 +439,9 @@ var SuvanLlantaAsignacion = function () {
 
         posicionRetiroActual = {
             idVehiculo: idVehiculo,
-            idLlantaAsignacion: getValue(asignacion, "IdLlantaAsignacion", "idLlantaAsignacion")
+            idLlantaAsignacion: getValue(asignacion, "IdLlantaAsignacion", "idLlantaAsignacion"),
+            eje: eje,
+            posicion: posicion
         };
 
         formRetiro.reset();
@@ -443,6 +480,82 @@ var SuvanLlantaAsignacion = function () {
             setSelectOptions(selectMotivoRetiro, "No fue posible cargar motivos", []);
             setSelectOptions(selectEstadoRetiro, "No fue posible cargar estados", []);
             showRetiroAlert(error.message);
+        }
+    };
+
+    var abrirModalReemplazo = async function (eje, posicion) {
+        if (!modalReemplazo || !formReemplazo) {
+            return;
+        }
+
+        var asignacion = getValue(posicion, "Asignacion", "asignacion");
+        if (!asignacion) {
+            return;
+        }
+
+        var idVehiculo = getValue(configuracionActual, "IdVehiculo", "idVehiculo");
+        var numeroEje = getValue(eje, "NumeroEje", "numeroEje");
+        var numeroPosicion = getValue(posicion, "NumeroPosicion", "numeroPosicion");
+        var kilometraje = getValue(configuracionActual, "KilometrajeActual", "kilometrajeActual");
+        var codigoLlanta = getValue(asignacion, "CodigoLlanta", "codigoLlanta") || "-";
+        var serie = getValue(asignacion, "NumeroSerieDot", "numeroSerieDot") || "-";
+        var today = new Date().toISOString().slice(0, 10);
+
+        posicionReemplazoActual = {
+            idVehiculo: idVehiculo,
+            idLlantaAsignacion: getValue(asignacion, "IdLlantaAsignacion", "idLlantaAsignacion")
+        };
+
+        formReemplazo.reset();
+        hideReemplazoAlert();
+        setSelectOptions(selectLlantaReemplazo, "Cargando llantas disponibles...", []);
+        setSelectOptions(selectMotivoReemplazo, "Cargando motivos...", []);
+        setSelectOptions(selectEstadoSalienteReemplazo, "Cargando estados...", []);
+
+        document.getElementById("llanta-reemplazo-id-asignacion").value = posicionReemplazoActual.idLlantaAsignacion;
+        document.getElementById("llanta-reemplazo-posicion").textContent = "Eje " + numeroEje + " - Posición " + numeroPosicion;
+        document.getElementById("llanta-reemplazo-saliente").value = codigoLlanta + " - " + serie;
+        document.getElementById("llanta-reemplazo-fecha").value = today;
+        document.getElementById("llanta-reemplazo-km").value = kilometraje !== null && kilometraje !== undefined ? Math.trunc(Number(kilometraje)) : "";
+
+        modalReemplazo.show();
+
+        try {
+            var results = await Promise.all([
+                getJson(config.llantasDisponiblesUrl),
+                getJson(config.catalogosRetiroUrl)
+            ]);
+            var llantasResult = results[0];
+            var catalogosResult = results[1];
+
+            if (!llantasResult.success) {
+                throw new Error(llantasResult.message || "No fue posible cargar las llantas disponibles.");
+            }
+
+            if (!catalogosResult.success) {
+                throw new Error(catalogosResult.message || "No fue posible cargar los catálogos de retiro.");
+            }
+
+            var dataCatalogos = catalogosResult.data || {};
+            var motivos = getValue(dataCatalogos, "Motivos", "motivos") || [];
+            var estadosDestino = getValue(dataCatalogos, "EstadosDestino", "estadosDestino") || [];
+
+            setSelectOptions(selectLlantaReemplazo, "Seleccione una llanta", llantasResult.data || []);
+            setSelectOptions(selectMotivoReemplazo, "Seleccione un motivo", motivos);
+            setSelectOptions(selectEstadoSalienteReemplazo, "Seleccione un estado", estadosDestino);
+
+            if (!llantasResult.data || !llantasResult.data.length) {
+                showReemplazoAlert("No hay llantas disponibles para instalar como reemplazo.");
+            } else if (!motivos.length) {
+                showReemplazoAlert("No hay motivos de retiro activos.");
+            } else if (!estadosDestino.length) {
+                showReemplazoAlert("No hay estados destino activos para la llanta saliente.");
+            }
+        } catch (error) {
+            setSelectOptions(selectLlantaReemplazo, "No fue posible cargar llantas", []);
+            setSelectOptions(selectMotivoReemplazo, "No fue posible cargar motivos", []);
+            setSelectOptions(selectEstadoSalienteReemplazo, "No fue posible cargar estados", []);
+            showReemplazoAlert(error.message);
         }
     };
 
@@ -576,6 +689,30 @@ var SuvanLlantaAsignacion = function () {
                     width: "100%",
                     dropdownParent: window.jQuery(modalRetiroElement),
                     placeholder: selectEstadoRetiro.getAttribute("data-placeholder") || "Seleccione"
+                });
+            }
+
+            if (selectLlantaReemplazo) {
+                window.jQuery(selectLlantaReemplazo).select2({
+                    width: "100%",
+                    dropdownParent: window.jQuery(modalReemplazoElement),
+                    placeholder: selectLlantaReemplazo.getAttribute("data-placeholder") || "Seleccione"
+                });
+            }
+
+            if (selectMotivoReemplazo) {
+                window.jQuery(selectMotivoReemplazo).select2({
+                    width: "100%",
+                    dropdownParent: window.jQuery(modalReemplazoElement),
+                    placeholder: selectMotivoReemplazo.getAttribute("data-placeholder") || "Seleccione"
+                });
+            }
+
+            if (selectEstadoSalienteReemplazo) {
+                window.jQuery(selectEstadoSalienteReemplazo).select2({
+                    width: "100%",
+                    dropdownParent: window.jQuery(modalReemplazoElement),
+                    placeholder: selectEstadoSalienteReemplazo.getAttribute("data-placeholder") || "Seleccione"
                 });
             }
         }
@@ -753,6 +890,79 @@ var SuvanLlantaAsignacion = function () {
                     });
             });
         }
+
+        if (botonRetiroReemplazar) {
+            botonRetiroReemplazar.addEventListener("click", function () {
+                if (!posicionRetiroActual || !posicionRetiroActual.eje || !posicionRetiroActual.posicion) {
+                    showRetiroAlert("Selecciona una posición ocupada.");
+                    return;
+                }
+
+                if (modalRetiro) {
+                    modalRetiro.hide();
+                }
+
+                abrirModalReemplazo(posicionRetiroActual.eje, posicionRetiroActual.posicion);
+            });
+        }
+
+        if (formReemplazo) {
+            formReemplazo.addEventListener("submit", function (event) {
+                event.preventDefault();
+                hideReemplazoAlert();
+
+                if (!posicionReemplazoActual) {
+                    showReemplazoAlert("Selecciona una posición ocupada.");
+                    return;
+                }
+
+                if (!selectLlantaReemplazo.value) {
+                    showReemplazoAlert("Selecciona una llanta entrante.");
+                    return;
+                }
+
+                if (!selectMotivoReemplazo.value) {
+                    showReemplazoAlert("Selecciona un motivo de retiro.");
+                    return;
+                }
+
+                if (!selectEstadoSalienteReemplazo.value) {
+                    showReemplazoAlert("Selecciona el estado destino de la llanta saliente.");
+                    return;
+                }
+
+                var fecha = document.getElementById("llanta-reemplazo-fecha").value;
+                var kilometraje = document.getElementById("llanta-reemplazo-km").value;
+
+                if (!fecha) {
+                    showReemplazoAlert("Captura la fecha de reemplazo.");
+                    return;
+                }
+
+                if (kilometraje === "" || Number(kilometraje) < 0) {
+                    showReemplazoAlert("Captura un kilometraje válido.");
+                    return;
+                }
+
+                setSubmitReemplazoLoading(true);
+
+                postForm(config.reemplazarUrl, new FormData(formReemplazo))
+                    .then(function (result) {
+                        if (!result.success) {
+                            throw new Error(result.message || "No fue posible reemplazar la llanta.");
+                        }
+
+                        modalReemplazo.hide();
+                        return cargarConfiguracion(posicionReemplazoActual.idVehiculo);
+                    })
+                    .catch(function (error) {
+                        showReemplazoAlert(error.message);
+                    })
+                    .finally(function () {
+                        setSubmitReemplazoLoading(false);
+                    });
+            });
+        }
     };
 
     var init = async function () {
@@ -773,6 +983,14 @@ var SuvanLlantaAsignacion = function () {
         selectEstadoRetiro = document.getElementById("llanta-retiro-estado");
         submitRetiro = document.getElementById("llanta-retiro-submit");
         alertaRetiro = document.getElementById("llanta-retiro-alerta");
+        botonRetiroReemplazar = document.getElementById("llanta-retiro-reemplazar");
+        modalReemplazoElement = document.getElementById("llanta-reemplazo-modal");
+        formReemplazo = document.getElementById("llanta-reemplazo-form");
+        selectLlantaReemplazo = document.getElementById("llanta-reemplazo-entrante");
+        selectMotivoReemplazo = document.getElementById("llanta-reemplazo-motivo");
+        selectEstadoSalienteReemplazo = document.getElementById("llanta-reemplazo-estado-saliente");
+        submitReemplazo = document.getElementById("llanta-reemplazo-submit");
+        alertaReemplazo = document.getElementById("llanta-reemplazo-alerta");
         config = window.SUVAN && window.SUVAN.LlantaAsignacion ? window.SUVAN.LlantaAsignacion : {};
 
         if (!selectorVehiculo || !config.configuracionUrlTemplate) {
@@ -786,6 +1004,10 @@ var SuvanLlantaAsignacion = function () {
 
             if (modalRetiroElement && window.bootstrap) {
                 modalRetiro = new bootstrap.Modal(modalRetiroElement);
+            }
+
+            if (modalReemplazoElement && window.bootstrap) {
+                modalReemplazo = new bootstrap.Modal(modalReemplazoElement);
             }
 
             initSelectVehiculo();

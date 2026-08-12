@@ -218,9 +218,94 @@
                 </div>
 
                 <div class="modal-footer">
+                    <button type="button" id="llanta-retiro-reemplazar" class="btn btn-light-primary me-auto">Reemplazar</button>
                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" id="llanta-retiro-submit" class="btn btn-danger">
                         <span class="indicator-label">Retirar</span>
+                        <span class="indicator-progress">
+                            Guardando...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="llanta-reemplazo-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="llanta-reemplazo-form" autocomplete="off">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="IdLlantaAsignacion" id="llanta-reemplazo-id-asignacion" />
+
+                <div class="modal-header">
+                    <div>
+                        <h3 class="modal-title">Reemplazar llanta</h3>
+                        <div id="llanta-reemplazo-posicion" class="text-muted fw-semibold"></div>
+                    </div>
+                    <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="ki-outline ki-cross fs-2"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div id="llanta-reemplazo-alerta" class="alert alert-danger d-none"></div>
+
+                    <div class="mb-5">
+                        <label class="form-label">Llanta saliente</label>
+                        <input id="llanta-reemplazo-saliente" type="text" class="form-control form-control-solid" readonly />
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="llanta-reemplazo-entrante" class="required form-label">Llanta entrante</label>
+                        <select id="llanta-reemplazo-entrante" name="IdLlantaEntrante" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione una llanta">
+                            <option value="">Seleccione una llanta</option>
+                        </select>
+                    </div>
+
+                    <div class="row g-5">
+                        <div class="col-md-6">
+                            <label for="llanta-reemplazo-fecha" class="required form-label">Fecha de reemplazo</label>
+                            <input id="llanta-reemplazo-fecha" name="FechaMovimiento" type="date" class="form-control form-control-solid" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="llanta-reemplazo-km" class="required form-label">Kilometraje</label>
+                            <input id="llanta-reemplazo-km" name="KmVehiculo" type="number" min="0" step="1" class="form-control form-control-solid" />
+                        </div>
+                    </div>
+
+                    <div class="row g-5 mt-0">
+                        <div class="col-md-6">
+                            <label for="llanta-reemplazo-motivo" class="required form-label">Motivo de retiro</label>
+                            <select id="llanta-reemplazo-motivo" name="IdMotivoRetiro" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un motivo">
+                                <option value="">Seleccione un motivo</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="llanta-reemplazo-estado-saliente" class="required form-label">Estado llanta saliente</label>
+                            <select id="llanta-reemplazo-estado-saliente" name="IdEstadoDestinoSaliente" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un estado">
+                                <option value="">Seleccione un estado</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="llanta-reemplazo-observaciones-retiro" class="form-label">Observaciones retiro</label>
+                        <textarea id="llanta-reemplazo-observaciones-retiro" name="ObservacionesRetiro" class="form-control form-control-solid" rows="2" maxlength="500"></textarea>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="llanta-reemplazo-observaciones-asignacion" class="form-label">Observaciones asignación</label>
+                        <textarea id="llanta-reemplazo-observaciones-asignacion" name="ObservacionesAsignacion" class="form-control form-control-solid" rows="2" maxlength="500"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="llanta-reemplazo-submit" class="btn btn-primary">
+                        <span class="indicator-label">Reemplazar</span>
                         <span class="indicator-progress">
                             Guardando...
                             <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
@@ -240,7 +325,8 @@
             llantasDisponiblesUrl: '@Url.Content("~/llantasasignacion/llantas-disponibles")',
             instalarUrl: '@Url.Content("~/llantasasignacion/instalar")',
             catalogosRetiroUrl: '@Url.Content("~/llantasasignacion/catalogos-retiro")',
-            retirarUrl: '@Url.Content("~/llantasasignacion/retirar")'
+            retirarUrl: '@Url.Content("~/llantasasignacion/retirar")',
+            reemplazarUrl: '@Url.Content("~/llantasasignacion/reemplazar")'
         };
     </script>
     <script src="~/js/administrativo/llantaasignacion/index.js" asp-append-version="true"></script>

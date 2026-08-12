@@ -7,6 +7,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
     public class LlantaService : ILlantaService
     {
         private const ushort TipoAsignacionInicial = 1;
+        private const ushort TipoAsignacionReemplazo = 2;
 
         private readonly SuvanDbContext context;
 
@@ -561,17 +562,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
             if (!existeTipoAsignacionInicial)
                 throw new Exception("No se encontró el tipo de asignación inicial activo con id 1.");
 
-            var estadoInstalada = await context.LlantaEstados
-                .AsNoTracking()
-                .Where(x => x.EsActivo == true)
-                .Select(x => new { x.IdEstadoLlanta, x.Nombre })
-                .ToListAsync();
-
-            var idEstadoInstalada = estadoInstalada
-                .FirstOrDefault(x => NormalizarTexto(x.Nombre).Contains("instalada"))?.IdEstadoLlanta;
-
-            if (!idEstadoInstalada.HasValue)
-                throw new Exception("No se encontró el estado de llanta Instalada.");
+            var idEstadoInstalada = await GetIdEstadoInstalada();
 
             var kilometrajesVehiculo = await context.VehiculoDetalles
                 .AsNoTracking()
@@ -622,7 +613,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 EliminadoPor = null
             };
 
-            llanta.IdEstadoLlanta = idEstadoInstalada.Value;
+            llanta.IdEstadoLlanta = idEstadoInstalada;
             llanta.FechaModificacion = DateTime.Now;
             llanta.ModificadoPor = (uint)idUsuario;
 
@@ -745,6 +736,151 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return true;
         }
 
+        public async Task<bool> ReemplazarLlanta(LlantaReemplazoViewModel model, int idEmpresa, int idUsuario)
+        {
+            if (model.IdLlantaAsignacion == 0)
+                throw new Exception("La asignación saliente es obligatoria.");
+
+            if (model.IdLlantaEntrante == 0)
+                throw new Exception("La llanta entrante es obligatoria.");
+
+            if (model.FechaMovimiento == default)
+                throw new Exception("La fecha del reemplazo es obligatoria.");
+
+            if (model.IdMotivoRetiro <= 0)
+                throw new Exception("El motivo de retiro es obligatorio.");
+
+            if (model.IdEstadoDestinoSaliente <= 0)
+                throw new Exception("El estado destino de la llanta saliente es obligatorio.");
+
+            if (model.ObservacionesRetiro?.Length > 500 || model.ObservacionesAsignacion?.Length > 500)
+                throw new Exception("Las observaciones no deben exceder 500 caracteres.");
+
+            if (model.FechaMovimiento.Date > DateTime.Today)
+                throw new Exception("La fecha del reemplazo no puede ser posterior a la fecha actual.");
+
+            await using var transaction = await context.Database.BeginTransactionAsync();
+
+            var asignacionSaliente = await context.LlantaAsignacions
+                .Include(x => x.IdLlantaNavigation)
+                .Include(x => x.IdVehiculoNavigation)
+                .FirstOrDefaultAsync(x => x.IdLlantaAsignacion == model.IdLlantaAsignacion
+                                       && x.Activa == true);
+
+            if (asignacionSaliente == null)
+                throw new Exception("No se encontró una asignación activa para reemplazar.");
+
+            if (asignacionSaliente.IdVehiculoNavigation.EmpresaIdempresa != idEmpresa)
+                throw new Exception("La asignación no pertenece a su empresa.");
+
+            if (model.FechaMovimiento < asignacionSaliente.FechaAsignacion)
+                throw new Exception("La fecha del reemplazo no puede ser anterior a la fecha de instalación.");
+
+            if (asignacionSaliente.IdLlanta == model.IdLlantaEntrante)
+                throw new Exception("La llanta entrante debe ser distinta a la llanta saliente.");
+
+            var motivoValido = await context.LlantaMotivoRetiros
+                .AsNoTracking()
+                .AnyAsync(x => x.IdMotivoRetiro == model.IdMotivoRetiro && x.EsActivo == true);
+
+            if (!motivoValido)
+                throw new Exception("El motivo de retiro no está activo o no existe.");
+
+            var estadoSaliente = await context.LlantaEstados
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.IdEstadoLlanta == model.IdEstadoDestinoSaliente && x.EsActivo == true);
+
+            if (estadoSaliente == null)
+                throw new Exception("El estado destino de la llanta saliente no está activo o no existe.");
+
+            if (NormalizarTexto(estadoSaliente.Nombre).Contains("instalada"))
+                throw new Exception("El estado destino de la llanta saliente no puede ser Instalada.");
+
+            var existeTipoReemplazo = await context.LlantaTipoAsignacions
+                .AsNoTracking()
+                .AnyAsync(x => x.IdTipoAsignacion == TipoAsignacionReemplazo && x.EsActivo == true);
+
+            if (!existeTipoReemplazo)
+                throw new Exception("No se encontró el tipo de asignación Reemplazo activo con id 2.");
+
+            var idEstadoInstalada = await GetIdEstadoInstalada();
+
+            var llantaEntrante = await context.Llanta
+                .FirstOrDefaultAsync(x => x.IdLlanta == model.IdLlantaEntrante
+                                       && x.IdEmpresa == (uint)idEmpresa
+                                       && !x.Eliminado);
+
+            if (llantaEntrante == null)
+                throw new Exception("No se encontró la llanta entrante o no pertenece a su empresa.");
+
+            var llantaEntranteConAsignacionActiva = await context.LlantaAsignacions
+                .AnyAsync(x => x.IdLlanta == model.IdLlantaEntrante && x.Activa == true);
+
+            if (llantaEntranteConAsignacionActiva)
+                throw new Exception("La llanta entrante ya tiene una asignación activa.");
+
+            var estadoActualEntrante = await context.LlantaEstados
+                .AsNoTracking()
+                .Where(x => x.IdEstadoLlanta == llantaEntrante.IdEstadoLlanta)
+                .Select(x => x.Nombre)
+                .FirstOrDefaultAsync();
+
+            if (!EstadoPermiteInstalacion(estadoActualEntrante))
+                throw new Exception("La llanta entrante no está disponible para instalación.");
+
+            var ultimoKmValido = await GetUltimoKilometrajeValido(asignacionSaliente.IdVehiculo);
+            if (model.KmVehiculo < ultimoKmValido)
+                throw new Exception($"El kilometraje no puede ser menor al último kilometraje registrado ({ultimoKmValido:0}).");
+
+            if (model.KmVehiculo < asignacionSaliente.KmVehiculoAsignacion)
+                throw new Exception($"El kilometraje del reemplazo no puede ser menor al kilometraje de instalación ({asignacionSaliente.KmVehiculoAsignacion}).");
+
+            asignacionSaliente.FechaRetiro = model.FechaMovimiento;
+            asignacionSaliente.KmVehiculoRetiro = model.KmVehiculo;
+            asignacionSaliente.IdMotivoRetiro = model.IdMotivoRetiro;
+            asignacionSaliente.ObservacionesRetiro = string.IsNullOrWhiteSpace(model.ObservacionesRetiro) ? null : model.ObservacionesRetiro.Trim();
+            asignacionSaliente.Activa = false;
+            asignacionSaliente.FechaModificacion = DateTime.Now;
+            asignacionSaliente.ModificadoPor = (uint)idUsuario;
+
+            asignacionSaliente.IdLlantaNavigation.IdEstadoLlanta = model.IdEstadoDestinoSaliente;
+            asignacionSaliente.IdLlantaNavigation.FechaModificacion = DateTime.Now;
+            asignacionSaliente.IdLlantaNavigation.ModificadoPor = (uint)idUsuario;
+
+            var asignacionEntrante = new LlantaAsignacion
+            {
+                IdLlanta = model.IdLlantaEntrante,
+                IdVehiculo = asignacionSaliente.IdVehiculo,
+                IdVehiculoEje = asignacionSaliente.IdVehiculoEje,
+                NumeroPosicion = asignacionSaliente.NumeroPosicion,
+                IdTipoAsignacion = TipoAsignacionReemplazo,
+                FechaAsignacion = model.FechaMovimiento,
+                KmVehiculoAsignacion = model.KmVehiculo,
+                FechaRetiro = null,
+                KmVehiculoRetiro = null,
+                IdMotivoRetiro = null,
+                ObservacionesAsignacion = string.IsNullOrWhiteSpace(model.ObservacionesAsignacion) ? null : model.ObservacionesAsignacion.Trim(),
+                ObservacionesRetiro = null,
+                Activa = true,
+                FechaCreacion = DateTime.Now,
+                CreadoPor = (uint)idUsuario,
+                FechaModificacion = null,
+                ModificadoPor = null,
+                FechaEliminacion = null,
+                EliminadoPor = null
+            };
+
+            llantaEntrante.IdEstadoLlanta = idEstadoInstalada;
+            llantaEntrante.FechaModificacion = DateTime.Now;
+            llantaEntrante.ModificadoPor = (uint)idUsuario;
+
+            context.LlantaAsignacions.Add(asignacionEntrante);
+            await context.SaveChangesAsync();
+            await transaction.CommitAsync();
+
+            return true;
+        }
+
         private async Task<decimal> GetUltimoKilometrajeValido(int idVehiculo)
         {
             var kilometrajesVehiculo = await context.VehiculoDetalles
@@ -770,6 +906,23 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 .Max();
 
             return Math.Max((decimal)ultimoKmVehiculo, (decimal)ultimoKmAsignacion);
+        }
+
+        private async Task<ushort> GetIdEstadoInstalada()
+        {
+            var estados = await context.LlantaEstados
+                .AsNoTracking()
+                .Where(x => x.EsActivo == true)
+                .Select(x => new { x.IdEstadoLlanta, x.Nombre })
+                .ToListAsync();
+
+            var idEstadoInstalada = estados
+                .FirstOrDefault(x => NormalizarTexto(x.Nombre).Contains("instalada"))?.IdEstadoLlanta;
+
+            if (!idEstadoInstalada.HasValue)
+                throw new Exception("No se encontró el estado de llanta Instalada.");
+
+            return idEstadoInstalada.Value;
         }
 
         private static bool EstadoPermiteInstalacion(string? estado)
