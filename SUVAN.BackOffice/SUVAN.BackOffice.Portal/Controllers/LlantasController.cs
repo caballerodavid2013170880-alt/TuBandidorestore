@@ -134,5 +134,19 @@ namespace SUVAN.BackOffice.Portal.Controllers
             var detalle = await llantaService.GetDetalleModelo(idModeloLlanta);
             return Json(detalle);
         }
+
+        [HttpGet("~/llantas/vehiculo/{idVehiculo}/configuracion")]
+        public async Task<IActionResult> GetConfiguracionVehiculo(int idVehiculo)
+        {
+            try
+            {
+                var configuracion = await llantaService.GetConfiguracionVehiculoLlantas(idVehiculo, User.GetEmpresaId());
+                return Json(new { success = true, data = configuracion });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
     }
 }
