@@ -1,25 +1,42 @@
 .llanta-asignacion-diagrama {
-    min-height: 280px;
+    min-height: 220px;
 }
 
 .llanta-vehicle-panel {
     color: var(--bs-gray-800);
 }
 
+.llanta-vehicle-header {
+    line-height: 1.25;
+}
+
+.llanta-vehicle-header .fs-5 {
+    font-size: 1rem !important;
+}
+
+.llanta-vehicle-header .text-muted {
+    font-size: 12px;
+}
+
+.llanta-vehicle-legend .badge {
+    font-size: 10px;
+    padding: 0.32rem 0.48rem;
+}
+
 .llanta-vehicle-shell {
     position: relative;
-    width: min(100%, 620px);
-    min-height: 520px;
+    width: min(100%, 390px);
+    min-height: 352px;
     margin: 0 auto;
-    padding: 72px 18px 44px;
+    padding: 44px 8px 24px;
     overflow: hidden;
 }
 
 .llanta-vehicle-silhouette {
     position: absolute;
-    inset: 18px 50%;
-    width: min(54%, 340px);
-    height: calc(100% - 36px);
+    inset: 12px 50%;
+    width: min(48%, 210px);
+    height: calc(100% - 24px);
     transform: translateX(-50%);
     z-index: 0;
     pointer-events: none;
@@ -39,20 +56,20 @@
 
 .llanta-vehicle-front {
     position: absolute;
-    top: 28px;
+    top: 16px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 2;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 84px;
-    height: 28px;
+    min-width: 68px;
+    height: 24px;
     border-radius: 999px;
     background: var(--bs-body-bg);
     border: 1px solid var(--bs-gray-300);
     color: var(--bs-gray-600);
-    font-size: 12px;
+    font-size: 10px;
     font-weight: 700;
     text-transform: uppercase;
 }
@@ -63,16 +80,16 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    gap: clamp(34px, 6vw, 58px);
-    min-height: 404px;
+    gap: clamp(18px, 3vw, 32px);
+    min-height: 284px;
 }
 
 .llanta-vehicle-axle {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(112px, 1fr) minmax(132px, 180px) minmax(112px, 1fr);
+    grid-template-columns: minmax(70px, 1fr) minmax(96px, 128px) minmax(70px, 1fr);
     align-items: center;
-    gap: clamp(12px, 3vw, 26px);
+    gap: clamp(6px, 1.6vw, 14px);
 }
 
 .llanta-vehicle-axis-bar {
@@ -80,7 +97,7 @@
     left: 15%;
     right: 15%;
     top: 50%;
-    height: 8px;
+    height: 6px;
     transform: translateY(-50%);
     border-radius: 999px;
     background: linear-gradient(90deg, transparent, var(--bs-gray-400) 18%, var(--bs-gray-400) 82%, transparent);
@@ -95,8 +112,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 82px;
-    padding: 10px 12px;
+    min-height: 58px;
+    padding: 7px 8px;
     border-radius: 8px;
     background: rgba(var(--bs-body-bg-rgb), 0.94);
     border: 1px solid var(--bs-gray-300);
@@ -108,12 +125,13 @@
     color: var(--bs-gray-900);
     font-weight: 800;
     line-height: 1.1;
+    font-size: 12px;
 }
 
 .llanta-vehicle-axis-type,
 .llanta-vehicle-axis-count {
     color: var(--bs-gray-600);
-    font-size: 12px;
+    font-size: 10px;
     line-height: 1.25;
 }
 
@@ -122,7 +140,7 @@
     z-index: 2;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 4px;
 }
 
 .llanta-vehicle-side--left {
@@ -139,14 +157,14 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 46px;
-    height: 96px;
-    padding: 8px 5px;
+    width: 34px;
+    height: 72px;
+    padding: 6px 4px;
     border: 2px solid var(--bs-gray-400);
-    border-radius: 14px;
+    border-radius: 11px;
     background: var(--bs-gray-800);
     color: var(--bs-white);
-    box-shadow: 0 10px 22px rgba(15, 23, 42, 0.18);
+    box-shadow: 0 8px 16px rgba(15, 23, 42, 0.16);
     transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
@@ -155,20 +173,20 @@
 .llanta-wheel__tread {
     content: "";
     position: absolute;
-    top: 9px;
-    bottom: 9px;
-    width: 3px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.28);
     pointer-events: none;
 }
 
 .llanta-wheel::before {
-    left: 10px;
+    left: 8px;
 }
 
 .llanta-wheel::after {
-    right: 10px;
+    right: 8px;
 }
 
 .llanta-wheel__tread {
@@ -201,29 +219,54 @@
     box-shadow: 0 0 0 4px rgba(var(--bs-info-rgb), 0.18), 0 16px 30px rgba(15, 23, 42, 0.2);
 }
 
+.llanta-instaladas-card {
+    min-height: 100%;
+}
+
+.llanta-instaladas-card .table {
+    min-width: 680px;
+}
+
+.llanta-instaladas-row {
+    cursor: pointer;
+}
+
+.llanta-instaladas-row.active {
+    background: rgba(var(--bs-primary-rgb), 0.08);
+}
+
+.llanta-instaladas-row.active td:first-child {
+    box-shadow: inset 4px 0 0 var(--bs-primary);
+}
+
+.llanta-instaladas-row:focus {
+    outline: 3px solid rgba(var(--bs-primary-rgb), 0.22);
+    outline-offset: -3px;
+}
+
 .llanta-wheel__number {
     position: relative;
     z-index: 1;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     border-radius: 999px;
     background: var(--bs-body-bg);
     color: var(--bs-gray-900);
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 800;
 }
 
 .llanta-wheel__code {
     position: relative;
     z-index: 1;
-    max-width: 38px;
-    margin-top: 5px;
+    max-width: 28px;
+    margin-top: 4px;
     overflow: hidden;
     color: rgba(255, 255, 255, 0.88);
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 700;
     line-height: 1.05;
     text-overflow: ellipsis;

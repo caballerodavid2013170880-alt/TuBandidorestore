@@ -6,7 +6,7 @@ var SuvanLlantaAsignacion = function () {
     var resumen;
     var loading;
     var diagrama;
-    var detalle;
+    var tablaLlantas;
     var modalInstalacionElement;
     var modalInstalacion;
     var formInstalacion;
@@ -80,6 +80,23 @@ var SuvanLlantaAsignacion = function () {
         return value !== null && value !== undefined ? Number(value).toLocaleString("es-MX") : "-";
     };
 
+    var formatDate = function (value) {
+        if (!value) {
+            return "-";
+        }
+
+        var date = new Date(value);
+        if (Number.isNaN(date.getTime())) {
+            return "-";
+        }
+
+        return date.toLocaleDateString("es-MX", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+        });
+    };
+
     var normalizeText = function (value) {
         return String(value || "")
             .toLowerCase()
@@ -134,6 +151,7 @@ var SuvanLlantaAsignacion = function () {
             '<button type="button" class="llanta-posicion llanta-wheel llanta-wheel--' + estado.key + '"',
             ' data-eje-index="' + ejeIndex + '"',
             ' data-posicion-index="' + posicionIndex + '"',
+            asignacion ? ' data-id-asignacion="' + escapeHtml(getValue(asignacion, "IdLlantaAsignacion", "idLlantaAsignacion")) + '"' : '',
             ' aria-label="' + escapeHtml(ariaLabel) + '"',
             ' title="' + escapeHtml(ariaLabel) + '">',
             '<span class="llanta-wheel__tread" aria-hidden="true"></span>',
@@ -277,6 +295,148 @@ var SuvanLlantaAsignacion = function () {
         }
     };
 
+    var getLlantasInstaladas = function () {
+        var ejes = configuracionActual ? getValue(configuracionActual, "Ejes", "ejes") || [] : [];
+        var llantas = [];
+
+        ejes.forEach(function (eje, ejeIndex) {
+            var posiciones = getValue(eje, "Posiciones", "posiciones") || [];
+            var numeroEje = getValue(eje, "NumeroEje", "numeroEje");
+            var tipoEje = getValue(eje, "NombreTipoEje", "nombreTipoEje") || getValue(eje, "DescripcionTipoEje", "descripcionTipoEje");
+
+            posiciones.forEach(function (posicion, posicionIndex) {
+                var asignacion = getValue(posicion, "Asignacion", "asignacion");
+                if (!asignacion) {
+                    return;
+                }
+
+                var numeroPosicion = getValue(posicion, "NumeroPosicion", "numeroPosicion");
+                llantas.push({
+                    eje: eje,
+                    posicion: posicion,
+                    asignacion: asignacion,
+                    ejeIndex: ejeIndex,
+                    posicionIndex: posicionIndex,
+                    numeroEje: numeroEje,
+                    numeroPosicion: numeroPosicion,
+                    tipoEje: tipoEje
+                });
+            });
+        });
+
+        return llantas;
+    };
+
+    var setTablaActiva = function (idAsignacion) {
+        if (!tablaLlantas) {
+            return;
+        }
+
+        tablaLlantas.querySelectorAll(".llanta-instaladas-row").forEach(function (row) {
+            row.classList.toggle("active", String(row.getAttribute("data-id-asignacion")) === String(idAsignacion));
+        });
+    };
+
+    var setDiagramaActivo = function (ejeIndex, posicionIndex) {
+        if (!diagrama) {
+            return;
+        }
+
+        diagrama.querySelectorAll(".llanta-posicion").forEach(function (item) {
+            item.classList.remove("active");
+        });
+
+        var selector = '.llanta-posicion[data-eje-index="' + ejeIndex + '"][data-posicion-index="' + posicionIndex + '"]';
+        var button = diagrama.querySelector(selector);
+        if (button) {
+            button.classList.add("active");
+            button.scrollIntoView({ block: "nearest", inline: "nearest" });
+        }
+    };
+
+    var seleccionarPosicion = function (eje, posicion, ejeIndex, posicionIndex) {
+        var asignacion = getValue(posicion, "Asignacion", "asignacion");
+        var idAsignacion = asignacion ? getValue(asignacion, "IdLlantaAsignacion", "idLlantaAsignacion") : null;
+
+        setDiagramaActivo(ejeIndex, posicionIndex);
+        setTablaActiva(idAsignacion);
+    };
+
+    var renderTablaLlantasInstaladas = function () {
+        if (!tablaLlantas) {
+            return;
+        }
+
+        var llantas = getLlantasInstaladas();
+        if (!llantas.length) {
+            tablaLlantas.innerHTML = [
+                '<div class="border border-dashed border-gray-300 rounded p-6 text-muted">',
+                '<div class="fw-bold text-gray-800 mb-1">Llantas instaladas</div>',
+                '<div>No hay llantas instaladas en el vehículo seleccionado.</div>',
+                '</div>'
+            ].join("");
+            return;
+        }
+
+        var rows = llantas.map(function (item) {
+            var asignacion = item.asignacion;
+            var idAsignacion = getValue(asignacion, "IdLlantaAsignacion", "idLlantaAsignacion");
+            var marcaModelo = [getValue(asignacion, "Marca", "marca"), getValue(asignacion, "Modelo", "modelo")].filter(Boolean).join(" ") || "-";
+            var posicion = "Eje " + item.numeroEje + " - Posición " + item.numeroPosicion;
+            var codigoLlanta = getValue(asignacion, "CodigoLlanta", "codigoLlanta") || "-";
+            var dot = getValue(asignacion, "NumeroSerieDot", "numeroSerieDot") || "-";
+            var estado = getValue(asignacion, "EstadoLlanta", "estadoLlanta") || "-";
+
+            return [
+                '<tr class="llanta-instaladas-row" role="button" tabindex="0"',
+                ' data-id-asignacion="' + escapeHtml(idAsignacion) + '"',
+                ' data-eje-index="' + item.ejeIndex + '"',
+                ' data-posicion-index="' + item.posicionIndex + '">',
+                '<td>',
+                '<div class="fw-bold text-gray-800">' + escapeHtml(codigoLlanta) + '</div>',
+                '<div class="text-muted fs-8">' + escapeHtml(estado) + '</div>',
+                '</td>',
+                '<td class="fw-semibold text-gray-800">' + escapeHtml(dot) + '</td>',
+                '<td>' + escapeHtml(marcaModelo) + '</td>',
+                '<td>' + escapeHtml(posicion) + '</td>',
+                '<td>' + escapeHtml(formatDate(getValue(asignacion, "FechaAsignacion", "fechaAsignacion"))) + '</td>',
+                '<td>' + escapeHtml(formatNumber(getValue(asignacion, "KmVehiculoAsignacion", "kmVehiculoAsignacion"))) + '</td>',
+                '<td><span class="badge badge-light-success">Activa</span></td>',
+                '</tr>'
+            ].join("");
+        }).join("");
+
+        tablaLlantas.innerHTML = [
+            '<div class="llanta-instaladas-card border border-dashed border-gray-300 rounded p-6">',
+            '<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">',
+            '<div>',
+            '<div class="fw-bold text-gray-800 fs-5">Llantas instaladas</div>',
+            '<div class="text-muted">Selecciona una fila para ubicarla en el vehículo.</div>',
+            '</div>',
+            '<span class="badge badge-light-primary">' + llantas.length + ' instaladas</span>',
+            '</div>',
+            '<div class="table-responsive">',
+            '<table class="table align-middle table-row-dashed table-hover mb-0">',
+            '<thead>',
+            '<tr class="text-muted fw-bold fs-7 text-uppercase">',
+            '<th>Llanta</th>',
+            '<th>DOT</th>',
+            '<th>Marca / modelo</th>',
+            '<th>Posición</th>',
+            '<th>Fecha asignación</th>',
+            '<th>Km instalación</th>',
+            '<th>Activo</th>',
+            '</tr>',
+            '</thead>',
+            '<tbody>',
+            rows,
+            '</tbody>',
+            '</table>',
+            '</div>',
+            '</div>'
+        ].join("");
+    };
+
     var clearResumen = function () {
         if (typeof cancelarSeleccionDestinoRotacion === "function") {
             cancelarSeleccionDestinoRotacion();
@@ -286,6 +446,7 @@ var SuvanLlantaAsignacion = function () {
             resumen.classList.add("d-none");
         }
 
+        configuracionActual = null;
         setText("llanta-asignacion-numero-economico", "-");
         setText("llanta-asignacion-placas", "-");
         setText("llanta-asignacion-unidad", "-");
@@ -298,74 +459,7 @@ var SuvanLlantaAsignacion = function () {
             ].join("");
         }
 
-        renderDetalleDefault();
-    };
-
-    var renderDetalleDefault = function () {
-        if (!detalle) {
-            return;
-        }
-
-        detalle.innerHTML = [
-            '<div class="fw-bold text-gray-800 mb-2">Detalle de posición</div>',
-            '<div class="text-muted">Sin posición seleccionada.</div>'
-        ].join("");
-    };
-
-    var renderDetallePosicion = function (eje, posicion) {
-        if (!detalle) {
-            return;
-        }
-
-        var asignacion = getValue(posicion, "Asignacion", "asignacion");
-        var numeroEje = getValue(eje, "NumeroEje", "numeroEje");
-        var numeroPosicion = getValue(posicion, "NumeroPosicion", "numeroPosicion");
-        var tipoEje = getValue(eje, "NombreTipoEje", "nombreTipoEje") || getValue(eje, "DescripcionTipoEje", "descripcionTipoEje");
-
-        if (!asignacion) {
-            detalle.innerHTML = [
-                '<div class="d-flex align-items-center justify-content-between mb-4">',
-                '<div>',
-                '<div class="fw-bold text-gray-800">Eje ' + escapeHtml(numeroEje) + ' - Posición ' + escapeHtml(numeroPosicion) + '</div>',
-                '<div class="text-muted">' + escapeHtml(tipoEje || "-") + '</div>',
-                '</div>',
-                '<span class="badge badge-light-success">Libre</span>',
-                '</div>',
-                '<div class="text-muted">La posición no tiene una llanta instalada.</div>'
-            ].join("");
-            return;
-        }
-
-        detalle.innerHTML = [
-            '<div class="d-flex align-items-center justify-content-between mb-4">',
-            '<div>',
-            '<div class="fw-bold text-gray-800">Eje ' + escapeHtml(numeroEje) + ' - Posición ' + escapeHtml(numeroPosicion) + '</div>',
-            '<div class="text-muted">' + escapeHtml(tipoEje || "-") + '</div>',
-            '</div>',
-            '<span class="badge badge-light-primary">Ocupada</span>',
-            '</div>',
-            '<div class="separator separator-dashed my-4"></div>',
-            '<div class="mb-3">',
-            '<div class="fw-semibold text-muted">Código de llanta</div>',
-            '<div class="fw-bold text-gray-800">' + escapeHtml(getValue(asignacion, "CodigoLlanta", "codigoLlanta") || "-") + '</div>',
-            '</div>',
-            '<div class="mb-3">',
-            '<div class="fw-semibold text-muted">Serie DOT</div>',
-            '<div class="fw-bold text-gray-800">' + escapeHtml(getValue(asignacion, "NumeroSerieDot", "numeroSerieDot") || "-") + '</div>',
-            '</div>',
-            '<div class="mb-3">',
-            '<div class="fw-semibold text-muted">Marca / modelo</div>',
-            '<div class="fw-bold text-gray-800">' + escapeHtml([getValue(asignacion, "Marca", "marca"), getValue(asignacion, "Modelo", "modelo")].filter(Boolean).join(" ") || "-") + '</div>',
-            '</div>',
-            '<div class="mb-3">',
-            '<div class="fw-semibold text-muted">Estado</div>',
-            '<div class="fw-bold text-gray-800">' + escapeHtml(getValue(asignacion, "EstadoLlanta", "estadoLlanta") || "-") + '</div>',
-            '</div>',
-            '<div>',
-            '<div class="fw-semibold text-muted">Km instalación</div>',
-            '<div class="fw-bold text-gray-800">' + escapeHtml(formatNumber(getValue(asignacion, "KmVehiculoAsignacion", "kmVehiculoAsignacion"))) + '</div>',
-            '</div>'
-        ].join("");
+        renderTablaLlantasInstaladas();
     };
 
     var setSelectOptions = function (select, placeholder, items) {
@@ -710,18 +804,15 @@ var SuvanLlantaAsignacion = function () {
                 '<div class="fw-semibold fs-6 text-gray-700">El vehículo no tiene ejes configurados.</div>',
                 '<div class="text-muted">Configura sus ejes antes de asignar llantas.</div>'
             ].join("");
-            renderDetalleDefault();
             return;
         }
 
         var html = [
             '<div class="llanta-vehicle-panel text-start">',
-            '<div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-5">',
-            '<div>',
+            '<div class="llanta-vehicle-header mb-3">',
             '<div class="fw-bold text-gray-800 fs-5">Ejes y posiciones</div>',
-            '<div class="text-muted">Vista superior del vehículo. Selecciona una llanta para ver el detalle.</div>',
-            '</div>',
-            '<div class="d-flex flex-wrap gap-2">',
+            '<div class="text-muted">Vista superior del vehículo. Selecciona una llanta para ubicarla en la tabla.</div>',
+            '<div class="llanta-vehicle-legend d-flex flex-wrap gap-2 mt-2">',
             '<span class="badge badge-light-success">Libre</span>',
             '<span class="badge badge-light-primary">Ocupada</span>',
             '<span class="badge badge-light-warning">Advertencia</span>',
@@ -776,7 +867,6 @@ var SuvanLlantaAsignacion = function () {
 
         html.push('</div>', '</div>', '</div>');
         diagrama.innerHTML = html.join("");
-        renderDetalleDefault();
     };
 
     var renderResumen = function (data) {
@@ -798,6 +888,7 @@ var SuvanLlantaAsignacion = function () {
 
         configuracionActual = data;
         renderDiagrama(ejes);
+        renderTablaLlantasInstaladas();
     };
 
     var initSelectVehiculo = function () {
@@ -914,12 +1005,7 @@ var SuvanLlantaAsignacion = function () {
                 var asignacion = getValue(posicion, "Asignacion", "asignacion");
                 var ocupada = getValue(posicion, "Ocupada", "ocupada") === true;
 
-                diagrama.querySelectorAll(".llanta-posicion").forEach(function (item) {
-                    item.classList.remove("active");
-                });
-                button.classList.add("active");
-
-                renderDetallePosicion(eje, posicion);
+                seleccionarPosicion(eje, posicion, parseInt(button.getAttribute("data-eje-index"), 10), parseInt(button.getAttribute("data-posicion-index"), 10));
 
                 if (posicionRotacionOrigenActual) {
                     var idVehiculoEjeDestino = getValue(eje, "IdVehiculoEje", "idVehiculoEje");
@@ -941,6 +1027,56 @@ var SuvanLlantaAsignacion = function () {
                 } else {
                     abrirModalRetiro(eje, posicion);
                 }
+            });
+        }
+
+        if (tablaLlantas) {
+            tablaLlantas.addEventListener("click", function (event) {
+                var row = event.target.closest(".llanta-instaladas-row");
+                if (!row || !configuracionActual) {
+                    return;
+                }
+
+                var ejeIndex = parseInt(row.getAttribute("data-eje-index"), 10);
+                var posicionIndex = parseInt(row.getAttribute("data-posicion-index"), 10);
+                var ejes = getValue(configuracionActual, "Ejes", "ejes") || [];
+                var eje = ejes[ejeIndex];
+                var posiciones = eje ? getValue(eje, "Posiciones", "posiciones") || [] : [];
+                var posicion = posiciones[posicionIndex];
+
+                if (!eje || !posicion) {
+                    return;
+                }
+
+                seleccionarPosicion(eje, posicion, ejeIndex, posicionIndex);
+
+                if (posicionRotacionOrigenActual) {
+                    var idVehiculoEjeDestino = getValue(eje, "IdVehiculoEje", "idVehiculoEje");
+                    var numeroPosicionDestino = getValue(posicion, "NumeroPosicion", "numeroPosicion");
+                    var idVehiculoEjeOrigen = getValue(posicionRotacionOrigenActual.eje, "IdVehiculoEje", "idVehiculoEje");
+                    var numeroPosicionOrigen = getValue(posicionRotacionOrigenActual.posicion, "NumeroPosicion", "numeroPosicion");
+
+                    if (idVehiculoEjeDestino === idVehiculoEjeOrigen && numeroPosicionDestino === numeroPosicionOrigen) {
+                        showInfoAlert("Selecciona una posición destino distinta a la posición origen.");
+                        return;
+                    }
+
+                    abrirModalRotacion(eje, posicion);
+                }
+            });
+
+            tablaLlantas.addEventListener("keydown", function (event) {
+                if (event.key !== "Enter" && event.key !== " ") {
+                    return;
+                }
+
+                var row = event.target.closest(".llanta-instaladas-row");
+                if (!row) {
+                    return;
+                }
+
+                event.preventDefault();
+                row.click();
             });
         }
 
@@ -1176,7 +1312,7 @@ var SuvanLlantaAsignacion = function () {
         resumen = document.getElementById("llanta-asignacion-resumen");
         loading = document.getElementById("llanta-asignacion-loading");
         diagrama = document.getElementById("llanta-asignacion-diagrama");
-        detalle = document.getElementById("llanta-asignacion-detalle");
+        tablaLlantas = document.getElementById("llanta-asignacion-tabla");
         modalInstalacionElement = document.getElementById("llanta-instalacion-modal");
         formInstalacion = document.getElementById("llanta-instalacion-form");
         selectLlantaInstalacion = document.getElementById("llanta-instalacion-id-llanta");
