@@ -2558,6 +2558,12 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.PresionMinimaPsi)
                 .HasPrecision(5, 2)
                 .HasColumnName("presion_minima_psi");
+            entity.Property(e => e.ProfundidadAlertaMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_alerta_mm");
+            entity.Property(e => e.ProfundidadMinimaMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_minima_mm");
             entity.Property(e => e.ProfundidadOriginalMm)
                 .HasPrecision(5, 2)
                 .HasColumnName("profundidad_original_mm");
