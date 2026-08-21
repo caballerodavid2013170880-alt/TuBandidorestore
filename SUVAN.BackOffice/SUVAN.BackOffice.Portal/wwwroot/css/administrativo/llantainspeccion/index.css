@@ -1,0 +1,40 @@
+.llanta-inspeccion-row {
+    cursor: pointer;
+}
+
+.llanta-inspeccion-row.active td:first-child {
+    border-left: 3px solid var(--bs-primary);
+}
+
+.llanta-inspeccion-row.active {
+    background-color: var(--bs-primary-light);
+}
+
+.llanta-inspeccion-detalles {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.llanta-inspeccion-detalle {
+    background-color: var(--bs-body-bg);
+}
+
+.llanta-inspeccion-parametros .badge,
+.llanta-vehicle-legend .badge {
+    white-space: nowrap;
+}
+
+.llanta-wheel.active {
+    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), .18), 0 12px 24px rgba(15, 23, 42, .16);
+    transform: translateY(-1px);
+}
+
+.llanta-wheel[disabled] {
+    cursor: not-allowed;
+}
+
+@media (max-width: 767.98px) {
+    .llanta-inspeccion-detalle {
+        padding: 1.25rem !important;
+    }
+}

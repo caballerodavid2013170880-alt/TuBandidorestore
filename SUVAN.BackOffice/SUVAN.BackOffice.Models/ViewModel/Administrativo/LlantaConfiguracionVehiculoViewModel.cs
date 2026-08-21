@@ -37,9 +37,16 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
         public string NumeroSerieDot { get; set; } = string.Empty;
         public string? Marca { get; set; }
         public string? Modelo { get; set; }
+        public string? Medida { get; set; }
         public ushort IdEstadoLlanta { get; set; }
         public string EstadoLlanta { get; set; } = string.Empty;
         public DateTime FechaAsignacion { get; set; }
         public uint KmVehiculoAsignacion { get; set; }
+        public decimal? PresionMinimaPsi { get; set; }
+        public decimal? PresionMaximaPsi { get; set; }
+        public decimal? ProfundidadOriginalMm { get; set; }
+        public decimal? ProfundidadAlertaMm { get; set; }
+        public decimal? ProfundidadMinimaMm { get; set; }
+        public uint? VidaUtilEstimadaKm { get; set; }
     }
 }

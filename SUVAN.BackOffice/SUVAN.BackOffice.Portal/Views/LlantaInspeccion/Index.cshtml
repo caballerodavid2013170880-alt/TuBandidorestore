@@ -1,0 +1,161 @@
+@using SUVAN.BackOffice.Models.ViewModel.Administrativo
+@using System.Text.Json
+@model LlantaInspeccionViewModel
+
+@{
+    ViewData["Title"] = "Inspección de llantas";
+    var estadosJson = JsonSerializer.Serialize(Model.EstadosInspeccion);
+    var conclusionesJson = JsonSerializer.Serialize(Model.ConclusionesInspeccion);
+}
+
+<link href="~/css/administrativo/llantaasignacion/index.css" rel="stylesheet" type="text/css" asp-append-version="true" />
+<link href="~/css/administrativo/llantainspeccion/index.css" rel="stylesheet" type="text/css" asp-append-version="true" />
+
+<!--begin::Toolbar-->
+<div id="kt_app_toolbar" class="app-toolbar ">
+    <div id="kt_app_toolbar_container" class="app-container container-fluid d-flex align-items-stretch">
+        <div class="app-toolbar-wrapper d-flex flex-stack flex-wrap gap-4 w-100">
+            <div class="page-title d-flex flex-column justify-content-center gap-1 me-3">
+                <h1 class="page-heading d-flex flex-column justify-content-center text-dark fw-bold fs-3 m-0">Inspección de llantas</h1>
+            </div>
+        </div>
+    </div>
+</div>
+<!--end::Toolbar-->
+
+<!--begin::Content-->
+<div id="kt_app_content" class="app-content flex-column-fluid">
+    <div id="kt_app_content_container" class="app-container container-fluid">
+        <form id="llanta-inspeccion-form" autocomplete="off">
+            @Html.AntiForgeryToken()
+
+            <div class="card mb-6">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title w-100">
+                        <div class="row g-5 w-100">
+                            <div class="col-12 col-xl-4">
+                                <label for="llanta-inspeccion-vehiculo" class="required form-label fw-semibold text-gray-700">Vehículo</label>
+                                <select id="llanta-inspeccion-vehiculo" name="IdVehiculo" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un vehículo">
+                                    <option value="">Seleccione un vehículo</option>
+                                    @foreach (var vehiculo in Model.Vehiculos)
+                                    {
+                                        <option value="@vehiculo.Id">@vehiculo.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-3">
+                                <label for="llanta-inspeccion-tipo" class="required form-label fw-semibold text-gray-700">Tipo de inspección</label>
+                                <select id="llanta-inspeccion-tipo" name="IdTipoInspeccion" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione">
+                                    <option value="">Seleccione</option>
+                                    @foreach (var tipo in Model.TiposInspeccion)
+                                    {
+                                        <option value="@tipo.Id">@tipo.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-3 col-xl-2">
+                                <label for="llanta-inspeccion-fecha" class="required form-label fw-semibold text-gray-700">Fecha</label>
+                                <input id="llanta-inspeccion-fecha" name="FechaInspeccion" type="date" class="form-control form-control-solid" value="@Model.FechaInspeccion.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-12 col-md-3 col-xl-2">
+                                <label for="llanta-inspeccion-km" class="required form-label fw-semibold text-gray-700">Kilometraje</label>
+                                <input id="llanta-inspeccion-km" name="KilometrajeLlanta" type="number" min="0" step="1" class="form-control form-control-solid" />
+                            </div>
+                            <div class="col-12 col-xl-1 d-flex align-items-end">
+                                <div id="llanta-inspeccion-loading" class="d-none align-items-center text-muted">
+                                    <span class="spinner-border spinner-border-sm me-2"></span>
+                                    Cargando
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-body py-4">
+                    <div id="llanta-inspeccion-alerta" class="alert alert-danger d-none"></div>
+                    <div id="llanta-inspeccion-exito" class="alert alert-success d-none"></div>
+
+                    <div id="llanta-inspeccion-resumen" class="row g-5 mb-6 d-none">
+                        <div class="col-12 col-md-3">
+                            <div class="fw-semibold text-muted">Número económico</div>
+                            <div id="llanta-inspeccion-numero-economico" class="fw-bold text-gray-800">-</div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="fw-semibold text-muted">Placas</div>
+                            <div id="llanta-inspeccion-placas" class="fw-bold text-gray-800">-</div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="fw-semibold text-muted">Unidad</div>
+                            <div id="llanta-inspeccion-unidad" class="fw-bold text-gray-800">-</div>
+                        </div>
+                        <div class="col-12 col-md-3">
+                            <div class="fw-semibold text-muted">Kilometraje actual</div>
+                            <div id="llanta-inspeccion-kilometraje-actual" class="fw-bold text-gray-800">-</div>
+                        </div>
+                    </div>
+
+                    <div class="row g-6">
+                        <div class="col-12 col-xl-5">
+                            <div id="llanta-inspeccion-diagrama" class="llanta-asignacion-diagrama border border-dashed border-gray-300 rounded p-5 text-center text-muted">
+                                <i class="ki-outline ki-truck fs-2tx mb-4"></i>
+                                <div class="fw-semibold fs-6">Selecciona un vehículo para consultar sus llantas instaladas.</div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-xl-7">
+                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                                <div>
+                                    <div class="fw-bold text-gray-800 fs-5">Llantas instaladas</div>
+                                    <div class="text-muted">Selecciona una, varias o todas las llantas instaladas.</div>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <button type="button" id="llanta-inspeccion-seleccionar-todas" class="btn btn-light-primary btn-sm" disabled>Seleccionar todas</button>
+                                    <button type="button" id="llanta-inspeccion-limpiar" class="btn btn-light btn-sm" disabled>Limpiar</button>
+                                </div>
+                            </div>
+                            <div id="llanta-inspeccion-tabla" class="h-100"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="llanta-inspeccion-captura" class="card d-none">
+                <div class="card-header border-0 pt-6">
+                    <div class="card-title">
+                        <div>
+                            <div class="fw-bold text-gray-800 fs-5">Datos por llanta</div>
+                            <div class="text-muted">Cada llanta seleccionada se guardará como un registro independiente.</div>
+                        </div>
+                    </div>
+                    <div class="card-toolbar">
+                        <button type="submit" id="llanta-inspeccion-guardar" class="btn btn-primary">
+                            <span class="indicator-label">Guardar inspección</span>
+                            <span class="indicator-progress">
+                                Guardando...
+                                <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                            </span>
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body py-4">
+                    <div id="llanta-inspeccion-detalles" class="llanta-inspeccion-detalles"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--end::Content-->
+
+@section Scripts {
+    <script>
+        window.SUVAN = window.SUVAN || {};
+        window.SUVAN.LlantaInspeccion = {
+            configuracionUrlTemplate: '@Url.Content("~/Llantas/Inspeccion/Vehiculo/__ID__/Configuracion")',
+            guardarUrl: '@Url.Content("~/Llantas/Inspeccion/Guardar")',
+            estadosInspeccion: @Html.Raw(estadosJson),
+            conclusionesInspeccion: @Html.Raw(conclusionesJson)
+        };
+    </script>
+    <script src="~/js/administrativo/llantainspeccion/index.js" asp-append-version="true"></script>
+    <script src="~/assets/js/widgets.bundle.js"></script>
+    <script src="~/assets/js/custom/widgets.js"></script>
+}

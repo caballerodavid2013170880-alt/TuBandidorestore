@@ -363,10 +363,17 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     x.IdLlantaNavigation.NumeroSerieDot,
                     Marca = x.IdLlantaNavigation.IdModeloLlantaNavigation.IdMarcaLlantaNavigation.Nombre,
                     Modelo = x.IdLlantaNavigation.IdModeloLlantaNavigation.Nombre,
+                    Medida = x.IdLlantaNavigation.IdModeloLlantaNavigation.Medida,
                     x.IdLlantaNavigation.IdEstadoLlanta,
                     EstadoLlanta = x.IdLlantaNavigation.IdEstadoLlantaNavigation.Nombre,
                     x.FechaAsignacion,
-                    x.KmVehiculoAsignacion
+                    x.KmVehiculoAsignacion,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.PresionMinimaPsi,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.PresionMaximaPsi,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.ProfundidadOriginalMm,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.ProfundidadAlertaMm,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.ProfundidadMinimaMm,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.VidaUtilEstimadaKm
                 })
                 .ToListAsync();
 
@@ -412,10 +419,17 @@ namespace SUVAN.BackOffice.Service.Administrativo
                                         NumeroSerieDot = asignacion.NumeroSerieDot,
                                         Marca = asignacion.Marca,
                                         Modelo = asignacion.Modelo,
+                                        Medida = asignacion.Medida,
                                         IdEstadoLlanta = asignacion.IdEstadoLlanta,
                                         EstadoLlanta = asignacion.EstadoLlanta,
                                         FechaAsignacion = asignacion.FechaAsignacion,
-                                        KmVehiculoAsignacion = asignacion.KmVehiculoAsignacion
+                                        KmVehiculoAsignacion = asignacion.KmVehiculoAsignacion,
+                                        PresionMinimaPsi = asignacion.PresionMinimaPsi,
+                                        PresionMaximaPsi = asignacion.PresionMaximaPsi,
+                                        ProfundidadOriginalMm = asignacion.ProfundidadOriginalMm,
+                                        ProfundidadAlertaMm = asignacion.ProfundidadAlertaMm,
+                                        ProfundidadMinimaMm = asignacion.ProfundidadMinimaMm,
+                                        VidaUtilEstimadaKm = asignacion.VidaUtilEstimadaKm
                                     }
                             };
                         })
