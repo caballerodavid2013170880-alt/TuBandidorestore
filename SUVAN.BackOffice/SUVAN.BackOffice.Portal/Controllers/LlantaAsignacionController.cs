@@ -21,6 +21,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         [HttpGet("")]
         [HttpGet("~/llantaasignacion")]
         [HttpGet("~/llantasasignacion")]
+        [HttpGet("~/Llantas/Asignacion")]
         [HttpGet("~/Administrativo/ModuloAdministrativo/LlantaAsignacion")]
         public async Task<IActionResult> Index()
         {
