@@ -7,6 +7,7 @@
     ViewData["LlantaOperacionActiva"] = "Inspeccion";
     var estadosJson = JsonSerializer.Serialize(Model.EstadosInspeccion);
     var conclusionesJson = JsonSerializer.Serialize(Model.ConclusionesInspeccion);
+    var estadosLlantaJson = JsonSerializer.Serialize(Model.EstadosLlanta);
 }
 
 <link href="~/css/administrativo/llantaasignacion/index.css" rel="stylesheet" type="text/css" asp-append-version="true" />
@@ -34,46 +35,57 @@
             <div class="card mb-6">
                 <div class="card-header border-0 pt-6">
                     <div class="card-title w-100">
-                        <div class="row g-5 w-100">
-                            <div class="col-12 col-xl-4">
-                                <label for="llanta-inspeccion-vehiculo" class="required form-label fw-semibold text-gray-700">Vehículo</label>
-                                <select id="llanta-inspeccion-vehiculo" name="IdVehiculo" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un vehículo">
-                                    <option value="">Seleccione un vehículo</option>
-                                    @foreach (var vehiculo in Model.Vehiculos)
-                                    {
-                                        <option value="@vehiculo.Id">@vehiculo.Nombre</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-6 col-xl-3">
-                                <label for="llanta-inspeccion-tipo" class="required form-label fw-semibold text-gray-700">Tipo de inspección</label>
-                                <select id="llanta-inspeccion-tipo" name="IdTipoInspeccion" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione">
-                                    <option value="">Seleccione</option>
-                                    @foreach (var tipo in Model.TiposInspeccion)
-                                    {
-                                        <option value="@tipo.Id">@tipo.Nombre</option>
-                                    }
-                                </select>
-                            </div>
-                            <div class="col-12 col-md-3 col-xl-2">
-                                <label for="llanta-inspeccion-fecha" class="required form-label fw-semibold text-gray-700">Fecha</label>
-                                <input id="llanta-inspeccion-fecha" name="FechaInspeccion" type="date" class="form-control form-control-solid" value="@Model.FechaInspeccion.ToString("yyyy-MM-dd")" />
-                            </div>
-                            <div class="col-12 col-md-3 col-xl-2">
-                                <label for="llanta-inspeccion-km" class="required form-label fw-semibold text-gray-700">Kilometraje</label>
-                                <input id="llanta-inspeccion-km" name="KilometrajeLlanta" type="number" min="0" step="1" class="form-control form-control-solid" />
-                            </div>
-                            <div class="col-12 col-xl-1 d-flex align-items-end">
-                                <div id="llanta-inspeccion-loading" class="d-none align-items-center text-muted">
-                                    <span class="spinner-border spinner-border-sm me-2"></span>
-                                    Cargando
-                                </div>
-                            </div>
+                        <div class="llanta-inspeccion-context-tabs mb-6">
+                            <label class="llanta-inspeccion-context-tab active">
+                                <input class="d-none" type="radio" name="ContextoInspeccion" value="Vehiculo" checked />
+                                Por vehículo
+                            </label>
+                            <label class="llanta-inspeccion-context-tab">
+                                <input class="d-none" type="radio" name="ContextoInspeccion" value="FueraVehiculo" />
+                                Fuera de vehículo
+                            </label>
                         </div>
                     </div>
                 </div>
 
                 <div class="card-body py-4">
+                    <div class="row g-5 w-100 mb-6">
+                        <div class="col-12 col-xl-4" data-contexto-panel="Vehiculo">
+                            <label for="llanta-inspeccion-vehiculo" class="required form-label fw-semibold text-gray-700">Vehículo</label>
+                            <select id="llanta-inspeccion-vehiculo" name="IdVehiculo" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione un vehículo">
+                                <option value="">Seleccione un vehículo</option>
+                                @foreach (var vehiculo in Model.Vehiculos)
+                                {
+                                    <option value="@vehiculo.Id">@vehiculo.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-6 col-xl-3">
+                            <label for="llanta-inspeccion-tipo" class="required form-label fw-semibold text-gray-700">Tipo de inspección</label>
+                            <select id="llanta-inspeccion-tipo" name="IdTipoInspeccion" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione">
+                                <option value="">Seleccione</option>
+                                @foreach (var tipo in Model.TiposInspeccion)
+                                {
+                                    <option value="@tipo.Id">@tipo.Nombre</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-3 col-xl-2">
+                            <label for="llanta-inspeccion-fecha" class="required form-label fw-semibold text-gray-700">Fecha</label>
+                            <input id="llanta-inspeccion-fecha" name="FechaInspeccion" type="date" class="form-control form-control-solid" value="@Model.FechaInspeccion.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="col-12 col-md-3 col-xl-2" data-contexto-panel="Vehiculo">
+                            <label for="llanta-inspeccion-km" class="required form-label fw-semibold text-gray-700">Kilometraje</label>
+                            <input id="llanta-inspeccion-km" name="KilometrajeLlanta" type="number" min="0" step="1" class="form-control form-control-solid" />
+                        </div>
+                        <div class="col-12 col-xl-1 d-flex align-items-end">
+                            <div id="llanta-inspeccion-loading" class="d-none align-items-center text-muted">
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Cargando
+                            </div>
+                        </div>
+                    </div>
+
                     <div id="llanta-inspeccion-alerta" class="alert alert-danger d-none"></div>
                     <div id="llanta-inspeccion-exito" class="alert alert-success d-none"></div>
 
@@ -96,7 +108,7 @@
                         </div>
                     </div>
 
-                    <div class="row g-6">
+                    <div class="row g-6" data-contexto-panel="Vehiculo">
                         <div class="col-12 col-xl-5">
                             <div id="llanta-inspeccion-diagrama" class="llanta-asignacion-diagrama border border-dashed border-gray-300 rounded p-5 text-center text-muted">
                                 <i class="ki-outline ki-truck fs-2tx mb-4"></i>
@@ -116,6 +128,39 @@
                             </div>
                             <div id="llanta-inspeccion-tabla" class="h-100"></div>
                         </div>
+                    </div>
+
+                    <div id="llanta-inspeccion-fuera" class="d-none" data-contexto-panel="FueraVehiculo">
+                        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-4">
+                            <div>
+                                <div class="fw-bold text-gray-800 fs-5">Llantas fuera de vehículo</div>
+                                <div class="text-muted">Busca llantas sin asignación activa para inspección posterior o revisión en depósito.</div>
+                            </div>
+                            <div id="llanta-inspeccion-fuera-loading" class="d-none align-items-center text-muted">
+                                <span class="spinner-border spinner-border-sm me-2"></span>
+                                Cargando
+                            </div>
+                        </div>
+                        <div class="row g-5 mb-5">
+                            <div class="col-12 col-xl-6">
+                                <label for="llanta-inspeccion-fuera-buscar" class="form-label fw-semibold text-gray-700">Buscar</label>
+                                <input id="llanta-inspeccion-fuera-buscar" type="text" class="form-control form-control-solid" placeholder="Código, serie, marca o modelo" />
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-4">
+                                <label for="llanta-inspeccion-fuera-estado" class="form-label fw-semibold text-gray-700">Estado</label>
+                                <select id="llanta-inspeccion-fuera-estado" class="form-select form-select-solid" data-control="select2" data-placeholder="Todos">
+                                    <option value="">Todos</option>
+                                    @foreach (var estado in Model.EstadosLlanta)
+                                    {
+                                        <option value="@estado.Id">@estado.Nombre</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-12 col-md-6 col-xl-2 d-flex align-items-end">
+                                <button type="button" id="llanta-inspeccion-fuera-limpiar" class="btn btn-light btn-sm w-100">Limpiar</button>
+                            </div>
+                        </div>
+                        <div id="llanta-inspeccion-fuera-tabla"></div>
                     </div>
                 </div>
             </div>
@@ -152,9 +197,11 @@
         window.SUVAN = window.SUVAN || {};
         window.SUVAN.LlantaInspeccion = {
             configuracionUrlTemplate: '@Url.Content("~/Llantas/Inspeccion/Vehiculo/__ID__/Configuracion")',
+            llantasFueraVehiculoUrl: '@Url.Content("~/Llantas/Inspeccion/LlantasFueraVehiculo")',
             guardarUrl: '@Url.Content("~/Llantas/Inspeccion/Guardar")',
             estadosInspeccion: @Html.Raw(estadosJson),
-            conclusionesInspeccion: @Html.Raw(conclusionesJson)
+            conclusionesInspeccion: @Html.Raw(conclusionesJson),
+            estadosLlanta: @Html.Raw(estadosLlantaJson)
         };
     </script>
     <script src="~/js/administrativo/llantainspeccion/index.js" asp-append-version="true"></script>

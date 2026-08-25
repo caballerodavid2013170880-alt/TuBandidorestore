@@ -8,6 +8,8 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
         Task<LlantaConfiguracionVehiculoViewModel> GetConfiguracionVehiculo(int idVehiculo, int idEmpresa);
 
+        Task<List<LlantaInspeccionLlantaFueraVehiculoViewModel>> GetLlantasFueraVehiculo(int idEmpresa);
+
         Task<bool> GuardarInspeccion(LlantaInspeccionGuardarViewModel model, int idEmpresa, int idUsuario);
     }
 }

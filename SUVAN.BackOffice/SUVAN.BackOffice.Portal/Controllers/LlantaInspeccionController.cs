@@ -39,6 +39,20 @@ namespace SUVAN.BackOffice.Portal.Controllers
             }
         }
 
+        [HttpGet("LlantasFueraVehiculo")]
+        public async Task<IActionResult> GetLlantasFueraVehiculo()
+        {
+            try
+            {
+                var llantas = await llantaInspeccionService.GetLlantasFueraVehiculo(User.GetEmpresaId());
+                return Json(new { success = true, data = llantas });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
+        }
+
         [HttpPost("Guardar")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Guardar(LlantaInspeccionGuardarViewModel model)

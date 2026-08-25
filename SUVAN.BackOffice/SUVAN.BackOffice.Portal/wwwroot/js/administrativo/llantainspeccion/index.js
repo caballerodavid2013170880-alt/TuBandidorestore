@@ -16,9 +16,19 @@ var SuvanLlantaInspeccion = function () {
     var botonSeleccionarTodas;
     var botonLimpiar;
     var botonGuardar;
+    var contextoInputs;
+    var contextoPanels;
+    var fueraLoading;
+    var fueraBuscar;
+    var fueraEstado;
+    var fueraLimpiar;
+    var fueraTabla;
     var form;
     var config;
     var configuracionActual;
+    var contextoActual = "Vehiculo";
+    var llantasFueraVehiculo = [];
+    var llantasFueraCargadas = false;
     var requestId = 0;
     var seleccionadas = [];
     var successTimeoutId;
@@ -64,6 +74,14 @@ var SuvanLlantaInspeccion = function () {
 
         var number = Number(value);
         return Number.isNaN(number) ? "-" : number.toLocaleString("es-MX", { maximumFractionDigits: 2 });
+    };
+
+    var normalizeText = function (value) {
+        return (value || "")
+            .toString()
+            .toLowerCase()
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "");
     };
 
     var setText = function (id, value) {
@@ -126,6 +144,15 @@ var SuvanLlantaInspeccion = function () {
         loading.classList.toggle("d-flex", isLoading);
     };
 
+    var setFueraLoading = function (isLoading) {
+        if (!fueraLoading) {
+            return;
+        }
+
+        fueraLoading.classList.toggle("d-none", !isLoading);
+        fueraLoading.classList.toggle("d-flex", isLoading);
+    };
+
     var getJson = function (url) {
         return fetch(url, {
             headers: {
@@ -158,6 +185,24 @@ var SuvanLlantaInspeccion = function () {
 
     var getAsignacion = function (posicion) {
         return getValue(posicion, "Asignacion", "asignacion");
+    };
+
+    var getSelectionKey = function (item) {
+        if (!item) {
+            return "";
+        }
+
+        if (item.idLlantaAsignacion) {
+            return "asignacion-" + item.idLlantaAsignacion;
+        }
+
+        return "llanta-" + item.idLlanta;
+    };
+
+    var findSelectedIndexByKey = function (key) {
+        return seleccionadas.findIndex(function (item) {
+            return getSelectionKey(item) === key;
+        });
     };
 
     var getAllInstaladas = function () {
@@ -212,6 +257,28 @@ var SuvanLlantaInspeccion = function () {
             profundidadAlertaMm: getValue(asignacion, "ProfundidadAlertaMm", "profundidadAlertaMm"),
             profundidadMinimaMm: getValue(asignacion, "ProfundidadMinimaMm", "profundidadMinimaMm"),
             vidaUtilEstimadaKm: getValue(asignacion, "VidaUtilEstimadaKm", "vidaUtilEstimadaKm")
+        };
+    };
+
+    var buildSelectedItemFueraVehiculo = function (llanta) {
+        return {
+            idLlantaAsignacion: null,
+            idLlanta: getValue(llanta, "IdLlanta", "idLlanta"),
+            codigoLlanta: getValue(llanta, "CodigoLlanta", "codigoLlanta"),
+            numeroSerieDot: getValue(llanta, "NumeroSerieDot", "numeroSerieDot"),
+            marca: getValue(llanta, "Marca", "marca"),
+            modelo: getValue(llanta, "Modelo", "modelo"),
+            medida: getValue(llanta, "Medida", "medida"),
+            estadoLlanta: getValue(llanta, "EstadoLlanta", "estadoLlanta"),
+            deposito: getValue(llanta, "Deposito", "deposito"),
+            idDeposito: getValue(llanta, "IdDeposito", "idDeposito"),
+            idEstadoLlanta: getValue(llanta, "IdEstadoLlanta", "idEstadoLlanta"),
+            presionMinimaPsi: getValue(llanta, "PresionMinimaPsi", "presionMinimaPsi"),
+            presionMaximaPsi: getValue(llanta, "PresionMaximaPsi", "presionMaximaPsi"),
+            profundidadOriginalMm: getValue(llanta, "ProfundidadOriginalMm", "profundidadOriginalMm"),
+            profundidadAlertaMm: getValue(llanta, "ProfundidadAlertaMm", "profundidadAlertaMm"),
+            profundidadMinimaMm: getValue(llanta, "ProfundidadMinimaMm", "profundidadMinimaMm"),
+            vidaUtilEstimadaKm: getValue(llanta, "VidaUtilEstimadaKm", "vidaUtilEstimadaKm")
         };
     };
 
@@ -398,6 +465,78 @@ var SuvanLlantaInspeccion = function () {
         tabla.innerHTML = html.join("");
     };
 
+    var getLlantasFueraFiltradas = function () {
+        var texto = normalizeText(fueraBuscar ? fueraBuscar.value : "");
+        var idEstado = fueraEstado ? fueraEstado.value : "";
+
+        return llantasFueraVehiculo.filter(function (llanta) {
+            var contenido = [
+                getValue(llanta, "CodigoLlanta", "codigoLlanta"),
+                getValue(llanta, "NumeroSerieDot", "numeroSerieDot"),
+                getValue(llanta, "Marca", "marca"),
+                getValue(llanta, "Modelo", "modelo"),
+                getValue(llanta, "Medida", "medida"),
+                getValue(llanta, "EstadoLlanta", "estadoLlanta"),
+                getValue(llanta, "Deposito", "deposito")
+            ].filter(Boolean).join(" ");
+
+            var coincideTexto = !texto || normalizeText(contenido).indexOf(texto) >= 0;
+            var coincideEstado = !idEstado || String(getValue(llanta, "IdEstadoLlanta", "idEstadoLlanta")) === String(idEstado);
+
+            return coincideTexto && coincideEstado;
+        });
+    };
+
+    var renderLlantasFueraVehiculo = function () {
+        if (!fueraTabla) {
+            return;
+        }
+
+        if (!llantasFueraCargadas) {
+            fueraTabla.innerHTML = '<div class="border border-dashed border-gray-300 rounded p-5 text-center text-muted">Selecciona el contexto fuera de vehículo para cargar las llantas.</div>';
+            return;
+        }
+
+        var llantas = getLlantasFueraFiltradas();
+
+        if (!llantas.length) {
+            fueraTabla.innerHTML = '<div class="border border-dashed border-gray-300 rounded p-5 text-center text-muted">No se encontraron llantas fuera de vehículo.</div>';
+            return;
+        }
+
+        var html = [
+            '<div class="table-responsive">',
+            '<table class="table align-middle table-row-dashed fs-6 gy-4 mb-0">',
+            '<thead><tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">',
+            '<th class="w-45px"></th>',
+            '<th>Llanta</th>',
+            '<th>Modelo</th>',
+            '<th>Estado</th>',
+            '<th>Depósito</th>',
+            '<th>Parámetros</th>',
+            '</tr></thead><tbody>'
+        ];
+
+        llantas.forEach(function (llanta) {
+            var item = buildSelectedItemFueraVehiculo(llanta);
+            var selected = findSelectedIndexByKey(getSelectionKey(item)) >= 0;
+
+            html.push(
+                '<tr class="llanta-inspeccion-fuera-row' + (selected ? ' active' : '') + '" data-id-llanta="' + escapeHtml(item.idLlanta) + '">',
+                '<td><input class="form-check-input llanta-inspeccion-fuera-check" type="checkbox" ' + (selected ? 'checked' : '') + ' /></td>',
+                '<td><div class="fw-bold text-gray-800">' + escapeHtml(item.codigoLlanta) + '</div><div class="text-muted">' + escapeHtml(item.numeroSerieDot) + '</div></td>',
+                '<td>' + escapeHtml([item.marca, item.modelo, item.medida].filter(Boolean).join(" ")) + '</td>',
+                '<td><span class="badge badge-light-info">' + escapeHtml(item.estadoLlanta) + '</span></td>',
+                '<td>' + escapeHtml(item.deposito || "-") + '</td>',
+                '<td><span class="text-muted">PSI</span> ' + formatDecimal(item.presionMinimaPsi) + ' - ' + formatDecimal(item.presionMaximaPsi) + '<br/><span class="text-muted">Prof.</span> ' + formatDecimal(item.profundidadMinimaMm) + ' / ' + formatDecimal(item.profundidadAlertaMm) + ' mm</td>',
+                '</tr>'
+            );
+        });
+
+        html.push('</tbody></table></div>');
+        fueraTabla.innerHTML = html.join("");
+    };
+
     var optionList = function (items, selectedValue) {
         var html = ['<option value="">Seleccione</option>'];
 
@@ -477,15 +616,20 @@ var SuvanLlantaInspeccion = function () {
         var html = [];
 
         seleccionadas.forEach(function (item, index) {
+            var ubicacion = item.idLlantaAsignacion
+                ? 'Eje ' + escapeHtml(item.numeroEje) + ' - Posición ' + escapeHtml(item.numeroPosicion)
+                : 'Fuera de vehículo' + (item.estadoLlanta ? ' - ' + escapeHtml(item.estadoLlanta) : '') + (item.deposito ? ' - ' + escapeHtml(item.deposito) : '');
+
             html.push(
                 '<div class="llanta-inspeccion-detalle border rounded p-5 mb-5" data-index="' + index + '">',
-                '<input type="hidden" name="Detalles[' + index + '].IdLlantaAsignacion" value="' + escapeHtml(item.idLlantaAsignacion) + '" />',
+                '<input type="hidden" name="Detalles[' + index + '].IdLlantaAsignacion" value="' + escapeHtml(item.idLlantaAsignacion || "") + '" />',
+                '<input type="hidden" name="Detalles[' + index + '].IdLlanta" value="' + escapeHtml(item.idLlanta) + '" />',
                 '<div class="d-flex flex-wrap align-items-start justify-content-between gap-3 mb-4">',
                 '<div>',
                 '<div class="fw-bold text-gray-900 fs-5">' + escapeHtml(item.codigoLlanta) + '</div>',
-                '<div class="text-muted">Eje ' + escapeHtml(item.numeroEje) + ' - Posición ' + escapeHtml(item.numeroPosicion) + ' · ' + escapeHtml([item.marca, item.modelo, item.medida].filter(Boolean).join(" ")) + '</div>',
+                '<div class="text-muted">' + ubicacion + ' · ' + escapeHtml([item.marca, item.modelo, item.medida].filter(Boolean).join(" ")) + '</div>',
                 '</div>',
-                '<button type="button" class="btn btn-icon btn-light btn-sm llanta-inspeccion-quitar" data-id-asignacion="' + escapeHtml(item.idLlantaAsignacion) + '" title="Quitar">',
+                '<button type="button" class="btn btn-icon btn-light btn-sm llanta-inspeccion-quitar" data-selection-key="' + escapeHtml(getSelectionKey(item)) + '" title="Quitar">',
                 '<i class="ki-outline ki-cross fs-2"></i>',
                 '</button>',
                 '</div>',
@@ -540,6 +684,7 @@ var SuvanLlantaInspeccion = function () {
 
         renderDiagrama();
         renderTabla();
+        renderLlantasFueraVehiculo();
         renderDetalles();
     };
 
@@ -619,6 +764,71 @@ var SuvanLlantaInspeccion = function () {
         }
     };
 
+    var cargarLlantasFueraVehiculo = async function () {
+        if (llantasFueraCargadas) {
+            renderLlantasFueraVehiculo();
+            return;
+        }
+
+        hideAlert();
+        setFueraLoading(true);
+
+        try {
+            var result = await getJson(config.llantasFueraVehiculoUrl);
+
+            if (!result.success) {
+                throw new Error(result.message || "No fue posible cargar las llantas fuera de vehículo.");
+            }
+
+            llantasFueraVehiculo = result.data || [];
+            llantasFueraCargadas = true;
+            renderSelectionState();
+        } catch (error) {
+            showAlert(error.message);
+        } finally {
+            setFueraLoading(false);
+        }
+    };
+
+    var setContexto = function (contexto) {
+        contextoActual = contexto || "Vehiculo";
+        seleccionadas = [];
+
+        if (contextoPanels) {
+            contextoPanels.forEach(function (panel) {
+                panel.classList.toggle("d-none", panel.getAttribute("data-contexto-panel") !== contextoActual);
+            });
+        }
+
+        if (contextoInputs) {
+            contextoInputs.forEach(function (input) {
+                var label = input.closest(".llanta-inspeccion-context-tab");
+                if (label) {
+                    label.classList.toggle("active", input.value === contextoActual);
+                }
+            });
+        }
+
+        if (contextoActual === "FueraVehiculo") {
+            if (resumen) {
+                resumen.classList.add("d-none");
+            }
+            if (inputKilometraje) {
+                inputKilometraje.value = "";
+                inputKilometraje.disabled = true;
+            }
+            cargarLlantasFueraVehiculo();
+        } else {
+            if (inputKilometraje) {
+                inputKilometraje.disabled = false;
+            }
+            if (configuracionActual) {
+                renderResumen(configuracionActual);
+            }
+            renderSelectionState();
+        }
+    };
+
     var getItemFromButton = function (button) {
         if (!button || !configuracionActual) {
             return null;
@@ -641,6 +851,12 @@ var SuvanLlantaInspeccion = function () {
         });
     };
 
+    var getLlantaFueraById = function (idLlanta) {
+        return llantasFueraVehiculo.find(function (llanta) {
+            return String(getValue(llanta, "IdLlanta", "idLlanta")) === String(idLlanta);
+        });
+    };
+
     var setSubmitLoading = function (isLoading) {
         if (!botonGuardar) {
             return;
@@ -654,7 +870,7 @@ var SuvanLlantaInspeccion = function () {
         event.preventDefault();
         hideAlert();
 
-        if (!selectorVehiculo.value) {
+        if (contextoActual === "Vehiculo" && !selectorVehiculo.value) {
             showAlert("Selecciona un vehículo.");
             return;
         }
@@ -669,13 +885,13 @@ var SuvanLlantaInspeccion = function () {
             return;
         }
 
-        if (!inputKilometraje.value) {
+        if (contextoActual === "Vehiculo" && !inputKilometraje.value) {
             showAlert("Captura el kilometraje.");
             return;
         }
 
         if (!seleccionadas.length) {
-            showAlert("Selecciona al menos una llanta instalada.");
+            showAlert(contextoActual === "Vehiculo" ? "Selecciona al menos una llanta instalada." : "Selecciona al menos una llanta fuera de vehículo.");
             return;
         }
 
@@ -702,7 +918,7 @@ var SuvanLlantaInspeccion = function () {
             return;
         }
 
-        [selectorVehiculo, selectorTipo].forEach(function (select) {
+        [selectorVehiculo, selectorTipo, fueraEstado].forEach(function (select) {
             if (select) {
                 window.jQuery(select).select2({
                     width: "100%",
@@ -713,6 +929,16 @@ var SuvanLlantaInspeccion = function () {
     };
 
     var bindEvents = function () {
+        if (contextoInputs) {
+            contextoInputs.forEach(function (input) {
+                input.addEventListener("change", function () {
+                    if (input.checked) {
+                        setContexto(input.value);
+                    }
+                });
+            });
+        }
+
         if (selectorVehiculo) {
             var onVehiculoChange = function () {
                 cargarConfiguracion();
@@ -762,6 +988,77 @@ var SuvanLlantaInspeccion = function () {
             });
         }
 
+        if (fueraTabla) {
+            fueraTabla.addEventListener("click", function (event) {
+                var row = event.target.closest(".llanta-inspeccion-fuera-row");
+
+                if (!row) {
+                    return;
+                }
+
+                var llanta = getLlantaFueraById(row.getAttribute("data-id-llanta"));
+
+                if (!llanta) {
+                    return;
+                }
+
+                var item = buildSelectedItemFueraVehiculo(llanta);
+                var key = getSelectionKey(item);
+                var index = findSelectedIndexByKey(key);
+
+                if (index >= 0) {
+                    seleccionadas.splice(index, 1);
+                } else {
+                    seleccionadas.push(item);
+                }
+
+                renderSelectionState();
+            });
+        }
+
+        if (fueraBuscar) {
+            fueraBuscar.addEventListener("input", renderLlantasFueraVehiculo);
+        }
+
+        [fueraEstado].forEach(function (select) {
+            if (!select) {
+                return;
+            }
+
+            var onFilterChange = function () {
+                renderLlantasFueraVehiculo();
+            };
+
+            if (window.jQuery) {
+                window.jQuery(select).on("change", onFilterChange);
+                window.jQuery(select).on("select2:select", onFilterChange);
+                window.jQuery(select).on("select2:clear", onFilterChange);
+            } else {
+                select.addEventListener("change", onFilterChange);
+            }
+        });
+
+        if (fueraLimpiar) {
+            fueraLimpiar.addEventListener("click", function () {
+                if (fueraBuscar) {
+                    fueraBuscar.value = "";
+                }
+
+                [fueraEstado].forEach(function (select) {
+                    if (!select) {
+                        return;
+                    }
+
+                    select.value = "";
+                    if (window.jQuery && window.jQuery.fn && window.jQuery.fn.select2) {
+                        window.jQuery(select).trigger("change");
+                    }
+                });
+
+                renderLlantasFueraVehiculo();
+            });
+        }
+
         if (detalles) {
             detalles.addEventListener("click", function (event) {
                 var quitar = event.target.closest(".llanta-inspeccion-quitar");
@@ -770,7 +1067,7 @@ var SuvanLlantaInspeccion = function () {
                     return;
                 }
 
-                var index = findSelectedIndex(quitar.getAttribute("data-id-asignacion"));
+                var index = findSelectedIndexByKey(quitar.getAttribute("data-selection-key"));
 
                 if (index >= 0) {
                     seleccionadas.splice(index, 1);
@@ -831,12 +1128,19 @@ var SuvanLlantaInspeccion = function () {
             botonSeleccionarTodas = document.getElementById("llanta-inspeccion-seleccionar-todas");
             botonLimpiar = document.getElementById("llanta-inspeccion-limpiar");
             botonGuardar = document.getElementById("llanta-inspeccion-guardar");
+            contextoInputs = Array.prototype.slice.call(document.querySelectorAll('input[name="ContextoInspeccion"]'));
+            contextoPanels = Array.prototype.slice.call(document.querySelectorAll("[data-contexto-panel]"));
+            fueraLoading = document.getElementById("llanta-inspeccion-fuera-loading");
+            fueraBuscar = document.getElementById("llanta-inspeccion-fuera-buscar");
+            fueraEstado = document.getElementById("llanta-inspeccion-fuera-estado");
+            fueraLimpiar = document.getElementById("llanta-inspeccion-fuera-limpiar");
+            fueraTabla = document.getElementById("llanta-inspeccion-fuera-tabla");
             form = document.getElementById("llanta-inspeccion-form");
             config = window.SUVAN && window.SUVAN.LlantaInspeccion ? window.SUVAN.LlantaInspeccion : {};
 
             initSelect2();
             bindEvents();
-            renderSelectionState();
+            setContexto(contextoActual);
         }
     };
 }();
