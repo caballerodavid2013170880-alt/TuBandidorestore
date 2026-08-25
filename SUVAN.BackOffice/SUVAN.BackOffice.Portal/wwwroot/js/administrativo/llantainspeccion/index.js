@@ -16,6 +16,8 @@ var SuvanLlantaInspeccion = function () {
     var botonSeleccionarTodas;
     var botonLimpiar;
     var botonGuardar;
+    var botonGuardarProcesar;
+    var inputProcesarAccion;
     var contextoInputs;
     var contextoPanels;
     var fueraLoading;
@@ -91,12 +93,21 @@ var SuvanLlantaInspeccion = function () {
         }
     };
 
+    var showToast = function (type, message, title) {
+        if (window.notificacion && typeof window.notificacion.popup === "function") {
+            window.notificacion.popup(type, message, title);
+        }
+    };
+
     var showAlert = function (message) {
+        var alertMessage = message || "No fue posible procesar la solicitud.";
+        showToast("error", alertMessage, "Atención");
+
         if (!alerta) {
             return;
         }
 
-        alerta.textContent = message || "No fue posible procesar la solicitud.";
+        alerta.textContent = alertMessage;
         alerta.classList.remove("d-none");
         if (exito) {
             exito.classList.add("d-none");
@@ -116,11 +127,14 @@ var SuvanLlantaInspeccion = function () {
     };
 
     var showSuccess = function (message) {
+        var successMessage = message || "Operación realizada correctamente.";
+        showToast("success", successMessage, "Correcto");
+
         if (!exito) {
             return;
         }
 
-        exito.textContent = message || "Operación realizada correctamente.";
+        exito.textContent = successMessage;
         exito.classList.remove("d-none");
         hideAlert();
 
@@ -601,6 +615,32 @@ var SuvanLlantaInspeccion = function () {
         return '<span class="badge ' + badge.className + '">' + escapeHtml(badge.label) + '</span>';
     };
 
+    var conclusionRequiereAccion = function (idConclusion) {
+        var conclusion = (config.conclusionesInspeccion || []).find(function (item) {
+            return String(getValue(item, "Id", "id")) === String(idConclusion || "");
+        });
+
+        var nombre = normalizeText(getValue(conclusion, "Nombre", "nombre"));
+        return nombre === "reparar" || nombre === "renovar" || nombre === "desechar";
+    };
+
+    var actualizarBotonProcesar = function () {
+        if (!botonGuardarProcesar) {
+            return;
+        }
+
+        var mostrar = false;
+
+        if (contextoActual === "Vehiculo" && detalles) {
+            mostrar = Array.prototype.slice.call(detalles.querySelectorAll('select[name$=".IdConclusionInspeccion"]'))
+                .some(function (select) {
+                    return conclusionRequiereAccion(select.value);
+                });
+        }
+
+        botonGuardarProcesar.classList.toggle("d-none", !mostrar);
+    };
+
     var renderDetalles = function () {
         if (!detalles || !captura) {
             return;
@@ -610,6 +650,7 @@ var SuvanLlantaInspeccion = function () {
 
         if (!seleccionadas.length) {
             detalles.innerHTML = "";
+            actualizarBotonProcesar();
             return;
         }
 
@@ -668,6 +709,7 @@ var SuvanLlantaInspeccion = function () {
         });
 
         detalles.innerHTML = html.join("");
+        actualizarBotonProcesar();
     };
 
     var renderSelectionState = function () {
@@ -813,6 +855,9 @@ var SuvanLlantaInspeccion = function () {
             if (resumen) {
                 resumen.classList.add("d-none");
             }
+            if (botonGuardarProcesar) {
+                botonGuardarProcesar.classList.add("d-none");
+            }
             if (inputKilometraje) {
                 inputKilometraje.value = "";
                 inputKilometraje.disabled = true;
@@ -864,6 +909,9 @@ var SuvanLlantaInspeccion = function () {
 
         botonGuardar.disabled = isLoading;
         botonGuardar.setAttribute("data-kt-indicator", isLoading ? "on" : "off");
+        if (botonGuardarProcesar) {
+            botonGuardarProcesar.disabled = isLoading;
+        }
     };
 
     var guardar = async function (event) {
@@ -895,6 +943,13 @@ var SuvanLlantaInspeccion = function () {
             return;
         }
 
+        var procesarAccion = inputProcesarAccion && inputProcesarAccion.value === "true";
+
+        if (procesarAccion && contextoActual !== "Vehiculo") {
+            showAlert("El procesamiento de acción aplica únicamente para llantas instaladas.");
+            return;
+        }
+
         setSubmitLoading(true);
 
         try {
@@ -905,7 +960,14 @@ var SuvanLlantaInspeccion = function () {
             }
 
             showSuccess(result.message || "Inspección registrada correctamente.");
+            if (inputProcesarAccion) {
+                inputProcesarAccion.value = "false";
+            }
             limpiarSeleccion();
+
+            if (procesarAccion && contextoActual === "Vehiculo") {
+                await cargarConfiguracion();
+            }
         } catch (error) {
             showAlert(error.message);
         } finally {
@@ -959,6 +1021,20 @@ var SuvanLlantaInspeccion = function () {
 
         if (botonLimpiar) {
             botonLimpiar.addEventListener("click", limpiarSeleccion);
+        }
+
+        if (botonGuardarProcesar) {
+            botonGuardarProcesar.addEventListener("click", function () {
+                if (inputProcesarAccion) {
+                    inputProcesarAccion.value = "true";
+                }
+
+                if (form && typeof form.requestSubmit === "function") {
+                    form.requestSubmit();
+                } else if (form) {
+                    form.dispatchEvent(new Event("submit", { cancelable: true }));
+                }
+            });
         }
 
         if (diagrama) {
@@ -1103,11 +1179,29 @@ var SuvanLlantaInspeccion = function () {
                         targetProfundidad.innerHTML = renderBadge(getProfundidadBadge(item, input.value));
                     }
                 }
+
+                if (input.name && input.name.indexOf(".IdConclusionInspeccion") >= 0) {
+                    actualizarBotonProcesar();
+                }
+            });
+
+            detalles.addEventListener("change", function (event) {
+                var input = event.target;
+
+                if (input.name && input.name.indexOf(".IdConclusionInspeccion") >= 0) {
+                    actualizarBotonProcesar();
+                }
             });
         }
 
         if (form) {
-            form.addEventListener("submit", guardar);
+            form.addEventListener("submit", function (event) {
+                if (event.submitter && event.submitter === botonGuardar && inputProcesarAccion) {
+                    inputProcesarAccion.value = "false";
+                }
+
+                guardar(event);
+            });
         }
     };
 
@@ -1128,6 +1222,8 @@ var SuvanLlantaInspeccion = function () {
             botonSeleccionarTodas = document.getElementById("llanta-inspeccion-seleccionar-todas");
             botonLimpiar = document.getElementById("llanta-inspeccion-limpiar");
             botonGuardar = document.getElementById("llanta-inspeccion-guardar");
+            botonGuardarProcesar = document.getElementById("llanta-inspeccion-guardar-procesar");
+            inputProcesarAccion = document.getElementById("llanta-inspeccion-procesar-accion");
             contextoInputs = Array.prototype.slice.call(document.querySelectorAll('input[name="ContextoInspeccion"]'));
             contextoPanels = Array.prototype.slice.call(document.querySelectorAll("[data-contexto-panel]"));
             fueraLoading = document.getElementById("llanta-inspeccion-fuera-loading");

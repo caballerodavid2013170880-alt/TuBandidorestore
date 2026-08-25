@@ -31,6 +31,7 @@
         @await Html.PartialAsync("_LlantasOperacionTabs")
         <form id="llanta-inspeccion-form" autocomplete="off">
             @Html.AntiForgeryToken()
+            <input id="llanta-inspeccion-procesar-accion" type="hidden" name="ProcesarAccion" value="false" />
 
             <div class="card mb-6">
                 <div class="card-header border-0 pt-6">
@@ -174,6 +175,9 @@
                         </div>
                     </div>
                     <div class="card-toolbar">
+                        <button type="button" id="llanta-inspeccion-guardar-procesar" class="btn btn-light-primary me-3 d-none">
+                            <span class="indicator-label">Guardar y procesar acción</span>
+                        </button>
                         <button type="submit" id="llanta-inspeccion-guardar" class="btn btn-primary">
                             <span class="indicator-label">Guardar inspección</span>
                             <span class="indicator-progress">

@@ -45,6 +45,8 @@ namespace SUVAN.BackOffice.Models.ViewModel.Administrativo
 
         public uint? KilometrajeLlanta { get; set; }
 
+        public bool ProcesarAccion { get; set; }
+
         public List<LlantaInspeccionDetalleGuardarViewModel> Detalles { get; set; } = new();
     }
 

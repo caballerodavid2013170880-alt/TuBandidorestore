@@ -686,7 +686,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 .ToList();
         }
 
-        public async Task<bool> RetirarLlanta(LlantaRetiroViewModel model, int idEmpresa, int idUsuario)
+        public async Task<bool> RetirarLlanta(LlantaRetiroViewModel model, int idEmpresa, int idUsuario, bool administrarTransaccion = true)
         {
             if (model.IdLlantaAsignacion == 0)
                 throw new Exception("La asignación es obligatoria.");
@@ -706,7 +706,9 @@ namespace SUVAN.BackOffice.Service.Administrativo
             if (model.FechaRetiro.Date > DateTime.Today)
                 throw new Exception("La fecha de retiro no puede ser posterior a la fecha actual.");
 
-            await using var transaction = await context.Database.BeginTransactionAsync();
+            await using var transaction = administrarTransaccion
+                ? await context.Database.BeginTransactionAsync()
+                : null;
 
             var asignacion = await context.LlantaAsignacions
                 .Include(x => x.IdLlantaNavigation)
@@ -772,7 +774,10 @@ namespace SUVAN.BackOffice.Service.Administrativo
             });
 
             await context.SaveChangesAsync();
-            await transaction.CommitAsync();
+            if (transaction != null)
+            {
+                await transaction.CommitAsync();
+            }
 
             return true;
         }

@@ -16,6 +16,9 @@ namespace SUVAN.BackOffice.Service.Administrativo
         };
 
         private const string ContextoFueraVehiculo = "FueraVehiculo";
+        private const string ConclusionReparar = "reparar";
+        private const string ConclusionRenovar = "renovar";
+        private const string ConclusionDesechar = "desechar";
 
         private readonly SuvanDbContext context;
         private readonly ILlantaService llantaService;
@@ -156,6 +159,12 @@ namespace SUVAN.BackOffice.Service.Administrativo
             if (!esFueraVehiculo && model.Detalles.Any(x => x.IdLlantaAsignacion == 0))
                 throw new Exception("Todas las llantas seleccionadas deben tener una asignación activa.");
 
+            if (model.ProcesarAccion && esFueraVehiculo)
+                throw new Exception("El procesamiento de acción aplica únicamente para llantas instaladas.");
+
+            if (model.ProcesarAccion && !model.KilometrajeLlanta.HasValue)
+                throw new Exception("El kilometraje es obligatorio para procesar la acción.");
+
             if (esFueraVehiculo)
             {
                 if (model.Detalles.Any(x => x.IdLlanta == 0))
@@ -293,6 +302,31 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 });
             }
 
+            if (model.ProcesarAccion)
+            {
+                var detallesConAccion = model.Detalles
+                    .Where(x => RequiereAccion(conclusionesPorId[x.IdConclusionInspeccion]))
+                    .ToList();
+
+                if (!detallesConAccion.Any())
+                    throw new Exception("Selecciona al menos una conclusión que requiera acción para procesarla.");
+
+                foreach (var detalle in detallesConAccion)
+                {
+                    var conclusion = NormalizarTexto(conclusionesPorId[detalle.IdConclusionInspeccion]);
+                    var accion = await ResolverAccionRetiro(conclusion);
+                    await llantaService.RetirarLlanta(new LlantaRetiroViewModel
+                    {
+                        IdLlantaAsignacion = detalle.IdLlantaAsignacion,
+                        FechaRetiro = model.FechaInspeccion,
+                        KmVehiculoRetiro = model.KilometrajeLlanta!.Value,
+                        IdMotivoRetiro = accion.IdMotivoRetiro,
+                        IdEstadoDestino = accion.IdEstadoDestino,
+                        ObservacionesRetiro = GetObservacionesRetiro(detalle.Observaciones, conclusionesPorId[detalle.IdConclusionInspeccion])
+                    }, idEmpresa, idUsuario, administrarTransaccion: false);
+                }
+            }
+
             await context.SaveChangesAsync();
             await transaction.CommitAsync();
 
@@ -307,6 +341,66 @@ namespace SUVAN.BackOffice.Service.Administrativo
         private static bool EsContextoFueraVehiculo(string? contexto)
         {
             return string.Equals(contexto, ContextoFueraVehiculo, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private async Task<(ushort IdMotivoRetiro, ushort IdEstadoDestino)> ResolverAccionRetiro(string conclusion)
+        {
+            return conclusion switch
+            {
+                ConclusionReparar => (
+                    await GetIdMotivoRetiro("envio a reparacion"),
+                    await GetIdEstadoLlanta("en reparacion")),
+                ConclusionRenovar => (
+                    await GetIdMotivoRetiro("envio a renovado"),
+                    await GetIdEstadoLlanta("en renovado")),
+                ConclusionDesechar => (
+                    await GetIdMotivoRetiro("fin de vida util"),
+                    await GetIdEstadoLlanta("baja definitiva")),
+                _ => throw new Exception("La conclusión seleccionada no tiene una acción de retiro configurada.")
+            };
+        }
+
+        private async Task<ushort> GetIdMotivoRetiro(string nombreBuscado)
+        {
+            var motivos = await context.LlantaMotivoRetiros
+                .AsNoTracking()
+                .Where(x => x.EsActivo == true)
+                .Select(x => new { x.IdMotivoRetiro, x.Nombre })
+                .ToListAsync();
+
+            var nombreNormalizado = NormalizarTexto(nombreBuscado);
+            var motivo = motivos.FirstOrDefault(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
+
+            if (motivo == null)
+                throw new Exception($"No se encontró el motivo de retiro activo '{nombreBuscado}'.");
+
+            return motivo.IdMotivoRetiro;
+        }
+
+        private async Task<ushort> GetIdEstadoLlanta(string nombreBuscado)
+        {
+            var estados = await context.LlantaEstados
+                .AsNoTracking()
+                .Where(x => x.EsActivo == true)
+                .Select(x => new { x.IdEstadoLlanta, x.Nombre })
+                .ToListAsync();
+
+            var nombreNormalizado = NormalizarTexto(nombreBuscado);
+            var estado = estados.FirstOrDefault(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
+
+            if (estado == null)
+                throw new Exception($"No se encontró el estado de llanta activo '{nombreBuscado}'.");
+
+            return estado.IdEstadoLlanta;
+        }
+
+        private static string GetObservacionesRetiro(string? observaciones, string conclusion)
+        {
+            var texto = string.IsNullOrWhiteSpace(observaciones)
+                ? $"Retiro generado desde inspección por conclusión {conclusion}."
+                : observaciones.Trim();
+
+            return texto.Length <= 500 ? texto : texto[..500];
         }
 
         private static string NormalizarTexto(string value)
