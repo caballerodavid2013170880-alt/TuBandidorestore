@@ -3,11 +3,11 @@
 }
 
 .llanta-inspeccion-row.active td:first-child {
-    border-left: 3px solid var(--bs-primary);
+    border-left: 3px solid var(--bs-info);
 }
 
 .llanta-inspeccion-row.active {
-    background-color: var(--bs-primary-light);
+    background-color: var(--bs-info-light);
 }
 
 .llanta-inspeccion-detalles {
@@ -25,7 +25,8 @@
 }
 
 .llanta-wheel.active {
-    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), .18), 0 12px 24px rgba(15, 23, 42, .16);
+    border-color: var(--bs-info);
+    box-shadow: 0 0 0 4px rgba(var(--bs-info-rgb), .18), 0 12px 24px rgba(15, 23, 42, .16);
     transform: translateY(-1px);
 }
 

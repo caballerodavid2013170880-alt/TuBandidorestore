@@ -21,6 +21,7 @@ var SuvanLlantaInspeccion = function () {
     var configuracionActual;
     var requestId = 0;
     var seleccionadas = [];
+    var successTimeoutId;
 
     var getValue = function (source, pascalName, camelName) {
         if (!source) {
@@ -83,6 +84,10 @@ var SuvanLlantaInspeccion = function () {
             exito.classList.add("d-none");
             exito.textContent = "";
         }
+        if (successTimeoutId) {
+            clearTimeout(successTimeoutId);
+            successTimeoutId = null;
+        }
     };
 
     var hideAlert = function () {
@@ -100,6 +105,16 @@ var SuvanLlantaInspeccion = function () {
         exito.textContent = message || "Operación realizada correctamente.";
         exito.classList.remove("d-none");
         hideAlert();
+
+        if (successTimeoutId) {
+            clearTimeout(successTimeoutId);
+        }
+
+        successTimeoutId = setTimeout(function () {
+            exito.classList.add("d-none");
+            exito.textContent = "";
+            successTimeoutId = null;
+        }, 4000);
     };
 
     var setLoading = function (isLoading) {
