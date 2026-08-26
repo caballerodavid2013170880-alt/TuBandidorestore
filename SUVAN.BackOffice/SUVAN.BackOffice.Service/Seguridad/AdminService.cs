@@ -13,14 +13,17 @@ namespace SUVAN.BackOffice.Service.Seguridad
         private readonly IPerfilService perfilService;
         private readonly INotificacionCorreoService notificacionCorreoService;
         private readonly IEmpresasService empresasService;
+        private readonly IUsuarioJerarquiaService usuarioJerarquiaService;
+
 
         public AdminService(SuvanDbContext context, IPerfilService perfilService, INotificacionCorreoService notificacionCorreoService,
-            IEmpresasService empresasService)
+            IEmpresasService empresasService, IUsuarioJerarquiaService usuarioJerarquiaService)
         {
             this.context = context;
             this.perfilService = perfilService;
             this.notificacionCorreoService = notificacionCorreoService;
             this.empresasService = empresasService;
+            this.usuarioJerarquiaService = usuarioJerarquiaService;
         }
 
         /// <summary>
@@ -251,6 +254,54 @@ namespace SUVAN.BackOffice.Service.Seguridad
             await context.SaveChangesAsync();
             var empresas = Newtonsoft.Json.JsonConvert.DeserializeObject<List<EmpresaUsuarioViewModel>>(model.EmpresasUsuario);
             await GuardaAdminEmpresa(empresas!, admin.Idadmin);
+
+
+            // Guardar jerarquías si se enviaron depósitos asignados
+            int idEmpresaPrincipal = empresas?.FirstOrDefault(e => e.esPrincipal)?.empresaId ?? empresas?.FirstOrDefault()?.empresaId ?? 0;
+            if (idEmpresaPrincipal > 0)
+            {
+                var jerarquiasItems = string.IsNullOrWhiteSpace(model.JerarquiasUsuario)
+                    ? new List<UsuarioJerarquiaItemViewModel>()
+                    : Newtonsoft.Json.JsonConvert.DeserializeObject<List<UsuarioJerarquiaItemViewModel>>(model.JerarquiasUsuario) ?? new List<UsuarioJerarquiaItemViewModel>();
+
+                if (jerarquiasItems.Any())
+                {
+                    var entidades = jerarquiasItems.Select(item => new UsuarioJerarquium
+                    {
+                        TipoUsuario = "Admin",
+                        IdUsuario = admin.Idadmin,
+                        IdEmpresa = idEmpresaPrincipal,
+                        IdRegion = item.regionId,
+                        IdPlanta = item.plantaId,
+                        IdZona = item.zonaId,
+                        IdDeposito = item.depositoId,
+                        IdDepto = item.deptoId,
+                        EsPrincipal = (ulong)(item.esPrincipal ? 1 : 0),
+                        Activo = 1
+                    }).ToList();
+
+                    await usuarioJerarquiaService.GuardarJerarquiasUsuario("Admin", admin.Idadmin, idEmpresaPrincipal, entidades);
+                }
+                else if (model.IdRegion.HasValue)
+                {
+                    var jerarquia = new UsuarioJerarquium
+                    {
+                        TipoUsuario = "Admin",
+                        IdUsuario = admin.Idadmin,
+                        IdEmpresa = idEmpresaPrincipal,
+                        IdRegion = model.IdRegion,
+                        IdPlanta = model.IdPlanta,
+                        IdZona = model.IdZona,
+                        IdDeposito = model.IdDeposito,
+                        IdDepto = model.IdDepto,
+                        EsPrincipal = 1,
+                        Activo = 1
+                    };
+                    await usuarioJerarquiaService.GuardarJerarquiaUsuario(jerarquia);
+                }
+            }
+
+
             //:: TODO enviar correo de alta de usuario
             if (model.AdminId == 0)
             {
@@ -313,6 +364,64 @@ namespace SUVAN.BackOffice.Service.Seguridad
                    perfilNombre = x.PerfilIdperfilNavigation.Nombre!,
                    esPrincipal = x.Principal == 1 ? true : false
                }).ToList());
+
+
+                // Cargar jerarquía guardada del usuario si existe
+                int idEmpresaPrincipal = viewModel.EmpresasSeleccion.FirstOrDefault(e => e.esPrincipal)?.empresaId
+                                       ?? viewModel.EmpresasSeleccion.FirstOrDefault()?.empresaId
+                                       ?? (empresas.FirstOrDefault()?.Idempresa ?? 0);
+
+                if (idEmpresaPrincipal > 0)
+                {
+                    var jerarquias = await usuarioJerarquiaService.GetJerarquiasUsuario("Admin", adminId, idEmpresaPrincipal);
+                    if (jerarquias != null && jerarquias.Any())
+                    {
+                        viewModel.JerarquiasSeleccion = jerarquias.Select(j => new UsuarioJerarquiaItemViewModel
+                        {
+                            idUsuarioJerarquia = j.IdUsuarioJerarquia,
+                            empresaId = j.IdEmpresa,
+                            regionId = j.IdRegion,
+                            regionNombre = j.IdRegionNavigation?.NombreRegion ?? string.Empty,
+                            plantaId = j.IdPlanta,
+                            plantaNombre = j.IdPlantaNavigation?.NombrePlanta ?? string.Empty,
+                            zonaId = j.IdZona,
+                            zonaNombre = j.IdZonaNavigation?.NombreZona ?? string.Empty,
+                            depositoId = j.IdDeposito,
+                            depositoNombre = j.IdDepositoNavigation?.NombreDeposito ?? string.Empty,
+                            deptoId = j.IdDepto,
+                            deptoNombre = j.IdDeptoNavigation?.NombreDepto ?? string.Empty,
+                            esPrincipal = j.EsPrincipal == 1
+                        }).ToList();
+
+                        viewModel.JerarquiasUsuario = Newtonsoft.Json.JsonConvert.SerializeObject(viewModel.JerarquiasSeleccion);
+
+                        var principal = jerarquias.FirstOrDefault(j => j.EsPrincipal == 1) ?? jerarquias.First();
+                        viewModel.IdRegion = principal.IdRegion;
+                        viewModel.IdPlanta = principal.IdPlanta;
+                        viewModel.IdZona = principal.IdZona;
+                        viewModel.IdDeposito = principal.IdDeposito;
+                        viewModel.IdDepto = principal.IdDepto;
+                    }
+
+                    viewModel.Regiones = await usuarioJerarquiaService.GetRegionesPorEmpresa(idEmpresaPrincipal);
+                    if (viewModel.IdRegion.HasValue)
+                    {
+                        viewModel.Plantas = await usuarioJerarquiaService.GetPlantasPorRegion(idEmpresaPrincipal, viewModel.IdRegion.Value);
+                    }
+                    if (viewModel.IdRegion.HasValue && viewModel.IdPlanta.HasValue)
+                    {
+                        viewModel.Zonas = await usuarioJerarquiaService.GetZonasPorPlanta(idEmpresaPrincipal, viewModel.IdRegion.Value, viewModel.IdPlanta.Value);
+                    }
+                    if (viewModel.IdRegion.HasValue && viewModel.IdPlanta.HasValue && viewModel.IdZona.HasValue)
+                    {
+                        viewModel.Depositos = await usuarioJerarquiaService.GetDepositosPorZona(idEmpresaPrincipal, viewModel.IdRegion.Value, viewModel.IdPlanta.Value, viewModel.IdZona.Value);
+                    }
+                    if (viewModel.IdRegion.HasValue && viewModel.IdPlanta.HasValue && viewModel.IdZona.HasValue && viewModel.IdDeposito.HasValue)
+                    {
+                        viewModel.Departamentos = await usuarioJerarquiaService.GetDeptosPorDeposito(idEmpresaPrincipal, viewModel.IdRegion.Value, viewModel.IdPlanta.Value, viewModel.IdZona.Value, viewModel.IdDeposito.Value);
+                    }
+                }
+
             }
             if (viewModel.EmpresasSeleccion.Any())
             {

@@ -54,6 +54,7 @@
         <form class="form w-100" novalidate="novalidate" id="kt_user_in_form" data-kt-redirect-url="/" asp-controller="Usuarios" asp-action="Agregar" method="post">
           <input asp-for="AdminId" type="hidden" />
           <input asp-for="EmpresasUsuario" type="hidden" />
+                    <input asp-for="JerarquiasUsuario" type="hidden" />
 
           <div class="row">
             <div class="col-lg-6">
@@ -117,6 +118,86 @@
                   </div>
                 </div>
               </div>
+
+                            <!--begin::Asignación de Jerarquía Organizacional-->
+                            <div class="border rounded p-4 mb-8 bg-light-secondary">
+                                <h4 class="text-gray-800 mb-4 fw-bold">Asignación Jerárquica Organizacional</h4>
+
+                                <!--Región-->
+                                <div class="fv-row mb-4">
+                                    <label asp-for="IdRegion" class="col-form-label text-gray-600">Región</label>
+                                    <select id="selectIdRegion" asp-for="IdRegion" class="form-select bg-white">
+                                        <option value="">-- Seleccione una Región --</option>
+                                        @foreach (var r in Model.Regiones)
+                                        {
+                                            <option value="@r.Id" selected="@(r.Id == Model.IdRegion ? "selected" : null)">@r.Nombre</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!--Planta-->
+                                <div class="fv-row mb-4">
+                                    <label asp-for="IdPlanta" class="col-form-label text-gray-600">Planta</label>
+                                    <select id="selectIdPlanta" asp-for="IdPlanta" class="form-select bg-white" disabled="@(!Model.IdRegion.HasValue)">
+                                        <option value="">--(Primero seleccione una Región)--</option>
+                                        @foreach (var p in Model.Plantas)
+                                        {
+                                            <option value="@p.Id" selected="@(p.Id == Model.IdPlanta ? "selected" : null)">@p.Nombre</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!--Zona-->
+                                <div class="fv-row mb-4">
+                                    <label asp-for="IdZona" class="col-form-label text-gray-600">Zona</label>
+                                    <select id="selectIdZona" asp-for="IdZona" class="form-select bg-white" disabled="@(!Model.IdPlanta.HasValue)">
+                                        <option value="">--(Primero seleccione una Planta)--</option>
+                                        @foreach (var z in Model.Zonas)
+                                        {
+                                            <option value="@z.Id" selected="@(z.Id == Model.IdZona ? "selected" : null)">@z.Nombre</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!--Depósito-->
+                                <div class="fv-row mb-4">
+                                    <label asp-for="IdDeposito" class="col-form-label text-gray-600">Depósito</label>
+                                    <select id="selectIdDeposito" asp-for="IdDeposito" class="form-select bg-white" disabled="@(!Model.IdZona.HasValue)">
+                                        <option value="">--(Primero seleccione una Zona)--</option>
+                                        @foreach (var d in Model.Depositos)
+                                        {
+                                            <option value="@d.Id" selected="@(d.Id == Model.IdDeposito ? "selected" : null)">@d.Nombre</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!--Departamento-->
+                                <div class="fv-row mb-4">
+                                    <label asp-for="IdDepto" class="col-form-label text-gray-600">Departamento</label>
+                                    <select id="selectIdDepto" asp-for="IdDepto" class="form-select bg-white" disabled="@(!Model.IdDeposito.HasValue)">
+                                        <option value="">--(Primero seleccione un Depósito)--</option>
+                                        @foreach (var dep in Model.Departamentos)
+                                        {
+                                            <option value="@dep.Id" selected="@(dep.Id == Model.IdDepto ? "selected" : null)">@dep.Nombre</option>
+                                        }
+                                    </select>
+                                </div>
+
+                                <!--Botón para agregar asignación de depósito a la lista de jerarquías-->
+                                <div class="text-end mb-4">
+                                    <button type="button" id="btn-agregar-jerarquia" class="btn btn-sm btn-light-primary fw-bold">
+                                        <i class="ki-duotone ki-plus-circle fs-4 me-1"><span class="path1"></span><span class="path2"></span></i>
+                                        Agregar Depósito a Jerarquía
+                                    </button>
+                                </div>
+
+                                <!--Lista de depósitos/jerarquías asignadas-->
+                                <div class="mt-4">
+                                    <h6 class="text-gray-700 fw-bold mb-2">Depósitos / Jerarquías Asignadas</h6>
+                                    <div id="jerarquiasContainer"></div>
+                                </div>
+                            </div>
+                            <!--end::Asignación de Jerarquía Organizacional-->
             </div>
             <div class="col-lg-6">
               <div class="fv-row mb-8">

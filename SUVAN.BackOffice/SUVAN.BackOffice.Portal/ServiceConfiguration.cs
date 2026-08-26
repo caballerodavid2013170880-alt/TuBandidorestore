@@ -109,6 +109,7 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<IMenuService, MenuService>();
             services.AddTransient<IUsuarioHelper, UsuarioHelper>();
             services.AddTransient<IRutasHelper, RutasHelper>();
+            services.AddTransient<IUsuarioJerarquiaService, UsuarioJerarquiaService>();
             services.AddTransient<IAuthenticationClaimService, AuthenticationClaimService>();
             services.AddTransient<IPerfilService, PerfilService>();
             services.AddTransient<IMFAPortalService, MFAPortalService>();
