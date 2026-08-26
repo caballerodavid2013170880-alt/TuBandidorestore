@@ -19,6 +19,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         private const string ConclusionReparar = "reparar";
         private const string ConclusionRenovar = "renovar";
         private const string ConclusionDesechar = "desechar";
+        private const string ConclusionSinConclusion = "sin conclusion";
 
         private readonly SuvanDbContext context;
         private readonly ILlantaService llantaService;
@@ -159,11 +160,11 @@ namespace SUVAN.BackOffice.Service.Administrativo
             if (!esFueraVehiculo && model.Detalles.Any(x => x.IdLlantaAsignacion == 0))
                 throw new Exception("Todas las llantas seleccionadas deben tener una asignación activa.");
 
-            if (model.ProcesarAccion && esFueraVehiculo)
-                throw new Exception("El procesamiento de acción aplica únicamente para llantas instaladas.");
-
-            if (model.ProcesarAccion && !model.KilometrajeLlanta.HasValue)
+            if (model.ProcesarAccion && !esFueraVehiculo && !model.KilometrajeLlanta.HasValue)
                 throw new Exception("El kilometraje es obligatorio para procesar la acción.");
+
+            if (model.ProcesarAccion && esFueraVehiculo && model.KilometrajeLlanta.HasValue)
+                throw new Exception("El kilometraje no aplica para procesar llantas fuera de vehículo.");
 
             if (esFueraVehiculo)
             {
@@ -209,9 +210,11 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
             var tipoValido = await context.LlantaTipoInspeccions
                 .AsNoTracking()
-                .AnyAsync(x => x.IdTipoInspeccion == model.IdTipoInspeccion && x.EsActivo == true);
+                .Where(x => x.IdTipoInspeccion == model.IdTipoInspeccion && x.EsActivo == true)
+                .Select(x => new { x.IdTipoInspeccion, x.Nombre })
+                .FirstOrDefaultAsync();
 
-            if (!tipoValido)
+            if (tipoValido == null)
                 throw new Exception("El tipo de inspección no está activo o no existe.");
 
             var idsEstado = model.Detalles.Select(x => x.IdEstadoInspeccion).Distinct().ToList();
@@ -302,7 +305,11 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 });
             }
 
-            if (model.ProcesarAccion)
+            if (model.ProcesarAccion && esFueraVehiculo)
+            {
+                await ProcesarAccionFueraVehiculoReparacion(model, idEmpresa, idUsuario, conclusionesPorId, tipoValido.Nombre);
+            }
+            else if (model.ProcesarAccion)
             {
                 var detallesConAccion = model.Detalles
                     .Where(x => RequiereAccion(conclusionesPorId[x.IdConclusionInspeccion]))
@@ -333,6 +340,58 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return true;
         }
 
+        private async Task ProcesarAccionFueraVehiculoReparacion(
+            LlantaInspeccionGuardarViewModel model,
+            int idEmpresa,
+            int idUsuario,
+            Dictionary<ushort, string> conclusionesPorId,
+            string tipoInspeccion)
+        {
+            if (!EsInspeccionPosteriorReparacion(tipoInspeccion))
+                throw new Exception("Para liberar una llanta reparada selecciona el tipo 'Inspección posterior a reparación'.");
+
+            var idsLlanta = model.Detalles.Select(x => x.IdLlanta).Distinct().ToList();
+            var llantas = await context.Llanta
+                .Include(x => x.IdEstadoLlantaNavigation)
+                .Where(x => idsLlanta.Contains(x.IdLlanta)
+                         && x.IdEmpresa == (uint)idEmpresa
+                         && !x.Eliminado
+                         && !context.LlantaAsignacions.Any(asignacion => asignacion.IdLlanta == x.IdLlanta && asignacion.Activa == true))
+                .ToListAsync();
+
+            if (llantas.Count != idsLlanta.Count)
+                throw new Exception("Una o más llantas seleccionadas ya no están disponibles para procesar fuera de vehículo.");
+
+            if (llantas.Any(x => NormalizarTexto(x.IdEstadoLlantaNavigation.Nombre) != "en reparacion"))
+                throw new Exception("Solo se pueden liberar desde reparación llantas con estado 'En reparación'.");
+
+            var idEstadoDisponible = await GetIdEstadoLlanta("disponible");
+            var idEstadoReparacion = await GetIdEstadoLlanta("en reparacion");
+            var idEstadoRenovado = await GetIdEstadoLlanta("en renovado");
+            var idEstadoBaja = await GetIdEstadoLlanta("baja definitiva");
+            var llantasPorId = llantas.ToDictionary(x => x.IdLlanta);
+            var ahora = DateTime.Now;
+
+            foreach (var detalle in model.Detalles)
+            {
+                var conclusion = NormalizarTexto(conclusionesPorId[detalle.IdConclusionInspeccion]);
+
+                if (conclusion == ConclusionSinConclusion)
+                    throw new Exception("Selecciona una conclusión final para liberar o redirigir la llanta reparada.");
+
+                var llanta = llantasPorId[detalle.IdLlanta];
+                llanta.IdEstadoLlanta = conclusion switch
+                {
+                    ConclusionReparar => idEstadoReparacion,
+                    ConclusionRenovar => idEstadoRenovado,
+                    ConclusionDesechar => idEstadoBaja,
+                    _ => idEstadoDisponible
+                };
+                llanta.FechaModificacion = ahora;
+                llanta.ModificadoPor = (uint)idUsuario;
+            }
+        }
+
         private static bool RequiereAccion(string conclusion)
         {
             return ConclusionesConAccion.Contains(NormalizarTexto(conclusion));
@@ -341,6 +400,12 @@ namespace SUVAN.BackOffice.Service.Administrativo
         private static bool EsContextoFueraVehiculo(string? contexto)
         {
             return string.Equals(contexto, ContextoFueraVehiculo, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool EsInspeccionPosteriorReparacion(string tipoInspeccion)
+        {
+            var tipoNormalizado = NormalizarTexto(tipoInspeccion);
+            return tipoNormalizado.Contains("posterior") && tipoNormalizado.Contains("reparacion");
         }
 
         private async Task<(ushort IdMotivoRetiro, ushort IdEstadoDestino)> ResolverAccionRetiro(string conclusion)

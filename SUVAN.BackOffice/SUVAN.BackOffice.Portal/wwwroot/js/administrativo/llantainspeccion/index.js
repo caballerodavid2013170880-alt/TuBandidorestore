@@ -624,6 +624,41 @@ var SuvanLlantaInspeccion = function () {
         return nombre === "reparar" || nombre === "renovar" || nombre === "desechar";
     };
 
+    var getCatalogName = function (items, id) {
+        var item = (items || []).find(function (catalogItem) {
+            return String(getValue(catalogItem, "Id", "id")) === String(id || "");
+        });
+
+        return getValue(item, "Nombre", "nombre") || "";
+    };
+
+    var esInspeccionPosteriorReparacion = function () {
+        var tipo = normalizeText(getCatalogName(config.tiposInspeccion, selectorTipo ? selectorTipo.value : ""));
+        return tipo.indexOf("posterior") >= 0 && tipo.indexOf("reparacion") >= 0;
+    };
+
+    var esLlantaEnReparacion = function (item) {
+        return normalizeText(item ? item.estadoLlanta : "") === "en reparacion";
+    };
+
+    var puedeProcesarReparacionFueraVehiculo = function () {
+        return contextoActual === "FueraVehiculo"
+            && seleccionadas.length > 0
+            && esInspeccionPosteriorReparacion()
+            && seleccionadas.every(esLlantaEnReparacion);
+    };
+
+    var setTextoBotonProcesar = function (texto) {
+        if (!botonGuardarProcesar) {
+            return;
+        }
+
+        var label = botonGuardarProcesar.querySelector(".indicator-label");
+        if (label) {
+            label.textContent = texto;
+        }
+    };
+
     var actualizarBotonProcesar = function () {
         if (!botonGuardarProcesar) {
             return;
@@ -636,6 +671,10 @@ var SuvanLlantaInspeccion = function () {
                 .some(function (select) {
                     return conclusionRequiereAccion(select.value);
                 });
+            setTextoBotonProcesar("Guardar y procesar acción");
+        } else if (puedeProcesarReparacionFueraVehiculo()) {
+            mostrar = true;
+            setTextoBotonProcesar("Guardar y liberar");
         }
 
         botonGuardarProcesar.classList.toggle("d-none", !mostrar);
@@ -855,9 +894,6 @@ var SuvanLlantaInspeccion = function () {
             if (resumen) {
                 resumen.classList.add("d-none");
             }
-            if (botonGuardarProcesar) {
-                botonGuardarProcesar.classList.add("d-none");
-            }
             if (inputKilometraje) {
                 inputKilometraje.value = "";
                 inputKilometraje.disabled = true;
@@ -872,6 +908,8 @@ var SuvanLlantaInspeccion = function () {
             }
             renderSelectionState();
         }
+
+        actualizarBotonProcesar();
     };
 
     var getItemFromButton = function (button) {
@@ -945,8 +983,8 @@ var SuvanLlantaInspeccion = function () {
 
         var procesarAccion = inputProcesarAccion && inputProcesarAccion.value === "true";
 
-        if (procesarAccion && contextoActual !== "Vehiculo") {
-            showAlert("El procesamiento de acción aplica únicamente para llantas instaladas.");
+        if (procesarAccion && contextoActual === "FueraVehiculo" && !puedeProcesarReparacionFueraVehiculo()) {
+            showAlert("Para liberar una llanta reparada selecciona llantas en reparación y el tipo 'Inspección posterior a reparación'.");
             return;
         }
 
@@ -967,6 +1005,9 @@ var SuvanLlantaInspeccion = function () {
 
             if (procesarAccion && contextoActual === "Vehiculo") {
                 await cargarConfiguracion();
+            } else if (procesarAccion && contextoActual === "FueraVehiculo") {
+                llantasFueraCargadas = false;
+                await cargarLlantasFueraVehiculo();
             }
         } catch (error) {
             showAlert(error.message);
@@ -1012,6 +1053,20 @@ var SuvanLlantaInspeccion = function () {
                 window.jQuery(selectorVehiculo).on("select2:clear", onVehiculoChange);
             } else {
                 selectorVehiculo.addEventListener("change", onVehiculoChange);
+            }
+        }
+
+        if (selectorTipo) {
+            var onTipoChange = function () {
+                actualizarBotonProcesar();
+            };
+
+            if (window.jQuery) {
+                window.jQuery(selectorTipo).on("change", onTipoChange);
+                window.jQuery(selectorTipo).on("select2:select", onTipoChange);
+                window.jQuery(selectorTipo).on("select2:clear", onTipoChange);
+            } else {
+                selectorTipo.addEventListener("change", onTipoChange);
             }
         }
 

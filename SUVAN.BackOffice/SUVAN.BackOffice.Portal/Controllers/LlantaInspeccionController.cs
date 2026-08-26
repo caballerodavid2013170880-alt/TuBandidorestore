@@ -61,7 +61,12 @@ namespace SUVAN.BackOffice.Portal.Controllers
             {
                 var idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
                 await llantaInspeccionService.GuardarInspeccion(model, User.GetEmpresaId(), idUsuario);
-                return Json(new { success = true, message = model.ProcesarAccion ? "Inspección registrada y acción procesada correctamente." : "Inspección registrada correctamente." });
+                var message = model.ProcesarAccion
+                    ? string.Equals(model.ContextoInspeccion, "FueraVehiculo", StringComparison.OrdinalIgnoreCase)
+                        ? "Inspección registrada y reparación procesada correctamente."
+                        : "Inspección registrada y acción procesada correctamente."
+                    : "Inspección registrada correctamente.";
+                return Json(new { success = true, message });
             }
             catch (Exception ex)
             {

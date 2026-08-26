@@ -5,6 +5,7 @@
 @{
     ViewData["Title"] = "Operación de llantas";
     ViewData["LlantaOperacionActiva"] = "Inspeccion";
+    var tiposJson = JsonSerializer.Serialize(Model.TiposInspeccion);
     var estadosJson = JsonSerializer.Serialize(Model.EstadosInspeccion);
     var conclusionesJson = JsonSerializer.Serialize(Model.ConclusionesInspeccion);
     var estadosLlantaJson = JsonSerializer.Serialize(Model.EstadosLlanta);
@@ -203,6 +204,7 @@
             configuracionUrlTemplate: '@Url.Content("~/Llantas/Inspeccion/Vehiculo/__ID__/Configuracion")',
             llantasFueraVehiculoUrl: '@Url.Content("~/Llantas/Inspeccion/LlantasFueraVehiculo")',
             guardarUrl: '@Url.Content("~/Llantas/Inspeccion/Guardar")',
+            tiposInspeccion: @Html.Raw(tiposJson),
             estadosInspeccion: @Html.Raw(estadosJson),
             conclusionesInspeccion: @Html.Raw(conclusionesJson),
             estadosLlanta: @Html.Raw(estadosLlantaJson)
