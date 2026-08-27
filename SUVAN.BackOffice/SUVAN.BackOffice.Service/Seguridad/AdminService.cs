@@ -266,6 +266,36 @@ namespace SUVAN.BackOffice.Service.Seguridad
 
                 if (jerarquiasItems.Any())
                 {
+
+                    // Sincronizar cambios directos de selectores (Departamento y Depósito) con el elemento principal
+                    var principalItem = jerarquiasItems.FirstOrDefault(j => j.esPrincipal) ?? jerarquiasItems.First();
+
+                    if (model.IdDeposito.HasValue && model.IdDeposito.Value > 0)
+                    {
+                        var matchingItem = jerarquiasItems.FirstOrDefault(j => j.depositoId == model.IdDeposito.Value);
+                        if (matchingItem != null)
+                        {
+                            principalItem = matchingItem;
+                        }
+                        else
+                        {
+                            principalItem.depositoId = model.IdDeposito.Value;
+                            if (model.IdRegion.HasValue) principalItem.regionId = model.IdRegion.Value;
+                            if (model.IdPlanta.HasValue) principalItem.plantaId = model.IdPlanta.Value;
+                            if (model.IdZona.HasValue) principalItem.zonaId = model.IdZona.Value;
+                        }
+                    }
+
+                    // Sincronizar Departamento asignado (incluyendo si se cambió o se dejó null)
+                    principalItem.deptoId = model.IdDepto;
+
+                    // Garantizar que exactamente uno tenga esPrincipal = true
+                    foreach (var item in jerarquiasItems)
+                    {
+                        item.esPrincipal = (item == principalItem);
+                    }
+
+
                     var entidades = jerarquiasItems.Select(item => new UsuarioJerarquium
                     {
                         TipoUsuario = "Admin",

@@ -218,9 +218,73 @@ var KTUsuario = function () {
         );
     }
 
+    const syncCurrentSelectorsToJerarquias = () => {
+        initHierarchyElements();
+        if (!selDeposito) return;
+
+        const regId = selRegion ? parseInt(selRegion.value) || null : null;
+        const planId = selPlanta ? parseInt(selPlanta.value) || null : null;
+        const zonId = selZona ? parseInt(selZona.value) || null : null;
+        const depId = parseInt(selDeposito.value) || null;
+        const deptId = selDepto ? parseInt(selDepto.value) || null : null;
+        const deptNombre = (selDepto && selDepto.selectedIndex >= 0 && deptId) ? selDepto.options[selDepto.selectedIndex].text : "";
+
+        if (depId && depId > 0) {
+            let target = jerarquiasList.find(j => j.depositoId === depId);
+            if (!target) {
+                target = jerarquiasList.find(j => j.esPrincipal) || (jerarquiasList.length > 0 ? jerarquiasList[0] : null);
+            }
+
+            if (target) {
+                target.regionId = regId || target.regionId;
+                if (selRegion && selRegion.selectedIndex >= 0 && regId) target.regionNombre = selRegion.options[selRegion.selectedIndex].text;
+                target.plantaId = planId || target.plantaId;
+                if (selPlanta && selPlanta.selectedIndex >= 0 && planId) target.plantaNombre = selPlanta.options[selPlanta.selectedIndex].text;
+                target.zonaId = zonId || target.zonaId;
+                if (selZona && selZona.selectedIndex >= 0 && zonId) target.zonaNombre = selZona.options[selZona.selectedIndex].text;
+                target.depositoId = depId;
+                if (selDeposito && selDeposito.selectedIndex >= 0) target.depositoNombre = selDeposito.options[selDeposito.selectedIndex].text;
+                target.deptoId = deptId;
+                target.deptoNombre = deptNombre;
+            } else {
+                const empId = getPrincipalEmpresaId();
+                jerarquiasList.push({
+                    idUsuarioJerarquia: 0,
+                    empresaId: empId,
+                    regionId: regId,
+                    regionNombre: (selRegion && selRegion.selectedIndex >= 0) ? selRegion.options[selRegion.selectedIndex].text : "",
+                    plantaId: planId,
+                    plantaNombre: (selPlanta && selPlanta.selectedIndex >= 0) ? selPlanta.options[selPlanta.selectedIndex].text : "",
+                    zonaId: zonId,
+                    zonaNombre: (selZona && selZona.selectedIndex >= 0) ? selZona.options[selZona.selectedIndex].text : "",
+                    depositoId: depId,
+                    depositoNombre: (selDeposito && selDeposito.selectedIndex >= 0) ? selDeposito.options[selDeposito.selectedIndex].text : "",
+                    deptoId: deptId,
+                    deptoNombre: deptNombre,
+                    esPrincipal: true
+                });
+            }
+        }
+
+        // Asegurar que exactamente una jerarquía tenga esPrincipal = true
+        if (jerarquiasList.length > 0) {
+            const hasPrincipal = jerarquiasList.some(j => j.esPrincipal);
+            if (!hasPrincipal) {
+                jerarquiasList[0].esPrincipal = true;
+            }
+        }
+
+        if (jerarquiasUsuarioInput) {
+            jerarquiasUsuarioInput.value = JSON.stringify(jerarquiasList);
+        }
+    };
+
+
     var handleSubmitValidation = function (e) {
         submitButton.addEventListener('click', function (e) {
             e.preventDefault();
+
+            syncCurrentSelectorsToJerarquias();
 
             if (empresasList !== null && empresasList.length > 0) {
                 empresasUsaurioInput.value = JSON.stringify(empresasList);
@@ -236,6 +300,16 @@ var KTUsuario = function () {
                 if (status == 'Valid') {
                     submitButton.setAttribute('data-kt-indicator', 'on');
                     submitButton.disabled = true;
+
+
+            // Habilitar temporalmente los desplegables jerarquia para asegurar su envío en el POST
+            if (selRegion) selRegion.disabled = false;
+            if (selPlanta) selPlanta.disabled = false;
+            if (selZona) selZona.disabled = false;
+            if (selDeposito) selDeposito.disabled = false;
+            if (selDepto) selDepto.disabled = false;
+
+
                     form.submit();
                 }
             });
@@ -322,7 +396,7 @@ var KTUsuario = function () {
                 const idRegion = selRegion ? selRegion.value : 0;
                 const idPlanta = selPlanta ? selPlanta.value : 0;
                 const idZona = selZona ? selZona.value : 0;
-                const idDeposito = this.value;
+                const idDeposito = parseInt(this.value) || 0;
                 resetSelect(selDepto, "-- Seleccione un Departamento --");
 
                 if (idEmpresa > 0 && idDeposito && idDeposito !== "0") {
@@ -332,6 +406,32 @@ var KTUsuario = function () {
                             fillSelect(selDepto, data, "-- Seleccione un Departamento --");
                             selDepto.disabled = false;
                         });
+                }
+            });
+        }
+
+        if (selDepto) {
+            selDepto.addEventListener("change", function () {
+                const deptId = parseInt(this.value) || null;
+                const deptNombre = (this.selectedIndex >= 0 && deptId) ? this.options[this.selectedIndex].text : "";
+
+                // Sincronizar de inmediato con el elemento activo en jerarquiasList
+                let targetItem = null;
+                const curDepId = selDeposito ? parseInt(selDeposito.value) || 0 : 0;
+                if (curDepId > 0) {
+                    targetItem = jerarquiasList.find(j => j.depositoId === curDepId);
+                }
+                if (!targetItem) {
+                    targetItem = jerarquiasList.find(j => j.esPrincipal) || (jerarquiasList.length > 0 ? jerarquiasList[0] : null);
+                }
+
+                if (targetItem) {
+                    targetItem.deptoId = deptId;
+                    targetItem.deptoNombre = deptNombre;
+                    if (jerarquiasUsuarioInput) {
+                        jerarquiasUsuarioInput.value = JSON.stringify(jerarquiasList);
+                    }
+                    renderJerarquiasGrid();
                 }
             });
         }

@@ -5364,12 +5364,12 @@ public partial class SuvanDbContext : DbContext
                 .HasComment("Identificador único del registro de jerarquía de usuario")
                 .HasColumnName("id_usuario_jerarquia");
             entity.Property(e => e.Activo)
-                .HasDefaultValueSql("b'1'")
+                .ValueGeneratedNever()
                 .HasComment("Estatus del registro (1=Activo, 0=Inactivo)")
                 .HasColumnType("bit(1)")
                 .HasColumnName("activo");
             entity.Property(e => e.EsPrincipal)
-                .HasDefaultValueSql("b'1'")
+                .ValueGeneratedNever()
                 .HasComment("Indica si es la jerarquía activa por defecto para el usuario (1=Sí, 0=No)")
                 .HasColumnType("bit(1)")
                 .HasColumnName("es_principal");

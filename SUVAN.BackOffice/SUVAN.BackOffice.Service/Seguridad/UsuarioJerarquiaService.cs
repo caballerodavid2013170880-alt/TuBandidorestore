@@ -79,16 +79,11 @@ namespace SUVAN.BackOffice.Service.Seguridad
 
         public async Task<bool> GuardarJerarquiasUsuario(string tipoUsuario, int idUsuario, int idEmpresa, List<UsuarioJerarquium> jerarquias)
         {
-            var existentes = await context.UsuarioJerarquia
+            await context.UsuarioJerarquia
                 .Where(u => u.TipoUsuario == tipoUsuario
                          && u.IdUsuario == idUsuario
                          && u.IdEmpresa == idEmpresa)
-                .ToListAsync();
-
-            if (existentes.Any())
-            {
-                context.UsuarioJerarquia.RemoveRange(existentes);
-            }
+                .ExecuteDeleteAsync();
 
             if (jerarquias != null && jerarquias.Any())
             {
@@ -102,9 +97,8 @@ namespace SUVAN.BackOffice.Service.Seguridad
                     item.FechaRegistro = DateTime.Now;
                     context.UsuarioJerarquia.Add(item);
                 }
+                await context.SaveChangesAsync();
             }
-
-            await context.SaveChangesAsync();
             return true;
         }
 
