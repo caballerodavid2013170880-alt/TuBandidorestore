@@ -7,3 +7,265 @@
 #contenedorPiramide div.col-md-1{
     padding-right:0px !important;
 }
+/* Contenedor lateral de la pantalla de Login */
+.app-blank .bg-primary {
+    background-color: #6B0E19 !important;
+}
+
+//Estilo Borde rojo y Fondo Blanco
+/* --------------------------------------------------------------------------
+   0. DESIGN SYSTEM TOKENS & CSS HELPER VARIABLES
+   -------------------------------------------------------------------------- */
+:root {
+    /* Color de Fondo, Borde y Texto Predeterminado para Botones, Páginas y Checkboxes */
+    --suvan-btn-bg: #FFFFFF;
+    --suvan-btn-border-color: #6B0E19;
+    --suvan-btn-border-width: 2px;
+    --suvan-btn-border: 2px solid #6B0E19;
+    --suvan-btn-color: #6B0E19;
+    /* Color de Fondo, Borde y Texto al Posicionar el Cursor (Hover) */
+    --suvan-btn-hover-bg: #C2192C;
+    --suvan-btn-hover-border-color: #C2192C;
+    --suvan-btn-hover-border: 2px solid #C2192C;
+    --suvan-btn-hover-color: #FFFFFF;
+    --suvan-btn-hover-font-weight: 700; /* Texto en Negrita (Bold) */
+    /* Formato y Tamaño de Texto para Botones */
+    --suvan-btn-font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    --suvan-btn-font-size: 0.875rem; /* 14px */
+    --suvan-btn-font-weight: 600; /* Semi-bold en estado normal */
+    --suvan-btn-text-transform: capitalize; /* Normal / Capitalized */
+    --suvan-btn-letter-spacing: 0.015em;
+    --suvan-btn-border-radius: 0.475rem; /* 7.6px Metronic standard */
+    /* Color de Texto al Posicionar sobre Menú o Elementos Interactivos (Hover) */
+    --suvan-menu-hover-text-color: #6B0E19;
+    --suvan-sidebar-bg-light: #ffffff;
+    --suvan-sidebar-shadow-light: 2px 0 12px rgba(0, 0, 0, 0.05);
+    --suvan-sidebar-item-hover-bg: rgba(107, 14, 25, 0.08);
+    --suvan-sidebar-item-active-bg: rgba(107, 14, 25, 0.14);
+    --suvan-sidebar-sub-accordion-bg: rgba(0, 0, 0, 0.02);
+}
+
+/* Soporte para Tema Oscuro */
+[data-bs-theme="dark"] {
+    --suvan-sidebar-bg-dark: #1e1e2d;
+    --suvan-sidebar-shadow-dark: 2px 0 12px rgba(0, 0, 0, 0.25);
+    --suvan-sidebar-item-hover-bg: rgba(255, 255, 255, 0.06);
+    --suvan-sidebar-item-active-bg: rgba(107, 14, 25, 0.25);
+    --suvan-sidebar-sub-accordion-bg: rgba(255, 255, 255, 0.02);
+}
+
+/* --------------------------------------------------------------------------
+   1. ELEMENTO A: TODOS LOS BOTONES DEL PROYECTO Y VARIACIONES "AGREGAR..."
+   Fondo: #FFFFFF | Borde: 2px #6B0E19 | Texto: #6B0E19
+   Hover Fondo: #C2192C | Hover Borde: 2px #C2192C | Hover Texto: #FFFFFF (Bold)
+   -------------------------------------------------------------------------- */
+
+.btn,
+.btn-primary,
+.btn-outline,
+.app-toolbar-wrapper .btn-outline,
+.btn-flex,
+.btn-light-primary,
+.btn-secondary,
+.btn-sm,
+#kt_user_in_submit,
+.btn-suvan-save,
+.btn-suvan-add,
+a.btn,
+button.btn,
+a[href*="Agregar"],
+a[href*="agregar"],
+#agregar-empresa,
+#btn-agregar-jerarquia {
+    background-color: var(--suvan-btn-bg) !important;
+    border: var(--suvan-btn-border-width) solid var(--suvan-btn-border-color) !important;
+    color: var(--suvan-btn-color) !important;
+    font-family: var(--suvan-btn-font-family);
+    font-size: var(--suvan-btn-font-size) !important;
+    font-weight: var(--suvan-btn-font-weight) !important;
+    text-transform: var(--suvan-btn-text-transform) !important;
+    letter-spacing: var(--suvan-btn-letter-spacing);
+    border-radius: var(--suvan-btn-border-radius);
+    transition: all 0.2s ease-in-out;
+}
+
+    /* Estado Hover / Focus / Active sobre Cualquier Botón -> Fondo #C2192C, Texto #FFFFFF en Bold */
+    .btn:hover,
+    .btn:focus,
+    .btn:active,
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active,
+    .btn-outline:hover,
+    .app-toolbar-wrapper .btn-outline:hover,
+    .btn-flex:hover,
+    .btn-light-primary:hover,
+    #kt_user_in_submit:hover,
+    .btn-suvan-save:hover,
+    .btn-suvan-add:hover,
+    a.btn:hover,
+    button.btn:hover,
+    a[href*="Agregar"]:hover,
+    a[href*="agregar"]:hover,
+    #agregar-empresa:hover,
+    #btn-agregar-jerarquia:hover {
+        background-color: var(--suvan-btn-hover-bg) !important;
+        border-color: var(--suvan-btn-hover-border-color) !important;
+        color: var(--suvan-btn-hover-color) !important;
+        font-weight: var(--suvan-btn-hover-font-weight) !important;
+        box-shadow: 0 4px 12px rgba(194, 25, 44, 0.3);
+    }
+
+/* Botones de Icono en Tablas (Editar / Ver / Eliminar) */
+.btn-icon.btn-active-light-primary {
+    background-color: var(--suvan-btn-bg) !important;
+    border: var(--suvan-btn-border-width) solid var(--suvan-btn-border-color) !important;
+    color: var(--suvan-btn-color) !important;
+    border-radius: var(--suvan-btn-border-radius);
+    transition: all 0.2s ease-in-out;
+}
+
+    .btn-icon.btn-active-light-primary:hover {
+        background-color: var(--suvan-btn-hover-bg) !important;
+        border-color: var(--suvan-btn-hover-border-color) !important;
+        color: var(--suvan-btn-hover-color) !important;
+        font-weight: var(--suvan-btn-hover-font-weight) !important;
+    }
+
+/* --------------------------------------------------------------------------
+   2. ELEMENTOS "form-check-input" (CHECKBOXES Y RADIO BUTTONS)
+   Fondo: #FFFFFF | Borde: 2px #6B0E19 | Checked / Hover: #C2192C
+   -------------------------------------------------------------------------- */
+
+.form-check-input {
+    background-color: var(--suvan-btn-bg) !important;
+    border: var(--suvan-btn-border-width) solid var(--suvan-btn-border-color) !important;
+    border-radius: 0.35rem;
+    transition: all 0.2s ease-in-out;
+}
+
+    .form-check-input:hover {
+        border-color: var(--suvan-btn-hover-border-color) !important;
+        background-color: rgba(194, 25, 44, 0.08) !important;
+    }
+
+    .form-check-input:checked {
+        background-color: var(--suvan-btn-border-color) !important;
+        border-color: var(--suvan-btn-border-color) !important;
+    }
+
+        .form-check-input:checked:hover {
+            background-color: var(--suvan-btn-hover-bg) !important;
+            border-color: var(--suvan-btn-hover-border-color) !important;
+        }
+
+/* --------------------------------------------------------------------------
+   3. NUMERALES DE LA NAVEGACIÓN DE PÁGINA (PAGINACIÓN / DATATABLES)
+   Fondo: #FFFFFF | Borde: 2px #6B0E19 | Texto: #6B0E19
+   Hover / Activo: Fondo #C2192C | Texto #FFFFFF (Bold)
+   -------------------------------------------------------------------------- */
+
+.pagination .page-item .page-link,
+.page-link,
+.dataTables_wrapper .pagination .page-item .page-link,
+.dataTables_wrapper .dataTables_paginate /*.paginate_button,*/
+.dt-paging-button {
+    background-color: var(--suvan-btn-bg) !important;
+    border: var(--suvan-btn-border-width) solid var(--suvan-btn-border-color) !important;
+    color: var(--suvan-btn-color) !important;
+    font-weight: var(--suvan-btn-font-weight) !important;
+    border-radius: var(--suvan-btn-border-radius) !important;
+    margin: 0 2px !important;
+    padding: 0.5rem 0.85rem !important;
+    transition: all 0.2s ease-in-out;
+}
+
+    .pagination .page-item .page-link:hover,
+    .page-link:hover,
+    .pagination .page-item.active .page-link,
+    .pagination .page-item.active > .page-link,
+    .dataTables_wrapper .pagination .page-item.active .page-link,
+    .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+    .dt-paging-button:hover,
+    .dt-paging-button.current {
+        background-color: var(--suvan-btn-hover-bg) !important;
+        border-color: var(--suvan-btn-hover-border-color) !important;
+        color: var(--suvan-btn-hover-color) !important;
+        font-weight: var(--suvan-btn-hover-font-weight) !important;
+        box-shadow: 0 4px 10px rgba(194, 25, 44, 0.25);
+    }
+
+/* --------------------------------------------------------------------------
+   4. ELEMENTO B: MENÚ IZQUIERDO Y ENLACES INTERACTIVOS (HOVER TEXTO #6B0E19)
+   -------------------------------------------------------------------------- */
+
+/* Panel Lateral Base */
+#kt_app_sidebar,
+.app-sidebar {
+    background-color: var(--suvan-sidebar-bg-light) !important;
+    box-shadow: var(--suvan-sidebar-shadow-light);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+[data-bs-theme="dark"] #kt_app_sidebar,
+[data-bs-theme="dark"] .app-sidebar {
+    background-color: var(--suvan-sidebar-bg-dark) !important;
+    box-shadow: var(--suvan-sidebar-shadow-dark);
+}
+
+/* Formato y Sombreado de Ítems del Menú Lateral */
+#kt_app_sidebar_menu .menu-item .menu-link {
+    border-radius: 0.475rem;
+    margin-bottom: 0.15rem;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+    /* Hover sobre Elementos de Menú o Enlaces (Excluyendo botones) -> Texto e Ícono Color #6B0E19 */
+    #kt_app_sidebar_menu .menu-item .menu-link:hover,
+    .menu-link:hover,
+    a.menu-link:hover,
+    .text-hover-primary:hover,
+    a.text-hover-primary:hover,
+    a:not(.btn):hover {
+        color: var(--suvan-menu-hover-text-color) !important;
+    }
+
+    #kt_app_sidebar_menu .menu-item .menu-link:hover {
+        background-color: var(--suvan-sidebar-item-hover-bg) !important;
+    }
+
+        #kt_app_sidebar_menu .menu-item .menu-link:hover .menu-title,
+        #kt_app_sidebar_menu .menu-item .menu-link:hover .menu-icon i,
+        .menu-link:hover .menu-title,
+        .menu-link:hover .menu-icon i {
+            color: var(--suvan-menu-hover-text-color) !important;
+        }
+
+    /* Estado Activo en Menú Lateral */
+    #kt_app_sidebar_menu .menu-item.show > .menu-link,
+    #kt_app_sidebar_menu .menu-item .menu-link.active {
+        background-color: var(--suvan-sidebar-item-active-bg) !important;
+        color: var(--suvan-menu-hover-text-color) !important;
+        font-weight: 700 !important;
+    }
+
+        #kt_app_sidebar_menu .menu-item.show > .menu-link .menu-title,
+        #kt_app_sidebar_menu .menu-item .menu-link.active .menu-title,
+        #kt_app_sidebar_menu .menu-item.show > .menu-link .menu-icon i,
+        #kt_app_sidebar_menu .menu-item .menu-link.active .menu-icon i {
+            color: var(--suvan-menu-hover-text-color) !important;
+        }
+
+/* Submenús en Acordeón */
+#kt_app_sidebar_menu .menu-sub-accordion {
+    background-color: var(--suvan-sidebar-sub-accordion-bg);
+    border-radius: 0.475rem;
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    margin-top: 0.25rem;
+}
+
+/* --------------------------------------------------------------------------
+   5. REGLAS AUXILIARES EXISTENTES
+   -------------------------------------------------------------------------- */
