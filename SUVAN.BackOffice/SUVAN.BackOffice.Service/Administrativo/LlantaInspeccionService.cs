@@ -307,7 +307,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
             if (model.ProcesarAccion && esFueraVehiculo)
             {
-                await ProcesarAccionFueraVehiculoReparacion(model, idEmpresa, idUsuario, conclusionesPorId, tipoValido.Nombre);
+                await ProcesarAccionFueraVehiculo(model, idEmpresa, idUsuario, conclusionesPorId, tipoValido.Nombre);
             }
             else if (model.ProcesarAccion)
             {
@@ -331,6 +331,17 @@ namespace SUVAN.BackOffice.Service.Administrativo
                         IdEstadoDestino = accion.IdEstadoDestino,
                         ObservacionesRetiro = GetObservacionesRetiro(detalle.Observaciones, conclusionesPorId[detalle.IdConclusionInspeccion])
                     }, idEmpresa, idUsuario, administrarTransaccion: false);
+
+                    if (conclusion == ConclusionRenovar)
+                    {
+                        await RegistrarEnvioRenovado(
+                            asignacionesPorId[detalle.IdLlantaAsignacion],
+                            model.FechaInspeccion,
+                            model.KilometrajeLlanta!.Value,
+                            detalle.ProfundidadMm,
+                            detalle.Observaciones,
+                            idUsuario);
+                    }
                 }
             }
 
@@ -340,16 +351,34 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return true;
         }
 
-        private async Task ProcesarAccionFueraVehiculoReparacion(
+        private async Task ProcesarAccionFueraVehiculo(
             LlantaInspeccionGuardarViewModel model,
             int idEmpresa,
             int idUsuario,
             Dictionary<ushort, string> conclusionesPorId,
             string tipoInspeccion)
         {
-            if (!EsInspeccionPosteriorReparacion(tipoInspeccion))
-                throw new Exception("Para liberar una llanta reparada selecciona el tipo 'Inspección posterior a reparación'.");
+            if (EsInspeccionPosteriorReparacion(tipoInspeccion))
+            {
+                await ProcesarAccionFueraVehiculoReparacion(model, idEmpresa, idUsuario, conclusionesPorId);
+                return;
+            }
 
+            if (EsInspeccionPosteriorRenovado(tipoInspeccion))
+            {
+                await ProcesarAccionFueraVehiculoRenovado(model, idEmpresa, idUsuario, conclusionesPorId);
+                return;
+            }
+
+            throw new Exception("Para procesar una llanta fuera de vehículo selecciona una inspección posterior a reparación o posterior a renovado.");
+        }
+
+        private async Task ProcesarAccionFueraVehiculoReparacion(
+            LlantaInspeccionGuardarViewModel model,
+            int idEmpresa,
+            int idUsuario,
+            Dictionary<ushort, string> conclusionesPorId)
+        {
             var idsLlanta = model.Detalles.Select(x => x.IdLlanta).Distinct().ToList();
             var llantas = await context.Llanta
                 .Include(x => x.IdEstadoLlantaNavigation)
@@ -392,6 +421,169 @@ namespace SUVAN.BackOffice.Service.Administrativo
             }
         }
 
+        private async Task ProcesarAccionFueraVehiculoRenovado(
+            LlantaInspeccionGuardarViewModel model,
+            int idEmpresa,
+            int idUsuario,
+            Dictionary<ushort, string> conclusionesPorId)
+        {
+            var idsLlanta = model.Detalles.Select(x => x.IdLlanta).Distinct().ToList();
+            var llantas = await context.Llanta
+                .Include(x => x.IdEstadoLlantaNavigation)
+                .Where(x => idsLlanta.Contains(x.IdLlanta)
+                         && x.IdEmpresa == (uint)idEmpresa
+                         && !x.Eliminado
+                         && !context.LlantaAsignacions.Any(asignacion => asignacion.IdLlanta == x.IdLlanta && asignacion.Activa == true))
+                .ToListAsync();
+
+            if (llantas.Count != idsLlanta.Count)
+                throw new Exception("Una o más llantas seleccionadas ya no están disponibles para procesar fuera de vehículo.");
+
+            if (llantas.Any(x => NormalizarTexto(x.IdEstadoLlantaNavigation.Nombre) != "en renovado"))
+                throw new Exception("Solo se pueden liberar desde renovado llantas con estado 'En renovado'.");
+
+            var renovadosBase = await context.LlantaRenovados
+                .Where(x => idsLlanta.Contains(x.IdLlanta) && x.FechaEliminacion == null)
+                .ToListAsync();
+
+            var renovados = renovadosBase
+                .GroupBy(x => x.IdLlanta)
+                .Select(x => x.OrderByDescending(r => r.NumeroRenovado).ThenByDescending(r => r.IdLlantaRenovado).First())
+                .ToList();
+
+            var idEstadoDisponible = await GetIdEstadoLlanta("disponible");
+            var idEstadoReparacion = await GetIdEstadoLlanta("en reparacion");
+            var idEstadoRenovadoLlanta = await GetIdEstadoLlanta("en renovado");
+            var idEstadoBaja = await GetIdEstadoLlanta("baja definitiva");
+            var idEstadoRenovadoLiberada = await GetIdEstadoRenovado("liberada");
+            var idEstadoRenovadoRechazada = await GetIdEstadoRenovado("rechazada");
+            var idEstadoRenovadoProceso = await GetIdEstadoRenovado("en proceso de renovado");
+            var idEstadoRenovadoEnvio = await GetIdEstadoRenovado("enviada al proveedor");
+            var llantasPorId = llantas.ToDictionary(x => x.IdLlanta);
+            var renovadosPorLlanta = renovados.ToDictionary(x => x.IdLlanta);
+            var ahora = DateTime.Now;
+
+            foreach (var detalle in model.Detalles)
+            {
+                var conclusion = NormalizarTexto(conclusionesPorId[detalle.IdConclusionInspeccion]);
+
+                if (conclusion == ConclusionSinConclusion)
+                    throw new Exception("Selecciona una conclusión final para liberar o redirigir la llanta renovada.");
+
+                var llanta = llantasPorId[detalle.IdLlanta];
+                var renovado = GetOrCreateRenovado(
+                    detalle.IdLlanta,
+                    model.FechaInspeccion,
+                    detalle.ProfundidadMm,
+                    detalle.Observaciones,
+                    idEstadoRenovadoEnvio,
+                    idUsuario,
+                    renovadosBase,
+                    renovadosPorLlanta);
+
+                llanta.IdEstadoLlanta = conclusion switch
+                {
+                    ConclusionReparar => idEstadoReparacion,
+                    ConclusionRenovar => idEstadoRenovadoLlanta,
+                    ConclusionDesechar => idEstadoBaja,
+                    _ => idEstadoDisponible
+                };
+                llanta.FechaModificacion = ahora;
+                llanta.ModificadoPor = (uint)idUsuario;
+
+                renovado.FechaRecepcion ??= model.FechaInspeccion;
+                renovado.FechaLiberacion = conclusion == ConclusionRenovar ? null : model.FechaInspeccion;
+                renovado.ProfundidadFinalMm = detalle.ProfundidadMm;
+                renovado.IdEstadoRenovado = conclusion switch
+                {
+                    ConclusionRenovar => idEstadoRenovadoProceso,
+                    ConclusionReparar or ConclusionDesechar => idEstadoRenovadoRechazada,
+                    _ => idEstadoRenovadoLiberada
+                };
+                renovado.Observaciones = MergeObservaciones(renovado.Observaciones, detalle.Observaciones);
+                renovado.FechaModificacion = ahora;
+                renovado.ModificadoPor = (uint)idUsuario;
+            }
+        }
+
+        private LlantaRenovado GetOrCreateRenovado(
+            ulong idLlanta,
+            DateTime fechaInspeccion,
+            decimal? profundidadInicial,
+            string? observaciones,
+            ushort idEstadoRenovadoEnvio,
+            int idUsuario,
+            List<LlantaRenovado> renovadosBase,
+            Dictionary<ulong, LlantaRenovado> renovadosPorLlanta)
+        {
+            if (renovadosPorLlanta.TryGetValue(idLlanta, out var renovado))
+                return renovado;
+
+            var ultimoNumero = renovadosBase
+                .Where(x => x.IdLlanta == idLlanta)
+                .Select(x => x.NumeroRenovado)
+                .DefaultIfEmpty((ushort)0)
+                .Max();
+
+            renovado = new LlantaRenovado
+            {
+                IdLlanta = idLlanta,
+                EsInterno = 0,
+                NumeroRenovado = (ushort)(ultimoNumero + 1),
+                FechaEnvio = fechaInspeccion,
+                KilometrajeRenovado = 0,
+                CostoRenovado = 0,
+                ProfundidadInicialMm = profundidadInicial,
+                IdEstadoRenovado = idEstadoRenovadoEnvio,
+                Observaciones = string.IsNullOrWhiteSpace(observaciones) ? null : observaciones.Trim(),
+                FechaCreacion = DateTime.Now,
+                CreadoPor = (uint)idUsuario
+            };
+
+            context.LlantaRenovados.Add(renovado);
+            renovadosBase.Add(renovado);
+            renovadosPorLlanta[idLlanta] = renovado;
+
+            return renovado;
+        }
+
+        private async Task RegistrarEnvioRenovado(
+            ulong idLlanta,
+            DateTime fechaEnvio,
+            uint kilometraje,
+            decimal? profundidadInicial,
+            string? observaciones,
+            int idUsuario)
+        {
+            var tieneRenovadoAbierto = await context.LlantaRenovados
+                .AnyAsync(x => x.IdLlanta == idLlanta
+                            && x.FechaEliminacion == null
+                            && x.FechaLiberacion == null);
+
+            if (tieneRenovadoAbierto)
+                return;
+
+            var ultimoNumero = await context.LlantaRenovados
+                .Where(x => x.IdLlanta == idLlanta)
+                .Select(x => (ushort?)x.NumeroRenovado)
+                .MaxAsync() ?? 0;
+
+            context.LlantaRenovados.Add(new LlantaRenovado
+            {
+                IdLlanta = idLlanta,
+                EsInterno = 0,
+                NumeroRenovado = (ushort)(ultimoNumero + 1),
+                FechaEnvio = fechaEnvio,
+                KilometrajeRenovado = kilometraje,
+                CostoRenovado = 0,
+                ProfundidadInicialMm = profundidadInicial,
+                IdEstadoRenovado = await GetIdEstadoRenovado("enviada al proveedor"),
+                Observaciones = string.IsNullOrWhiteSpace(observaciones) ? null : observaciones.Trim(),
+                FechaCreacion = DateTime.Now,
+                CreadoPor = (uint)idUsuario
+            });
+        }
+
         private static bool RequiereAccion(string conclusion)
         {
             return ConclusionesConAccion.Contains(NormalizarTexto(conclusion));
@@ -406,6 +598,12 @@ namespace SUVAN.BackOffice.Service.Administrativo
         {
             var tipoNormalizado = NormalizarTexto(tipoInspeccion);
             return tipoNormalizado.Contains("posterior") && tipoNormalizado.Contains("reparacion");
+        }
+
+        private static bool EsInspeccionPosteriorRenovado(string tipoInspeccion)
+        {
+            var tipoNormalizado = NormalizarTexto(tipoInspeccion);
+            return tipoNormalizado.Contains("posterior") && tipoNormalizado.Contains("renovado");
         }
 
         private async Task<(ushort IdMotivoRetiro, ushort IdEstadoDestino)> ResolverAccionRetiro(string conclusion)
@@ -459,6 +657,23 @@ namespace SUVAN.BackOffice.Service.Administrativo
             return estado.IdEstadoLlanta;
         }
 
+        private async Task<ushort> GetIdEstadoRenovado(string nombreBuscado)
+        {
+            var estados = await context.LlantaEstadoRenovados
+                .AsNoTracking()
+                .Where(x => x.EsActivo == true)
+                .Select(x => new { x.IdEstadoRenovado, x.Nombre })
+                .ToListAsync();
+
+            var nombreNormalizado = NormalizarTexto(nombreBuscado);
+            var estado = estados.FirstOrDefault(x => NormalizarTexto(x.Nombre) == nombreNormalizado);
+
+            if (estado == null)
+                throw new Exception($"No se encontró el estado de renovado activo '{nombreBuscado}'.");
+
+            return estado.IdEstadoRenovado;
+        }
+
         private static string GetObservacionesRetiro(string? observaciones, string conclusion)
         {
             var texto = string.IsNullOrWhiteSpace(observaciones)
@@ -466,6 +681,18 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 : observaciones.Trim();
 
             return texto.Length <= 500 ? texto : texto[..500];
+        }
+
+        private static string? MergeObservaciones(string? observacionesActuales, string? observacionesNuevas)
+        {
+            if (string.IsNullOrWhiteSpace(observacionesNuevas))
+                return observacionesActuales;
+
+            if (string.IsNullOrWhiteSpace(observacionesActuales))
+                return observacionesNuevas.Trim();
+
+            var texto = $"{observacionesActuales.Trim()} | {observacionesNuevas.Trim()}";
+            return texto.Length <= 1000 ? texto : texto[..1000];
         }
 
         private static string NormalizarTexto(string value)

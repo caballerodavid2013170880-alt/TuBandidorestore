@@ -637,8 +637,17 @@ var SuvanLlantaInspeccion = function () {
         return tipo.indexOf("posterior") >= 0 && tipo.indexOf("reparacion") >= 0;
     };
 
+    var esInspeccionPosteriorRenovado = function () {
+        var tipo = normalizeText(getCatalogName(config.tiposInspeccion, selectorTipo ? selectorTipo.value : ""));
+        return tipo.indexOf("posterior") >= 0 && tipo.indexOf("renovado") >= 0;
+    };
+
     var esLlantaEnReparacion = function (item) {
         return normalizeText(item ? item.estadoLlanta : "") === "en reparacion";
+    };
+
+    var esLlantaEnRenovado = function (item) {
+        return normalizeText(item ? item.estadoLlanta : "") === "en renovado";
     };
 
     var puedeProcesarReparacionFueraVehiculo = function () {
@@ -646,6 +655,13 @@ var SuvanLlantaInspeccion = function () {
             && seleccionadas.length > 0
             && esInspeccionPosteriorReparacion()
             && seleccionadas.every(esLlantaEnReparacion);
+    };
+
+    var puedeProcesarRenovadoFueraVehiculo = function () {
+        return contextoActual === "FueraVehiculo"
+            && seleccionadas.length > 0
+            && esInspeccionPosteriorRenovado()
+            && seleccionadas.every(esLlantaEnRenovado);
     };
 
     var setTextoBotonProcesar = function (texto) {
@@ -675,6 +691,9 @@ var SuvanLlantaInspeccion = function () {
         } else if (puedeProcesarReparacionFueraVehiculo()) {
             mostrar = true;
             setTextoBotonProcesar("Guardar y liberar");
+        } else if (puedeProcesarRenovadoFueraVehiculo()) {
+            mostrar = true;
+            setTextoBotonProcesar("Guardar y liberar renovado");
         }
 
         botonGuardarProcesar.classList.toggle("d-none", !mostrar);
@@ -983,8 +1002,11 @@ var SuvanLlantaInspeccion = function () {
 
         var procesarAccion = inputProcesarAccion && inputProcesarAccion.value === "true";
 
-        if (procesarAccion && contextoActual === "FueraVehiculo" && !puedeProcesarReparacionFueraVehiculo()) {
-            showAlert("Para liberar una llanta reparada selecciona llantas en reparación y el tipo 'Inspección posterior a reparación'.");
+        if (procesarAccion
+            && contextoActual === "FueraVehiculo"
+            && !puedeProcesarReparacionFueraVehiculo()
+            && !puedeProcesarRenovadoFueraVehiculo()) {
+            showAlert("Para liberar una llanta fuera de vehículo selecciona llantas en reparación o renovado y el tipo de inspección posterior correspondiente.");
             return;
         }
 
