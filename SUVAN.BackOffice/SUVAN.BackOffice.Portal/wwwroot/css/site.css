@@ -1,192 +1,616 @@
 //Estilo Borde rojo y Fondo Blanco
 /* --------------------------------------------------------------------------
-   0. DESIGN SYSTEM TOKENS & CSS HELPER VARIABLES
+   0. DESIGN SYSTEM TOKENS & VARIABLES GLOBALES
    -------------------------------------------------------------------------- */
 :root {
-    /* Color de Fondo, Borde y Texto Predeterminado para Botones, Páginas y Checkboxes */
-    --suvan-btn-bg: #FFFFFF;
-    --suvan-btn-border-color: #6B0E19;
-    --suvan-btn-border-width: 2px;
-    --suvan-btn-border: 2px solid #6B0E19;
-    --suvan-btn-color: #6B0E19;
-    /* Color de Fondo, Borde y Texto al Posicionar el Cursor (Hover) */
-    --suvan-btn-hover-bg: #C2192C;
-    --suvan-btn-hover-border-color: #C2192C;
-    --suvan-btn-hover-border: 2px solid #C2192C;
-    --suvan-btn-hover-color: #FFFFFF;
-    --suvan-btn-hover-font-weight: 700; /* Texto en Negrita (Bold) */
-    /* Formato y Tamaño de Texto para Botones */
-    --suvan-btn-font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    --suvan-btn-font-size: 0.875rem; /* 14px */
-    --suvan-btn-font-weight: 600; /* Semi-bold en estado normal */
-    --suvan-btn-text-transform: capitalize; /* Normal / Capitalized */
-    --suvan-btn-letter-spacing: 0.015em;
-    --suvan-btn-border-radius: 0.475rem; /* 7.6px Metronic standard */
-    /* Color de Texto al Posicionar sobre Menú o Elementos Interactivos (Hover) */
-    --suvan-menu-hover-text-color: #6B0E19;
+    /* --- Paleta Institucional SUVAN Rojizo & Blanco --- */
+    --suvan-color-primary: #6B0E19; /* Tono vino base institucional */
+    --suvan-color-primary-hover: #C2192C; /* Tono carmesí más claro y luminoso */
+    --suvan-color-primary-active: #4E0A12; /* Tono vino profundo para clic presionado */
+    --suvan-color-primary-light: rgba(107, 14, 25, 0.08); /* Tinte suave para sombreados */
+    /* --- Reemplazo Global de Variables Metronic / Bootstrap (Azul -> Vino) --- */
+    --bs-primary: #6B0E19;
+    --bs-primary-rgb: 107, 14, 25;
+    --bs-primary-active: #4E0A12;
+    --bs-primary-hover: #C2192C;
+    --bs-primary-light: rgba(107, 14, 25, 0.1);
+    --bs-link-color: #6B0E19;
+    --bs-link-hover-color: #C2192C;
+    /* --- A) Botones Principales ("Guardar", Guardar Cambios, Submit) --- */
+    --suvan-btn-save-bg: #6B0E19; /* Fondo vino sólido */
+    --suvan-btn-save-border: #6B0E19; /* Borde vino */
+    --suvan-btn-save-color: #FFFFFF; /* Texto blanco */
+    --suvan-btn-save-hover-bg: #C2192C; /* Fondo hover carmesí */
+    --suvan-btn-save-hover-border: #C2192C; /* Borde hover carmesí */
+    --suvan-btn-save-hover-color: #FFFFFF; /* Texto blanco en hover */
+    /* --- B) Botones Secundarios y Variaciones de "Agregar..." --- */
+    --suvan-btn-bg: #FFFFFF; /* Fondo blanco predeterminado */
+    --suvan-btn-border: #6B0E19; /* Borde vino predeterminado */
+    --suvan-btn-border-width: 2px; /* Grosor de 2px en bordes */
+    --suvan-btn-color: #6B0E19; /* Color de texto e ícono vino */
+    --suvan-btn-font-weight: 600; /* Semi-bold */
+    --suvan-btn-border-radius: 0.475rem; /* 7.6px estándar */
+    --suvan-btn-hover-bg: #C2192C; /* Fondo al pasar cursor (Hover) */
+    --suvan-btn-hover-border: #C2192C; /* Borde en Hover */
+    --suvan-btn-hover-color: #FFFFFF; /* Texto e ícono blanco en Hover */
+    --suvan-btn-hover-font-weight: 700; /* Bold en Hover */
+    /* --- C) Sombreados y Badges ("Administrador", "Principal", "Secundario") --- */
+    --suvan-badge-bg: #6B0E19; /* Sombreado fondo vino acorde al tema */
+    --suvan-badge-border: #6B0E19; /* Borde del sombreado */
+    --suvan-badge-color: #FFFFFF; /* Texto del sombreado en color BLANCO */
+    /* --- D) Botón "Iniciar Sesión" (Login) --- */
+    --suvan-login-btn-bg: #6B0E19;
+    --suvan-login-btn-border: #6B0E19;
+    --suvan-login-btn-color: #FFFFFF;
+    --suvan-login-btn-hover-bg: #C2192C;
+    --suvan-login-btn-hover-border: #C2192C;
+    --suvan-login-btn-hover-color: #FFFFFF;
+    --suvan-login-btn-active-bg: #4E0A12;
+    --suvan-login-btn-active-border: #42080F;
+    --suvan-login-btn-focus-shadow-rgb: 107, 14, 25;
+    --suvan-login-btn-disabled-bg: rgba(107, 14, 25, 0.65);
+    /* --- E) Iluminación y Sombreado de Menú Lateral (Panel Izquierdo) --- */
+    --suvan-menu-hover-text-color: #FFFFFF; /* Texto e íconos en blanco al interactuar */
     --suvan-sidebar-bg-light: #ffffff;
     --suvan-sidebar-shadow-light: 2px 0 12px rgba(0, 0, 0, 0.05);
-    --suvan-sidebar-item-hover-bg: rgba(107, 14, 25, 0.08);
-    --suvan-sidebar-item-active-bg: rgba(107, 14, 25, 0.14);
+    --suvan-sidebar-item-hover-bg: rgba(107, 14, 25, 0.78); /* Fondo vino con transparencia tenue */
+    --suvan-sidebar-item-active-bg: rgba(107, 14, 25, 0.88); /* Fondo vino activo */
     --suvan-sidebar-sub-accordion-bg: rgba(0, 0, 0, 0.02);
+    /* --- F) Checkboxes (Casillas de Verificación) --- */
+    --suvan-checkbox-border-color: #6B0E19;
+    --suvan-checkbox-border-width: 2px;
+    --suvan-checkbox-bg: #FFFFFF;
+    /* --- G) Switch Toggle (principalRadio / Empresa / Depósito Principal) --- */
+    --suvan-switch-checked-bg: #6B0E19;
+    --suvan-switch-checked-border: #6B0E19;
+    --suvan-switch-unchecked-bg: #E4E6EF;
+    --suvan-switch-unchecked-border: #C4C4C4;
 }
 
 /* Soporte para Tema Oscuro */
 [data-bs-theme="dark"] {
     --suvan-sidebar-bg-dark: #1e1e2d;
     --suvan-sidebar-shadow-dark: 2px 0 12px rgba(0, 0, 0, 0.25);
-    --suvan-sidebar-item-hover-bg: rgba(255, 255, 255, 0.06);
-    --suvan-sidebar-item-active-bg: rgba(107, 14, 25, 0.25);
+    --suvan-sidebar-item-hover-bg: rgba(107, 14, 25, 0.65);
+    --suvan-sidebar-item-active-bg: rgba(107, 14, 25, 0.85);
     --suvan-sidebar-sub-accordion-bg: rgba(255, 255, 255, 0.02);
 }
 
 /* --------------------------------------------------------------------------
-   1. ELEMENTO A: TODOS LOS BOTONES DEL PROYECTO Y VARIACIONES "AGREGAR..."
-   Fondo: #FFFFFF | Borde: 2px #6B0E19 | Texto: #6B0E19
-   Hover Fondo: #C2192C | Hover Borde: 2px #C2192C | Hover Texto: #FFFFFF (Bold)
+   1. BOTONES PRINCIPALES ("GUARDAR", SUBMIT, ACCIONES PRIMARIAS GLOBALES)
+   Fondo: #6B0E19 sólido | Borde: 2px solid #6B0E19 | Texto: #FFFFFF (bold)
+   Hover: #C2192C | Borde: #C2192C | Texto: #FFFFFF (bold) con sombra
    -------------------------------------------------------------------------- */
-
-.btn,
 .btn-primary,
-.btn-outline,
-.app-toolbar-wrapper .btn-outline,
-.btn-flex,
-.btn-light-primary,
-.btn-secondary,
-.btn-sm,
+.btn.btn-primary,
+button.btn-primary,
+a.btn-primary,
+button[type="submit"],
+input[type="submit"],
 #kt_user_in_submit,
+#kt_perfil_in_submit,
+#kt_sign_in_submit,
+button[id*="_in_submit"],
+button[id*="submit"],
 .btn-suvan-save,
-.btn-suvan-add,
-a.btn,
-button.btn,
-a[href*="Agregar"],
-a[href*="agregar"],
-#agregar-empresa,
-#btn-agregar-jerarquia {
-    background-color: var(--suvan-btn-bg) !important;
-    border: var(--suvan-btn-border-width) solid var(--suvan-btn-border-color) !important;
-    color: var(--suvan-btn-color) !important;
-    font-family: var(--suvan-btn-font-family);
-    font-size: var(--suvan-btn-font-size) !important;
-    font-weight: var(--suvan-btn-font-weight) !important;
-    text-transform: var(--suvan-btn-text-transform) !important;
-    letter-spacing: var(--suvan-btn-letter-spacing);
-    border-radius: var(--suvan-btn-border-radius);
-    transition: all 0.2s ease-in-out;
+.btn-suvan-submit,
+.card-footer .btn-primary,
+.modal-footer .btn-primary,
+form button[type="submit"] {
+    background-color: var(--suvan-btn-save-bg, #6B0E19) !important;
+    border: 2px solid var(--suvan-btn-save-border, #6B0E19) !important;
+    color: var(--suvan-btn-save-color, #FFFFFF) !important;
+    font-weight: 700 !important;
+    border-radius: var(--suvan-btn-border-radius, 0.475rem) !important;
+    box-shadow: 0 4px 12px rgba(107, 14, 25, 0.25) !important;
+    transition: all 0.2s ease-in-out !important;
 }
 
-    /* Estado Hover / Focus / Active sobre Cualquier Botón -> Fondo #C2192C, Texto #FFFFFF en Bold */
-    .btn:hover,
-    .btn:focus,
-    .btn:active,
+    /* Hover / Focus / Active sobre Botón "Guardar" y todos los botones primarios */
     .btn-primary:hover,
-    .btn-primary:focus,
-    .btn-primary:active,
-    .btn-outline:hover,
-    .app-toolbar-wrapper .btn-outline:hover,
-    .btn-flex:hover,
-    .btn-light-primary:hover,
+    .btn.btn-primary:hover,
+    button.btn-primary:hover,
+    a.btn-primary:hover,
+    button[type="submit"]:hover,
+    input[type="submit"]:hover,
     #kt_user_in_submit:hover,
+    #kt_perfil_in_submit:hover,
+    #kt_sign_in_submit:hover,
+    button[id*="_in_submit"]:hover,
+    button[id*="submit"]:hover,
     .btn-suvan-save:hover,
-    .btn-suvan-add:hover,
-    a.btn:hover,
-    button.btn:hover,
-    a[href*="Agregar"]:hover,
-    a[href*="agregar"]:hover,
-    #agregar-empresa:hover,
-    #btn-agregar-jerarquia:hover {
-        background-color: var(--suvan-btn-hover-bg) !important;
-        border-color: var(--suvan-btn-hover-border-color) !important;
-        color: var(--suvan-btn-hover-color) !important;
-        font-weight: var(--suvan-btn-hover-font-weight) !important;
-        box-shadow: 0 4px 12px rgba(194, 25, 44, 0.3);
+    .btn-suvan-submit:hover,
+    .card-footer .btn-primary:hover,
+    .modal-footer .btn-primary:hover,
+    form button[type="submit"]:hover {
+        background-color: var(--suvan-btn-save-hover-bg, #C2192C) !important;
+        border-color: var(--suvan-btn-save-hover-border, #C2192C) !important;
+        color: var(--suvan-btn-save-hover-color, #FFFFFF) !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 14px rgba(194, 25, 44, 0.4) !important;
     }
 
-/* Botones de Icono en Tablas (Editar / Ver / Eliminar) */
-.btn-icon.btn-active-light-primary {
-    background-color: var(--suvan-btn-bg) !important;
-    border: var(--suvan-btn-border-width) solid var(--suvan-btn-border-color) !important;
-    color: var(--suvan-btn-color) !important;
-    border-radius: var(--suvan-btn-border-radius);
-    transition: all 0.2s ease-in-out;
-}
-
-    .btn-icon.btn-active-light-primary:hover {
-        background-color: var(--suvan-btn-hover-bg) !important;
-        border-color: var(--suvan-btn-hover-border-color) !important;
-        color: var(--suvan-btn-hover-color) !important;
-        font-weight: var(--suvan-btn-hover-font-weight) !important;
+    .btn-primary:focus,
+    .btn.btn-primary:focus,
+    button[type="submit"]:focus,
+    #kt_user_in_submit:focus,
+    #kt_perfil_in_submit:focus {
+        background-color: var(--suvan-btn-save-bg, #6B0E19) !important;
+        border-color: var(--suvan-btn-save-border, #6B0E19) !important;
+        box-shadow: 0 0 0 0.25rem rgba(107, 14, 25, 0.35) !important;
     }
 
 /* --------------------------------------------------------------------------
-   2. ELEMENTOS "form-check-input" (CHECKBOXES Y RADIO BUTTONS)
-   Fondo: #FFFFFF | Borde: 2px #6B0E19 | Checked / Hover: #C2192C
+   1.1 BOTONES SECUNDARIOS Y VARIACIONES DE "AGREGAR..."
+   Fondo: #FFFFFF | Borde: 2px solid #6B0E19 | Texto e Ícono: #6B0E19
+   Hover Fondo: #C2192C | Hover Borde: #C2192C | Hover Texto: #FFFFFF (bold)
    -------------------------------------------------------------------------- */
-
-.form-check-input {
-    background-color: var(--suvan-btn-bg) !important;
-    border: var(--suvan-btn-border-width) solid var(--suvan-btn-border-color) !important;
-    border-radius: 0.35rem;
-    transition: all 0.2s ease-in-out;
+.app-default .btn-outline,
+body:not(.app-blank) .btn-outline,
+.app-toolbar-wrapper .btn-outline,
+.btn-flex:not(.btn-primary),
+.btn-light-primary,
+.btn-secondary,
+.btn-sm:not(.btn-primary),
+#btn-agregar-jerarquia,
+#agregar-empresa,
+.btn-suvan-add,
+.app-default a.btn:not(.btn-primary),
+.app-default button.btn:not(.btn-primary):not([type="submit"]) {
+    background-color: var(--suvan-btn-bg, #FFFFFF) !important;
+    border: var(--suvan-btn-outline-border-width, 2px) solid var(--suvan-btn-border, #6B0E19) !important;
+    color: var(--suvan-btn-color, #6B0E19) !important;
+    font-weight: var(--suvan-btn-font-weight, 600) !important;
+    border-radius: var(--suvan-btn-border-radius, 0.475rem) !important;
+    transition: all 0.2s ease-in-out !important;
 }
 
-    .form-check-input:hover {
-        border-color: var(--suvan-btn-hover-border-color) !important;
-        background-color: rgba(194, 25, 44, 0.08) !important;
+    /* Hover sobre Botones "Agregar..." */
+    .app-default .btn-outline:hover,
+    body:not(.app-blank) .btn-outline:hover,
+    .app-toolbar-wrapper .btn-outline:hover,
+    .btn-flex:not(.btn-primary):hover,
+    .btn-light-primary:hover,
+    #btn-agregar-jerarquia:hover,
+    #agregar-empresa:hover,
+    .btn-suvan-add:hover,
+    .app-default a.btn:not(.btn-primary):hover,
+    .app-default button.btn:not(.btn-primary):not([type="submit"]):hover {
+        background-color: var(--suvan-btn-hover-bg, #C2192C) !important;
+        border-color: var(--suvan-btn-hover-border, #C2192C) !important;
+        color: var(--suvan-btn-hover-color, #FFFFFF) !important;
+        font-weight: var(--suvan-btn-hover-font-weight, 700) !important;
+        box-shadow: 0 4px 12px rgba(194, 25, 44, 0.3) !important;
     }
 
-    .form-check-input:checked {
-        background-color: var(--suvan-btn-border-color) !important;
-        border-color: var(--suvan-btn-border-color) !important;
+/* --- ÍCONOS DENTRO DE BOTONES DE TEXTO (ej. Símbolo '+' en "Agregar...") --- */
+.btn:not(.btn-icon) i,
+.btn:not(.btn-icon) .ki-duotone,
+.btn:not(.btn-icon) .ki-outline,
+.btn:not(.btn-icon) i[class^="ki-"],
+.btn:not(.btn-icon) .ki-duotone .path1,
+.btn:not(.btn-icon) .ki-duotone .path2 {
+    color: inherit !important;
+    transition: color 0.2s ease-in-out;
+}
+
+    .btn:not(.btn-icon) .ki-duotone .path2 {
+        opacity: 0.6 !important;
     }
 
-        .form-check-input:checked:hover {
-            background-color: var(--suvan-btn-hover-bg) !important;
-            border-color: var(--suvan-btn-hover-border-color) !important;
+.btn:not(.btn-icon):hover i,
+.btn:not(.btn-icon):hover .ki-duotone,
+.btn:not(.btn-icon):hover .ki-outline,
+.btn:not(.btn-icon):hover i[class^="ki-"],
+.btn:not(.btn-icon):hover .ki-duotone .path1,
+.btn:not(.btn-icon):hover .ki-duotone .path2 {
+    color: #FFFFFF !important;
+}
+
+/* --------------------------------------------------------------------------
+   1.2 BOTONES DE ACCIÓN EN TABLAS Y LISTAS (EDITAR, ELIMINAR, .btn-icon)
+   Estado Base: Borde fino #6B0E19, fondo blanco, ícono #6B0E19
+   Hover (Invertido): Fondo #C2192C, borde #C2192C, ícono BLANCO #FFFFFF
+   -------------------------------------------------------------------------- */
+table .btn-icon,
+.table .btn-icon,
+.table tbody .btn-icon,
+table .btn.btn-icon,
+.btn-icon.btn-active-light-primary,
+table .btn-active-light-primary,
+.table .btn-active-color-primary,
+.btn.btn-icon.btn-active-light-primary,
+.btn-icon,
+.btn.btn-icon {
+    background-color: #FFFFFF !important;
+    border: 1.5px solid var(--suvan-color-primary, #6B0E19) !important;
+    border-radius: var(--suvan-btn-border-radius, 0.475rem) !important;
+    color: var(--suvan-color-primary, #6B0E19) !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+    table .btn-icon i,
+    .table .btn-icon i,
+    .btn-icon i,
+    .btn.btn-icon i,
+    .btn-icon .ki-duotone,
+    .btn-icon .ki-outline,
+    .btn-icon [class^="ki-"],
+    .btn-icon .path1,
+    .btn-icon .path2,
+    table .btn i,
+    table .btn-icon i,
+    .btn-icon.btn-active-light-primary i,
+    table .btn [class^="ki-"] {
+        color: var(--suvan-color-primary, #6B0E19) !important;
+        transition: color 0.2s ease-in-out !important;
+    }
+
+    /* Hover en Botones de Solo Ícono (Inversión total de colores para contraste perfecto): */
+    table .btn-icon:hover,
+    .table .btn-icon:hover,
+    .table tbody .btn-icon:hover,
+    table .btn.btn-icon:hover,
+    .btn-icon.btn-active-light-primary:hover,
+    table .btn-active-light-primary:hover,
+    .table .btn-active-color-primary:hover,
+    .btn.btn-icon.btn-active-light-primary:hover,
+    .btn-icon:hover,
+    .btn.btn-icon:hover,
+    table .btn:hover {
+        background-color: var(--suvan-color-primary-hover, #C2192C) !important;
+        border-color: var(--suvan-color-primary-hover, #C2192C) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 8px rgba(194, 25, 44, 0.35) !important;
+    }
+
+        table .btn-icon:hover i,
+        .table .btn-icon:hover i,
+        .btn-icon:hover i,
+        .btn.btn-icon:hover i,
+        .btn-icon:hover .ki-duotone,
+        .btn-icon:hover .ki-outline,
+        .btn-icon:hover [class^="ki-"],
+        .btn-icon:hover .path1,
+        .btn-icon:hover .path2,
+        .btn-icon.btn-active-light-primary:hover i,
+        .btn-icon.btn-active-light-primary:hover [class^="ki-"],
+        table .btn:hover i {
+            color: #FFFFFF !important;
         }
 
 /* --------------------------------------------------------------------------
-   3. NUMERALES DE LA NAVEGACIÓN DE PÁGINA (PAGINACIÓN / DATATABLES)
-   Fondo: #FFFFFF | Borde: 2px #6B0E19 | Texto: #6B0E19
-   Hover / Activo: Fondo #C2192C | Texto #FFFFFF (Bold)
+   1.3 BOTONES DE ÍCONO EN LA BARRA SUPERIOR (HEADER / NAVBAR)
+   Estado Pasivo: Contorno vino #6B0E19, fondo blanco, ícono #6B0E19
+   Hover (Invertido): Fondo #C2192C, borde #C2192C, ícono BLANCO #FFFFFF
    -------------------------------------------------------------------------- */
-
-.pagination .page-item .page-link,
-.page-link,
-.dataTables_wrapper .pagination .page-item .page-link,
-.dataTables_wrapper .dataTables_paginate /*.paginate_button,*/
-.dt-paging-button {
-    background-color: var(--suvan-btn-bg) !important;
-    border: var(--suvan-btn-border-width) solid var(--suvan-btn-border-color) !important;
-    color: var(--suvan-btn-color) !important;
-    font-weight: var(--suvan-btn-font-weight) !important;
-    border-radius: var(--suvan-btn-border-radius) !important;
-    margin: 0 2px !important;
-    padding: 0.5rem 0.85rem !important;
-    transition: all 0.2s ease-in-out;
+#kt_app_header .btn-icon,
+.app-navbar .btn-icon,
+#kt_drawer_chat_toggle,
+#kt_activities_toggle,
+#kt_app_sidebar_mobile_toggle {
+    background-color: #FFFFFF !important;
+    border: 1.5px solid var(--suvan-color-primary, #6B0E19) !important;
+    border-radius: var(--suvan-btn-border-radius, 0.475rem) !important;
+    color: var(--suvan-color-primary, #6B0E19) !important;
+    box-shadow: none !important;
+    transition: all 0.2s ease-in-out !important;
 }
 
-    .pagination .page-item .page-link:hover,
-    .page-link:hover,
-    .pagination .page-item.active .page-link,
-    .pagination .page-item.active > .page-link,
-    .dataTables_wrapper .pagination .page-item.active .page-link,
-    .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
-    .dataTables_wrapper .dataTables_paginate .paginate_button.current,
-    .dt-paging-button:hover,
-    .dt-paging-button.current {
-        background-color: var(--suvan-btn-hover-bg) !important;
-        border-color: var(--suvan-btn-hover-border-color) !important;
-        color: var(--suvan-btn-hover-color) !important;
-        font-weight: var(--suvan-btn-hover-font-weight) !important;
-        box-shadow: 0 4px 10px rgba(194, 25, 44, 0.25);
+    #kt_app_header .btn-icon i,
+    .app-navbar .btn-icon i,
+    #kt_drawer_chat_toggle i,
+    #kt_activities_toggle i,
+    #kt_app_sidebar_mobile_toggle i {
+        color: var(--suvan-color-primary, #6B0E19) !important;
+        transition: color 0.2s ease-in-out !important;
+    }
+
+    /* Badge contador sobre el ícono superior (ej. '0' mensajes) */
+    #kt_drawer_chat_toggle #kt_drawer_chat_counter,
+    .app-navbar .badge-circle,
+    .app-navbar .badge-custom {
+        background-color: var(--suvan-color-primary, #6B0E19) !important;
+        color: #FFFFFF !important;
+        border: 1px solid #FFFFFF !important;
+        font-size: 0.75rem !important;
+        font-weight: 700 !important;
+    }
+
+    /* Hover / Interacción en barra superior */
+    #kt_app_header .btn-icon:hover,
+    .app-navbar .btn-icon:hover,
+    #kt_drawer_chat_toggle:hover,
+    #kt_activities_toggle:hover,
+    #kt_app_sidebar_mobile_toggle:hover {
+        background-color: var(--suvan-color-primary-hover, #C2192C) !important;
+        border-color: var(--suvan-color-primary-hover, #C2192C) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 8px rgba(194, 25, 44, 0.35) !important;
+    }
+
+        #kt_app_header .btn-icon:hover i,
+        .app-navbar .btn-icon:hover i,
+        #kt_drawer_chat_toggle:hover i,
+        #kt_activities_toggle:hover i,
+        #kt_app_sidebar_mobile_toggle:hover i {
+            color: #FFFFFF !important;
+        }
+
+/* --------------------------------------------------------------------------
+   2. SOMBREADOS Y BADGES ("ADMINISTRADOR", "PRINCIPAL", "SECUNDARIO")
+   Sombreado fondo #6B0E19 acorde al tema con texto en color BLANCO #FFFFFF
+   -------------------------------------------------------------------------- */
+.badge.badge-light-primary,
+.badge-light-primary,
+.badge.badge-primary,
+.badge-primary,
+.badge.badge-light-info,
+.badge-light-info,
+.badge.badge-light-success,
+.badge-light-success,
+.badge.badge-light,
+.badge-light,
+.badge {
+    background-color: var(--suvan-badge-bg, #6B0E19) !important;
+    border: 1px solid var(--suvan-badge-border, #6B0E19) !important;
+    color: var(--suvan-badge-color, #FFFFFF) !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.025em;
+    padding: 0.45rem 0.85rem !important;
+    border-radius: 0.425rem !important;
+    box-shadow: 0 2px 6px rgba(107, 14, 25, 0.25) !important;
+}
+
+/* --------------------------------------------------------------------------
+   3. BOTÓN Y ELEMENTOS DE LA PANTALLA DE LOGIN
+   Estado Base (Imagen 2): Fondo vino #6B0E19 con texto blanco
+   Hover (Imagen 3): Carmesí luminoso #C2192C con sombra y texto blanco
+   -------------------------------------------------------------------------- */
+
+/* Botón "Iniciar sesión" (#kt_sign_in_submit) - Estado Base (Imagen 2) */
+#kt_sign_in_submit,
+.app-blank .btn.btn-primary,
+.app-blank button[type="submit"],
+form#kt_sign_in_form button[type="submit"],
+button#kt_sign_in_submit {
+    background-color: var(--suvan-color-primary, #6B0E19) !important;
+    border: 2px solid var(--suvan-color-primary, #6B0E19) !important;
+    color: #FFFFFF !important;
+    font-weight: 700 !important;
+    border-radius: 0.475rem !important;
+    box-shadow: 0 4px 12px rgba(107, 14, 25, 0.25) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+    /* Hover / Interacción (Imagen 3): Carmesí luminoso #C2192C */
+    #kt_sign_in_submit:hover,
+    .app-blank .btn.btn-primary:hover,
+    .app-blank button[type="submit"]:hover,
+    form#kt_sign_in_form button[type="submit"]:hover,
+    button#kt_sign_in_submit:hover {
+        background-color: var(--suvan-color-primary-hover, #C2192C) !important;
+        border-color: var(--suvan-color-primary-hover, #C2192C) !important;
+        color: #FFFFFF !important;
+        font-weight: 700 !important;
+        box-shadow: 0 4px 14px rgba(194, 25, 44, 0.4) !important;
+    }
+
+    #kt_sign_in_submit:focus,
+    .app-blank .btn.btn-primary:focus,
+    form button[type="submit"]:focus {
+        background-color: var(--suvan-color-primary, #6B0E19) !important;
+        border-color: var(--suvan-color-primary, #6B0E19) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 0 0 0.25rem rgba(107, 14, 25, 0.35) !important;
+    }
+
+    #kt_sign_in_submit:active,
+    #kt_sign_in_submit.active,
+    .app-blank .btn.btn-primary:active,
+    form button[type="submit"]:active {
+        background-color: var(--suvan-login-btn-active-bg, #4E0A12) !important;
+        border-color: var(--suvan-login-btn-active-border, #42080F) !important;
+        color: #FFFFFF !important;
+        box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.3) !important;
+    }
+
+    #kt_sign_in_submit:disabled,
+    #kt_sign_in_submit[disabled],
+    .app-blank .btn.btn-primary:disabled,
+    form button[type="submit"]:disabled {
+        background-color: var(--suvan-login-btn-disabled-bg) !important;
+        border-color: var(--suvan-login-btn-disabled-bg) !important;
+        color: rgba(255, 255, 255, 0.8) !important;
+        cursor: not-allowed !important;
+        opacity: 0.85 !important;
+    }
+
+/* Contenedor lateral derecho del Login (fondo #6B0E19 vino institucional sólido) */
+.app-blank .bg-primary,
+.app-blank div.bg-primary,
+div.order-lg-2.bg-primary,
+.app-blank [class*="bg-primary"],
+#kt_app_root .order-lg-2 {
+    background-color: var(--suvan-color-primary, #6B0E19) !important;
+}
+
+/* Enlaces de texto en Login y Formularios */
+a.link-primary,
+.link-primary,
+.text-primary,
+a.text-primary,
+a[href*="olvido"] {
+    color: var(--suvan-color-primary, #6B0E19) !important;
+    transition: color 0.15s ease-in-out;
+}
+
+    a.link-primary:hover,
+    .link-primary:hover,
+    .text-primary:hover,
+    a.text-primary:hover,
+    a[href*="olvido"]:hover {
+        color: var(--suvan-color-primary-hover, #C2192C) !important;
     }
 
 /* --------------------------------------------------------------------------
-   4. ELEMENTO B: MENÚ IZQUIERDO Y ENLACES INTERACTIVOS (HOVER TEXTO #6B0E19)
+   4. NUMERALES Y NAVEGACIÓN DE PÁGINA (PAGINACIÓN / DATATABLES)
+   Sin doble borde: Se anula el borde de los <li> y se estiliza solo el <a> interior
    -------------------------------------------------------------------------- */
 
-/* Panel Lateral Base */
+/* Eliminar borde y fondo del elemento contenedor <li> para evitar el doble borde */
+.pagination .page-item,
+.pagination .paginate_button,
+li.paginate_button,
+.dataTables_wrapper .pagination .page-item,
+.dataTables_paginate .pagination li {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+    /* El estilo y borde se aplica de forma única al enlace <a> interior (.page-link) */
+    .pagination .page-item > .page-link,
+    .pagination .page-link,
+    .dt-paging-button,
+    .dataTables_wrapper .pagination .page-item > .page-link {
+        background-color: var(--suvan-btn-bg, #FFFFFF) !important;
+        border: var(--suvan-btn-border-width, 2px) solid var(--suvan-btn-border, #6B0E19) !important;
+        color: var(--suvan-btn-color, #6B0E19) !important;
+        font-weight: var(--suvan-btn-font-weight, 600) !important;
+        border-radius: var(--suvan-btn-border-radius, 0.475rem) !important;
+        margin: 0 2px !important;
+        box-shadow: none !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+
+        /* Estado Hover y Activo (página seleccionada) */
+        .pagination .page-item.active > .page-link,
+        .pagination .page-item > .page-link:hover,
+        .pagination .page-item > .page-link:focus,
+        .page-link:hover,
+        .dt-paging-button:hover,
+        .dt-paging-button.current {
+            background-color: var(--suvan-btn-hover-bg, #C2192C) !important;
+            border-color: var(--suvan-btn-hover-border, #C2192C) !important;
+            color: var(--suvan-btn-hover-color, #FFFFFF) !important;
+            font-weight: var(--suvan-btn-hover-font-weight, 700) !important;
+            box-shadow: 0 2px 8px rgba(194, 25, 44, 0.25) !important;
+        }
+
+    /* Flechas/botones deshabilitados */
+    .pagination .page-item.disabled > .page-link,
+    .pagination .paginate_button.disabled > .page-link {
+        background-color: #f5f8fa !important;
+        border-color: #e4e6ef !important;
+        color: #b5b5c3 !important;
+        cursor: not-allowed !important;
+        box-shadow: none !important;
+    }
+
+/* --------------------------------------------------------------------------
+   5. CASILLAS DE VERIFICACIÓN (CHECKBOXES GLOBALES)
+   Borde visible #6B0E19 de 2px en todas las vistas (Perfiles, Permisos, Tablas)
+   -------------------------------------------------------------------------- */
+input[type="checkbox"]:not(.form-switch *),
+.form-check:not(.form-switch) .form-check-input,
+.form-check-custom .form-check-input:not(.form-switch *),
+.form-check-solid:not(.form-switch) .form-check-input,
+.form-check-input[type="checkbox"]:not(.form-switch *),
+table input[type="checkbox"] {
+    background-color: #FFFFFF !important;
+    border: 2px solid var(--suvan-color-primary, #6B0E19) !important;
+    border-radius: 0.35rem !important;
+    min-width: 1.35rem !important;
+    min-height: 1.35rem !important;
+    cursor: pointer !important;
+    transition: border-color 0.15s ease-in-out, background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+}
+
+    /* Checked (Palomita / Verificado con contraste vino nítido) */
+    input[type="checkbox"]:not(.form-switch *):checked,
+    .form-check:not(.form-switch) .form-check-input:checked,
+    .form-check-custom .form-check-input:checked:not(.form-switch *),
+    .form-check-solid:not(.form-switch) .form-check-input:checked,
+    .form-check-input[type="checkbox"]:not(.form-switch *):checked,
+    table input[type="checkbox"]:checked {
+        background-color: #FFFFFF !important;
+        border: 2px solid var(--suvan-color-primary, #6B0E19) !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%236B0E19' stroke-linecap='round' stroke-linejoin='round' stroke-width='3.2' d='m5 10.5 3.5 3.5 7-7'/%3e%3c/svg%3e") !important;
+        background-size: 80% 80% !important;
+        background-position: center !important;
+        background-repeat: no-repeat !important;
+    }
+
+    /* Hover & Focus en Checkbox */
+    input[type="checkbox"]:not(.form-switch *):hover,
+    .form-check:not(.form-switch) .form-check-input:hover {
+        border-color: var(--suvan-color-primary-hover, #C2192C) !important;
+        box-shadow: 0 0 0 0.15rem rgba(194, 25, 44, 0.2) !important;
+    }
+
+    input[type="checkbox"]:not(.form-switch *):focus,
+    .form-check:not(.form-switch) .form-check-input:focus {
+        border-color: var(--suvan-color-primary, #6B0E19) !important;
+        box-shadow: 0 0 0 0.25rem rgba(107, 14, 25, 0.25) !important;
+    }
+
+/* --------------------------------------------------------------------------
+   6. SWITCH TOGGLE (principalRadio / Empresa / Depósito Principal / Radios)
+   -------------------------------------------------------------------------- */
+.form-switch .form-check-input,
+.form-check-solid.form-switch .form-check-input,
+input[name="principalRadio"],
+input[name="principalJerarquiaRadio"],
+input[name*="ActualizarPrincipal"],
+input[id*="ActualizarPrincipal"] {
+    background-color: var(--suvan-switch-unchecked-bg, #E4E6EF) !important;
+    border: 1.5px solid var(--suvan-switch-unchecked-border, #C4C4C4) !important;
+    border-radius: 2em !important;
+    background-position: left center !important;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e") !important;
+    transition: background-color 0.2s ease, border-color 0.2s ease, background-position 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+    .form-switch .form-check-input:hover,
+    input[name="principalRadio"]:hover,
+    input[name="principalJerarquiaRadio"]:hover {
+        border-color: var(--suvan-color-primary-hover, #C2192C) !important;
+        box-shadow: 0 0 0 0.15rem rgba(194, 25, 44, 0.2) !important;
+    }
+
+    .form-switch .form-check-input:checked,
+    .form-check-solid.form-switch .form-check-input:checked,
+    input[name="principalRadio"]:checked,
+    input[name="principalJerarquiaRadio"]:checked,
+    input[name*="ActualizarPrincipal"]:checked,
+    input[id*="ActualizarPrincipal"]:checked {
+        background-color: var(--suvan-switch-checked-bg, #6B0E19) !important;
+        border-color: var(--suvan-switch-checked-border, #6B0E19) !important;
+        background-position: right center !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23ffffff'/%3e%3c/svg%3e") !important;
+    }
+
+/* Botones de Opción Redondos (Radio Buttons) */
+input[type="radio"].form-check-input {
+    background-color: #FFFFFF !important;
+    border: 2px solid var(--suvan-color-primary, #6B0E19) !important;
+    border-radius: 50% !important;
+}
+
+    input[type="radio"].form-check-input:checked {
+        background-color: #FFFFFF !important;
+        border-color: var(--suvan-color-primary, #6B0E19) !important;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2.2' fill='%236B0E19'/%3e%3c/svg%3e") !important;
+    }
+
+/* --------------------------------------------------------------------------
+   7. ILUMINACIÓN Y SOMBREADO DEL MENÚ LATERAL IZQUIERDO
+   Al interactuar (Hover): Fondo vino con transparencia tenue y texto/íconos en BLANCO
+   -------------------------------------------------------------------------- */
 #kt_app_sidebar,
 .app-sidebar {
     background-color: var(--suvan-sidebar-bg-light) !important;
@@ -200,52 +624,72 @@ a[href*="agregar"],
     box-shadow: var(--suvan-sidebar-shadow-dark);
 }
 
-/* Formato y Sombreado de Ítems del Menú Lateral */
-#kt_app_sidebar_menu .menu-item .menu-link {
+#kt_app_sidebar_menu .menu-item .menu-link,
+.app-sidebar .menu-link {
     border-radius: 0.475rem;
-    margin-bottom: 0.15rem;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    margin-bottom: 0.2rem;
+    padding: 0.65rem 0.85rem;
+    transition: all 0.2s ease-in-out;
 }
 
-    /* Hover sobre Elementos de Menú o Enlaces (Excluyendo botones) -> Texto e Ícono Color #6B0E19 */
+    /* Hover al interactuar con algún menú: Fondo vino con transparencia tenue y texto blanco */
     #kt_app_sidebar_menu .menu-item .menu-link:hover,
-    .menu-link:hover,
-    a.menu-link:hover,
-    .text-hover-primary:hover,
-    a.text-hover-primary:hover,
-    a:not(.btn):hover {
-        color: var(--suvan-menu-hover-text-color) !important;
-    }
-
-    #kt_app_sidebar_menu .menu-item .menu-link:hover {
-        background-color: var(--suvan-sidebar-item-hover-bg) !important;
+    #kt_app_sidebar_menu .menu-link:hover,
+    .app-sidebar-menu .menu-link:hover,
+    .app-sidebar .menu-link:hover {
+        background-color: var(--suvan-sidebar-item-hover-bg, rgba(107, 14, 25, 0.78)) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 8px rgba(107, 14, 25, 0.25) !important;
     }
 
         #kt_app_sidebar_menu .menu-item .menu-link:hover .menu-title,
         #kt_app_sidebar_menu .menu-item .menu-link:hover .menu-icon i,
+        #kt_app_sidebar_menu .menu-item .menu-link:hover .menu-arrow,
+        #kt_app_sidebar_menu .menu-item .menu-link:hover .menu-arrow:after,
+        .app-sidebar .menu-link:hover .menu-title,
+        .app-sidebar .menu-link:hover .menu-icon i,
+        .app-sidebar .menu-link:hover .menu-arrow,
         .menu-link:hover .menu-title,
-        .menu-link:hover .menu-icon i {
-            color: var(--suvan-menu-hover-text-color) !important;
+        .menu-link:hover .menu-icon i,
+        .menu-link:hover .menu-arrow {
+            color: #FFFFFF !important;
         }
 
-    /* Estado Activo en Menú Lateral */
+        #kt_app_sidebar_menu .menu-item .menu-link:hover .menu-bullet .bullet,
+        .app-sidebar .menu-link:hover .menu-bullet .bullet,
+        .menu-link:hover .menu-bullet .bullet {
+            background-color: #FFFFFF !important;
+        }
+
+    /* Estado Activo / Menú Seleccionado */
     #kt_app_sidebar_menu .menu-item.show > .menu-link,
-    #kt_app_sidebar_menu .menu-item .menu-link.active {
-        background-color: var(--suvan-sidebar-item-active-bg) !important;
-        color: var(--suvan-menu-hover-text-color) !important;
+    #kt_app_sidebar_menu .menu-item .menu-link.active,
+    .app-sidebar .menu-link.active {
+        background-color: var(--suvan-sidebar-item-active-bg, rgba(107, 14, 25, 0.88)) !important;
+        color: #FFFFFF !important;
         font-weight: 700 !important;
+        box-shadow: 0 2px 8px rgba(107, 14, 25, 0.3) !important;
     }
 
         #kt_app_sidebar_menu .menu-item.show > .menu-link .menu-title,
         #kt_app_sidebar_menu .menu-item .menu-link.active .menu-title,
         #kt_app_sidebar_menu .menu-item.show > .menu-link .menu-icon i,
-        #kt_app_sidebar_menu .menu-item .menu-link.active .menu-icon i {
-            color: var(--suvan-menu-hover-text-color) !important;
+        #kt_app_sidebar_menu .menu-item .menu-link.active .menu-icon i,
+        #kt_app_sidebar_menu .menu-item.show > .menu-link .menu-arrow,
+        #kt_app_sidebar_menu .menu-item .menu-link.active .menu-arrow,
+        .app-sidebar .menu-link.active .menu-title,
+        .app-sidebar .menu-link.active .menu-icon i {
+            color: #FFFFFF !important;
         }
 
-/* Submenús en Acordeón */
+        #kt_app_sidebar_menu .menu-item.show > .menu-link .menu-bullet .bullet,
+        #kt_app_sidebar_menu .menu-item .menu-link.active .menu-bullet .bullet,
+        .app-sidebar .menu-link.active .menu-bullet .bullet {
+            background-color: #FFFFFF !important;
+        }
+
 #kt_app_sidebar_menu .menu-sub-accordion {
-    background-color: var(--suvan-sidebar-sub-accordion-bg);
+    background-color: rgba(0, 0, 0, 0.02);
     border-radius: 0.475rem;
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
@@ -253,7 +697,88 @@ a[href*="agregar"],
 }
 
 /* --------------------------------------------------------------------------
-   5. REGLAS AUXILIARES EXISTENTES
+   7.1 MENÚ DE USUARIO / SESIÓN Y SUBMENÚS DESPLEGABLES (DROPDOWNS)
+   Al interactuar (Hover / Show / Active): Fondo vino con transparencia tenue y texto en BLANCO
+   -------------------------------------------------------------------------- */
+.menu-sub-dropdown .menu-item .menu-link,
+.menu-sub-dropdown .menu-link {
+    border-radius: 0.475rem !important;
+    transition: all 0.2s ease-in-out !important;
+}
+
+    /* Hover e interacción en opciones del menú de usuario y submenús (Modo, Empresa, Bandeja, Cerrar Sesión) */
+    .menu-sub-dropdown .menu-item .menu-link:hover,
+    .menu-sub-dropdown .menu-link:hover,
+    .menu-sub-dropdown .menu-item:hover > .menu-link,
+    .menu-sub-dropdown .menu-item.show > .menu-link,
+    .menu-sub-dropdown [data-kt-element="theme-mode-menu"] .menu-link:hover,
+    #kt_app_sidebar .menu-sub-dropdown .menu-link:hover,
+    #kt_app_sidebar .menu-sub-dropdown .menu-item.show > .menu-link,
+    .menu-sub-dropdown .menu-item.hover > .menu-link {
+        background-color: var(--suvan-sidebar-item-hover-bg, rgba(107, 14, 25, 0.78)) !important;
+        color: #FFFFFF !important;
+        box-shadow: 0 2px 8px rgba(107, 14, 25, 0.25) !important;
+    }
+
+        .menu-sub-dropdown .menu-item .menu-link:hover .menu-title,
+        .menu-sub-dropdown .menu-link:hover .menu-title,
+        .menu-sub-dropdown .menu-item:hover > .menu-link .menu-title,
+        .menu-sub-dropdown .menu-item.show > .menu-link .menu-title,
+        .menu-sub-dropdown .menu-item .menu-link:hover .menu-icon,
+        .menu-sub-dropdown .menu-item .menu-link:hover .menu-icon i,
+        .menu-sub-dropdown .menu-link:hover i,
+        .menu-sub-dropdown .menu-link:hover span,
+        .menu-sub-dropdown .menu-item:hover > .menu-link i,
+        #kt_app_sidebar .menu-sub-dropdown .menu-link:hover .menu-title,
+        #kt_app_sidebar .menu-sub-dropdown .menu-link:hover i,
+        #kt_app_sidebar .menu-sub-dropdown .menu-item.show > .menu-link .menu-title,
+        #kt_app_sidebar .menu-sub-dropdown .menu-item.show > .menu-link i {
+            color: #FFFFFF !important;
+        }
+
+    /* Ítem Activo en Submenú (ej. Empresa Principal seleccionada 'Pruebas SA de CV') */
+    .menu-sub-dropdown .menu-link.active,
+    .menu-sub-dropdown .menu-item .menu-link.active,
+    #kt_app_sidebar .menu-sub-dropdown .menu-link.active {
+        background-color: rgba(107, 14, 25, 0.12) !important;
+        color: var(--suvan-color-primary, #6B0E19) !important;
+        font-weight: 700 !important;
+    }
+
+        .menu-sub-dropdown .menu-link.active .menu-title,
+        .menu-sub-dropdown .menu-item .menu-link.active .menu-title,
+        .menu-sub-dropdown .menu-link.active .menu-icon i {
+            color: var(--suvan-color-primary, #6B0E19) !important;
+            font-weight: 700 !important;
+        }
+
+        /* Ítem Activo cuando se interactúa (Hover) */
+        .menu-sub-dropdown .menu-link.active:hover,
+        .menu-sub-dropdown .menu-item .menu-link.active:hover,
+        #kt_app_sidebar .menu-sub-dropdown .menu-link.active:hover {
+            background-color: var(--suvan-sidebar-item-active-bg, rgba(107, 14, 25, 0.88)) !important;
+            color: #FFFFFF !important;
+        }
+
+            .menu-sub-dropdown .menu-link.active:hover .menu-title,
+            .menu-sub-dropdown .menu-item .menu-link.active:hover .menu-title,
+            .menu-sub-dropdown .menu-link.active:hover .menu-icon i {
+                color: #FFFFFF !important;
+            }
+
+/* --------------------------------------------------------------------------
+   8. FOCO EN ENTRADAS DE TEXTO Y DESPLEGABLES (INPUTS & SELECTS)
+   Sustituye el anillo de foco azul de Bootstrap por un resplandor vino suave
+   -------------------------------------------------------------------------- */
+.form-control:focus,
+.form-select:focus,
+.form-control.form-control-solid:focus {
+    border-color: var(--suvan-color-primary, #6B0E19) !important;
+    box-shadow: 0 0 0 0.25rem rgba(107, 14, 25, 0.2) !important;
+}
+
+/* --------------------------------------------------------------------------
+   9. REGLAS AUXILIARES EXISTENTES
    -------------------------------------------------------------------------- */
 .inputparada {
     padding: 10px !important;
