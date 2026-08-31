@@ -117,6 +117,32 @@ namespace SUVAN.BackOffice.Portal.Controllers
             var estadisticas = await _cargaPeriodoService.GetEstadisticasPeriodo(idEmpresa, idDeposito);
             return Json(estadisticas);
         }
+
+
+        /// <summary>
+        /// Obtiene lista de vehículos únicos con cargas en el periodo para el depósito seleccionado
+        /// </summary>
+        [HttpGet]
+        public async Task<JsonResult> GetVehiculosCargasPeriodo (int idDeposito)
+        {
+            var idEmpresa = User.GetEmpresaId();
+            var cargas = await _cargaPeriodoService.GetCargasPeriodo(idEmpresa, idDeposito);
+
+            //Mapeo y filtración para evitar vehiculos repetidossi tienen multiples cargas
+            var vehiculos = cargas
+                .Where(c => c.IdVehiculoNavigation != null)
+                .Select(c => new
+                {
+                    numeconomico = c.IdVehiculoNavigation.Numeroeconomico ?? "",
+                    marca = c.IdVehiculoNavigation.Marca ?? "",
+                    modelo = c.IdVehiculoNavigation.Modelo ?? "",
+                    placas = c.IdVehiculoNavigation.Placas ?? ""
+                })
+                .GroupBy(v => v.numeconomico)
+                .Select(g => g.First())
+                .ToList();
+            return Json(vehiculos);
+        }
     }
 }
 

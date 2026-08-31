@@ -75,12 +75,66 @@ var KTPlantum = function () {
         submitButton.addEventListener('click', function (e) {
             // Prevenir el envío por defecto hasta que la validación sea exitosa
             e.preventDefault();
-            validator.validate().then(function (status) {
+            validator.validate().then(async function (status) {
                 if (status === 'Valid') {
                     // Deshabilitar el botón para evitar múltiples envíos
                     submitButton.setAttribute('data-kt-indicator', 'on');
                     submitButton.disabled = true;
-                    form.submit();
+
+                    try {
+                        //recopila los datos del formulario 
+                        const formData = new FormData(form);
+
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData
+                        });
+                        const result = await response.json();
+
+                        //quitar indicador de carga
+                        submitButton.removeAttribute('data-kt-indicator');
+                        submitButton.disabled = false;
+
+                        if (result.success) {
+                            Swal.fire({
+                                text: result.message,
+                                icon: "success",
+                                buttonsStyling: false,
+                                confirmButtonText: "Aceptar",
+                                customClass: {
+                                    confirmButton: "btn fw-bold btn-primary"
+                                }
+                            }).then(function () {
+                                // Redirigir a la página de listado de regiones
+                                window.location.href = '/Administrativo/Plantas';
+                            });
+                        } else {
+                            Swal.fire({
+                                text: result.message || "Ocurrió un error al guardar la región.",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Aceptar",
+                                customClass: {
+                                    confirmButton: "btn fw-bold btn-primary"
+                                }
+                            });
+                        }
+                    } catch (error) {
+                        //quitar indicador en caso de error en la red
+                        submitButton.removeAttribute('data-kt-indicator');
+                        submitButton.disabled = false;
+
+                        Swal.fire({
+                            text: "Error de conexión con el servidor",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Aceptar",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary"
+                            }
+                        });
+                    }
+
                 }
             });
         });
