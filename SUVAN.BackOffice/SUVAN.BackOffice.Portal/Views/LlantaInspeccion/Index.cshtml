@@ -193,9 +193,90 @@
                 </div>
             </div>
         </form>
+
+        <div id="llanta-inspeccion-reemplazos" class="card d-none mt-6">
+            <div class="card-header border-0 pt-6">
+                <div class="card-title">
+                    <div>
+                        <div class="fw-bold text-gray-800 fs-5">Posiciones disponibles para reemplazo</div>
+                        <div class="text-muted">Instala una llanta disponible en las posiciones liberadas por la inspección.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body py-4">
+                <div id="llanta-inspeccion-reemplazos-lista" class="d-flex flex-column gap-3"></div>
+            </div>
+        </div>
     </div>
 </div>
 <!--end::Content-->
+
+<div class="modal fade" id="llanta-inspeccion-reemplazo-modal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form id="llanta-inspeccion-reemplazo-form" autocomplete="off">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="IdVehiculo" id="llanta-inspeccion-reemplazo-id-vehiculo" />
+                <input type="hidden" name="IdVehiculoEje" id="llanta-inspeccion-reemplazo-id-eje" />
+                <input type="hidden" name="NumeroPosicion" id="llanta-inspeccion-reemplazo-numero-posicion" />
+                <input type="hidden" name="IdTipoAsignacion" value="2" />
+
+                <div class="modal-header">
+                    <div>
+                        <h3 class="modal-title">Reemplazar llanta retirada</h3>
+                        <div id="llanta-inspeccion-reemplazo-posicion" class="text-muted fw-semibold"></div>
+                    </div>
+                    <button type="button" class="btn btn-icon btn-sm btn-active-light-primary" data-bs-dismiss="modal" aria-label="Cerrar">
+                        <i class="ki-outline ki-cross fs-2"></i>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div id="llanta-inspeccion-reemplazo-alerta" class="alert alert-danger d-none"></div>
+
+                    <div class="mb-5">
+                        <label class="form-label">Llanta retirada</label>
+                        <input id="llanta-inspeccion-reemplazo-saliente" type="text" class="form-control form-control-solid" readonly />
+                    </div>
+
+                    <div class="mb-5">
+                        <label for="llanta-inspeccion-reemplazo-entrante" class="required form-label">Llanta entrante</label>
+                        <select id="llanta-inspeccion-reemplazo-entrante" name="IdLlanta" class="form-select form-select-solid" data-control="select2" data-placeholder="Seleccione una llanta">
+                            <option value="">Seleccione una llanta</option>
+                        </select>
+                    </div>
+
+                    <div class="row g-5">
+                        <div class="col-md-6">
+                            <label for="llanta-inspeccion-reemplazo-fecha" class="required form-label">Fecha de instalación</label>
+                            <input id="llanta-inspeccion-reemplazo-fecha" name="FechaAsignacion" type="date" class="form-control form-control-solid" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="llanta-inspeccion-reemplazo-km" class="required form-label">Kilometraje</label>
+                            <input id="llanta-inspeccion-reemplazo-km" name="KmVehiculoAsignacion" type="number" min="0" step="1" class="form-control form-control-solid" />
+                        </div>
+                    </div>
+
+                    <div class="mt-5">
+                        <label for="llanta-inspeccion-reemplazo-observaciones" class="form-label">Observaciones asignación</label>
+                        <textarea id="llanta-inspeccion-reemplazo-observaciones" name="ObservacionesAsignacion" class="form-control form-control-solid" rows="2" maxlength="500"></textarea>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="llanta-inspeccion-reemplazo-submit" class="btn btn-primary">
+                        <span class="indicator-label">Instalar reemplazo</span>
+                        <span class="indicator-progress">
+                            Guardando...
+                            <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 @section Scripts {
     <script>
@@ -203,6 +284,8 @@
         window.SUVAN.LlantaInspeccion = {
             configuracionUrlTemplate: '@Url.Content("~/Llantas/Inspeccion/Vehiculo/__ID__/Configuracion")',
             llantasFueraVehiculoUrl: '@Url.Content("~/Llantas/Inspeccion/LlantasFueraVehiculo")',
+            llantasDisponiblesUrl: '@Url.Content("~/ModuloAdministrativo/LlantaAsignacion/LlantasDisponibles")',
+            instalarUrl: '@Url.Content("~/ModuloAdministrativo/LlantaAsignacion/Instalar")',
             guardarUrl: '@Url.Content("~/Llantas/Inspeccion/Guardar")',
             tiposInspeccion: @Html.Raw(tiposJson),
             estadosInspeccion: @Html.Raw(estadosJson),

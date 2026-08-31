@@ -25,12 +25,22 @@ var SuvanLlantaInspeccion = function () {
     var fueraEstado;
     var fueraLimpiar;
     var fueraTabla;
+    var reemplazosPanel;
+    var reemplazosLista;
+    var reemplazoModalElement;
+    var reemplazoModal;
+    var reemplazoForm;
+    var reemplazoSelectLlanta;
+    var reemplazoSubmit;
+    var reemplazoAlerta;
     var form;
     var config;
     var configuracionActual;
     var contextoActual = "Vehiculo";
     var llantasFueraVehiculo = [];
     var llantasFueraCargadas = false;
+    var posicionesPendientesReemplazo = [];
+    var posicionReemplazoActual;
     var requestId = 0;
     var seleccionadas = [];
     var successTimeoutId;
@@ -197,6 +207,24 @@ var SuvanLlantaInspeccion = function () {
         });
     };
 
+    var setSelectOptions = function (select, placeholder, items) {
+        if (!select) {
+            return;
+        }
+
+        var html = ['<option value="">' + escapeHtml(placeholder || "Seleccione") + '</option>'];
+
+        (items || []).forEach(function (item) {
+            html.push('<option value="' + escapeHtml(getValue(item, "Id", "id")) + '">' + escapeHtml(getValue(item, "Nombre", "nombre")) + '</option>');
+        });
+
+        select.innerHTML = html.join("");
+
+        if (window.jQuery && window.jQuery.fn && window.jQuery.fn.select2) {
+            window.jQuery(select).trigger("change");
+        }
+    };
+
     var getAsignacion = function (posicion) {
         return getValue(posicion, "Asignacion", "asignacion");
     };
@@ -263,6 +291,7 @@ var SuvanLlantaInspeccion = function () {
             modelo: getValue(asignacion, "Modelo", "modelo"),
             medida: getValue(asignacion, "Medida", "medida"),
             estadoLlanta: getValue(asignacion, "EstadoLlanta", "estadoLlanta"),
+            idVehiculoEje: getValue(eje, "IdVehiculoEje", "idVehiculoEje"),
             numeroEje: getValue(eje, "NumeroEje", "numeroEje"),
             numeroPosicion: getValue(posicion, "NumeroPosicion", "numeroPosicion"),
             presionMinimaPsi: getValue(asignacion, "PresionMinimaPsi", "presionMinimaPsi"),
@@ -788,6 +817,44 @@ var SuvanLlantaInspeccion = function () {
         renderDetalles();
     };
 
+    var hideReemplazos = function () {
+        posicionesPendientesReemplazo = [];
+        posicionReemplazoActual = null;
+
+        if (reemplazosPanel) {
+            reemplazosPanel.classList.add("d-none");
+        }
+
+        if (reemplazosLista) {
+            reemplazosLista.innerHTML = "";
+        }
+    };
+
+    var renderReemplazos = function () {
+        if (!reemplazosPanel || !reemplazosLista) {
+            return;
+        }
+
+        reemplazosPanel.classList.toggle("d-none", !posicionesPendientesReemplazo.length);
+
+        if (!posicionesPendientesReemplazo.length) {
+            reemplazosLista.innerHTML = "";
+            return;
+        }
+
+        reemplazosLista.innerHTML = posicionesPendientesReemplazo.map(function (item, index) {
+            return [
+                '<div class="d-flex flex-wrap align-items-center justify-content-between gap-3 border rounded p-4">',
+                '<div>',
+                '<div class="fw-bold text-gray-900">' + escapeHtml(item.codigoLlanta) + '</div>',
+                '<div class="text-muted">Eje ' + escapeHtml(item.numeroEje) + ' - Posición ' + escapeHtml(item.numeroPosicion) + '</div>',
+                '</div>',
+                '<button type="button" class="btn btn-light-primary btn-sm llanta-inspeccion-reemplazar" data-index="' + index + '">Reemplazar</button>',
+                '</div>'
+            ].join("");
+        }).join("");
+    };
+
     var renderResumen = function (data) {
         var numeroEconomico = getValue(data, "NumeroEconomico", "numeroEconomico");
         var placas = getValue(data, "Placas", "placas");
@@ -812,6 +879,7 @@ var SuvanLlantaInspeccion = function () {
     var resetConfiguracion = function () {
         configuracionActual = null;
         seleccionadas = [];
+        hideReemplazos();
 
         if (resumen) {
             resumen.classList.add("d-none");
@@ -893,6 +961,7 @@ var SuvanLlantaInspeccion = function () {
     var setContexto = function (contexto) {
         contextoActual = contexto || "Vehiculo";
         seleccionadas = [];
+        hideReemplazos();
 
         if (contextoPanels) {
             contextoPanels.forEach(function (panel) {
@@ -971,6 +1040,154 @@ var SuvanLlantaInspeccion = function () {
         }
     };
 
+    var getPosicionesParaReemplazo = function () {
+        if (contextoActual !== "Vehiculo" || !detalles) {
+            return [];
+        }
+
+        return Array.prototype.slice.call(detalles.querySelectorAll(".llanta-inspeccion-detalle"))
+            .map(function (detalle) {
+                var index = Number(detalle.getAttribute("data-index"));
+                var item = seleccionadas[index];
+                var conclusion = detalle.querySelector('select[name$=".IdConclusionInspeccion"]');
+
+                if (!item || !conclusion || !conclusionRequiereAccion(conclusion.value)) {
+                    return null;
+                }
+
+                return {
+                    idVehiculo: selectorVehiculo ? selectorVehiculo.value : "",
+                    idVehiculoEje: item.idVehiculoEje,
+                    numeroEje: item.numeroEje,
+                    numeroPosicion: item.numeroPosicion,
+                    codigoLlanta: item.codigoLlanta,
+                    numeroSerieDot: item.numeroSerieDot
+                };
+            })
+            .filter(Boolean);
+    };
+
+    var showReemplazoAlert = function (message) {
+        if (!reemplazoAlerta) {
+            showAlert(message || "No fue posible guardar el reemplazo.");
+            return;
+        }
+
+        reemplazoAlerta.textContent = message || "No fue posible guardar el reemplazo.";
+        reemplazoAlerta.classList.remove("d-none");
+    };
+
+    var hideReemplazoAlert = function () {
+        if (reemplazoAlerta) {
+            reemplazoAlerta.classList.add("d-none");
+            reemplazoAlerta.textContent = "";
+        }
+    };
+
+    var setReemplazoLoading = function (isLoading) {
+        if (!reemplazoSubmit) {
+            return;
+        }
+
+        reemplazoSubmit.disabled = isLoading;
+        reemplazoSubmit.setAttribute("data-kt-indicator", isLoading ? "on" : "off");
+    };
+
+    var abrirModalReemplazo = async function (index) {
+        if (!reemplazoModal || !reemplazoForm) {
+            return;
+        }
+
+        var item = posicionesPendientesReemplazo[index];
+        if (!item) {
+            return;
+        }
+
+        posicionReemplazoActual = item;
+        reemplazoForm.reset();
+        hideReemplazoAlert();
+        setSelectOptions(reemplazoSelectLlanta, "Cargando llantas disponibles...", []);
+
+        document.getElementById("llanta-inspeccion-reemplazo-id-vehiculo").value = item.idVehiculo;
+        document.getElementById("llanta-inspeccion-reemplazo-id-eje").value = item.idVehiculoEje;
+        document.getElementById("llanta-inspeccion-reemplazo-numero-posicion").value = item.numeroPosicion;
+        document.getElementById("llanta-inspeccion-reemplazo-posicion").textContent = "Eje " + item.numeroEje + " - Posición " + item.numeroPosicion;
+        document.getElementById("llanta-inspeccion-reemplazo-saliente").value = [item.codigoLlanta, item.numeroSerieDot].filter(Boolean).join(" - ");
+        document.getElementById("llanta-inspeccion-reemplazo-fecha").value = inputFecha ? inputFecha.value : new Date().toISOString().slice(0, 10);
+        document.getElementById("llanta-inspeccion-reemplazo-km").value = inputKilometraje ? inputKilometraje.value : "";
+
+        reemplazoModal.show();
+
+        try {
+            var result = await getJson(config.llantasDisponiblesUrl);
+
+            if (!result.success) {
+                throw new Error(result.message || "No fue posible cargar las llantas disponibles.");
+            }
+
+            setSelectOptions(reemplazoSelectLlanta, "Seleccione una llanta", result.data || []);
+
+            if (!result.data || !result.data.length) {
+                showReemplazoAlert("No hay llantas disponibles para instalar como reemplazo.");
+            }
+        } catch (error) {
+            setSelectOptions(reemplazoSelectLlanta, "No fue posible cargar llantas", []);
+            showReemplazoAlert(error.message);
+        }
+    };
+
+    var guardarReemplazo = async function (event) {
+        event.preventDefault();
+        hideReemplazoAlert();
+
+        if (!posicionReemplazoActual) {
+            showReemplazoAlert("Selecciona una posición para reemplazo.");
+            return;
+        }
+
+        if (!reemplazoSelectLlanta || !reemplazoSelectLlanta.value) {
+            showReemplazoAlert("Selecciona una llanta entrante.");
+            return;
+        }
+
+        var fecha = document.getElementById("llanta-inspeccion-reemplazo-fecha").value;
+        var kilometraje = document.getElementById("llanta-inspeccion-reemplazo-km").value;
+
+        if (!fecha) {
+            showReemplazoAlert("Captura la fecha de instalación.");
+            return;
+        }
+
+        if (!kilometraje || Number(kilometraje) < 0) {
+            showReemplazoAlert("Captura un kilometraje válido.");
+            return;
+        }
+
+        setReemplazoLoading(true);
+
+        try {
+            var result = await postForm(config.instalarUrl, new FormData(reemplazoForm));
+
+            if (!result.success) {
+                throw new Error(result.message || "No fue posible instalar el reemplazo.");
+            }
+
+            showSuccess("Llanta reemplazada correctamente.");
+            var posicionesRestantes = posicionesPendientesReemplazo.filter(function (item) {
+                return item !== posicionReemplazoActual;
+            });
+            posicionReemplazoActual = null;
+            reemplazoModal.hide();
+            await cargarConfiguracion();
+            posicionesPendientesReemplazo = posicionesRestantes;
+            renderReemplazos();
+        } catch (error) {
+            showReemplazoAlert(error.message);
+        } finally {
+            setReemplazoLoading(false);
+        }
+    };
+
     var guardar = async function (event) {
         event.preventDefault();
         hideAlert();
@@ -1001,6 +1218,7 @@ var SuvanLlantaInspeccion = function () {
         }
 
         var procesarAccion = inputProcesarAccion && inputProcesarAccion.value === "true";
+        var posicionesParaReemplazo = procesarAccion ? getPosicionesParaReemplazo() : [];
 
         if (procesarAccion
             && contextoActual === "FueraVehiculo"
@@ -1027,9 +1245,13 @@ var SuvanLlantaInspeccion = function () {
 
             if (procesarAccion && contextoActual === "Vehiculo") {
                 await cargarConfiguracion();
+                posicionesPendientesReemplazo = posicionesParaReemplazo;
+                renderReemplazos();
             } else if (procesarAccion && contextoActual === "FueraVehiculo") {
                 llantasFueraCargadas = false;
                 await cargarLlantasFueraVehiculo();
+            } else {
+                hideReemplazos();
             }
         } catch (error) {
             showAlert(error.message);
@@ -1271,6 +1493,22 @@ var SuvanLlantaInspeccion = function () {
             });
         }
 
+        if (reemplazosLista) {
+            reemplazosLista.addEventListener("click", function (event) {
+                var button = event.target.closest(".llanta-inspeccion-reemplazar");
+
+                if (!button) {
+                    return;
+                }
+
+                abrirModalReemplazo(Number(button.getAttribute("data-index")));
+            });
+        }
+
+        if (reemplazoForm) {
+            reemplazoForm.addEventListener("submit", guardarReemplazo);
+        }
+
         if (form) {
             form.addEventListener("submit", function (event) {
                 if (event.submitter && event.submitter === botonGuardar && inputProcesarAccion) {
@@ -1308,10 +1546,30 @@ var SuvanLlantaInspeccion = function () {
             fueraEstado = document.getElementById("llanta-inspeccion-fuera-estado");
             fueraLimpiar = document.getElementById("llanta-inspeccion-fuera-limpiar");
             fueraTabla = document.getElementById("llanta-inspeccion-fuera-tabla");
+            reemplazosPanel = document.getElementById("llanta-inspeccion-reemplazos");
+            reemplazosLista = document.getElementById("llanta-inspeccion-reemplazos-lista");
+            reemplazoModalElement = document.getElementById("llanta-inspeccion-reemplazo-modal");
+            reemplazoForm = document.getElementById("llanta-inspeccion-reemplazo-form");
+            reemplazoSelectLlanta = document.getElementById("llanta-inspeccion-reemplazo-entrante");
+            reemplazoSubmit = document.getElementById("llanta-inspeccion-reemplazo-submit");
+            reemplazoAlerta = document.getElementById("llanta-inspeccion-reemplazo-alerta");
             form = document.getElementById("llanta-inspeccion-form");
             config = window.SUVAN && window.SUVAN.LlantaInspeccion ? window.SUVAN.LlantaInspeccion : {};
 
             initSelect2();
+
+            if (reemplazoModalElement && window.bootstrap) {
+                reemplazoModal = new bootstrap.Modal(reemplazoModalElement);
+            }
+
+            if (window.jQuery && window.jQuery.fn && window.jQuery.fn.select2 && reemplazoSelectLlanta) {
+                window.jQuery(reemplazoSelectLlanta).select2({
+                    width: "100%",
+                    dropdownParent: window.jQuery(reemplazoModalElement),
+                    placeholder: reemplazoSelectLlanta.getAttribute("data-placeholder") || "Seleccione"
+                });
+            }
+
             bindEvents();
             setContexto(contextoActual);
         }

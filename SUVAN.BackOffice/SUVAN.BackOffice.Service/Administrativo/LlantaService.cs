@@ -570,12 +570,16 @@ namespace SUVAN.BackOffice.Service.Administrativo
             if (!EstadoPermiteInstalacion(estadoActualLlanta))
                 throw new Exception("La llanta seleccionada no está disponible para instalación.");
 
-            var existeTipoAsignacionInicial = await context.LlantaTipoAsignacions
-                .AsNoTracking()
-                .AnyAsync(x => x.IdTipoAsignacion == TipoAsignacionInicial && x.EsActivo == true);
+            var idTipoAsignacion = model.IdTipoAsignacion > 0
+                ? model.IdTipoAsignacion
+                : TipoAsignacionInicial;
 
-            if (!existeTipoAsignacionInicial)
-                throw new Exception("No se encontró el tipo de asignación inicial activo con id 1.");
+            var existeTipoAsignacion = await context.LlantaTipoAsignacions
+                .AsNoTracking()
+                .AnyAsync(x => x.IdTipoAsignacion == idTipoAsignacion && x.EsActivo == true);
+
+            if (!existeTipoAsignacion)
+                throw new Exception("No se encontró el tipo de asignación activo.");
 
             var idEstadoInstalada = await GetIdEstadoInstalada();
 
@@ -611,7 +615,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 IdVehiculo = model.IdVehiculo,
                 IdVehiculoEje = model.IdVehiculoEje,
                 NumeroPosicion = model.NumeroPosicion,
-                IdTipoAsignacion = TipoAsignacionInicial,
+                IdTipoAsignacion = idTipoAsignacion,
                 FechaAsignacion = model.FechaAsignacion,
                 KmVehiculoAsignacion = model.KmVehiculoAsignacion,
                 FechaRetiro = null,
@@ -638,7 +642,9 @@ namespace SUVAN.BackOffice.Service.Administrativo
             RegistrarMovimientoBitacora(new LlantaAsignacionBitacoraMovimiento
             {
                 IdLlanta = asignacion.IdLlanta,
-                TipoMovimiento = LlantaMovimientoBitacoraTipo.Asignacion,
+                TipoMovimiento = idTipoAsignacion == TipoAsignacionReemplazo
+                    ? LlantaMovimientoBitacoraTipo.Reemplazo
+                    : LlantaMovimientoBitacoraTipo.Asignacion,
                 IdLlantaAsignacionDestino = asignacion.IdLlantaAsignacion,
                 IdVehiculoDestino = (ulong)asignacion.IdVehiculo,
                 IdVehiculoEjeDestino = (ulong)asignacion.IdVehiculoEje,
