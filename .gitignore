@@ -17,6 +17,10 @@
 # Mono auto generated files
 mono_crash.*
 
+# Ignorar carpetas de llaves generadas por macOS u otros entornos
+**/Portal/.keys/
+.keys/
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
