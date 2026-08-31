@@ -14,7 +14,7 @@ var notificacion = new function () {
         return isIE11orLess;
     }
 
-    function _init(type, title, message) {
+    function _init(type, title, message, positionClass) {
         var timeOut = _isIE() ? 12500 : 6500;
 
         toastr.options = {
@@ -22,7 +22,7 @@ var notificacion = new function () {
             "debug": false,
             "newestOnTop": false,
             "progressBar": false,
-            "positionClass": "toastr-top-right",
+            "positionClass": positionClass || "toastr-top-right",
             "preventDuplicates": false,
             "onclick": null,
             "showDuration": 300,
@@ -66,6 +66,10 @@ var notificacion = new function () {
 
     self.show = function (type, message, title) {
         _init(type, title, message);
+    }
+
+    self.popup = function (type, message, title) {
+        _init(type || "info", title, message, "toastr-bottom-right");
     }
 }
 
