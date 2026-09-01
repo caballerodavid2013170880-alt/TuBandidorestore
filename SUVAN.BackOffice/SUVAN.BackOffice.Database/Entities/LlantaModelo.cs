@@ -19,6 +19,10 @@ public partial class LlantaModelo
 
     public decimal? ProfundidadOriginalMm { get; set; }
 
+    public decimal? ProfundidadAlertaMm { get; set; }
+
+    public decimal? ProfundidadMinimaMm { get; set; }
+
     public uint? VidaUtilEstimadaKm { get; set; }
 
     public bool? Activo { get; set; }

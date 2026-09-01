@@ -95,6 +95,7 @@ namespace SUVAN.BackOffice.Portal
             services.AddTransient<ILlantaService, LlantaService>();
             services.AddTransient<ILlantaMarcaService, LlantaMarcaService>();
             services.AddTransient<ILlantaModeloService, LlantaModeloService>();
+            services.AddTransient<ILlantaInspeccionService, LlantaInspeccionService>();
 
         }
 

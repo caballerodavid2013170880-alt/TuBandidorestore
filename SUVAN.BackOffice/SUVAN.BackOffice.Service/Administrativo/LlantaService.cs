@@ -363,10 +363,17 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     x.IdLlantaNavigation.NumeroSerieDot,
                     Marca = x.IdLlantaNavigation.IdModeloLlantaNavigation.IdMarcaLlantaNavigation.Nombre,
                     Modelo = x.IdLlantaNavigation.IdModeloLlantaNavigation.Nombre,
+                    Medida = x.IdLlantaNavigation.IdModeloLlantaNavigation.Medida,
                     x.IdLlantaNavigation.IdEstadoLlanta,
                     EstadoLlanta = x.IdLlantaNavigation.IdEstadoLlantaNavigation.Nombre,
                     x.FechaAsignacion,
-                    x.KmVehiculoAsignacion
+                    x.KmVehiculoAsignacion,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.PresionMinimaPsi,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.PresionMaximaPsi,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.ProfundidadOriginalMm,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.ProfundidadAlertaMm,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.ProfundidadMinimaMm,
+                    x.IdLlantaNavigation.IdModeloLlantaNavigation.VidaUtilEstimadaKm
                 })
                 .ToListAsync();
 
@@ -412,10 +419,17 @@ namespace SUVAN.BackOffice.Service.Administrativo
                                         NumeroSerieDot = asignacion.NumeroSerieDot,
                                         Marca = asignacion.Marca,
                                         Modelo = asignacion.Modelo,
+                                        Medida = asignacion.Medida,
                                         IdEstadoLlanta = asignacion.IdEstadoLlanta,
                                         EstadoLlanta = asignacion.EstadoLlanta,
                                         FechaAsignacion = asignacion.FechaAsignacion,
-                                        KmVehiculoAsignacion = asignacion.KmVehiculoAsignacion
+                                        KmVehiculoAsignacion = asignacion.KmVehiculoAsignacion,
+                                        PresionMinimaPsi = asignacion.PresionMinimaPsi,
+                                        PresionMaximaPsi = asignacion.PresionMaximaPsi,
+                                        ProfundidadOriginalMm = asignacion.ProfundidadOriginalMm,
+                                        ProfundidadAlertaMm = asignacion.ProfundidadAlertaMm,
+                                        ProfundidadMinimaMm = asignacion.ProfundidadMinimaMm,
+                                        VidaUtilEstimadaKm = asignacion.VidaUtilEstimadaKm
                                     }
                             };
                         })
@@ -556,12 +570,16 @@ namespace SUVAN.BackOffice.Service.Administrativo
             if (!EstadoPermiteInstalacion(estadoActualLlanta))
                 throw new Exception("La llanta seleccionada no está disponible para instalación.");
 
-            var existeTipoAsignacionInicial = await context.LlantaTipoAsignacions
-                .AsNoTracking()
-                .AnyAsync(x => x.IdTipoAsignacion == TipoAsignacionInicial && x.EsActivo == true);
+            var idTipoAsignacion = model.IdTipoAsignacion > 0
+                ? model.IdTipoAsignacion
+                : TipoAsignacionInicial;
 
-            if (!existeTipoAsignacionInicial)
-                throw new Exception("No se encontró el tipo de asignación inicial activo con id 1.");
+            var existeTipoAsignacion = await context.LlantaTipoAsignacions
+                .AsNoTracking()
+                .AnyAsync(x => x.IdTipoAsignacion == idTipoAsignacion && x.EsActivo == true);
+
+            if (!existeTipoAsignacion)
+                throw new Exception("No se encontró el tipo de asignación activo.");
 
             var idEstadoInstalada = await GetIdEstadoInstalada();
 
@@ -597,7 +615,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 IdVehiculo = model.IdVehiculo,
                 IdVehiculoEje = model.IdVehiculoEje,
                 NumeroPosicion = model.NumeroPosicion,
-                IdTipoAsignacion = TipoAsignacionInicial,
+                IdTipoAsignacion = idTipoAsignacion,
                 FechaAsignacion = model.FechaAsignacion,
                 KmVehiculoAsignacion = model.KmVehiculoAsignacion,
                 FechaRetiro = null,
@@ -619,6 +637,22 @@ namespace SUVAN.BackOffice.Service.Administrativo
             llanta.ModificadoPor = (uint)idUsuario;
 
             context.LlantaAsignacions.Add(asignacion);
+            await context.SaveChangesAsync();
+
+            RegistrarMovimientoBitacora(new LlantaAsignacionBitacoraMovimiento
+            {
+                IdLlanta = asignacion.IdLlanta,
+                TipoMovimiento = idTipoAsignacion == TipoAsignacionReemplazo
+                    ? LlantaMovimientoBitacoraTipo.Reemplazo
+                    : LlantaMovimientoBitacoraTipo.Asignacion,
+                IdLlantaAsignacionDestino = asignacion.IdLlantaAsignacion,
+                IdVehiculoDestino = (ulong)asignacion.IdVehiculo,
+                IdVehiculoEjeDestino = (ulong)asignacion.IdVehiculoEje,
+                PosicionDestino = asignacion.NumeroPosicion,
+                Kilometraje = asignacion.KmVehiculoAsignacion,
+                CreadoPor = (uint)idUsuario
+            });
+
             await context.SaveChangesAsync();
             await transaction.CommitAsync();
 
@@ -658,7 +692,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 .ToList();
         }
 
-        public async Task<bool> RetirarLlanta(LlantaRetiroViewModel model, int idEmpresa, int idUsuario)
+        public async Task<bool> RetirarLlanta(LlantaRetiroViewModel model, int idEmpresa, int idUsuario, bool administrarTransaccion = true)
         {
             if (model.IdLlantaAsignacion == 0)
                 throw new Exception("La asignación es obligatoria.");
@@ -678,7 +712,9 @@ namespace SUVAN.BackOffice.Service.Administrativo
             if (model.FechaRetiro.Date > DateTime.Today)
                 throw new Exception("La fecha de retiro no puede ser posterior a la fecha actual.");
 
-            await using var transaction = await context.Database.BeginTransactionAsync();
+            await using var transaction = administrarTransaccion
+                ? await context.Database.BeginTransactionAsync()
+                : null;
 
             var asignacion = await context.LlantaAsignacions
                 .Include(x => x.IdLlantaNavigation)
@@ -731,8 +767,23 @@ namespace SUVAN.BackOffice.Service.Administrativo
             asignacion.IdLlantaNavigation.FechaModificacion = DateTime.Now;
             asignacion.IdLlantaNavigation.ModificadoPor = (uint)idUsuario;
 
+            RegistrarMovimientoBitacora(new LlantaAsignacionBitacoraMovimiento
+            {
+                IdLlanta = asignacion.IdLlanta,
+                TipoMovimiento = LlantaMovimientoBitacoraTipo.Retiro,
+                IdLlantaAsignacionOrigen = asignacion.IdLlantaAsignacion,
+                IdVehiculoOrigen = (ulong)asignacion.IdVehiculo,
+                IdVehiculoEjeOrigen = (ulong)asignacion.IdVehiculoEje,
+                PosicionOrigen = asignacion.NumeroPosicion,
+                Kilometraje = model.KmVehiculoRetiro,
+                CreadoPor = (uint)idUsuario
+            });
+
             await context.SaveChangesAsync();
-            await transaction.CommitAsync();
+            if (transaction != null)
+            {
+                await transaction.CommitAsync();
+            }
 
             return true;
         }
@@ -878,6 +929,36 @@ namespace SUVAN.BackOffice.Service.Administrativo
             await context.SaveChangesAsync();
             context.LlantaAsignacions.Add(asignacionEntrante);
             await context.SaveChangesAsync();
+
+            var idOperacion = Guid.NewGuid();
+
+            RegistrarMovimientoBitacora(new LlantaAsignacionBitacoraMovimiento
+            {
+                IdOperacion = idOperacion,
+                IdLlanta = asignacionSaliente.IdLlanta,
+                TipoMovimiento = LlantaMovimientoBitacoraTipo.Reemplazo,
+                IdLlantaAsignacionOrigen = asignacionSaliente.IdLlantaAsignacion,
+                IdVehiculoOrigen = (ulong)asignacionSaliente.IdVehiculo,
+                IdVehiculoEjeOrigen = (ulong)asignacionSaliente.IdVehiculoEje,
+                PosicionOrigen = asignacionSaliente.NumeroPosicion,
+                Kilometraje = model.KmVehiculo,
+                CreadoPor = (uint)idUsuario
+            });
+
+            RegistrarMovimientoBitacora(new LlantaAsignacionBitacoraMovimiento
+            {
+                IdOperacion = idOperacion,
+                IdLlanta = asignacionEntrante.IdLlanta,
+                TipoMovimiento = LlantaMovimientoBitacoraTipo.Reemplazo,
+                IdLlantaAsignacionDestino = asignacionEntrante.IdLlantaAsignacion,
+                IdVehiculoDestino = (ulong)asignacionEntrante.IdVehiculo,
+                IdVehiculoEjeDestino = (ulong)asignacionEntrante.IdVehiculoEje,
+                PosicionDestino = asignacionEntrante.NumeroPosicion,
+                Kilometraje = model.KmVehiculo,
+                CreadoPor = (uint)idUsuario
+            });
+
+            await context.SaveChangesAsync();
             await transaction.CommitAsync();
 
             return true;
@@ -1017,6 +1098,50 @@ namespace SUVAN.BackOffice.Service.Administrativo
             }
 
             await context.SaveChangesAsync();
+
+            var idOperacionRotacion = asignacionDestino != null ? Guid.NewGuid() : (Guid?)null;
+            var fechaMovimientoBitacora = DateTime.Now;
+
+            var bitacoraOrigen = RegistrarMovimientoBitacora(new LlantaAsignacionBitacoraMovimiento
+            {
+                IdOperacion = idOperacionRotacion,
+                IdLlanta = asignacionOrigen.IdLlanta,
+                TipoMovimiento = LlantaMovimientoBitacoraTipo.Rotacion,
+                IdLlantaAsignacionOrigen = asignacionOrigen.IdLlantaAsignacion,
+                IdVehiculoOrigen = (ulong)asignacionOrigen.IdVehiculo,
+                IdVehiculoEjeOrigen = (ulong)asignacionOrigen.IdVehiculoEje,
+                PosicionOrigen = asignacionOrigen.NumeroPosicion,
+                IdLlantaAsignacionDestino = nuevaAsignacionOrigenDestino.IdLlantaAsignacion,
+                IdVehiculoDestino = (ulong)nuevaAsignacionOrigenDestino.IdVehiculo,
+                IdVehiculoEjeDestino = (ulong)nuevaAsignacionOrigenDestino.IdVehiculoEje,
+                PosicionDestino = nuevaAsignacionOrigenDestino.NumeroPosicion,
+                Kilometraje = model.KmVehiculo,
+                CreadoPor = (uint)idUsuario
+            });
+            bitacoraOrigen.FechaMovimiento = fechaMovimientoBitacora;
+
+            if (asignacionDestino != null && nuevaAsignacionDestinoOrigen != null)
+            {
+                var bitacoraDestino = RegistrarMovimientoBitacora(new LlantaAsignacionBitacoraMovimiento
+                {
+                    IdOperacion = idOperacionRotacion,
+                    IdLlanta = asignacionDestino.IdLlanta,
+                    TipoMovimiento = LlantaMovimientoBitacoraTipo.Rotacion,
+                    IdLlantaAsignacionOrigen = asignacionDestino.IdLlantaAsignacion,
+                    IdVehiculoOrigen = (ulong)asignacionDestino.IdVehiculo,
+                    IdVehiculoEjeOrigen = (ulong)asignacionDestino.IdVehiculoEje,
+                    PosicionOrigen = asignacionDestino.NumeroPosicion,
+                    IdLlantaAsignacionDestino = nuevaAsignacionDestinoOrigen.IdLlantaAsignacion,
+                    IdVehiculoDestino = (ulong)nuevaAsignacionDestinoOrigen.IdVehiculo,
+                    IdVehiculoEjeDestino = (ulong)nuevaAsignacionDestinoOrigen.IdVehiculoEje,
+                    PosicionDestino = nuevaAsignacionDestinoOrigen.NumeroPosicion,
+                    Kilometraje = model.KmVehiculo,
+                    CreadoPor = (uint)idUsuario
+                });
+                bitacoraDestino.FechaMovimiento = fechaMovimientoBitacora;
+            }
+
+            await context.SaveChangesAsync();
             await transaction.CommitAsync();
 
             return true;
@@ -1055,6 +1180,47 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 FechaEliminacion = null,
                 EliminadoPor = null
             };
+        }
+
+        private LlantaAsignacionBitacora RegistrarMovimientoBitacora(LlantaAsignacionBitacoraMovimiento movimiento)
+        {
+            if (movimiento == null)
+                throw new ArgumentNullException(nameof(movimiento));
+
+            if (movimiento.IdLlanta == 0)
+                throw new Exception("La llanta es obligatoria para registrar la bitácora.");
+
+            if (!LlantaMovimientoBitacoraTipo.EsValido(movimiento.TipoMovimiento))
+                throw new Exception("El tipo de movimiento de bitácora no es válido.");
+
+            if (movimiento.CreadoPor == 0)
+                throw new Exception("El usuario que registra la bitácora es obligatorio.");
+
+            if (movimiento.Observaciones?.Length > 500)
+                throw new Exception("Las observaciones de bitácora no deben exceder 500 caracteres.");
+
+            var bitacora = new LlantaAsignacionBitacora
+            {
+                IdOperacion = movimiento.IdOperacion,
+                IdLlanta = movimiento.IdLlanta,
+                TipoMovimiento = LlantaMovimientoBitacoraTipo.Normalizar(movimiento.TipoMovimiento),
+                IdLlantaAsignacionOrigen = movimiento.IdLlantaAsignacionOrigen,
+                IdVehiculoOrigen = movimiento.IdVehiculoOrigen,
+                IdVehiculoEjeOrigen = movimiento.IdVehiculoEjeOrigen,
+                PosicionOrigen = movimiento.PosicionOrigen,
+                IdLlantaAsignacionDestino = movimiento.IdLlantaAsignacionDestino,
+                IdVehiculoDestino = movimiento.IdVehiculoDestino,
+                IdVehiculoEjeDestino = movimiento.IdVehiculoEjeDestino,
+                PosicionDestino = movimiento.PosicionDestino,
+                Kilometraje = movimiento.Kilometraje,
+                Observaciones = string.IsNullOrWhiteSpace(movimiento.Observaciones) ? null : movimiento.Observaciones.Trim(),
+                CreadoPor = movimiento.CreadoPor,
+                FechaMovimiento = DateTime.Now
+            };
+
+            context.LlantaAsignacionBitacoras.Add(bitacora);
+
+            return bitacora;
         }
 
         private async Task<decimal> GetUltimoKilometrajeValido(int idVehiculo)

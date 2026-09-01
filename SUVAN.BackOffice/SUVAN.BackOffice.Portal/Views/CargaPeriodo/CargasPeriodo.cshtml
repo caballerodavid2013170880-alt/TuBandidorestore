@@ -132,7 +132,12 @@
                     <h5 class="text-dark fw-bold mb-4"><i class="ki-outline ki-chart-pie-3 fs-3 me-2"></i>Estadísticas del periodo</h5>
                     <div class="row text-gray-800 fw-semibold fs-6">
                         <div class="col-md-3 mb-2">
-                            <span class="text-muted d-block fs-7">Cargas Totales:</span>
+                            <span class="text-muted d-block fs-7">Cargas Totales: 
+                                <!--boton detalle-->
+                                <button type="button" class="btn btn-icon btn-active-ligth-primary btn-sm ms-2 p-0 w-20px h-20px" id="btnVerVehiculosCargas" title="Ver vehiculos con carga">
+                                    <i class="ki-outline ki-eye fs-4 text-primary"></i>
+                                </button>
+                            </span>
                             <span id="lblCargasTotales" class="fw-bold fs-5">0</span>
                         </div>
                         <div class="col-md-3 mb-2">
@@ -158,6 +163,54 @@
                     </div>
                 </div>
                 <!--end::Panel estadisticas-->
+
+                <!--begin::Modal  de Vehiculos con cargas-->
+                <div class="modal fade" id="kt_modal_vehiculos_cargas" tabindex="-1" aria-hidden="true">
+                    <!--begin::Modal dialog-->
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <!--begin::Modal content-->
+                        <div class="modal-content">
+                            <!--begin::Modal header-->
+                            <div class="modal-header">
+                                <h3 class="fw-bold">Vehículos con Cargas en el periodo</h3>
+                                <!--begin::Close-->
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <!--end::Modal header-->
+
+
+                            <!--begin::Modal body-->
+                            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                                <!--begin::Table-->
+                                <div class="table-responsive">
+                                    <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_vehiculos_cargas">
+                                        <thead>
+                                            <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                                <th class="min-w-85px">Núm Económico</th>
+                                                <th class="min-w-80px">Marca</th>
+                                                <th class="min-w-80px">Modelo</th>
+                                                <th class="min-w-80px">Placas</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="text-gray-600 fw-semibold" id="tbodyVehiculosCargas">
+                                            <!--llenado dinamico desde JS-->
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!--end::Table-->
+                            </div>
+                            <!--end::Modal body-->
+
+                            <!--begin::Modal footer-->
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                            </div>
+                        </div>
+                        <!--end::Modal content-->
+                    </div>
+                    <!--end::Modal dialog-->
+                </div>
+                <!--end::Modal  de Vehiculos con cargas-->
 
             </div>
             <!--end::Card body-->

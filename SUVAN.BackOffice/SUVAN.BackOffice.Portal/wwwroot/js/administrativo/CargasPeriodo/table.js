@@ -4,6 +4,8 @@ var KTCargasPeriodoList = function () {
     var table = document.getElementById('kt_table_cargas_periodo');
     var datatable;
     var txtBuscar = document.getElementById('txtBuscarGrid');
+    var depositoActualId = null; //variable para guardar el depósito actual y evitar recargas innecesarias
+    var vehiculosDatatable = null; // Instancia DataTable para el modal de vehículos
 
     // 1. Manejo de los Combos en Cascada (Endpoints en inglés)
     var initFiltrosCascada = function () {
@@ -55,9 +57,11 @@ var KTCargasPeriodoList = function () {
 
         cmbDeposito.addEventListener('change', function () {
             if (this.value) {
+                depositoActualId = this.value; // Guardar el depósito actual
                 cargarDatosGrid(this.value);
                 cargarEstadisticas(this.value);
             } else {
+                despositoActualId = null; // Resetear el depósito actual
                 destruirGrid();
             }
         });
@@ -133,7 +137,76 @@ var KTCargasPeriodoList = function () {
             console.error('Error al cargar estadísticas:', error);
         }
     };
-    
+
+    //4. Inicialización delevento para cargar el Modal
+    var initModalVehiculos = function () {
+        const btnVerVehiculos = document.getElementById('btnVerVehiculosCargas');
+        if (!btnVerVehiculos) return;
+
+        //instancia de modal de forma segura
+        const modalElement = document.getElementById('kt_modal_vehiculos_cargas');
+        const bsmodal = new bootstrap.Modal(modalElement);
+
+
+        btnVerVehiculos.addEventListener('click', async function () {
+            if (!depositoActualId) {
+                Swal.fire({
+                    text: "Seleccione un deposito para ver los vehiculos.",
+                    icon: "warning",
+                    buttonsStyling: false,
+                    confirmButtonText: "Aceptar",
+                    customClass: { confirmButton: "btn fw-bold btn-primary" }
+                });
+                return;
+            }
+
+            const tbodyVehiculos = document.getElementById('tbodyVehiculosCargas');
+
+            //destruir Datatable anterior de forma segura antes de impiar el HTML
+            if ($.fn.DataTable.isDataTable('#kt_table_vehiculos_cargas')) {
+                $('#kt_table_vehiculos_cargas').DataTable().clear().destroy();
+            }
+            
+            tbodyVehiculos.innerHTML = `<tr><td colspan="4" class="text-center py-5"><span class="spinner-border text-primary"></span> Cargando vehículos...</td></tr>`;
+
+            //muestra modal inmediatamente mientras carga la info
+            bsmodal.show();
+
+            try {
+                const response = await fetch(`/CargaPeriodo/GetVehiculosCargasPeriodo?idDeposito=${depositoActualId}`);
+                const vehiculos = await response.json();
+
+                if (!vehiculos || vehiculos.length === 0) {
+                    tbodyVehiculos.innerHTML = `<tr><td colspan="4" class="text-center text-muted py-5">No se encontraron vehiculos asociados. </td></tr>`;
+                    return;
+                }
+
+                tbodyVehiculos.innerHTML = '';
+                vehiculos.forEach(v => {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="fw-bold">${v.numeconomico}</td>
+                        <td>${v.marca || ''}</td>
+                        <td>${v.modelo || ''}</td>
+                        <td>${v.placas || ''}</td>
+                    `;
+                    tbodyVehiculos.appendChild(tr);
+                });
+
+                // Inicializar DataTable dentro del modal
+                vehiculosDatatable = $('#kt_table_vehiculos_cargas').DataTable({
+                    "info": false,
+                    "pageLength": 5,
+                    "lengthChange": false,
+                    'ordering': true
+                });
+
+            } catch (error) {
+                console.error('Error al cargar vehiculos del periodo:', error);
+                tbodyVehiculos.innerHTML = `<tr><td colspan="4" class="text-center text-danger py-5">Error al cargar los datos.</td></tr>`;
+            }
+        });
+    };
 
     // Auxiliares para manipulación de combos
     var handleSearchDatatable = () => {
@@ -181,6 +254,7 @@ var KTCargasPeriodoList = function () {
         init: function () {
             if (!table) return;
             initFiltrosCascada();
+            initModalVehiculos(); // Inicializar el modal
             handleSearchDatatable();
         }
     };

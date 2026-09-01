@@ -1,0 +1,16 @@
+@{
+    var activa = (ViewData["LlantaOperacionActiva"] as string) ?? string.Empty;
+    var asignacionActiva = string.Equals(activa, "Asignacion", StringComparison.OrdinalIgnoreCase);
+    var inspeccionActiva = string.Equals(activa, "Inspeccion", StringComparison.OrdinalIgnoreCase);
+}
+
+<div class="d-flex justify-content-center mb-6">
+    <ul class="nav nav-pills d-flex justify-content-center" id="llantasOperacionTabs">
+        <li class="nav-item">
+            <a class="nav-link @(asignacionActiva ? "active" : string.Empty)" href="@Url.Content("~/Llantas/Asignacion")">Asignación</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @(inspeccionActiva ? "active" : string.Empty)" href="@Url.Content("~/Llantas/Inspeccion")">Inspección</a>
+        </li>
+    </ul>
+</div>

@@ -115,6 +115,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<LlantaAsignacion> LlantaAsignacions { get; set; }
 
+    public virtual DbSet<LlantaAsignacionBitacora> LlantaAsignacionBitacoras { get; set; }
+
     public virtual DbSet<LlantaConclusionInspeccion> LlantaConclusionInspeccions { get; set; }
 
     public virtual DbSet<LlantaEstado> LlantaEstados { get; set; }
@@ -2295,6 +2297,37 @@ public partial class SuvanDbContext : DbContext
                 .HasConstraintName("fk_llanta_asignacion_vehiculo_eje");
         });
 
+        modelBuilder.Entity<LlantaAsignacionBitacora>(entity =>
+        {
+            entity.HasKey(e => e.IdLlantaAsignacionBitacora).HasName("PRIMARY");
+
+            entity.ToTable("llanta_asignacion_bitacora");
+
+            entity.Property(e => e.IdLlantaAsignacionBitacora).HasColumnName("id_llanta_asignacion_bitacora");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.FechaMovimiento)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_movimiento");
+            entity.Property(e => e.IdLlanta).HasColumnName("id_llanta");
+            entity.Property(e => e.IdLlantaAsignacionDestino).HasColumnName("id_llanta_asignacion_destino");
+            entity.Property(e => e.IdLlantaAsignacionOrigen).HasColumnName("id_llanta_asignacion_origen");
+            entity.Property(e => e.IdOperacion).HasColumnName("id_operacion");
+            entity.Property(e => e.IdVehiculoDestino).HasColumnName("id_vehiculo_destino");
+            entity.Property(e => e.IdVehiculoEjeDestino).HasColumnName("id_vehiculo_eje_destino");
+            entity.Property(e => e.IdVehiculoEjeOrigen).HasColumnName("id_vehiculo_eje_origen");
+            entity.Property(e => e.IdVehiculoOrigen).HasColumnName("id_vehiculo_origen");
+            entity.Property(e => e.Kilometraje).HasColumnName("kilometraje");
+            entity.Property(e => e.Observaciones)
+                .HasMaxLength(500)
+                .HasColumnName("observaciones");
+            entity.Property(e => e.PosicionDestino).HasColumnName("posicion_destino");
+            entity.Property(e => e.PosicionOrigen).HasColumnName("posicion_origen");
+            entity.Property(e => e.TipoMovimiento)
+                .HasMaxLength(20)
+                .HasColumnName("tipo_movimiento");
+        });
+
         modelBuilder.Entity<LlantaConclusionInspeccion>(entity =>
         {
             entity.HasKey(e => e.IdConclusionInspeccion).HasName("PRIMARY");
@@ -2525,6 +2558,12 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.PresionMinimaPsi)
                 .HasPrecision(5, 2)
                 .HasColumnName("presion_minima_psi");
+            entity.Property(e => e.ProfundidadAlertaMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_alerta_mm");
+            entity.Property(e => e.ProfundidadMinimaMm)
+                .HasPrecision(5, 2)
+                .HasColumnName("profundidad_minima_mm");
             entity.Property(e => e.ProfundidadOriginalMm)
                 .HasPrecision(5, 2)
                 .HasColumnName("profundidad_original_mm");
