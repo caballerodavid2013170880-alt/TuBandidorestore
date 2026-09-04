@@ -175,6 +175,8 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Modelo> Modelos { get; set; }
 
+    public virtual DbSet<ModeloEje> ModeloEjes { get; set; }
+
     public virtual DbSet<Monedero> Monederos { get; set; }
 
     public virtual DbSet<MotivoAuxilioVial> MotivoAuxilioVials { get; set; }
@@ -3340,7 +3342,6 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.IdTipoV).HasColumnName("id_tipo_v");
             entity.Property(e => e.KmGarantia).HasColumnName("km_garantia");
             entity.Property(e => e.MesGarantia).HasColumnName("mes_garantia");
-            entity.Property(e => e.TipoEje).HasColumnName("tipo_eje");
 
             entity.HasOne(d => d.IdMarcaNavigation).WithMany(p => p.Modelos)
                 .HasForeignKey(d => d.IdMarca)
@@ -3351,6 +3352,54 @@ public partial class SuvanDbContext : DbContext
                 .HasForeignKey(d => d.IdTipoV)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_modelo_tipo_v");
+        });
+
+        modelBuilder.Entity<ModeloEje>(entity =>
+        {
+            entity.HasKey(e => e.IdModeloEje).HasName("PRIMARY");
+
+            entity
+                .ToTable("modelo_eje")
+                .HasCharSet("utf8mb3")
+                .UseCollation("utf8mb3_general_ci");
+
+            entity.HasIndex(e => e.IdModelo, "idx_modelo_eje_modelo");
+
+            entity.HasIndex(e => e.IdTipoEje, "idx_modelo_eje_tipo_eje");
+
+            entity.HasIndex(e => new { e.IdModelo, e.NumeroEje }, "uq_modelo_eje_numero").IsUnique();
+
+            entity.Property(e => e.IdModeloEje).HasColumnName("id_modelo_eje");
+            entity.Property(e => e.CreadoPor).HasColumnName("creado_por");
+            entity.Property(e => e.EliminadoPor).HasColumnName("eliminado_por");
+            entity.Property(e => e.EsActivo)
+                .IsRequired()
+                .HasDefaultValueSql("'1'")
+                .HasColumnName("es_activo");
+            entity.Property(e => e.FechaCreacion)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_creacion");
+            entity.Property(e => e.FechaEliminacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_eliminacion");
+            entity.Property(e => e.FechaModificacion)
+                .HasColumnType("datetime")
+                .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.IdModelo).HasColumnName("id_modelo");
+            entity.Property(e => e.IdTipoEje).HasColumnName("id_tipo_eje");
+            entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
+            entity.Property(e => e.NumeroEje).HasColumnName("numero_eje");
+
+            entity.HasOne(d => d.IdModeloNavigation).WithMany(p => p.ModeloEjes)
+                .HasForeignKey(d => d.IdModelo)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_modelo_eje_modelo");
+
+            entity.HasOne(d => d.IdTipoEjeNavigation).WithMany(p => p.ModeloEjes)
+                .HasForeignKey(d => d.IdTipoEje)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_modelo_eje_tipo_eje");
         });
 
         modelBuilder.Entity<Monedero>(entity =>
@@ -4824,7 +4873,6 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.Nombre)
                 .HasMaxLength(50)
                 .HasColumnName("nombre");
-            entity.Property(e => e.NumeroEje).HasColumnName("numero_eje");
             entity.Property(e => e.NumeroPosiciones).HasColumnName("numero_posiciones");
         });
 
@@ -5565,6 +5613,8 @@ public partial class SuvanDbContext : DbContext
 
             entity.HasIndex(e => e.TipovehiculoIdtipovehiculo, "fk_vehiculo_tipovehiculo1_idx");
 
+            entity.HasIndex(e => e.IdModelo, "ix_vehiculo_modelo");
+
             entity.Property(e => e.IdVehiculo).HasColumnName("Id_vehiculo");
             entity.Property(e => e.Activo)
                 .HasColumnType("bit(1)")
@@ -5604,6 +5654,10 @@ public partial class SuvanDbContext : DbContext
             entity.HasOne(d => d.EmpresaIdempresaNavigation).WithMany(p => p.Vehiculos)
                 .HasForeignKey(d => d.EmpresaIdempresa)
                 .HasConstraintName("fk_vehiculo_empresa1");
+
+            entity.HasOne(d => d.IdModeloNavigation).WithMany(p => p.Vehiculos)
+                .HasForeignKey(d => d.IdModelo)
+                .HasConstraintName("fk_vehiculo_modelo");
 
             entity.HasOne(d => d.TipovehiculoIdtipovehiculoNavigation).WithMany(p => p.Vehiculos)
                 .HasForeignKey(d => d.TipovehiculoIdtipovehiculo)

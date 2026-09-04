@@ -15,7 +15,7 @@ public partial class TipoEje
 
     public bool? EsActivo { get; set; }
 
-    public ushort NumeroEje { get; set; }
+    public virtual ICollection<ModeloEje> ModeloEjes { get; set; } = new List<ModeloEje>();
 
     public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
 

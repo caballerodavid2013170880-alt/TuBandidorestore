@@ -24,7 +24,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <param name="model">ViewModel con los datos del modelo.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        Task<bool> AgregarModelo(ModeloViewModel model);
+        Task<bool> AgregarModelo(ModeloViewModel model, int idUsuario);
 
         /// <summary>
         /// Elimina un modelo en la base de datos.
@@ -38,5 +38,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         List<TipoVehiculoViewModel> ObtenerTipoVehiculo();
 
         List<MarcaViewModel> ObtenerMarca();
+
+        List<TipoEjeCatalogoViewModel> ObtenerTipoEje();
     }
 }
