@@ -125,35 +125,10 @@
                     <div class="row">
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
-                                <label asp-for="Marca" class="col-sm-12 col-form-label text-gray-600 required">Marca</label>
-                                <div class="col-sm-12">
-                                    <input asp-for="Marca" class="form-control bg-transparent" placeholder="Marca" maxlength="100" />
-                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                        <span asp-validation-for="Marca"></span>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
-                                <label asp-for="Modelo" class="col-sm-12 col-form-label text-gray-600 required">Modelo</label>
-                                <div class="col-sm-12">
-                                    <input asp-for="Modelo" class="form-control bg-transparent" placeholder="Modelo" />
-                                    <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                        <span asp-validation-for="Modelo"></span>
-                                    </div>
-
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-sm-6">
-                            <div class="fv-row mb-8">
                                 <div class="fv-row mb-3">
                                     <label asp-for="IdMarca" class="col-form-label text-gray-600 required">Marca</label>
                                     <select asp-for="IdMarca" asp-items="new SelectList(Model.Marcas, nameof(MarcaUnidadViewModel.IdMarca), nameof(MarcaUnidadViewModel.DescripcionMarca), Model.IdMarca)" class="form-control">
-                                        <option value="">Selecciona una Zona</option>
+                                        <option value="">Selecciona una Marca</option>
                                     </select>
                                     <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                         <span asp-validation-for="IdMarca"></span>
@@ -165,7 +140,7 @@
                         <div class="col-sm-6">
                             <div class="fv-row mb-8">
                                 <div class="fv-row mb-3">
-                                    <label asp-for="IdModelo" class="col-form-label text-gray-600 required">Marca</label>
+                                    <label asp-for="IdModelo" class="col-form-label text-gray-600 required">Modelo</label>
                                     <select asp-for="IdModelo" asp-items="new SelectList(Model.Modelos, nameof(ModeloUnidadViewModel.IdModelo), nameof(ModeloUnidadViewModel.DescripcionModelo), Model.IdModelo)" class="form-control">
                                         <option value="">Selecciona un Modelo</option>
                                     </select>
@@ -204,7 +179,7 @@
 
                     </div>
                     <div class="fv-row mb-8">
-                        <label asp-for="Vin" class="col-sm-12 col-form-label text-gray-600">VIN</label>
+                        <label asp-for="Vin" class="col-sm-12 col-form-label text-gray-600 required">VIN</label>
                         <div class="col-sm-12">
                             <input asp-for="Vin" class="form-control bg-transparent" placeholder="VIN" style="text-transform: uppercase" />
                             <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">

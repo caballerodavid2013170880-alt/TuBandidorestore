@@ -12,6 +12,7 @@ namespace SUVAN.BackOffice.Models.ViewModel.Configuracion
     public int UnidadId { get; set; }
     [Required(ErrorMessage = "Las Placas es requerida")]
     public string Placas { get; set; } = null!;
+    [Required(ErrorMessage = "VIN requerido")]
     public string? Vin { get; set; } = null;
 
     public bool Activo { get; set; } = true;
@@ -28,12 +29,16 @@ namespace SUVAN.BackOffice.Models.ViewModel.Configuracion
     public string Marca { get; set; } = string.Empty;
     public string Modelo { get; set; } = string.Empty;
     public string NumeroEconomico { get; set; } = string.Empty;
+    [RegularExpression(@"^[A-Z0-9]+$", ErrorMessage = "Ingrese un formato de Motor válido")]
     public string NumeroMotor { get; set; } = string.Empty;
 
     public List<ServicioUnidadViewModel> Servicios { get; set; } = new List<ServicioUnidadViewModel>();
     public string ServiciosJson { get; set; } = string.Empty;
         
+    [Required(ErrorMessage = "La Marca es requerida")]
     public int? IdMarca { get; set; }
+
+    [Required(ErrorMessage = "El Modelo es requerido")]
     public int? IdModelo { get; set; }
     public List<MarcaUnidadViewModel> Marcas { get; set; } = new List<MarcaUnidadViewModel>();
     public List<ModeloUnidadViewModel> Modelos { get; set; } = new List<ModeloUnidadViewModel>();

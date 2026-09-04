@@ -71,17 +71,25 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
         public async Task<List<VehiViewModel>> ObtenerVehiculo(int IdEmpresa)
         {
-            var resultado = await (from t in context.Vehiculos
-                                   where t.EmpresaIdempresa == IdEmpresa
-                                   select new VehiViewModel
-                                   {
-                                       Id = t.IdVehiculo,
-                                       Placas = t.Placas,
-                                       Vin = t.Vin,
-                                       Numeroeconomico = t.Numeroeconomico,
-                                       Numeromotor = t.Numeromotor
-
-                                   }).ToListAsync();
+            var resultado = await context.Vehiculos
+                .Where(t => t.EmpresaIdempresa == IdEmpresa)
+                .Select(t => new VehiViewModel
+                {
+                    Id = t.IdVehiculo,
+                    Placas = t.Placas,
+                    Vin = t.Vin,
+                    Numeroeconomico = t.Numeroeconomico,
+                    Numeromotor = t.Numeromotor,
+                    IdMarca = t.IdMarca,
+                    DescripcionMarca = t.IdModeloNavigation != null && t.IdModeloNavigation.IdMarcaNavigation != null
+                        ? t.IdModeloNavigation.IdMarcaNavigation.Descripcion
+                        : t.Marca,
+                    IdModelo = t.IdModelo,
+                    DescripcionModelo = t.IdModeloNavigation != null
+                        ? t.IdModeloNavigation.Descripcion
+                        : t.Modelo
+                })
+                .ToListAsync();
             return resultado;
         }
 

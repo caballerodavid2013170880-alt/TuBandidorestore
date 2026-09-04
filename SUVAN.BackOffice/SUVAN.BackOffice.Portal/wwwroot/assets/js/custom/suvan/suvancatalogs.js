@@ -81,7 +81,30 @@
                     $('#NumeroMotor').val(datos.numeromotor);
                     $('#EconomicoAnterior').val(datos.numeroeconomico);
 
+                    const $marcaVisible = $('#IdMarcaVisible');
+                    const $modeloVisible = $('#IdModeloVisible');
+
+                    if ($marcaVisible.is('select') && datos.idMarca && $marcaVisible.find(`option[value="${datos.idMarca}"]`).length === 0) {
+                        $marcaVisible.append(new Option(datos.descripcionMarca || datos.idMarca, datos.idMarca));
+                    }
+
+                    const $modeloSelect = $modeloVisible.is('select') ? $modeloVisible : $('#IdModelo');
+                    if ($modeloSelect.is('select') && datos.idModelo && $modeloSelect.find(`option[value="${datos.idModelo}"]`).length === 0) {
+                        $modeloSelect.append(new Option(datos.descripcionModelo || datos.idModelo, datos.idModelo));
+                    }
+
+                    $('#IdMarca').val(datos.idMarca || '');
+                    $('#IdModelo').val(datos.idModelo || '').trigger('change');
+                    $marcaVisible.val(datos.idMarca || '');
+                    $modeloVisible.val(datos.idModelo || '');
+
                     $('#IdVehiculoVisible').val(datos.id + ' - ' + datos.placas);
+
+                    $('[data-catalog-for="IdMarca"]').val(datos.descripcionMarca || '');
+                    $('[data-catalog-for="IdModelo"]').val(datos.descripcionModelo || '');
+
+                    window.validator?.revalidateField('IdMarca');
+                    window.validator?.revalidateField('IdModelo');
                 }
                 $currentInput.data('catalog-id', catalogId);
                 $currentInput.data('catalog-des', catalogDes);

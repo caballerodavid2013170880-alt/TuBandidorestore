@@ -113,6 +113,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+                await vehiculoService.CompletarCamposError(model);
                 return View(model);
             }
         }

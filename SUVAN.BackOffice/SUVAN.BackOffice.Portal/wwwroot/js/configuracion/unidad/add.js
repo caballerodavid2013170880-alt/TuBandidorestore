@@ -44,6 +44,9 @@ var KTUnidad = function () {
                     },
                     'Vin': {
                         validators: {
+                            notEmpty: {
+                                message: 'VIN requerido'
+                            },
                             regexp: {
                                 regexp: /^[A-HJ-NPR-Z0-9]{17}$/,
                                 message: 'Ingrese un formato de VIN v&aacute;lido',
@@ -72,27 +75,17 @@ var KTUnidad = function () {
                             }
                         }
                     },
-                    'Marca': {
+                    'IdMarca': {
                         validators: {
                             notEmpty: {
                                 message: 'Marca requerida'
-                            },
-                            stringLength: {
-                                min: 3,
-                                max: 255,
-                                message: 'deben tener entre 3 y 255 caracteres',
                             }
                         }
                     },
-                    'Modelo': {
+                    'IdModelo': {
                         validators: {
                             notEmpty: {
                                 message: 'Modelo requerido'
-                            },
-                            stringLength: {
-                                min: 1,
-                                max: 6,
-                                message: 'deben tener entre 1 y 6 caracteres',
                             }
                         }
                     },
@@ -107,6 +100,10 @@ var KTUnidad = function () {
                         validators: {
                             notEmpty: {
                                 message: 'N&uacute;mero motor requerido'
+                            },
+                            regexp: {
+                                regexp: /^[A-Z0-9]+$/,
+                                message: 'Ingrese un formato de Motor v&aacute;lido'
                             }
                         }
                     },

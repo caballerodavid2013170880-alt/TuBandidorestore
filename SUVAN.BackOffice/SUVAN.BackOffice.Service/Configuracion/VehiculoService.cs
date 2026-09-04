@@ -182,6 +182,8 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 throw new Exception("Ya existe un vehículo registrado con este número económico");
             }
 
+            var marcaModeloCatalogo = await ObtenerMarcaModeloCatalogo(model.IdMarca, model.IdModelo);
+
             vehiculo.Placas = model.Placas;
             vehiculo.Vin = model.Vin;
             vehiculo.Activo = (ulong?)(model.Activo ? 1 : 0);
@@ -190,8 +192,8 @@ namespace SUVAN.BackOffice.Service.Configuracion
             vehiculo.EmpresaIdempresa = empresaId;
             vehiculo.Numeropoliza = model.NumeroPoliza;
             vehiculo.Fechafinseguro = model.FechaFinSeguro;
-            vehiculo.Marca = model.Marca;
-            vehiculo.Modelo = model.Modelo;
+            vehiculo.Marca = marcaModeloCatalogo.marca;
+            vehiculo.Modelo = marcaModeloCatalogo.modelo;
             vehiculo.Numeroeconomico = model.NumeroEconomico;
             vehiculo.Numeromotor = model.NumeroMotor;
             vehiculo.IdMarca = model.IdMarca;
@@ -220,6 +222,27 @@ namespace SUVAN.BackOffice.Service.Configuracion
             await AgregarDetalle(model, vehiculo.IdVehiculo);
 
             return true;
+        }
+
+        private async Task<(string marca, string modelo)> ObtenerMarcaModeloCatalogo(int? idMarca, int? idModelo)
+        {
+            if (!idMarca.HasValue || idMarca.Value <= 0)
+                throw new Exception("Marca requerida");
+
+            if (!idModelo.HasValue || idModelo.Value <= 0)
+                throw new Exception("Modelo requerido");
+
+            var modelo = await context.Modelos
+                .Include(x => x.IdMarcaNavigation)
+                .FirstOrDefaultAsync(x => x.IdModelo == idModelo.Value && x.IdMarca == idMarca.Value);
+
+            if (modelo == null)
+                throw new Exception("El modelo seleccionado no corresponde a la marca seleccionada");
+
+            return (
+                string.IsNullOrWhiteSpace(modelo.IdMarcaNavigation?.Descripcion) ? "NA" : modelo.IdMarcaNavigation.Descripcion.Trim(),
+                string.IsNullOrWhiteSpace(modelo.Descripcion) ? "NA" : modelo.Descripcion.Trim()
+            );
         }
 
         /// <summary>
@@ -289,4 +312,3 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
     }
 }
-
