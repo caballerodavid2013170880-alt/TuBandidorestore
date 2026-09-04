@@ -5861,6 +5861,8 @@ public partial class SuvanDbContext : DbContext
 
             entity.ToTable("vehiculo_eje");
 
+            entity.HasIndex(e => e.IdModeloEje, "fk_vehiculo_eje_modelo_eje");
+
             entity.HasIndex(e => e.IdTipoEje, "ix_vehiculo_eje_tipo");
 
             entity.HasIndex(e => e.IdVehiculo, "ix_vehiculo_eje_vehiculo");
@@ -5884,10 +5886,15 @@ public partial class SuvanDbContext : DbContext
             entity.Property(e => e.FechaModificacion)
                 .HasColumnType("datetime")
                 .HasColumnName("fecha_modificacion");
+            entity.Property(e => e.IdModeloEje).HasColumnName("id_modelo_eje");
             entity.Property(e => e.IdTipoEje).HasColumnName("id_tipo_eje");
             entity.Property(e => e.IdVehiculo).HasColumnName("id_vehiculo");
             entity.Property(e => e.ModificadoPor).HasColumnName("modificado_por");
             entity.Property(e => e.NumeroEje).HasColumnName("numero_eje");
+
+            entity.HasOne(d => d.IdModeloEjeNavigation).WithMany(p => p.VehiculoEjes)
+                .HasForeignKey(d => d.IdModeloEje)
+                .HasConstraintName("fk_vehiculo_eje_modelo_eje");
 
             entity.HasOne(d => d.IdTipoEjeNavigation).WithMany(p => p.VehiculoEjes)
                 .HasForeignKey(d => d.IdTipoEje)

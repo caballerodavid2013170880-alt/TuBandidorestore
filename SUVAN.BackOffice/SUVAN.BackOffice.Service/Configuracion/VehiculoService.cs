@@ -147,9 +147,11 @@ namespace SUVAN.BackOffice.Service.Configuracion
         /// <param name="model">ViewModel del vehículo.</param>
         /// <returns>Indica si la operación fue exitosa.</returns>
         /// <exception cref="Exception">Se lanza en caso de error.</exception>
-        public async Task<bool> AgregarVehiculo(AgregarUnidadViewModel model, int empresaId)
+        public async Task<bool> AgregarVehiculo(AgregarUnidadViewModel model, int empresaId, int idUsuario)
         {
             Vehiculo? vehiculo = new();
+            var esCreacion = model.UnidadId <= 0;
+            var ejesModelo = new List<ModeloEje>();
 
             if (model.UnidadId > 0)
             {
@@ -184,44 +186,70 @@ namespace SUVAN.BackOffice.Service.Configuracion
 
             var marcaModeloCatalogo = await ObtenerMarcaModeloCatalogo(model.IdMarca, model.IdModelo);
 
-            vehiculo.Placas = model.Placas;
-            vehiculo.Vin = model.Vin;
-            vehiculo.Activo = (ulong?)(model.Activo ? 1 : 0);
-            vehiculo.Fecharegistro = DateTime.Now;
-            vehiculo.TipovehiculoIdtipovehiculo = (sbyte)model.TipoUnidadId;
-            vehiculo.EmpresaIdempresa = empresaId;
-            vehiculo.Numeropoliza = model.NumeroPoliza;
-            vehiculo.Fechafinseguro = model.FechaFinSeguro;
-            vehiculo.Marca = marcaModeloCatalogo.marca;
-            vehiculo.Modelo = marcaModeloCatalogo.modelo;
-            vehiculo.Numeroeconomico = model.NumeroEconomico;
-            vehiculo.Numeromotor = model.NumeroMotor;
-            vehiculo.IdMarca = model.IdMarca;
-            vehiculo.IdModelo = model.IdModelo;
-
-
-            if (model.UnidadId > 0)
+            if (esCreacion)
             {
-                context.Vehiculos.Entry(vehiculo);
+                ejesModelo = await ObtenerEjesActivosModelo(model.IdModelo);
             }
-            else
+
+            await using var transaction = esCreacion ? await context.Database.BeginTransactionAsync() : null;
+
+            try
             {
-                context.Vehiculos.Add(vehiculo);
+                var fechaActual = DateTime.Now;
+
+                vehiculo.Placas = model.Placas;
+                vehiculo.Vin = model.Vin;
+                vehiculo.Activo = (ulong?)(model.Activo ? 1 : 0);
+                vehiculo.Fecharegistro = fechaActual;
+                vehiculo.TipovehiculoIdtipovehiculo = (sbyte)model.TipoUnidadId;
+                vehiculo.EmpresaIdempresa = empresaId;
+                vehiculo.Numeropoliza = model.NumeroPoliza;
+                vehiculo.Fechafinseguro = model.FechaFinSeguro;
+                vehiculo.Marca = marcaModeloCatalogo.marca;
+                vehiculo.Modelo = marcaModeloCatalogo.modelo;
+                vehiculo.Numeroeconomico = model.NumeroEconomico;
+                vehiculo.Numeromotor = model.NumeroMotor;
+                vehiculo.IdMarca = model.IdMarca;
+                vehiculo.IdModelo = model.IdModelo;
+
+                if (model.UnidadId > 0)
+                {
+                    context.Vehiculos.Entry(vehiculo);
+                }
+                else
+                {
+                    context.Vehiculos.Add(vehiculo);
+                    await context.SaveChangesAsync();
+
+                    model.UnidadId = vehiculo.IdVehiculo;
+                    CrearEjesVehiculoDesdeModelo(vehiculo.IdVehiculo, ejesModelo, fechaActual, idUsuario);
+                }
+
                 await context.SaveChangesAsync();
+                if (!string.IsNullOrEmpty(model.ServiciosJson))
+                {
 
-                model.UnidadId = vehiculo.IdVehiculo;
+                    model.Servicios = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ServicioUnidadViewModel>>(model.ServiciosJson);
+                }
+                await AgregarServiciosVehiculo(model.Servicios!, vehiculo.IdVehiculo);
+                await AgregarDetalle(model, vehiculo.IdVehiculo);
+
+                if (transaction != null)
+                {
+                    await transaction.CommitAsync();
+                }
+
+                return true;
             }
-
-            await context.SaveChangesAsync();
-            if (!string.IsNullOrEmpty(model.ServiciosJson))
+            catch
             {
+                if (transaction != null)
+                {
+                    await transaction.RollbackAsync();
+                }
 
-                model.Servicios = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ServicioUnidadViewModel>>(model.ServiciosJson);
+                throw;
             }
-            await AgregarServiciosVehiculo(model.Servicios!, vehiculo.IdVehiculo);
-            await AgregarDetalle(model, vehiculo.IdVehiculo);
-
-            return true;
         }
 
         private async Task<(string marca, string modelo)> ObtenerMarcaModeloCatalogo(int? idMarca, int? idModelo)
@@ -243,6 +271,51 @@ namespace SUVAN.BackOffice.Service.Configuracion
                 string.IsNullOrWhiteSpace(modelo.IdMarcaNavigation?.Descripcion) ? "NA" : modelo.IdMarcaNavigation.Descripcion.Trim(),
                 string.IsNullOrWhiteSpace(modelo.Descripcion) ? "NA" : modelo.Descripcion.Trim()
             );
+        }
+
+        private async Task<List<ModeloEje>> ObtenerEjesActivosModelo(int? idModelo)
+        {
+            if (!idModelo.HasValue || idModelo.Value <= 0)
+                throw new Exception("Modelo requerido");
+
+            var modeloExiste = await context.Modelos.AnyAsync(x => x.IdModelo == idModelo.Value);
+
+            if (!modeloExiste)
+                throw new Exception("El modelo seleccionado no existe");
+
+            var ejesModelo = await context.ModeloEjes
+                .AsNoTracking()
+                .Where(x => x.IdModelo == idModelo.Value && x.EsActivo == true && x.FechaEliminacion == null)
+                .OrderBy(x => x.NumeroEje)
+                .ToListAsync();
+
+            if (!ejesModelo.Any())
+                throw new Exception("El modelo seleccionado no tiene una configuración de ejes. Configure los ejes del modelo antes de crear el vehículo.");
+
+            return ejesModelo;
+        }
+
+        private void CrearEjesVehiculoDesdeModelo(int idVehiculo, List<ModeloEje> ejesModelo, DateTime fechaActual, int idUsuario)
+        {
+            var usuarioAuditoria = (uint)Math.Max(idUsuario, 0);
+
+            foreach (var ejeModelo in ejesModelo)
+            {
+                context.VehiculoEjes.Add(new VehiculoEje
+                {
+                    IdVehiculo = idVehiculo,
+                    IdModeloEje = ejeModelo.IdModeloEje,
+                    IdTipoEje = ejeModelo.IdTipoEje,
+                    NumeroEje = ejeModelo.NumeroEje,
+                    Activo = true,
+                    FechaCreacion = fechaActual,
+                    CreadoPor = usuarioAuditoria,
+                    FechaModificacion = null,
+                    ModificadoPor = null,
+                    FechaEliminacion = null,
+                    EliminadoPor = null
+                });
+            }
         }
 
         /// <summary>

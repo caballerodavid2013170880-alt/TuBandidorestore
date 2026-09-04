@@ -30,4 +30,6 @@ public partial class ModeloEje
     public virtual Modelo IdModeloNavigation { get; set; } = null!;
 
     public virtual TipoEje IdTipoEjeNavigation { get; set; } = null!;
+
+    public virtual ICollection<VehiculoEje> VehiculoEjes { get; set; } = new List<VehiculoEje>();
 }

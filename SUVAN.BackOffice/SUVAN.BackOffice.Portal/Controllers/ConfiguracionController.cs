@@ -212,7 +212,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     return View(returnModel);
                 }
 
-                var result = await vehiculoService.AgregarVehiculo(model, User.GetEmpresaId());
+                var result = await vehiculoService.AgregarVehiculo(model, User.GetEmpresaId(), User.GetUserId());
 
                 if (result)
                 {
