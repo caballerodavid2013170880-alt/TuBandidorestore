@@ -29,10 +29,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
         public async Task<IActionResult> AgregarTaller(int id)
         {
-            var agregarModel = await taller.GetTallerViewModel(id, User.GetEmpresaId());
-            // 1407 evitar conflictos con depostios disponibles   agregarModel.DepositoView = taller.ObtenerDeposito(agregarModel.ZonaIdzona);
-            agregarModel.ZonaJson = JsonConvert.SerializeObject(agregarModel.ZonaView);
-            return View(agregarModel);
+            var idEmpresa = User.GetEmpresaId();
+            var model = await taller.GetTallerViewModel(id, idEmpresa);
+            
+            //caraga de regiones iniciales para el primer selector  (regiones)
+            model.Regiones = await taller.GetRegions(idEmpresa);
+
+            return View(model);
         }
 
         [HttpPost]
@@ -40,10 +43,11 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
-                // 1407 evitar conflictos con depostios disponibles model.DepositoView = taller.ObtenerDeposito(model.ZonaIdzona);
+                
 
                 if (!ModelState.IsValid)
                 {
+                    model.Regiones = await taller.GetRegions(User.GetEmpresaId());
                     return View(model);
                 }
 
@@ -54,11 +58,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     return RedirectToAction("Index", "Taller");
                 }
 
+                model.Regiones = await taller.GetRegions(User.GetEmpresaId());
                 return View(model);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+                model.Regiones = await taller.GetRegions(User.GetEmpresaId());
                 return View(model);
             }
         }
@@ -79,6 +85,31 @@ namespace SUVAN.BackOffice.Portal.Controllers
             {
                 return Ok(new { success = false, message = ex.Message });
             }
+        }
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetPlantas(int regionId)
+        {
+            var idEmpresa = User.GetEmpresaId();
+            var plantas = await taller.GetPlantasByRegion(idEmpresa, regionId);
+            return Json(plantas);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetZonas(int plantaId)
+        {
+            var idEmpresa = User.GetEmpresaId();
+            var zonas = await taller.GetZonasByPlanta(idEmpresa, plantaId);
+            return Json(zonas);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetDepositos(int zonaId)
+        {
+            var idEmpresa = User.GetEmpresaId();
+            var depositos = await taller.GetDepositosByZona(idEmpresa, zonaId);
+            return Json(depositos);
         }
     }
 }

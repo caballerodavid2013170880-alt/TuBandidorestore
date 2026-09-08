@@ -128,8 +128,11 @@
                 <!--end::Table-->
 
                 <!--begin::Panel estadisticas (inferior)-->
-                <div class="card bg-light-primary mt-6 p-5 border border-primary border-opacity-25">
-                    <h5 class="text-dark fw-bold mb-4"><i class="ki-outline ki-chart-pie-3 fs-3 me-2"></i>Estadísticas del periodo</h5>
+                <!--<div class="card bg-light-primary mt-6 p-5 border border-primary border-opacity-25">
+                    <h5 class="text-dark fw-bold mb-4"><i class="ki-outline ki-chart-pie-3 fs-3 me-2"></i>Estadísticas del periodo</h5>-->
+                <div class="card panel-estadisticas-guinda mt-6 p-5">
+                    <h5 class="fw-bold mb-4"><i class="ki-outline ki-chart-pie-3 fs-3 me-2"></i>Estadísticas del periodo</h5>
+
                     <div class="row text-gray-800 fw-semibold fs-6">
                         <div class="col-md-3 mb-2">
                             <span class="text-muted d-block fs-7">Cargas Totales: 
@@ -169,10 +172,10 @@
                     <!--begin::Modal dialog-->
                     <div class="modal-dialog modal-dialog-centered modal-lg">
                         <!--begin::Modal content-->
-                        <div class="modal-content">
+                        <div class="modal-content shadow-sm">
                             <!--begin::Modal header-->
-                            <div class="modal-header">
-                                <h3 class="fw-bold">Vehículos con Cargas en el periodo</h3>
+                            <div class="modal-header border-bottom py-4 px-7">
+                                <h3 class="fw-bold text-dark m-0">Vehículos con Cargas en el periodo</h3>
                                 <!--begin::Close-->
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
@@ -180,12 +183,12 @@
 
 
                             <!--begin::Modal body-->
-                            <div class="modal-body scroll-y mx-5 mx-xl-15 my-7">
+                            <div class="modal-body scroll-y px-7 py-7">
                                 <!--begin::Table-->
                                 <div class="table-responsive">
                                     <table class="table align-middle table-row-dashed fs-6 gy-5" id="kt_table_vehiculos_cargas">
                                         <thead>
-                                            <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0">
+                                            <tr class="text-start text-muted fw-bold fs-7 text-uppercase gs-0 border-bottom">
                                                 <th class="min-w-85px">Núm Económico</th>
                                                 <th class="min-w-80px">Marca</th>
                                                 <th class="min-w-80px">Modelo</th>
@@ -202,8 +205,8 @@
                             <!--end::Modal body-->
 
                             <!--begin::Modal footer-->
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cerrar</button>
+                            <div class="modal-footer border-top py-4 px-7">
+                                <button type="button" class="btn btn-outline-secondary btn-active-light-primary px-6" data-bs-dismiss="modal">Cerrar</button>
                             </div>
                         </div>
                         <!--end::Modal content-->

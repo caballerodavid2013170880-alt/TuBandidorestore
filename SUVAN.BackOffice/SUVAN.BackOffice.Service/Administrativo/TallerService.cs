@@ -24,7 +24,11 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
         public async Task<List<Taller>> GetTaller(int IdEmpresa)
         {
-            var talleres = await context.Tallers.Where(e => e.IdDepositoNavigation.IdEmpresa == IdEmpresa ).Include(t => t.ZonaIdzonaNavigation).Include(t => t.IdDepositoNavigation).ToListAsync();
+            var talleres = await context.Tallers
+                .Where(e => e.IdDepositoNavigation.IdEmpresa == IdEmpresa )
+                .Include(t => t.ZonaIdzonaNavigation)
+                .Include(t => t.IdDepositoNavigation)
+                .ToListAsync();
 
             return talleres;
         }
@@ -47,31 +51,12 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     Contacto = d.Contacto,
                     Telefono = d.Telefono,
                     Email = d.Email,
-                    ZonaIdzona = d.ZonaIdzona,
+                    IdZona = d.ZonaIdzona,
                     IdDeposito = d.IdDeposito,
                 })
                 .FirstOrDefaultAsync();
-            
-            var zonas = await (from z in context.Zonas where z.IdEmpresa == IdEmpresa
-                             select new TallerViewModel.ZonasViewModel() {/*
-                                 //1407 Evita conflictos con DepositosdisponiblesZonaId = z.IdZona,
-                                 //1407 Evita conflictos con DepositosdisponiblesZonaNombre = z.NombreZona//,
-                                 //1407 Evita conflictos con Depositosdisponibles Depositos = context.Depositosdisponibles
-                                 //.Where(d => d.ZonaId == z.IdZona)
-                                 //1407 Evita conflictos con Depositosdisponibles.Select(d => new TallerViewModel.DepositosViewModel
-                                 {
-                                     //1407 Evita conflictos con DepositosdisponiblesDepositoId = d.IdDeposito,
-                                     //1407 Evita conflictos con DepositosdisponiblesNombreDeposito = d.DepositoNombre
-                                 }).ToList()
-                             */}).ToListAsync();
 
-            if (taller != null)
-            {
-                taller.ZonaView = zonas;
-                return taller;
-            }
-
-            return new TallerViewModel { ZonaView = zonas };
+            return taller ?? new TallerViewModel();
         }
 
         /// <summary>
@@ -111,12 +96,12 @@ namespace SUVAN.BackOffice.Service.Administrativo
             taller.Contacto = model.Contacto;
             taller.Telefono = model.Telefono;
             taller.Email = model.Email;
-            taller.ZonaIdzona = model.ZonaIdzona;
-            // 1407 evitar conflictos con depostios disponibles: taller.IdDeposito = model.IdDeposito;
+            taller.ZonaIdzona = model.IdZona;
+            taller.IdDeposito = model.IdDeposito;
 
             if (model.IdTaller > 0)
             {
-                context.Tallers.Entry(taller);
+                context.Tallers.Update(taller);
 
                 await context.SaveChangesAsync();
             }
@@ -149,7 +134,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
 
 
-            var delete = await context.Tallers
+            await context.Tallers
               .Where(x => x.IdTaller == TallerId)
               .ExecuteDeleteAsync();
 
@@ -159,19 +144,52 @@ namespace SUVAN.BackOffice.Service.Administrativo
             context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
             return true;
         }
-        /*
-        public List<TallerViewModel.DepositosViewModel> ObtenerDeposito(int zonaId)
-        {// 1407 evitar conflictos con depostios disponibles:
-            var deposito = context.Depositosdisponibles
-                .Where(t => t.ZonaId == zonaId)
-                .Select(t => new TallerViewModel.DepositosViewModel
-                {
-                    DepositoId = t.IdDeposito,
-                    NombreDeposito = t.DepositoNombre
-                }).ToList();
 
-            return deposito;
-            
-        }*/
+
+
+        //metodos implementados para carga de cascada 
+        public async Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetRegions(int id_empresa)
+        {
+            return await context.Regions
+                .Where(x => x.IdEmpresa == id_empresa)
+                .Select(x => new VehiculoDetalleViewModel.CatalogItemViewModel
+                {
+                    Id = x.IdRegion,
+                    Nombre = x.NombreRegion
+                }).ToListAsync();
+        }
+
+        public async Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetPlantasByRegion(int id_empresa, int id_region)
+        {
+            return await context.Planta
+                .Where(x => x.IdEmpresa == id_empresa && x.IdRegion == (short)id_region)
+                .Select(x => new VehiculoDetalleViewModel.CatalogItemViewModel
+                {
+                    Id = x.IdPlanta,
+                    Nombre = x.NombrePlanta
+                }).ToListAsync();
+        }
+
+        public async Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetZonasByPlanta(int id_empresa, int id_planta)
+        {
+            return await context.Zonas
+                .Where(x => x.IdEmpresa == id_empresa && x.IdPlanta == id_planta)
+                .Select(x => new VehiculoDetalleViewModel.CatalogItemViewModel
+                {
+                    Id = x.IdZona,
+                    Nombre = x.NombreZona
+                }).ToListAsync();
+        }
+
+        public async Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetDepositosByZona(int id_empresa, int id_zona)
+        {
+            return await context.Depositos
+                .Where(x => x.IdEmpresa == id_empresa && x.IdZona == id_zona && x.Activo.GetValueOrDefault() == 1)
+                .Select(x => new VehiculoDetalleViewModel.CatalogItemViewModel
+                {
+                    Id = x.IdDeposito,
+                    Nombre = x.NombreDeposito
+                }).ToListAsync();
+        }
     }
 }
