@@ -15,8 +15,6 @@ public partial class Modelo
 
     public int MesGarantia { get; set; }
 
-    public int? TipoEje { get; set; }
-
     public short IdMarca { get; set; }
 
     public sbyte IdTipoV { get; set; }
@@ -27,7 +25,11 @@ public partial class Modelo
 
     public virtual Tipovehiculo IdTipoVNavigation { get; set; } = null!;
 
+    public virtual ICollection<ModeloEje> ModeloEjes { get; set; } = new List<ModeloEje>();
+
     public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
 
     public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
+
+    public virtual ICollection<Vehiculo> Vehiculos { get; set; } = new List<Vehiculo>();
 }

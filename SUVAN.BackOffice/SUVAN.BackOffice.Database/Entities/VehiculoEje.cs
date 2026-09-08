@@ -9,6 +9,8 @@ public partial class VehiculoEje
 
     public int IdVehiculo { get; set; }
 
+    public int? IdModeloEje { get; set; }
+
     public int IdTipoEje { get; set; }
 
     public ushort NumeroEje { get; set; }
@@ -26,6 +28,8 @@ public partial class VehiculoEje
     public DateTime? FechaEliminacion { get; set; }
 
     public uint? EliminadoPor { get; set; }
+
+    public virtual ModeloEje? IdModeloEjeNavigation { get; set; }
 
     public virtual TipoEje IdTipoEjeNavigation { get; set; } = null!;
 

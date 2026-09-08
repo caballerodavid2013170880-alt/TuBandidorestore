@@ -48,7 +48,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
                     Descripcion = modelo.Descripcion,
                     KmGarantia = modelo.KmGarantia,
                     MesGarantia = modelo.MesGarantia,
-                    TipoEje = modelo.TipoEje,
+                    //TipoEje = modelo.TipoEje,
 
                 };
             }
