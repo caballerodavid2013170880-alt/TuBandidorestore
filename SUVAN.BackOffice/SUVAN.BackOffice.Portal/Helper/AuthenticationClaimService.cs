@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Service.Seguridad;
 using System.Security.Claims;
 
 namespace SUVAN.BackOffice.Portal.Helper
@@ -8,9 +9,11 @@ namespace SUVAN.BackOffice.Portal.Helper
   public class AuthenticationClaimService : IAuthenticationClaimService
   {
     private readonly IHttpContextAccessor _httpContextAccessor;
-    public AuthenticationClaimService(IHttpContextAccessor httpContextAccessor)
+    private readonly IUsuarioJerarquiaService _usuarioJerarquiaService;
+        public AuthenticationClaimService(IHttpContextAccessor httpContextAccessor, IUsuarioJerarquiaService usuarioJerarquiaService)
     {
       _httpContextAccessor = httpContextAccessor;
+      _usuarioJerarquiaService = usuarioJerarquiaService;
     }
 
     /// <summary>
@@ -32,7 +35,18 @@ namespace SUVAN.BackOffice.Portal.Helper
             new Claim("Activo", $"{usuario.Activo}")
         };
 
-      var claimsIdentity = new ClaimsIdentity(claims, "AuthScheme");
+            // Consultar y adjuntar Claims de Jerarquía si existen
+            var jerarquia = await _usuarioJerarquiaService.GetJerarquiaUsuario("Admin", usuario.Idadmin, empresa.EmpresaIdempresa);
+            if (jerarquia != null)
+            {
+                if (jerarquia.IdRegion.HasValue) claims.Add(new Claim("RegionId", jerarquia.IdRegion.Value.ToString()));
+                if (jerarquia.IdPlanta.HasValue) claims.Add(new Claim("PlantaId", jerarquia.IdPlanta.Value.ToString()));
+                if (jerarquia.IdZona.HasValue) claims.Add(new Claim("ZonaId", jerarquia.IdZona.Value.ToString()));
+                if (jerarquia.IdDeposito.HasValue) claims.Add(new Claim("DepositoId", jerarquia.IdDeposito.Value.ToString()));
+                if (jerarquia.IdDepto.HasValue) claims.Add(new Claim("DeptoId", jerarquia.IdDepto.Value.ToString()));
+            }
+
+            var claimsIdentity = new ClaimsIdentity(claims, "AuthScheme");
 
       await _httpContextAccessor.HttpContext!.SignInAsync("AuthScheme",
           new ClaimsPrincipal(claimsIdentity),

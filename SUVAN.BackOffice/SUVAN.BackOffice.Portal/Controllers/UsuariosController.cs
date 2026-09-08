@@ -11,11 +11,16 @@ namespace SUVAN.BackOffice.Portal.Controllers
   {
     private readonly ILogger<PerfilesController> logger;
     private readonly IAdminService adminService;
+    private readonly IUsuarioJerarquiaService usuarioJerarquiaService;
 
-    public UsuariosController(ILogger<PerfilesController> logger, IAdminService adminService)
+        public UsuariosController(
+            ILogger<PerfilesController> logger, 
+            IAdminService adminService, 
+            IUsuarioJerarquiaService usuarioJerarquiaService)
     {
       this.logger = logger;
       this.adminService = adminService;
+            this.usuarioJerarquiaService = usuarioJerarquiaService;
     }
     public async Task<IActionResult> Index()
     {
@@ -83,5 +88,100 @@ namespace SUVAN.BackOffice.Portal.Controllers
         return BadRequest(ex.Message);
       }
     }
-  }
+
+        // =========================================================================
+        // Endpoints AJAX para cascada jerárquica por Empresa asignada al Usuario
+        // =========================================================================
+
+        [HttpGet]
+        public async Task<IActionResult> GetRegionesPorEmpresa(int idEmpresa)
+        {
+            var regiones = await usuarioJerarquiaService.GetRegionesPorEmpresa(idEmpresa);
+            return Json(regiones);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetPlantasPorRegion(int idEmpresa, int idRegion)
+        {
+            var plantas = await usuarioJerarquiaService.GetPlantasPorRegion(idEmpresa, idRegion);
+            return Json(plantas);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetZonasPorPlanta(int idEmpresa, int idRegion, int idPlanta)
+        {
+            var zonas = await usuarioJerarquiaService.GetZonasPorPlanta(idEmpresa, idRegion, idPlanta);
+            return Json(zonas);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDepositosPorZona(int idEmpresa, int idRegion, int idPlanta, int idZona)
+        {
+            var depositos = await usuarioJerarquiaService.GetDepositosPorZona(idEmpresa, idRegion, idPlanta, idZona);
+            return Json(depositos);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetDeptosPorDeposito(int idEmpresa, int idRegion, int idPlanta, int idZona, int idDeposito)
+        {
+            var deptos = await usuarioJerarquiaService.GetDeptosPorDeposito(idEmpresa, idRegion, idPlanta, idZona, idDeposito);
+            return Json(deptos);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetJerarquiaUsuario(int adminId, int idEmpresa)
+        {
+            if (adminId <= 0 || idEmpresa <= 0)
+            {
+                return Json(new { success = false });
+            }
+
+            var jerarquia = await usuarioJerarquiaService.GetJerarquiaUsuario("Admin", adminId, idEmpresa);
+            if (jerarquia != null)
+            {
+                return Json(new
+                {
+                    success = true,
+                    idRegion = jerarquia.IdRegion,
+                    idPlanta = jerarquia.IdPlanta,
+                    idZona = jerarquia.IdZona,
+                    idDeposito = jerarquia.IdDeposito,
+                    idDepto = jerarquia.IdDepto
+                });
+            }
+
+            return Json(new { success = false });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetJerarquiasUsuario(int adminId, int idEmpresa)
+        {
+            if (adminId <= 0 || idEmpresa <= 0)
+            {
+                return Json(new { success = false, items = new List<UsuarioJerarquiaItemViewModel>() });
+            }
+
+            var jerarquias = await usuarioJerarquiaService.GetJerarquiasUsuario("Admin", adminId, idEmpresa);
+            var items = jerarquias.Select(j => new UsuarioJerarquiaItemViewModel
+            {
+                idUsuarioJerarquia = j.IdUsuarioJerarquia,
+                empresaId = j.IdEmpresa,
+                regionId = j.IdRegion,
+                regionNombre = j.IdRegionNavigation?.NombreRegion ?? string.Empty,
+                plantaId = j.IdPlanta,
+                plantaNombre = j.IdPlantaNavigation?.NombrePlanta ?? string.Empty,
+                zonaId = j.IdZona,
+                zonaNombre = j.IdZonaNavigation?.NombreZona ?? string.Empty,
+                depositoId = j.IdDeposito,
+                depositoNombre = j.IdDepositoNavigation?.NombreDeposito ?? string.Empty,
+                deptoId = j.IdDepto,
+                deptoNombre = j.IdDeptoNavigation?.NombreDepto ?? string.Empty,
+                esPrincipal = j.EsPrincipal == 1
+            }).ToList();
+
+            return Json(new { success = true, items = items });
+        }
+
+
+    }
 }

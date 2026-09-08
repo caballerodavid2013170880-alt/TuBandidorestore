@@ -1,14 +1,31 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using SUVAN.BackOffice.Models.StoredsProcedures;
+using System;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 
 namespace SUVAN.BackOffice.Database.Entities;
 
 public partial class SuvanDbContext : DbContext
+
 {
-    public SuvanDbContext(DbContextOptions<SuvanDbContext> options)
-        : base(options)
+
+    private readonly IConfiguration configuration;
+
+    public SuvanDbContext()
+
     {
+
+    }
+
+    public SuvanDbContext(DbContextOptions options, IConfiguration configuration)
+
+    : base(options)
+
+    {
+
+        this.configuration = configuration;
+
     }
 
     public virtual DbSet<Admin> Admins { get; set; }
@@ -317,6 +334,9 @@ public partial class SuvanDbContext : DbContext
 
     public virtual DbSet<Zona> Zonas { get; set; }
 
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+//#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
+=> optionsBuilder.UseMySql(configuration.GetConnectionString("DefaultConnection"), Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.31-mysql"));
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder

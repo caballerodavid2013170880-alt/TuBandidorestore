@@ -10,17 +10,24 @@ namespace SUVAN.BackOffice.Portal.Helper
     const string claimTypeEmpresaId = "Empresa";
     const string claimTypeNombreEmpresa = "NombreEmpresa";
 
-    const string claimTypeId = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
+        const string claimTypeRegionId = "RegionId";
+        const string claimTypePlantaId = "PlantaId";
+        const string claimTypeZonaId = "ZonaId";
+        const string claimTypeDepositoId = "DepositoId";
+        const string claimTypeDeptoId = "DeptoId";
+
+
+        const string claimTypeId = "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier";
 
     public static int GetEmpresaId(this ClaimsPrincipal user)
     {
       if (user.Identity!.IsAuthenticated)
       {
         var userEmpresa = user.Claims
-          .FirstOrDefault(i => i.Type == claimTypeEmpresaId)!.Value;
+          .FirstOrDefault(i => i.Type == claimTypeEmpresaId)?.Value;
 
-        return int.Parse(userEmpresa);
-      }
+                return string.IsNullOrEmpty(userEmpresa) ? 0 : int.Parse(userEmpresa);
+            }
 
       return 0;
     }
@@ -30,10 +37,10 @@ namespace SUVAN.BackOffice.Portal.Helper
       if (user.Identity!.IsAuthenticated)
       {
         var userEmpresa = user.Claims
-          .FirstOrDefault(i => i.Type == claimTypeNombreEmpresa)!.Value;
+          .FirstOrDefault(i => i.Type == claimTypeNombreEmpresa)?.Value;
 
-        return userEmpresa;
-      }
+            return userEmpresa ?? string.Empty;
+        }
 
       return string.Empty;
     }
@@ -43,9 +50,9 @@ namespace SUVAN.BackOffice.Portal.Helper
       if (user.Identity!.IsAuthenticated)
       {
         var userPerfil = user.Claims
-          .FirstOrDefault(i => i.Type == claimTypePerfilId)!.Value;
+            .FirstOrDefault(i => i.Type == claimTypePerfilId)?.Value;
 
-        return userPerfil;
+        return userPerfil!;
       }
 
       return null!;
@@ -56,12 +63,55 @@ namespace SUVAN.BackOffice.Portal.Helper
       if (user.Identity!.IsAuthenticated)
       {
         var userId = user.Claims
-          .FirstOrDefault(i => i.Type == claimTypeId)!.Value;
+          .FirstOrDefault(i => i.Type == claimTypeId)?.Value;
 
-        return int.Parse(userId);
+          return string.IsNullOrEmpty(userId) ? 0 : int.Parse(userId);
       }
 
       return 0;
     }
-  }
+
+
+        public static int? GetRegionId(this ClaimsPrincipal user)
+        {
+            return GetClaimIntNullable(user, claimTypeRegionId);
+        }
+
+        public static int? GetPlantaId(this ClaimsPrincipal user)
+        {
+            return GetClaimIntNullable(user, claimTypePlantaId);
+        }
+
+        public static int? GetZonaId(this ClaimsPrincipal user)
+        {
+            return GetClaimIntNullable(user, claimTypeZonaId);
+        }
+
+        public static int? GetDepositoId(this ClaimsPrincipal user)
+        {
+            return GetClaimIntNullable(user, claimTypeDepositoId);
+        }
+
+        public static int? GetDeptoId(this ClaimsPrincipal user)
+        {
+            return GetClaimIntNullable(user, claimTypeDeptoId);
+        }
+
+        private static int? GetClaimIntNullable(ClaimsPrincipal user, string claimType)
+        {
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                var claim = user.Claims.FirstOrDefault(i => i.Type == claimType);
+                if (claim != null && int.TryParse(claim.Value, out int result))
+                {
+                    return result;
+                }
+            }
+            return null;
+        }
+
+
+
+
+    }
 }
