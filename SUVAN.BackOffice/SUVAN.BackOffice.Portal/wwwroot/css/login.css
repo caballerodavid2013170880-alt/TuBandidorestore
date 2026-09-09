@@ -159,6 +159,39 @@ body.login-page {
   text-decoration: underline;
 }
 
+.suvan-login__reset-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.suvan-login__cancel {
+  display: inline-flex;
+  flex: 0 0 118px;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  color: #8b1021 !important;
+  border: 1px solid #d8d8dc !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  font-size: 15px;
+  font-weight: 600 !important;
+  text-decoration: none;
+}
+
+.suvan-login__cancel:hover,
+.suvan-login__cancel:focus {
+  color: #fff !important;
+  border-color: #8b1021 !important;
+  background: #8b1021 !important;
+}
+
+.suvan-login__reset-actions .suvan-login__submit {
+  width: auto;
+  flex: 1 1 auto;
+}
+
 .suvan-login__error {
   display: block;
   min-height: 20px;
@@ -168,7 +201,7 @@ body.login-page {
   text-align: center;
 }
 
-.suvan-login #kt_sign_in_submit {
+.suvan-login .suvan-login__submit {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -182,22 +215,22 @@ body.login-page {
   font-weight: 700 !important;
 }
 
-.suvan-login #kt_sign_in_submit:hover,
-.suvan-login #kt_sign_in_submit:focus,
-.suvan-login #kt_sign_in_submit:active {
+.suvan-login .suvan-login__submit:hover,
+.suvan-login .suvan-login__submit:focus,
+.suvan-login .suvan-login__submit:active {
   border: 0 !important;
   background: linear-gradient(90deg, #5f0919 0%, #a80d20 100%) !important;
 }
 
-.suvan-login #kt_sign_in_submit .indicator-progress {
+.suvan-login .suvan-login__submit .indicator-progress {
   display: none;
 }
 
-.suvan-login #kt_sign_in_submit[data-kt-indicator="on"] .indicator-label {
+.suvan-login .suvan-login__submit[data-kt-indicator="on"] .indicator-label {
   display: none;
 }
 
-.suvan-login #kt_sign_in_submit[data-kt-indicator="on"] .indicator-progress {
+.suvan-login .suvan-login__submit[data-kt-indicator="on"] .indicator-progress {
   display: inline-flex;
   align-items: center;
 }
