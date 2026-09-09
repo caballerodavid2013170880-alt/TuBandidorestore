@@ -112,18 +112,6 @@ var KTTaller = function () {
             }
         );
     };
-    //const initData = () => {
-    //    try {
-    //        zonaConfiguration = JSON.parse(zonaJsonInput.value);
-    //    } catch (e) {
-    //    }
-    //};
-
-    // const clearSelect = (select) => {
-    //     while (select.options.length > 0) {
-    //         select.remove(0);
-    //     }
-    // };
 
     const clearSelect = (select, defaultMessage) => {
         if (!select) return;
@@ -145,8 +133,6 @@ var KTTaller = function () {
                 fetch(`/Taller/GetPlantas?regionId=${regionId}`)
                     .then(response => response.json())
                     .then(data => {
-                        console.log("Plantas recibidas:", data);
-                        console.log("primeraplanta", data[0]);//prueba borrar
 
                         plantaSelect.innerHTML = '<option value="">--Selecciona una Planta--</option>';
                         data.forEach(item => {

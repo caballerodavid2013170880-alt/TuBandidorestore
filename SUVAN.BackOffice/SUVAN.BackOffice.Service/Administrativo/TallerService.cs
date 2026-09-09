@@ -40,23 +40,58 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <returns>ViewModel para el taller especifico.</returns>
         public async Task<TallerViewModel> GetTallerViewModel(int id, int IdEmpresa)
         {
-
-            var taller = await context.Tallers
-                .Where(x => x.IdTaller == id)
-                .Select(d => new TallerViewModel
+            //agregar
+            if (id == 0)
+            {
+                return new TallerViewModel
                 {
-                    IdTaller = d.IdTaller,
-                    NombreTaller = d.NombreTaller!,
-                    Domicilio = d.Domicilio,
-                    Contacto = d.Contacto,
-                    Telefono = d.Telefono,
-                    Email = d.Email,
-                    IdZona = d.ZonaIdzona,
-                    IdDeposito = d.IdDeposito,
-                })
+                    Regiones = await GetRegions(IdEmpresa)
+                };
+            }
+            //editar
+            var taller = await context.Tallers
+                .Include(t => t.ZonaIdzonaNavigation)
+                .Include(t => t.IdDepositoNavigation)
+                .Where(t => t.IdTaller == id && t.IdDepositoNavigation.IdEmpresa == IdEmpresa)
                 .FirstOrDefaultAsync();
+            if (taller == null)
+            {
+                return new TallerViewModel();
+            }
 
-            return taller ?? new TallerViewModel();
+            //obtener jerarquia desde la zona
+
+            var deposito = taller.IdDepositoNavigation;
+            
+            var idRegion = deposito.IdRegion;
+            var idPlanta = deposito.IdPlanta;
+            var idZona = deposito.IdZona;
+            var idDeposito = deposito.IdDeposito;
+
+            var model = new TallerViewModel
+            {
+                IdTaller = taller.IdTaller,
+
+                NombreTaller = taller.NombreTaller,
+                Domicilio = taller.Domicilio,
+                Contacto = taller.Contacto,
+                Telefono = taller.Telefono,
+                Email = taller.Email,
+
+                //jerarquia
+                IdRegion = idRegion,
+                IdPlanta = idPlanta,
+                IdZona = idZona,
+                IdDeposito = idDeposito,
+            };
+
+            //carga de catalogos
+            model.Regiones = await GetRegions(IdEmpresa);
+            model.Plantas = await GetPlantasByRegion(IdEmpresa, idRegion);
+            model.Zonas = await GetZonasByPlanta(IdEmpresa, idPlanta);
+            model.Depositos = await GetDepositosByZona(IdEmpresa, idZona);
+
+            return model;
         }
 
         /// <summary>
@@ -65,63 +100,119 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <param name="model">ViewModel con los datos del taller.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        public async Task<bool> AgregarTaller(TallerViewModel model)
+        public async Task<bool> AgregarTaller(TallerViewModel model, int idEmpresa)
         {
-            Taller taller;
-
+            //Taller taller;
+            //editar
             if (model.IdTaller > 0)
             {
-                taller = await context.Tallers.FirstOrDefaultAsync(x => x.IdTaller == model.IdTaller);
+                var taller = await context.Tallers
+                    .Include(t => t.IdDepositoNavigation)
+                    .FirstOrDefaultAsync(x => x.IdTaller == model.IdTaller && x.IdDepositoNavigation.IdEmpresa == idEmpresa);
 
                 if (taller == null)
+                {
                     throw new Exception("No se encontro el Taller");
+                }
 
+                //validar nombre duplicado
+                var tallerExistente = await context.Tallers
+                    .FirstOrDefaultAsync(x => x.NombreTaller!
+                    .ToLower() == model.NombreTaller!
+                    .ToLower() && x.IdTaller != model.IdTaller);
+
+                if (tallerExistente is not null)
+                {
+                    throw new Exception("Ya existe un taller con el mismo nombre");
+                }
+
+                //solo campos editables
+                taller.IdTaller = model.IdTaller;
+                taller.NombreTaller = model.NombreTaller;
+                taller.Domicilio = model.Domicilio;
+                taller.Contacto = model.Contacto;
+                taller.Telefono = model.Telefono;
+                taller.Email = model.Email;
+                //no se editan
+                //taller.ZonaIdzona = model.IdZona;
+                //taller.IdDeposito = model.IdDeposito;
+
+                await context.SaveChangesAsync();
+                return true;
             }
-            else
+
+            //agregar
+            // valida nombre duplicado
+            var tallerExistenteNuevo = await context.Tallers.FirstOrDefaultAsync(x =>
+            x.NombreTaller!.ToLower() == model.NombreTaller!.ToLower());
+
+            if (tallerExistenteNuevo is not null)
             {
-                taller = new Taller();
-            }
-
-            // valida si un depósito existe con el mismo nombre
-            var tallerExistente = await context.Tallers.FirstOrDefaultAsync(x =>
-            x.NombreTaller!.ToLower() == model.NombreTaller!.ToLower()
-            && x.IdTaller != model.IdTaller);
-
-            if (tallerExistente is not null)
                 throw new Exception("Ya existe un taller con el mismo nombre");
-
-            taller.IdTaller = model.IdTaller;
-            taller.NombreTaller = model.NombreTaller;
-            taller.Domicilio = model.Domicilio;
-            taller.Contacto = model.Contacto;
-            taller.Telefono = model.Telefono;
-            taller.Email = model.Email;
-            taller.ZonaIdzona = model.IdZona;
-            taller.IdDeposito = model.IdDeposito;
-
-            if (model.IdTaller > 0)
-            {
-                context.Tallers.Update(taller);
-
-                await context.SaveChangesAsync();
             }
-            else
-            {
-                context.Tallers.Add(taller);
+            //validar que exista la zona
+            var zona = await context.Zonas
+                .FirstOrDefaultAsync(x => x.IdZona == model.IdZona && x.IdEmpresa == idEmpresa);
 
-                await context.SaveChangesAsync();
+            if (zona == null)
+            {
+                throw new Exception($"La zona con ID {model.IdZona} no existe o no pertenece a la empresa");
             }
+
+            //validar que exista el deposito
+            var deposito = await context.Depositos
+                .FirstOrDefaultAsync(x => x.IdDeposito == model.IdDeposito && x.IdEmpresa == idEmpresa && x.Activo.GetValueOrDefault() == 1);
+
+            if (deposito == null)
+            {
+                throw new Exception($"El depósito con ID {model.IdDeposito} no existe, no pertenece a la empresa o no está activo");
+            }
+
+            //validar jerarquia
+            if (deposito.IdZona != model.IdZona)
+            {
+                throw new Exception("El deposito no pertenece a la zona seleccionada.");
+            }
+
+            if (deposito.IdPlanta != model.IdPlanta)
+            {
+                throw new Exception("El deposito no pertenece a la planta seleccionada.");
+            }
+
+            if (deposito.IdRegion != model.IdRegion)
+            {
+                throw new Exception("El deposito no pertenece a la Region seleccionada");
+            }
+
+            //crear nuevo taller
+            var nuevoTaller = new Taller
+            {
+                NombreTaller = model.NombreTaller,
+                Domicilio = model.Domicilio,
+                Contacto = model.Contacto,
+                Telefono = model.Telefono,
+                Email = model.Email,
+                ZonaIdzona = model.IdZona,
+                IdDeposito = model.IdDeposito
+            };
+
+            context.Tallers.Add(nuevoTaller);
+
+            await context.SaveChangesAsync();
+
             return true;
         }
 
-        /// <summary>
-        /// Elimina un taller en la base de datos.
-        /// </summary>
-        /// <param name="TallerId">Identificador del taller.</param>
-        /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
-        /// <exception cref="Exception"></exception>
 
-        public async Task<bool> EliminarTaller(int TallerId)
+
+/// <summary>
+/// Elimina un taller en la base de datos.
+/// </summary>
+/// <param name="TallerId">Identificador del taller.</param>
+/// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
+/// <exception cref="Exception"></exception>
+
+public async Task<bool> EliminarTaller(int TallerId)
         {
             var taller = await context.Tallers.FirstOrDefaultAsync(x => x.IdTaller == TallerId);
 

@@ -52,7 +52,6 @@
             <div class="card-body py-4">
                 <form class="form w-100" novalidate="novalidate" id="kt_taller_in_form" data-kt-redirect-url="/" asp-controller="Taller" asp-action="AgregarTaller" method="post">
                     @Html.AntiForgeryToken()
-                    <input asp-for="ZonaJson" type="hidden" id="ZonaJson" />
                     <input asp-for="IdTaller" type="hidden" />
                     <div class="fv-row mb-8">
                         <div class="col-sm-12">

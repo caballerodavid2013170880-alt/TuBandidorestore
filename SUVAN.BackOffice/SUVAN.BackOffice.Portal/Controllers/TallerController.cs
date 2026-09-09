@@ -43,15 +43,15 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
-                
+                var idEmpresa = User.GetEmpresaId();
 
                 if (!ModelState.IsValid)
                 {
-                    model.Regiones = await taller.GetRegions(User.GetEmpresaId());
+                    model.Regiones = await taller.GetRegions(idEmpresa);
                     return View(model);
                 }
 
-                var result = await taller.AgregarTaller(model);
+                var result = await taller.AgregarTaller(model, idEmpresa);
 
                 if (result)
                 {

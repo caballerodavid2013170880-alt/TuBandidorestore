@@ -30,7 +30,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <param name="model">ViewModel con los datos del taller.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        Task<bool> AgregarTaller(TallerViewModel model);
+        Task<bool> AgregarTaller(TallerViewModel model, int idEmpresa);
 
         // 1407 evitar conflictos con depostios disponibles: List<TallerViewModel.DepositosViewModel> ObtenerDeposito(int zonaId);
 
