@@ -21,6 +21,28 @@
 .llanta-vehicle-legend .badge {
     font-size: 10px;
     padding: 0.32rem 0.48rem;
+    border: 0 !important;
+    box-shadow: none !important;
+}
+
+.llanta-vehicle-legend .llanta-legend-badge--libre {
+    background-color: var(--bs-success-light) !important;
+    color: var(--bs-success) !important;
+}
+
+.llanta-vehicle-legend .llanta-legend-badge--ocupada {
+    background-color: var(--bs-primary-light) !important;
+    color: var(--bs-primary) !important;
+}
+
+.llanta-vehicle-legend .llanta-legend-badge--advertencia {
+    background-color: var(--bs-warning-light) !important;
+    color: var(--bs-warning) !important;
+}
+
+.llanta-vehicle-legend .llanta-legend-badge--fuera-servicio {
+    background-color: var(--bs-danger-light) !important;
+    color: var(--bs-danger) !important;
 }
 
 .llanta-vehicle-shell {
@@ -206,8 +228,8 @@
 }
 
 .llanta-wheel.active {
-    border-color: var(--bs-primary);
-    box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.16), 0 16px 30px rgba(15, 23, 42, 0.2);
+    border-color: var(--bs-info);
+    box-shadow: 0 0 0 4px rgba(var(--bs-info-rgb), 0.18), 0 16px 30px rgba(15, 23, 42, 0.2);
 }
 
 .llanta-rotacion-seleccion-activa .llanta-wheel {
