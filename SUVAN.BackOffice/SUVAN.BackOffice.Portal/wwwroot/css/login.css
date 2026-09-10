@@ -33,6 +33,10 @@ body.login-page {
   background: #fff;
 }
 
+.suvan-login__panel--legal {
+  overflow: hidden;
+}
+
 .suvan-login__form-area {
   display: flex;
   flex: 1 1 auto;
@@ -45,6 +49,77 @@ body.login-page {
   position: relative;
   z-index: 1;
   width: min(100%, 420px);
+}
+
+.suvan-login__legal-area {
+  align-items: center;
+  overflow-y: auto;
+  min-height: 0;
+  padding-top: 38px;
+  padding-bottom: 20px;
+}
+
+.suvan-login__legal-wrapper {
+  width: min(100%, 680px);
+}
+
+.suvan-login__legal-wrapper .suvan-login__brand {
+  width: min(100%, 290px);
+  margin-bottom: 30px;
+}
+
+.suvan-login__legal-heading {
+  margin-bottom: 22px;
+  text-align: center;
+}
+
+.suvan-login__legal-heading h1 {
+  margin: 0;
+  color: #25252b;
+  font-size: clamp(26px, 2.3vw, 36px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.suvan-login__legal-content {
+  position: relative;
+  z-index: 1;
+  color: #56565e;
+  font-size: 14px;
+  line-height: 1.65;
+  text-align: center;
+}
+
+.suvan-login__legal-content p,
+.suvan-login__legal-content ul,
+.suvan-login__legal-content ol,
+.suvan-login__legal-content h2,
+.suvan-login__legal-content h3,
+.suvan-login__legal-content h4 {
+  margin-top: 0;
+  margin-bottom: 16px;
+}
+
+.suvan-login__legal-content h2,
+.suvan-login__legal-content h3,
+.suvan-login__legal-content h4 {
+  color: #25252b;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.suvan-login__legal-content h2 { font-size: 21px; }
+.suvan-login__legal-content h3 { font-size: 17px; }
+.suvan-login__legal-content h4 { font-size: 15px; }
+
+.suvan-login__legal-content a {
+  color: #8b1021;
+  font-weight: 600;
+}
+
+.suvan-login__legal-content ul,
+.suvan-login__legal-content ol {
+  padding-left: 24px;
 }
 
 .suvan-login__brand {
