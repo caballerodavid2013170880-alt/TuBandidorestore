@@ -234,7 +234,7 @@ var KTTaller = function () {
                             buttonsStyling: false,
                             confirmButtonText: "Aceptar",
                             customClass: {
-                                confirmButton: "btn fw-bold btn-success"//btn fw-bold btn-primary
+                                confirmButton: "btn fw-bold btn-success"
                             }
                         })
 
