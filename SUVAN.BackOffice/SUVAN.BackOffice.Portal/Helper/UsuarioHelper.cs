@@ -14,15 +14,18 @@ namespace SUVAN.BackOffice.Portal.Helper
     private readonly IMenuService menuService;
     private readonly IPermisoService permisoService;
     private readonly IAdminService adminService;
+        private readonly IUsuarioJerarquiaService usuarioJerarquiaService;
 
-    public UsuarioHelper(IMenuService menuService,
+        public UsuarioHelper(IMenuService menuService,
       IPermisoService permisoService,
-      IAdminService adminService)
+      IAdminService adminService,
+      IUsuarioJerarquiaService usuarioJerarquiaService)
     {
       this.menuService = menuService;
       this.permisoService = permisoService;
       this.adminService = adminService;
-    }
+      this.usuarioJerarquiaService = usuarioJerarquiaService;
+        }
 
     /// <summary>
     /// obtiene las opciones del menu del usuario logueado
@@ -90,5 +93,60 @@ namespace SUVAN.BackOffice.Portal.Helper
       return null!;
     }
 
-  }
+        /// <summary>
+        /// Obtiene las empresas asignadas al usuario y sus almacenes/depósitos asignados en la jerarquía
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        public async Task<List<UsuarioEmpresaMenuViewModel>> GetEmpresasConDepositos(ClaimsPrincipal user)
+        {
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                var userIdentificador = user.GetUserId();
+                var adminEmpresas = await adminService.GetEmpresaUsuario(userIdentificador);
+                if (adminEmpresas == null || !adminEmpresas.Any())
+                {
+                    return new List<UsuarioEmpresaMenuViewModel>();
+                }
+
+                var result = new List<UsuarioEmpresaMenuViewModel>();
+
+                foreach (var ae in adminEmpresas)
+                {
+                    var empresaVm = new UsuarioEmpresaMenuViewModel
+                    {
+                        EmpresaId = ae.EmpresaIdempresa,
+                        EmpresaNombre = ae.EmpresaIdempresaNavigation?.Nombre ?? string.Empty,
+                        EsPrincipal = ae.Principal == 1
+                    };
+
+                    var jerarquias = await usuarioJerarquiaService.GetJerarquiasUsuario("Admin", userIdentificador, ae.EmpresaIdempresa);
+                    if (jerarquias != null && jerarquias.Any())
+                    {
+                        empresaVm.Depositos = jerarquias
+                          .Where(j => j.IdDepositoNavigation != null || (j.IdDeposito.HasValue && j.IdDeposito.Value > 0))
+                          .Select(j => new UsuarioDepositoMenuViewModel
+                          {
+                              IdUsuarioJerarquia = j.IdUsuarioJerarquia,
+                              DepositoId = j.IdDeposito,
+                              DepositoNombre = j.IdDepositoNavigation?.NombreDeposito ?? $"Depósito #{j.IdDeposito}",
+                              ZonaNombre = j.IdZonaNavigation?.NombreZona ?? string.Empty,
+                              PlantaNombre = j.IdPlantaNavigation?.NombrePlanta ?? string.Empty,
+                              RegionNombre = j.IdRegionNavigation?.NombreRegion ?? string.Empty,
+                              EsPrincipal = j.EsPrincipal == 1
+                          })
+                          .ToList();
+                    }
+
+                    result.Add(empresaVm);
+                }
+
+                return result;
+            }
+
+            return new List<UsuarioEmpresaMenuViewModel>();
+        }
+
+
+        }
 }

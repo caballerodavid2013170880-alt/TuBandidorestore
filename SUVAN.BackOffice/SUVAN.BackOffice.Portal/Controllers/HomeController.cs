@@ -26,10 +26,12 @@ namespace SUVAN.BackOffice.Portal.Controllers
         private readonly IDashboardService dashboardService;
         private readonly IViajesService viajeService;
         private readonly IMensajeAdminService mensajeAdminService;
+        private readonly IUsuarioJerarquiaService usuarioJerarquiaService;
+
 
         public HomeController(ILogger<HomeController> logger, IOptions<MFASettingsOptions> mfaSettings, IHttpContextAccessor httpContextAccessor,
           IAdminService adminService, IAuthenticationClaimService authenticationClaimService, IDashboardService dashboardService,
-          IViajesService viajeService, IMensajeAdminService mensajeAdminService)
+          IViajesService viajeService, IMensajeAdminService mensajeAdminService, IUsuarioJerarquiaService usuarioJerarquiaService)
         {
             _logger = logger;
             this.mfaSettings = mfaSettings;
@@ -39,6 +41,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
             this.dashboardService = dashboardService;
             this.viajeService = viajeService;
             this.mensajeAdminService = mensajeAdminService;
+            this.usuarioJerarquiaService = usuarioJerarquiaService;
         }
 
         public async Task<IActionResult> Index()
@@ -62,6 +65,29 @@ namespace SUVAN.BackOffice.Portal.Controllers
             {
                 await adminService.CambiarEmpresa(User.GetUserId(), id);
                 var usuario = await adminService.GetAdmin(User.GetUserId());
+
+                var empresa = usuario.AdminEmpresas.FirstOrDefault(x => x.Principal == 1);
+                await authenticationClaimService.SignInAsync(usuario, empresa!);
+                return RedirectToAction("Index", "Home");
+            }
+            catch (Exception)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        public async Task<IActionResult> CambiarDeposito(int idEmpresa, int idJerarquia)
+        {
+            try
+            {
+                int userId = User.GetUserId();
+                if (idEmpresa != User.GetEmpresaId())
+                {
+                    await adminService.CambiarEmpresa(userId, idEmpresa);
+                }
+                await usuarioJerarquiaService.CambiarDepositoPrincipal("Admin", userId, idEmpresa, idJerarquia);
+                var usuario = await adminService.GetAdmin(userId);
+
                 var empresa = usuario.AdminEmpresas.FirstOrDefault(x => x.Principal == 1);
                 await authenticationClaimService.SignInAsync(usuario, empresa!);
                 return RedirectToAction("Index", "Home");

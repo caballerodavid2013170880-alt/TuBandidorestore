@@ -9,6 +9,7 @@ namespace SUVAN.BackOffice.Portal.Helper
     const string claimTypePerfilId = "Perfil";
     const string claimTypeEmpresaId = "Empresa";
     const string claimTypeNombreEmpresa = "NombreEmpresa";
+    const string claimTypeNombreDeposito = "NombreDeposito";
 
         const string claimTypeRegionId = "RegionId";
         const string claimTypePlantaId = "PlantaId";
@@ -42,7 +43,20 @@ namespace SUVAN.BackOffice.Portal.Helper
             return userEmpresa ?? string.Empty;
         }
 
-      return string.Empty;
+
+            return string.Empty;
+        }
+
+    public static string GetNombreDeposito(this ClaimsPrincipal user)
+        {
+            if (user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                var userDeposito = user.Claims
+                  .FirstOrDefault(i => i.Type == claimTypeNombreDeposito)?.Value;
+
+                return userDeposito ?? string.Empty;
+            }
+            return string.Empty;
     }
 
     public static string GetPerfilId(this ClaimsPrincipal user)

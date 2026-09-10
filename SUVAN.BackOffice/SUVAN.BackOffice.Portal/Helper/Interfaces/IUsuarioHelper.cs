@@ -8,7 +8,8 @@ namespace SUVAN.BackOffice.Portal.Helper
   public interface IUsuarioHelper
   {
     Task<List<AdminEmpresa>> GetEmpresas(ClaimsPrincipal user);
-    Task<List<MenuViewModel>> GetOpcionesMenu(ClaimsPrincipal user);
+        Task<List<UsuarioEmpresaMenuViewModel>> GetEmpresasConDepositos(ClaimsPrincipal user);
+        Task<List<MenuViewModel>> GetOpcionesMenu(ClaimsPrincipal user);
     Task<PermisoPaginaViewModel> GetPermisosPagina(ClaimsPrincipal user, EnumOpcionMenu opcion);
   }
 }

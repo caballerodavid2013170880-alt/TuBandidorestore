@@ -16,5 +16,6 @@ namespace SUVAN.BackOffice.Service.Seguridad
         Task<List<CatalogItemViewModel>> GetZonasPorPlanta(int idEmpresa, int idRegion, int idPlanta);
         Task<List<CatalogItemViewModel>> GetDepositosPorZona(int idEmpresa, int idRegion, int idPlanta, int idZona);
         Task<List<CatalogItemViewModel>> GetDeptosPorDeposito(int idEmpresa, int idRegion, int idPlanta, int idZona, int idDeposito);
+        Task<bool> CambiarDepositoPrincipal(string tipoUsuario, int idUsuario, int idEmpresa, int idUsuarioJerarquia);
     }
 }

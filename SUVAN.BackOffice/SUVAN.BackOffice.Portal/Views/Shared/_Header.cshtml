@@ -25,6 +25,13 @@
           <i class="bi bi-building-fill fs-2"></i>
         </span>
         <span class="fs-2 fw-bold text-gray-800">@User.GetNombreEmpresa()</span>
+                @{
+                    var nombreDep = User.GetNombreDeposito();
+                    if (!string.IsNullOrWhiteSpace(nombreDep))
+                    {
+                        <span class="fs-2 fw-bold text-gray-800 ms-2">/ @nombreDep</span>
+                    }
+                }
       </div>
       <div class="app-navbar-item ms-1 ms-md-3">
         <!--begin::Menu wrapper-->

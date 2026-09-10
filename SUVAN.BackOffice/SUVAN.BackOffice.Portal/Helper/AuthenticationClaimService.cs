@@ -44,6 +44,10 @@ namespace SUVAN.BackOffice.Portal.Helper
                 if (jerarquia.IdZona.HasValue) claims.Add(new Claim("ZonaId", jerarquia.IdZona.Value.ToString()));
                 if (jerarquia.IdDeposito.HasValue) claims.Add(new Claim("DepositoId", jerarquia.IdDeposito.Value.ToString()));
                 if (jerarquia.IdDepto.HasValue) claims.Add(new Claim("DeptoId", jerarquia.IdDepto.Value.ToString()));
+                if (jerarquia.IdDepositoNavigation != null && !string.IsNullOrWhiteSpace(jerarquia.IdDepositoNavigation.NombreDeposito))
+                {
+                    claims.Add(new Claim("NombreDeposito", jerarquia.IdDepositoNavigation.NombreDeposito));
+                }
             }
 
             var claimsIdentity = new ClaimsIdentity(claims, "AuthScheme");

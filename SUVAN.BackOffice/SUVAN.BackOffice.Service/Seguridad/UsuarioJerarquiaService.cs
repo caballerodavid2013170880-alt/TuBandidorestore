@@ -178,5 +178,30 @@ namespace SUVAN.BackOffice.Service.Seguridad
                 })
                 .ToListAsync();
         }
+
+
+        public async Task<bool> CambiarDepositoPrincipal(string tipoUsuario, int idUsuario, int idEmpresa, int idUsuarioJerarquia)
+        {
+            await context.UsuarioJerarquia
+                .Where(u => u.TipoUsuario == tipoUsuario
+                         && u.IdUsuario == idUsuario
+                         && u.IdEmpresa == idEmpresa)
+                .ExecuteUpdateAsync(u => u.SetProperty(x => x.EsPrincipal, (ulong)0));
+
+            var jerarquia = await context.UsuarioJerarquia
+                .FirstOrDefaultAsync(u => u.IdUsuarioJerarquia == idUsuarioJerarquia
+                                       && u.TipoUsuario == tipoUsuario
+                                       && u.IdUsuario == idUsuario
+                                       && u.IdEmpresa == idEmpresa);
+
+            if (jerarquia != null)
+            {
+                jerarquia.EsPrincipal = 1;
+                await context.SaveChangesAsync();
+                return true;
+            }
+
+            return false;
+        }
     }
 }
