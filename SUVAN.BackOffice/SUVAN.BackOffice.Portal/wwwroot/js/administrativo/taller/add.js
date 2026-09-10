@@ -1,5 +1,7 @@
 ﻿"use strict";
 
+//const { Swal } = require("../../../assets/plugins/global/plugins.bundle");
+
 // Class definition
 var KTTaller = function () {
     // Elements
@@ -204,16 +206,69 @@ var KTTaller = function () {
             e.preventDefault();
 
             // Validate form
-            validator.validate().then(function (status) {
-                if (status == 'Valid') {
+            validator.validate().then(async function (status) {
+                if (status !== 'Valid') {
                     // Disable button to avoid multiple click
-                    submitButton.setAttribute('data-kt-indicator', 'on');
-                    submitButton.disabled = true;
-                    form.submit();
+                    return;
+                }
+
+                //deshabilitar el botón mientras procesa
+                submitButton.setAttribute('data-kt-indicator', 'on');
+                submitButton.disabled = true;
+
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    
+
+                    if (data.success) {
+                        await Swal.fire({
+                            text: data.message || "Taller guardado correctamente.",
+                            icon: "success",
+                            buttonsStyling: false,
+                            confirmButtonText: "Aceptar",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-success"//btn fw-bold btn-primary
+                            }
+                        })
+
+                        window.location.href = '/Taller/Index';
+
+                    } else {
+                        Swal.fire({
+                            text: result.message || "Ocurrió un error al guardar el taller.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Aceptar",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary"
+                            }
+                        });
+                    }
+                } catch (error) {
+                    
+                    Swal.fire({
+                        text: "Error de conexión con el servidor",
+                        icon: "error",
+                        buttonsStyling: false,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn fw-bold btn-primary"
+                        }
+                    });
+                } finally {
+                    submitButton.removeAttribute('data-kt-indicator');
+                    submitButton.disabled = false;
                 }
             });
         });
-    }
+    };
 
     const initControls = () => {
         initCascada();

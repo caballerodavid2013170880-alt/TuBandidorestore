@@ -47,25 +47,34 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
                 if (!ModelState.IsValid)
                 {
-                    model.Regiones = await taller.GetRegions(idEmpresa);
-                    return View(model);
+                    var errorMessage = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .FirstOrDefault()?.ErrorMessage ?? "Hay errores en el formulario.";
+                    return Json(new { success = false, message = errorMessage });
+
+                    //model.Regiones = await taller.GetRegions(idEmpresa);
+                    //return View(model);
                 }
 
                 var result = await taller.AgregarTaller(model, idEmpresa);
 
                 if (result)
                 {
-                    return RedirectToAction("Index", "Taller");
+                    return Json(new { success = true, message = "Taller guardado correctamente" });
+
                 }
 
-                model.Regiones = await taller.GetRegions(User.GetEmpresaId());
-                return View(model);
+                return Json(new { success = false, message = "No se pudo guardar el taller" });
+
+                //model.Regiones = await taller.GetRegions(User.GetEmpresaId());
+                //return View(model);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                model.Regiones = await taller.GetRegions(User.GetEmpresaId());
-                return View(model);
+                return Json(new { success = false, message = ex.Message });
+                //ModelState.AddModelError(string.Empty, ex.Message);
+                //model.Regiones = await taller.GetRegions(User.GetEmpresaId());
+                //return View(model);
             }
         }
 
@@ -76,14 +85,12 @@ namespace SUVAN.BackOffice.Portal.Controllers
             {
                 await taller.EliminarTaller(model.IdTaller);
 
-
-                return Ok(new { success = true });
-
+                return Json(new { success = true, message = "Taller eliminado correctamente." });
 
             }
             catch (Exception ex)
             {
-                return Ok(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = ex.Message });
             }
         }
 
