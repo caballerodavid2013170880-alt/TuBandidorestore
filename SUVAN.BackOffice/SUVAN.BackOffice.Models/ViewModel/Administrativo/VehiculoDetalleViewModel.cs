@@ -150,6 +150,34 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
             public List<MarcaViewModel> MarcasView { get; set; } = new();
 
             public List<TipoVehiculoViewModel> TipoVehiculoView { get; set; } = new();
+
+            public List<ModeloEjeViewModel> Ejes { get; set; } = new();
+
+            public List<TipoEjeCatalogoViewModel> TiposEjeView { get; set; } = new();
+        }
+
+        public class ModeloEjeViewModel
+        {
+            public int IdModeloEje { get; set; }
+
+            public int IdTipoEje { get; set; }
+
+            public ushort NumeroEje { get; set; }
+
+            public byte NumeroPosiciones { get; set; }
+        }
+
+        public class TipoEjeCatalogoViewModel
+        {
+            public int IdTipoEje { get; set; }
+
+            public string Nombre { get; set; } = null!;
+
+            public string Descripcion { get; set; } = null!;
+
+            public byte NumeroPosiciones { get; set; }
+
+            public string NombreTipoEjeId => $"{IdTipoEje} - {Nombre}";
         }
 
         public class MarcaViewModel

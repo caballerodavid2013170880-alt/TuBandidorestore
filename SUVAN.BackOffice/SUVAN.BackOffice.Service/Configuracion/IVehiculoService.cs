@@ -12,7 +12,7 @@ namespace SUVAN.BackOffice.Service.Configuracion
     /// <param name="model">ViewModel del vehículo.</param>
     /// <returns>Indica si la operación fue exitosa.</returns>
     /// <exception cref="Exception">Se lanza en caso de error.</exception>
-    Task<bool> AgregarVehiculo(AgregarUnidadViewModel model, int empresaId);
+    Task<bool> AgregarVehiculo(AgregarUnidadViewModel model, int empresaId, int idUsuario);
     /// <summary>
     /// Obtiene todos los vehículos desde la base de datos, incluyendo la información del tipo de vehículo asociado.
     /// </summary>
