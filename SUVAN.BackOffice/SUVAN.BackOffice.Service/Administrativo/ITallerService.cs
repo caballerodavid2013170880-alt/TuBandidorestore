@@ -1,4 +1,5 @@
 ﻿using SUVAN.BackOffice.Database.Entities;
+using SUVAN.BackOffice.Models.ViewModel;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
 using System;
 using System.Collections.Generic;
@@ -29,7 +30,7 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <param name="model">ViewModel con los datos del taller.</param>
         /// <returns>True si la operación fue exitosa, de lo contrario, lanza una excepción.</returns>
         /// <exception cref="Exception"></exception>
-        Task<bool> AgregarTaller(TallerViewModel model);
+        Task<bool> AgregarTaller(TallerViewModel model, int idEmpresa);
 
         // 1407 evitar conflictos con depostios disponibles: List<TallerViewModel.DepositosViewModel> ObtenerDeposito(int zonaId);
 
@@ -41,5 +42,16 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <exception cref="Exception"></exception>
 
         Task<bool> EliminarTaller(int TallerId);
+
+        /// <summary>
+        /// Metodos en cascada para la jerarquia del taller
+        /// </summary>
+        /// <returns>Cascada Jerarquia.</returns>
+
+        //Casacada jerarquia
+        Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetRegions(int id_empresa);
+        Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetPlantasByRegion(int id_empresa, int id_region);
+        Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetZonasByPlanta(int id_empresa, int id_planta);
+        Task<List<VehiculoDetalleViewModel.CatalogItemViewModel>> GetDepositosByZona(int id_empresa, int id_zona);
     }
 }
