@@ -14,6 +14,7 @@
         return;
     }
     var isAgaregarText = Model.IdTaller == 0 ? "Agregar" : "Editar";
+    var isEdicion = Model.IdTaller > 0;
 }
 <!--begin::Toolbar-->
 <div id="kt_app_toolbar" class="app-toolbar ">
@@ -51,7 +52,6 @@
             <div class="card-body py-4">
                 <form class="form w-100" novalidate="novalidate" id="kt_taller_in_form" data-kt-redirect-url="/" asp-controller="Taller" asp-action="AgregarTaller" method="post">
                     @Html.AntiForgeryToken()
-                    <input asp-for="ZonaJson" type="hidden" id="ZonaJson" />
                     <input asp-for="IdTaller" type="hidden" />
                     <div class="fv-row mb-8">
                         <div class="col-sm-12">
@@ -99,30 +99,154 @@
                             </div>
                         </div>
                     </div>
+                    <!--begin::Casacada jerarquia-->
+                    <!--begin::Fila 1 — Región y Planta-->
                     <div class="row">
+                        <!--begin::Selector de Región-->
                         <div class="col-sm-6">
-                            <div class="fv-row mb-3">
-                                <label asp-for="ZonaIdzona" class="col-form-label text-gray-600 required">Elige la Zona</label>
-                                <select asp-for="ZonaIdzona" asp-items="new SelectList(Model.ZonaView, nameof(TallerViewModel.ZonasViewModel.ZonaId), nameof(TallerViewModel.ZonasViewModel.IdNombre), Model.ZonaIdzona)" class="form-control">
-                                    <option value="">Selecciona una Zona</option>
-                                </select>
+                            <div class="fv-row mb-8">
+                                <label asp-for="IdRegion" class="col-form-label text-gray-600 required">Región</label>
+                                @if (isEdicion)
+                                {
+                                    @* Al Editar: selector visible pero deshabilitado; hidden garantiza el POST *@
+                                    <select id="selectIdRegion" name="IdRegion_display"
+                                            class="form-select bg-transparent" disabled>
+                                        <option value="">-- Seleccione una Región --</option>
+                                        @foreach (var region in Model.Regiones)
+                                        {
+                                            <option value="@region.Id"
+                                                    selected="@(region.Id == Model.IdRegion ? "selected" : null)">
+                                                @region.Nombre
+                                            </option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdRegion" />
+                                }
+                                else
+                                {
+                                    @* Al Agregar: id y name explícitos (sin asp-for) para
+                                       evitar que SelectTagHelper sobrescriba el id con el nombre del property *@
+                                    <select id="selectIdRegion" name="IdRegion"
+                                            class="form-select bg-transparent">
+                                        <option value="">-- Seleccione una Región --</option>
+                                        @foreach (var region in Model.Regiones)
+                                        {
+                                            <option value="@region.Id">@region.Nombre</option>
+                                        }
+                                    </select>
+                                }
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                                    <span asp-validation-for="ZonaIdzona"></span>
+                                    <span asp-validation-for="IdRegion"></span>
                                 </div>
                             </div>
                         </div>
+                        <!--end::Selector de Región-->
+                        <!--begin::Selector de Planta (se habilita vía AJAX al seleccionar Región)-->
                         <div class="col-sm-6">
-                            <div class="fv-row mb-3">
-                                <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Elige el Depósito</label>
-                                <select asp-for="IdDeposito" asp-items="new SelectList(Model.DepositoView, nameof(TallerViewModel.DepositosViewModel.DepositoId), nameof(TallerViewModel.DepositosViewModel.DepositoNombreId), Model.IdDeposito)" class="form-control">
-                                    <option value="">Selecciona un depósito</option>
-                                </select>
+                            <div class="fv-row mb-8">
+                                <label asp-for="IdPlanta" class="col-form-label text-gray-600 required">Planta</label>
+                                @if (isEdicion)
+                                {
+                                    @* Al Editar: deshabilitado, pre-cargado desde servidor *@
+                                    <select id="selectIdPlanta" name="IdPlanta_display"
+                                            class="form-select bg-transparent" disabled>
+                                        <option value="">-- Seleccione una Planta --</option>
+                                        @foreach (var planta in Model.Plantas)
+                                        {
+                                            <option value="@planta.Id"
+                                                    selected="@(planta.Id == Model.IdPlanta ? "selected" : null)">
+                                                @planta.Nombre
+                                            </option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdPlanta" />
+                                }
+                                else
+                                {
+                                    @* Al Agregar: deshabilitado hasta que se seleccione una Región *@
+                                    <select id="selectIdPlanta" name="IdPlanta"
+                                            class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Primero seleccione una Región --</option>
+                                    </select>
+                                }
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="IdPlanta"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Selector de Planta-->
+                    </div>
+                    <!--end::Fila 1-->
+                    <!--begin::Fila 2 — Zona y Depósito-->
+                    <div class="row">
+                        <!--begin::Selector de Zona (se habilita vía AJAX al seleccionar Planta)-->
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-8">
+                                <label asp-for="IdZona" class="col-form-label text-gray-600 required">Zona</label>
+                                @if (isEdicion)
+                                {
+                                    @* Al Editar: deshabilitado, pre-cargado desde servidor *@
+                                    <select id="selectIdZona" name="IdZona_display"
+                                            class="form-select bg-transparent" disabled>
+                                        <option value="">-- Seleccione una Zona --</option>
+                                        @foreach (var zona in Model.Zonas)
+                                        {
+                                            <option value="@zona.Id"
+                                                    selected="@(zona.Id == Model.IdZona ? "selected" : null)">
+                                                @zona.Nombre
+                                            </option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdZona" />
+                                }
+                                else
+                                {
+                                    @* Al Agregar: deshabilitado hasta que se seleccione una Planta *@
+                                    <select id="selectIdZona" name="IdZona"
+                                            class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Primero seleccione una Planta --</option>
+                                    </select>
+                                }
+                                <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    <span asp-validation-for="IdZona"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Selector de Zona-->
+                        <!--begin::Selector de Depósito (se habilita vía AJAX al seleccionar Zona)-->
+                        <div class="col-sm-6">
+                            <div class="fv-row mb-8">
+                                <label asp-for="IdDeposito" class="col-form-label text-gray-600 required">Depósito</label>
+                                @if (isEdicion)
+                                {
+                                    @* Al Editar: deshabilitado, pre-cargado desde servidor *@
+                                    <select id="selectIdDeposito" name="IdDeposito_display"
+                                            class="form-select bg-transparent" disabled>
+                                        <option value="">-- Seleccione un Depósito --</option>
+                                        @foreach (var dep in Model.Depositos)
+                                        {
+                                            <option value="@dep.Id"
+                                                    selected="@(dep.Id == Model.IdDeposito ? "selected" : null)">
+                                                @dep.Nombre
+                                            </option>
+                                        }
+                                    </select>
+                                    <input type="hidden" asp-for="IdDeposito" />
+                                }
+                                else
+                                {
+                                    @* Al Agregar: deshabilitado hasta que se seleccione una Zona *@
+                                    <select id="selectIdDeposito" name="IdDeposito"
+                                            class="form-select bg-transparent" disabled>
+                                        <option value="0">-- Primero seleccione una Zona --</option>
+                                    </select>
+                                }
                                 <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                                     <span asp-validation-for="IdDeposito"></span>
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        <!--end::Selector de Depósito-->
                     <div class="text-end">
                         <button type="submit" id="kt_taller_in_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Guardar</span>

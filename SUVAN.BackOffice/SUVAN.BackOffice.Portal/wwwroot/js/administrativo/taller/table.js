@@ -1,5 +1,7 @@
 ﻿"use strict";
 
+//const { icon } = require("leaflet");
+
 var KTTallerList = function () {
     // Define shared variables
     var table = document.getElementById('kt_table_taller');
@@ -58,6 +60,7 @@ var KTTallerList = function () {
 
                 // Get user name
                 const contenidoName = parent.querySelectorAll('td')[0].innerText;
+                const tallerId = parseInt(d.getAttribute('data-kt-taller-delete-item'));
 
                 // SweetAlert2 pop up --- official docs reference: https://sweetalert2.github.io/
                 Swal.fire({
@@ -71,54 +74,57 @@ var KTTallerList = function () {
                         confirmButton: "btn fw-bold btn-danger",
                         cancelButton: "btn fw-bold btn-active-light-primary"
                     },
-                    preConfirm: async () => {
+                }).then(async function (result) {
+                    if (result.isConfirmed) {
+                        try {
+                            const response = await fetch('/Taller/EliminarTaller', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({ IdTaller: tallerId })
+                            });
+                            const data = await response.json();
 
-                        const tallerId = parseInt(d.getAttribute('data-kt-taller-delete-item'));
-                        const response = await fetch('/Taller/EliminarTaller', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({ IdTaller: tallerId })
-                        });
-                        const data = await response.json();
-                        console.log(data);
-
-
-                    }
-                }).then(function (result) {
-                    if (result.value) {
-                        Swal.fire({
-                            text: `Usted eliminó el taller ${contenidoName}`,
-                            icon: "success",
-                            buttonsStyling: false,
-                            confirmButtonText: "Aceptar",
-                            customClass: {
-                                confirmButton: "btn fw-bold btn-primary",
+                            if (data.success) {
+                                Swal.fire({
+                                    text: data.message || `Usted eliminó el taller ${contenidoName}`,
+                                    icon: "success",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Aceptar",
+                                    customClass: {
+                                        confirmButton: "btn fw-bold btn-primary",
+                                    }
+                                }).then(function () {
+                                    datatable.row($(parent)).remove().draw();
+                                });
+                            } else {
+                                Swal.fire({
+                                    text: data.message || "No se pudo eliminar el taller.",
+                                    icon: "error",
+                                    buttonsStyling: false,
+                                    confirmButtonText: "Aceptar",
+                                    customClass: {
+                                        confirmButton: "btn fw-bold btn-primary",
+                                    }
+                                });
                             }
-                        }).then(function () {
-                            // Remove current row
-                            datatable.row($(parent)).remove().draw();
-                            //location.reload();
-                        }).then(function () {
-                            // Detect checked checkboxes
-                            toggleToolbars();
-                        });
-                    } else if (result.dismiss === 'cancel') {
-                        Swal.fire({
-                            text: result.value.message,
-                            icon: "error",
-                            buttonsStyling: false,
-                            confirmButtonText: "Ok, got it!",
-                            customClass: {
-                                confirmButton: "btn fw-bold btn-primary",
-                            }
-                        });
+                        } catch (error) {
+                            Swal.fire({
+                                text: "Error de conexion al intentar eliminar",
+                                icon: "error",
+                                buttonsStyling: false,
+                                confirmButtonText: "Aceptar",
+                                customClass: {
+                                    confirmButton: "btn fw-bold btn-primary",
+                                }
+                            });
+                        }
                     }
                 });
-            })
+            });
         });
-    }
+    };
 
     return {
         // Public functions  
