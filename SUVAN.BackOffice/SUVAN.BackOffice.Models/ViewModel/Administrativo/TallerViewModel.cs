@@ -13,17 +13,12 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
 
         public List<DepositosViewModel> DepositoView { get; set; } = new();
 
-        public string ZonaJson { get; set; } = string.Empty;
+        //public string ZonaJson { get; set; } = string.Empty;
 
         public int IdTaller { get; set; }
-
-        public int ZonaIdzona { get; set; }
-
         public string NombreZona { get; set; } = string.Empty;
 
         public string NombreTaller { get; set; } = null!;
-
-        public int IdDeposito { get; set; }
 
         public string NombreDeposito { get; set; } = string.Empty;
 
@@ -44,6 +39,19 @@ namespace SUVAN.BackOffice.Models.ViewModel.Logistica
         public ulong? Refaccion { get; set; }
 
         public float? ValorUnitario { get; set; }
+
+        //propiedades jerarquia cascada
+        public int IdRegion { get; set; }
+        public int IdPlanta { get; set; }
+        public int IdZona { get; set; }
+        public int IdDeposito { get; set; }
+
+        //listas desplegables para caraga de datos
+        //public List<CatalogItemViewModel> Regiones { get; set; } = new();
+        public List<VehiculoDetalleViewModel.CatalogItemViewModel> Regiones { get; set; } = new();
+        public List<VehiculoDetalleViewModel.CatalogItemViewModel> Plantas { get; set; } = new();
+        public List<VehiculoDetalleViewModel.CatalogItemViewModel> Zonas { get; set; } = new();
+        public List<VehiculoDetalleViewModel.CatalogItemViewModel> Depositos { get; set; } = new();
 
         public class ZonasViewModel
         {

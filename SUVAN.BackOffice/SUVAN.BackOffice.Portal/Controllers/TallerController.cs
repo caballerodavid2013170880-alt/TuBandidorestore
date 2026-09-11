@@ -29,10 +29,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
 
         public async Task<IActionResult> AgregarTaller(int id)
         {
-            var agregarModel = await taller.GetTallerViewModel(id, User.GetEmpresaId());
-            // 1407 evitar conflictos con depostios disponibles   agregarModel.DepositoView = taller.ObtenerDeposito(agregarModel.ZonaIdzona);
-            agregarModel.ZonaJson = JsonConvert.SerializeObject(agregarModel.ZonaView);
-            return View(agregarModel);
+            var idEmpresa = User.GetEmpresaId();
+            var model = await taller.GetTallerViewModel(id, idEmpresa);
+            
+            //caraga de regiones iniciales para el primer selector  (regiones)
+            model.Regiones = await taller.GetRegions(idEmpresa);
+
+            return View(model);
         }
 
         [HttpPost]
@@ -40,26 +43,38 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
-                // 1407 evitar conflictos con depostios disponibles model.DepositoView = taller.ObtenerDeposito(model.ZonaIdzona);
+                var idEmpresa = User.GetEmpresaId();
 
                 if (!ModelState.IsValid)
                 {
-                    return View(model);
+                    var errorMessage = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .FirstOrDefault()?.ErrorMessage ?? "Hay errores en el formulario.";
+                    return Json(new { success = false, message = errorMessage });
+
+                    //model.Regiones = await taller.GetRegions(idEmpresa);
+                    //return View(model);
                 }
 
-                var result = await taller.AgregarTaller(model);
+                var result = await taller.AgregarTaller(model, idEmpresa);
 
                 if (result)
                 {
-                    return RedirectToAction("Index", "Taller");
+                    return Json(new { success = true, message = "Taller guardado correctamente" });
+
                 }
 
-                return View(model);
+                return Json(new { success = false, message = "No se pudo guardar el taller" });
+
+                //model.Regiones = await taller.GetRegions(User.GetEmpresaId());
+                //return View(model);
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError(string.Empty, ex.Message);
-                return View(model);
+                return Json(new { success = false, message = ex.Message });
+                //ModelState.AddModelError(string.Empty, ex.Message);
+                //model.Regiones = await taller.GetRegions(User.GetEmpresaId());
+                //return View(model);
             }
         }
 
@@ -70,15 +85,38 @@ namespace SUVAN.BackOffice.Portal.Controllers
             {
                 await taller.EliminarTaller(model.IdTaller);
 
-
-                return Ok(new { success = true });
-
+                return Json(new { success = true, message = "Taller eliminado correctamente." });
 
             }
             catch (Exception ex)
             {
-                return Ok(new { success = false, message = ex.Message });
+                return Json(new { success = false, message = ex.Message });
             }
+        }
+
+
+        [HttpGet]
+        public async Task<JsonResult> GetPlantas(int regionId)
+        {
+            var idEmpresa = User.GetEmpresaId();
+            var plantas = await taller.GetPlantasByRegion(idEmpresa, regionId);
+            return Json(plantas);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetZonas(int plantaId)
+        {
+            var idEmpresa = User.GetEmpresaId();
+            var zonas = await taller.GetZonasByPlanta(idEmpresa, plantaId);
+            return Json(zonas);
+        }
+
+        [HttpGet]
+        public async Task<JsonResult> GetDepositos(int zonaId)
+        {
+            var idEmpresa = User.GetEmpresaId();
+            var depositos = await taller.GetDepositosByZona(idEmpresa, zonaId);
+            return Json(depositos);
         }
     }
 }

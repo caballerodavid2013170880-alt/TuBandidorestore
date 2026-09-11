@@ -1,5 +1,7 @@
 ﻿"use strict";
 
+//const { Swal } = require("../../../assets/plugins/global/plugins.bundle");
+
 // Class definition
 var KTTaller = function () {
     // Elements
@@ -7,12 +9,10 @@ var KTTaller = function () {
     var submitButton;
     var validator;
 
-    const depositoSelect = document.getElementById('IdDeposito');
-    const zonaSelect = document.getElementById('ZonaIdzona');
-    const zonaJsonInput = document.getElementById('ZonaJson');
-
-    let zonaConfiguration = {};
-    let depositoConfiguration = {};
+    const regionSelect = document.getElementById('selectIdRegion');
+    const plantaSelect = document.getElementById('selectIdPlanta');
+    const zonaSelect = document.getElementById('selectIdZona');
+    const depositoSelect = document.getElementById('selectIdDeposito');
 
     // Handle form
     var handleValidation = function (e) {
@@ -29,28 +29,35 @@ var KTTaller = function () {
                             stringLength: {
                                 min: 7,
                                 max: 100,
-
-                                message: 'deben tener entre 7 y 100 caracteres',
-                            },
+                                message: 'deben tener entre 7 y 100 caracteres'
+                            }
                         }
                     },
-                    'ZonaIdzona': {
+                    'IdRegion': {
                         validators: {
                             notEmpty: {
-                                message: 'Zona requerida',
-                                callback: function (value, validator, $field) {
-                                    return value !== "";
-                                }
+                                message: 'Region requerida'
+                            }
+                        }
+                    },
+                    'IdPlanta': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Planta requerida'
+                            }
+                        }
+                    },
+                    'IdZona': {
+                        validators: {
+                            notEmpty: {
+                                message: 'Zona requerida'
                             }
                         }
                     },
                     'IdDeposito': {
                         validators: {
                             notEmpty: {
-                                message: 'Depósito requerido',
-                                callback: function (value, validator, $field) {
-                                    return value !== "";
-                                }
+                                message: 'Depósito requerido'
                             }
                         }
                     },
@@ -91,12 +98,10 @@ var KTTaller = function () {
                             stringLength: {
                                 min: 7,
                                 max: 255,
-
                                 message: 'deben tener entre 7 y 50 caracteres',
                             },
                         }
-                    },
-                    
+                    }
                 },
                 plugins: {
                     trigger: new FormValidation.plugins.Trigger(),
@@ -108,70 +113,165 @@ var KTTaller = function () {
                 }
             }
         );
-    }
-
-    const initData = () => {
-        try {
-            zonaConfiguration = JSON.parse(zonaJsonInput.value);
-        } catch (e) {
-        }
     };
 
-    const clearSelect = (select) => {
-        while (select.options.length > 0) {
-            select.remove(0);
-        }
+    const clearSelect = (select, defaultMessage) => {
+        if (!select) return;
+        select.innerHTML = `<option value="">${defaultMessage}</option>`;
+        select.disabled = true;
     };
 
-    const initZonaAndDeposito = () => {
-        zonaSelect.addEventListener('change', function (event) {
-            const zonaId = parseInt(event.target.value);
-            const zona = zonaConfiguration.find(z => z.ZonaId === zonaId);
+    const initCascada = () => {
+        if (regionSelect) {
+            regionSelect.addEventListener('change', function () {
+                const regionId = this.value;
 
-            clearSelect(depositoSelect);
+                clearSelect(plantaSelect, "--Primero selecciona una Region--");
+                clearSelect(zonaSelect, "--Primero selecciona una Planta--");
+                clearSelect(depositoSelect, "--Primero selecciona una Zona--");
 
-            const optionSeleccione = document.createElement('option');
-            optionSeleccione.value = "";
-            optionSeleccione.textContent = "Selecciona un depósito";
-            depositoSelect.appendChild(optionSeleccione);
+                if (!regionId || regionId === "0") return;
 
-            depositoConfiguration = zona.Depositos;
+                fetch(`/Taller/GetPlantas?regionId=${regionId}`)
+                    .then(response => response.json())
+                    .then(data => {
 
-            zona.Depositos.forEach(t => {
-                const option = document.createElement('option');
-                option.value = t.DepositoId;
-                option.textContent = t.DepositoNombreId;
-                depositoSelect.appendChild(option);
+                        plantaSelect.innerHTML = '<option value="">--Selecciona una Planta--</option>';
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.nombre;
+                            plantaSelect.appendChild(option);
+                        });
+                        plantaSelect.disabled = false;
+                        if (validator) validator.revalidateField('IdPlanta');
+                    })
+                    .catch(error => console.error('Error al cargar plantas:', error));
             });
-        });
+        }
+        //Evento planta -> carga zonas por AJAX
+        if (plantaSelect) {
+            plantaSelect.addEventListener('change', function () {
+                const plantaId = this.value;
+                clearSelect(zonaSelect, "--Primero selecciona una Planta--");
+                clearSelect(depositoSelect, "--Primero selecciona una Zona--");
 
-        depositoSelect.addEventListener('change', function (event) {
-            const depositoId = parseInt(event.target.value);
-            const deposito = depositoConfiguration.find(t => t.DepositoId === depositoId);
-            console.log("Depósito seleccionado:", deposito);
-        });
+                if (!plantaId || plantaId === "0") return;
+
+                fetch(`/Taller/GetZonas?plantaId=${plantaId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        zonaSelect.innerHTML = '<option value="">--Selecciona una Zona--</option>';
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.nombre;
+                            zonaSelect.appendChild(option);
+                        });
+                        zonaSelect.disabled = false;
+                        if (validator) validator.revalidateField('IdZona');
+                    })
+                    .catch(error => console.error('Error al cargar zonas:', error));
+            });
+        }
+        if (zonaSelect) {
+            zonaSelect.addEventListener('change', function () {
+                const zonaId = this.value;
+
+                clearSelect(depositoSelect, "--Primero selecciona una Zona--");
+
+                if (!zonaId || zonaId === "0") return;
+                fetch(`/Taller/GetDepositos?zonaId=${zonaId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        depositoSelect.innerHTML = '<option value="">--Selecciona un Depósito--</option>';
+                        data.forEach(item => {
+                            const option = document.createElement('option');
+                            option.value = item.id;
+                            option.textContent = item.nombre;
+                            depositoSelect.appendChild(option);
+                        });
+                        depositoSelect.disabled = false;
+                        if (validator) validator.revalidateField('IdDeposito');
+                    })
+                    .catch(error => console.error('Error al cargar depósitos:', error));
+            });
+        }
     };
 
-    var handleSubmitValidation = function (e) {
+    var handleSubmitValidation = function () {
         // Handle form submit
         submitButton.addEventListener('click', function (e) {
             // Prevent button default action
             e.preventDefault();
 
             // Validate form
-            validator.validate().then(function (status) {
-                if (status == 'Valid') {
+            validator.validate().then(async function (status) {
+                if (status !== 'Valid') {
                     // Disable button to avoid multiple click
-                    submitButton.setAttribute('data-kt-indicator', 'on');
-                    submitButton.disabled = true;
-                    form.submit();
+                    return;
+                }
+
+                //deshabilitar el botón mientras procesa
+                submitButton.setAttribute('data-kt-indicator', 'on');
+                submitButton.disabled = true;
+
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    const data = await response.json();
+
+                    
+
+                    if (data.success) {
+                        await Swal.fire({
+                            text: data.message || "Taller guardado correctamente.",
+                            icon: "success",
+                            buttonsStyling: false,
+                            confirmButtonText: "Aceptar",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-success"
+                            }
+                        })
+
+                        window.location.href = '/Taller/Index';
+
+                    } else {
+                        Swal.fire({
+                            text: result.message || "Ocurrió un error al guardar el taller.",
+                            icon: "error",
+                            buttonsStyling: false,
+                            confirmButtonText: "Aceptar",
+                            customClass: {
+                                confirmButton: "btn fw-bold btn-primary"
+                            }
+                        });
+                    }
+                } catch (error) {
+                    
+                    Swal.fire({
+                        text: "Error de conexión con el servidor",
+                        icon: "error",
+                        buttonsStyling: false,
+                        confirmButtonText: "Aceptar",
+                        customClass: {
+                            confirmButton: "btn fw-bold btn-primary"
+                        }
+                    });
+                } finally {
+                    submitButton.removeAttribute('data-kt-indicator');
+                    submitButton.disabled = false;
                 }
             });
         });
-    }
+    };
 
     const initControls = () => {
-        initZonaAndDeposito();
+        initCascada();
         handleSubmitValidation();
     };
 
@@ -181,12 +281,15 @@ var KTTaller = function () {
             form = document.querySelector('#kt_taller_in_form');
             submitButton = document.querySelector('#kt_taller_in_submit');
 
-            document.querySelector("#Telefono").addEventListener("input", function () {
-                this.value = this.value.replace(/[^0-9]/g, '');
-            });
+            const phoneInput = document.querySelector("#Telefono");
+            if (phoneInput) {
+                phoneInput.addEventListener("input", function () {
+                    this.value = this.value.replace(/[^0-9]/g, '');
+                });
+            }
 
             handleValidation();
-            initData();
+            //initData();
             initControls();
         }
     };
