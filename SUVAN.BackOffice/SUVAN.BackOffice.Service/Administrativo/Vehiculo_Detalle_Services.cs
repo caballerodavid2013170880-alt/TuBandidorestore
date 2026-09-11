@@ -73,21 +73,42 @@ namespace SUVAN.BackOffice.Service.Administrativo
         /// <returns>ViewModel para el VehiculoDetalle especifico.</returns>
         public async Task<VehiculoDetalleViewModel> GetVehiculoDetalleViewModel(int id)
         {
-            var vehiculo = await context.VehiculoDetalles.Include(v => v.IdMarcaNavigation).Include(v => v.IdModeloNavigation).
+            var vehiculo = await context.VehiculoDetalles
+                .Include(v => v.IdMarcaNavigation)
+                .Include(v => v.IdModeloNavigation)
+                    .ThenInclude(v => v.IdMarcaNavigation)
+                .Include(v => v.IdVehiculoNavigation)
+                    .ThenInclude(v => v.IdModeloNavigation)
+                        .ThenInclude(v => v.IdMarcaNavigation)
                 //1407 Evita conflictos con Depositosdisponibles Include(v => v.IdTipoVehiculoNavigation).Include(v => v.IdTipoEjeNavigation).Include(v => v.IdDepositoNavigation).Include(v => v.IdZonaNavigation).
-                Include(v => v.IdVehiculoNavigation).FirstOrDefaultAsync(x => x.IdVehiculoDetalle == id);
+                .FirstOrDefaultAsync(x => x.IdVehiculoDetalle == id);
 
             if (vehiculo == null)
-                return new VehiculoDetalleViewModel();
-
-            return new VehiculoDetalleViewModel
             {
-                IdMarca = vehiculo.IdMarca,
-                DescripcionMarca = vehiculo?.IdMarcaNavigation?.Descripcion,
+                var emptyViewModel = new VehiculoDetalleViewModel();
+                await CargarMarcaModeloCatalogos(emptyViewModel);
+                return emptyViewModel;
+            }
+
+            var idMarca = vehiculo.IdMarca
+                ?? (vehiculo.IdVehiculoNavigation.IdMarca.HasValue
+                    ? (short?)vehiculo.IdVehiculoNavigation.IdMarca.Value
+                    : null);
+            var idModelo = vehiculo.IdModelo ?? vehiculo.IdVehiculoNavigation.IdModelo;
+            var descripcionModelo = vehiculo.IdModeloNavigation?.Descripcion
+                ?? vehiculo.IdVehiculoNavigation.IdModeloNavigation?.Descripcion;
+            var descripcionMarca = vehiculo.IdMarcaNavigation?.Descripcion
+                ?? vehiculo.IdModeloNavigation?.IdMarcaNavigation?.Descripcion
+                ?? vehiculo.IdVehiculoNavigation.IdModeloNavigation?.IdMarcaNavigation?.Descripcion;
+
+            var viewModel = new VehiculoDetalleViewModel
+            {
+                IdMarca = idMarca,
+                DescripcionMarca = descripcionMarca,
                 IdTipoVehiculo = vehiculo?.IdTipoVehiculo,
                 NombreTipoV = vehiculo?.IdTipoVehiculoNavigation?.Nombre,
-                IdModelo = vehiculo?.IdModelo,
-                DescripcionModelo = vehiculo?.IdModeloNavigation?.Descripcion,
+                IdModelo = idModelo,
+                DescripcionModelo = descripcionModelo,
                 IdTipoEje = vehiculo?.IdTipoEje,
                 DescripcionEje = vehiculo?.IdTipoEjeNavigation?.Descripcion,
                 IdZona = vehiculo?.IdZona,
@@ -138,6 +159,10 @@ namespace SUVAN.BackOffice.Service.Administrativo
                 VigenciaTarjetaCirculacion = vehiculo.VigenciaTarjetaCirculacion,
                 UsuarioCaptura = vehiculo.UsuarioCaptura
             };
+
+            await CargarMarcaModeloCatalogos(viewModel);
+
+            return viewModel;
         }
 
         /// <summary>
@@ -295,18 +320,57 @@ namespace SUVAN.BackOffice.Service.Administrativo
 
         public async Task CompletarCamposError(VehiculoDetalleViewModel model)
         {
-            if (model == null || model.IdVehiculoDetalle == 0)
+            if (model == null)
                 return;
+
+            if (model.IdVehiculoDetalle == 0)
+            {
+                await CargarMarcaModeloCatalogos(model);
+                return;
+            }
 
             var datos = await GetVehiculoDetalleViewModel(model.IdVehiculoDetalle);
 
             model.NombreTipoV = datos.NombreTipoV;
             model.DescripcionMarca = datos.DescripcionMarca;
             model.DescripcionModelo = datos.DescripcionModelo;
+            model.Marcas = datos.Marcas;
+            model.Modelos = datos.Modelos;
             model.DescripcionEje = datos.DescripcionEje;
             model.NombreZona = datos.NombreZona;
             model.NombreDeposito = datos.NombreDeposito;
             model.PlacasVehiculo = datos.PlacasVehiculo;
+        }
+
+        private async Task CargarMarcaModeloCatalogos(VehiculoDetalleViewModel model)
+        {
+            model.Marcas = await context.Marcas
+                .OrderBy(x => x.Descripcion)
+                .Select(x => new MarcaViewModel
+                {
+                    IdMarca = x.IdMarca,
+                    Descripcion = x.Descripcion
+                })
+                .ToListAsync();
+
+            if (model.IdMarca.HasValue)
+            {
+                model.Modelos = await context.Modelos
+                    .Where(x => x.IdMarca == model.IdMarca.Value)
+                    .OrderBy(x => x.Descripcion)
+                    .Select(x => new ModeloViewModel
+                    {
+                        IdModelo = x.IdModelo,
+                        IdMarca = x.IdMarca,
+                        Descripcion = x.Descripcion,
+                        IdTipoV = x.IdTipoV,
+                        AnioDesde = x.AnioDesde,
+                        AnioHasta = x.AnioHasta,
+                        KmGarantia = x.KmGarantia,
+                        MesGarantia = x.MesGarantia
+                    })
+                    .ToListAsync();
+            }
         }
 
         public async Task<List<VehiculoDetalleViewModel>> ObtenerDetalleModal(int idVehiculoDetalle)

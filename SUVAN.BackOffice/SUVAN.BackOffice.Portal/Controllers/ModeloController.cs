@@ -2,6 +2,7 @@
 using SUVAN.BackOffice.Service.Administrativo;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using SUVAN.BackOffice.Portal.Models;
 using SUVAN.BackOffice.Models.ViewModel.Logistica;
@@ -32,8 +33,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> AgregarModelo(int id)
         {
             var agregarModel = await modeloService.GetModeloViewModel(id);
-            agregarModel.MarcasView = modeloService.ObtenerMarca();
-            agregarModel.TipoVehiculoView = modeloService.ObtenerTipoVehiculo();
+            CargarCatalogos(agregarModel);
             return View(agregarModel);
         }
 
@@ -42,18 +42,21 @@ namespace SUVAN.BackOffice.Portal.Controllers
         {
             try
             {
-                var result = await modeloService.AgregarModelo(model);
+                var idUsuario = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier) ?? "0");
+                var result = await modeloService.AgregarModelo(model, idUsuario);
 
                 if (result)
                 {
                     return RedirectToAction("Index", "Modelo");
                 }
 
+                CargarCatalogos(model);
                 return View(model);
             }
             catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty, ex.Message);
+                CargarCatalogos(model);
                 return View(model);
             }
 
@@ -76,6 +79,13 @@ namespace SUVAN.BackOffice.Portal.Controllers
             {
                 return Ok(new { success = false, message = ex.Message });
             }
+        }
+
+        private void CargarCatalogos(ModeloViewModel model)
+        {
+            model.MarcasView = modeloService.ObtenerMarca();
+            model.TipoVehiculoView = modeloService.ObtenerTipoVehiculo();
+            model.TiposEjeView = modeloService.ObtenerTipoEje();
         }
     }
 }

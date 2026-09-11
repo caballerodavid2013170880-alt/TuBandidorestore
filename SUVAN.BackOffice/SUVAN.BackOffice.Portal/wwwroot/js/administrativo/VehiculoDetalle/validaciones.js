@@ -686,6 +686,53 @@
         }
     };
 
+    const handleMarcaModeloSelects = () => {
+        const selectMarca = document.getElementById('IdMarca');
+        const selectModelo = document.getElementById('IdModelo');
+
+        if (!selectMarca || !selectModelo || selectMarca.tagName !== 'SELECT' || selectModelo.tagName !== 'SELECT') {
+            return;
+        }
+
+        selectMarca.addEventListener('change', function () {
+            const idMarca = this.value;
+
+            selectModelo.innerHTML = '<option value="">Selecciona un Modelo</option>';
+            selectModelo.value = '';
+
+            if (!idMarca || idMarca === '0') {
+                window.validator?.revalidateField('IdMarca');
+                window.validator?.revalidateField('IdModelo');
+                return;
+            }
+
+            fetch(`/Catalogs/GetCatalogosSearch?id=modelo&nClaveFiltro=${idMarca}`)
+                .then(response => response.json())
+                .then(response => {
+                    if (!response.success) {
+                        console.error('Error al cargar modelos:', response.message);
+                        return;
+                    }
+
+                    response.data.forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.descripcion;
+                        selectModelo.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error al cargar modelos:', error))
+                .finally(() => {
+                    window.validator?.revalidateField('IdMarca');
+                    window.validator?.revalidateField('IdModelo');
+                });
+        });
+
+        selectModelo.addEventListener('change', function () {
+            window.validator?.revalidateField('IdModelo');
+        });
+    };
+
     
 
     function flatpickrFecha(campo) {
@@ -746,6 +793,7 @@
             handleValidation();
             handleNextTabValidation();
             handleCascadaSelects();
+            handleMarcaModeloSelects();
             handleSubmitValidation();
         }
     };

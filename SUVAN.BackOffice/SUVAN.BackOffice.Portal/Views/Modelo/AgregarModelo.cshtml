@@ -49,6 +49,7 @@
                 <form class="form w-100" novalidate="novalidate" id="kt_modelo_in_form" data-kt-redirect-url="/" asp-controller="Modelo" asp-action="AgregarModelo" method="post">
                     @Html.AntiForgeryToken()
                     <input asp-for="IdModelo" type="hidden" />
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-5"></div>
 
                     <div class="row">
                         <div class="col-sm-6">
@@ -110,6 +111,58 @@
                         </div>
                     </div>
 
+                    <div class="separator separator-dashed my-8"></div>
+
+                    <div class="mb-6">
+                        <h3 class="fs-5 fw-bold text-dark mb-4">Configuración de ejes</h3>
+                        <div id="kt_modelo_ejes_validation" class="text-danger mb-4"></div>
+                        <div id="kt_modelo_ejes_container">
+                            @for (var i = 0; i < Model.Ejes.Count; i++)
+                            {
+                                <div class="row align-items-end modelo-eje-row mb-4" data-modelo-eje-row>
+                                    <input asp-for="Ejes[i].IdModeloEje" type="hidden" data-field="idModeloEje" />
+                                    <input asp-for="Ejes[i].NumeroEje" type="hidden" data-field="numeroEje" />
+                                    <div class="col-sm-2">
+                                        <label class="col-form-label text-gray-600">Eje</label>
+                                        <div class="form-control bg-light text-muted" data-eje-label>Eje @(i + 1)</div>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <label asp-for="Ejes[i].IdTipoEje" class="col-form-label text-gray-600 required">Tipo de eje</label>
+                                        <select asp-for="Ejes[i].IdTipoEje" class="form-control" data-field="idTipoEje">
+                                            <option value="">Selecciona un Tipo de Eje</option>
+                                            @foreach (var tipoEje in Model.TiposEjeView)
+                                            {
+                                                if (tipoEje.IdTipoEje == Model.Ejes[i].IdTipoEje)
+                                                {
+                                                    <option value="@tipoEje.IdTipoEje" data-posiciones="@tipoEje.NumeroPosiciones" selected>@tipoEje.NombreTipoEjeId</option>
+                                                }
+                                                else
+                                                {
+                                                    <option value="@tipoEje.IdTipoEje" data-posiciones="@tipoEje.NumeroPosiciones">@tipoEje.NombreTipoEjeId</option>
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <label class="col-form-label text-gray-600">Posiciones</label>
+                                        <div class="form-control bg-light text-muted" data-posiciones-label>
+                                            @(Model.Ejes[i].NumeroPosiciones > 0 ? $"{Model.Ejes[i].NumeroPosiciones} posiciones" : "-")
+                                        </div>
+                                        <input asp-for="Ejes[i].NumeroPosiciones" type="hidden" data-field="numeroPosiciones" />
+                                    </div>
+                                    <div class="col-sm-2 text-end">
+                                        <button type="button" class="btn btn-light-danger btn-sm" data-eje-remove>Eliminar</button>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <button type="button" id="kt_modelo_add_eje" class="btn btn-light-primary btn-sm">
+                            <i class="ki-outline ki-plus fs-3"></i>
+                            Agregar eje
+                        </button>
+                    </div>
+
                     <div class="text-end">
                         <button type="submit" id="kt_modelo_in_submit" class="btn btn-primary btn-sm">
                             <span class="indicator-label">Guardar</span>
@@ -126,6 +179,11 @@
 </div>
 <!--end::Content-->
 @section scripts {
+    <script>
+        window.SUVAN = window.SUVAN || {};
+        window.SUVAN.Modelo = window.SUVAN.Modelo || {};
+        window.SUVAN.Modelo.tiposEje = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.TiposEjeView));
+    </script>
     <script src="~/js/administrativo/modelo/add.js"></script>
     <script src="~/assets/js/widgets.bundle.js"></script>
     <script src="~/assets/js/custom/widgets.js"></script>

@@ -27,6 +27,18 @@ namespace SUVAN.BackOffice.Models.ViewModel
 
             [JsonPropertyOrder(5)]
             public string? Numeromotor { get; set; }
+
+            [JsonPropertyOrder(6)]
+            public int? IdMarca { get; set; }
+
+            [JsonPropertyOrder(7)]
+            public string? DescripcionMarca { get; set; }
+
+            [JsonPropertyOrder(8)]
+            public int? IdModelo { get; set; }
+
+            [JsonPropertyOrder(9)]
+            public string? DescripcionModelo { get; set; }
         }
 
         public class MarcasViewModel

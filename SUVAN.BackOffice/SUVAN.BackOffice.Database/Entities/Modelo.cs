@@ -14,7 +14,6 @@ public partial class Modelo
     public float KmGarantia { get; set; }
 
     public int MesGarantia { get; set; }
-
     public short IdMarca { get; set; }
 
     public sbyte IdTipoV { get; set; }
@@ -30,6 +29,5 @@ public partial class Modelo
     public virtual ICollection<Preventivo> Preventivos { get; set; } = new List<Preventivo>();
 
     public virtual ICollection<VehiculoDetalle> VehiculoDetalles { get; set; } = new List<VehiculoDetalle>();
-
     public virtual ICollection<Vehiculo> Vehiculos { get; set; } = new List<Vehiculo>();
 }

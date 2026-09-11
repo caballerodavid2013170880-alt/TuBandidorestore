@@ -194,6 +194,9 @@ namespace SUVAN.BackOffice.Portal.Controllers
         public async Task<IActionResult> AgregarUnidad(AgregarUnidadViewModel model)
         {
             var returnModel = await vehiculoService.GetVehiculoViewModel(0, User.GetEmpresaId());
+            returnModel.Modelos = await vehiculoService.ObtenerModelo(model.IdMarca);
+            returnModel.MarcaJson = JsonConvert.SerializeObject(returnModel.Marcas);
+
             try
             {
                 returnModel.Placas = model.Placas;
@@ -209,7 +212,7 @@ namespace SUVAN.BackOffice.Portal.Controllers
                     return View(returnModel);
                 }
 
-                var result = await vehiculoService.AgregarVehiculo(model, User.GetEmpresaId());
+                var result = await vehiculoService.AgregarVehiculo(model, User.GetEmpresaId(), User.GetUserId());
 
                 if (result)
                 {
